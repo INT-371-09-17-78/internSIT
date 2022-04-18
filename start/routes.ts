@@ -28,6 +28,14 @@ Route.get('/announcement', async ({ view }) => {
   return view.render('announcement')
 })
 
+Route.get('/register', async ({ view }) => {
+  return view.render('auth/register')
+}).as('auth.register.show')
+
+Route.get('/login', async ({ view }) => {
+  return view.render('auth/login')
+}).as('auth.login.show')
+
 //backend
 import Database from '@ioc:Adonis/Lucid/Database'
 
@@ -39,7 +47,6 @@ Route.get('/test', async () => {
   // .first()
 })
 
-
 Route.resource('controller', 'UsersController').apiOnly()
 
 Route.post('register', 'AuthController.register').as('auth.register')
@@ -49,4 +56,3 @@ Route.post('register', 'AuthController.register').as('auth.register')
 Route.resource('user', 'UsersController').apiOnly()
 Route.post('user/login', 'UsersController.verify').as('auth.login')
 Route.get('logout', 'UsersController.logout').as('auth.logout')
-
