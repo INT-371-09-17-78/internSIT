@@ -958,6 +958,7 @@ module.exports = {
           ...require('daisyui/src/colors/themes')['[data-theme=light]'],
           'primary': '#4263EB',
           'primary-focus': '#2342C0',
+          'error-content': '#F03D3E',
         },
       },
     ],

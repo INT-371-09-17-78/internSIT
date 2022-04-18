@@ -1,17 +1,29 @@
-<form action="{{ route('auth.register') }}" method="POST">
-    <label for="">
-        Username
-        <input type="text" name="username" />
-    </label>
+@layout('layouts/app')
+@set('title', 'Register page')
+@section('register')
 
-    <label for="">
-        Email
-        <input type="email" name="email" />
-    </label>
+<section class="flex justify-center w-full h-screen items-center">
+    <div class="form-control w-full max-w-xs">    
+        <form action="{{ route('auth.register') }}" method="POST">
 
-    <label for="">
-        Password
-        <input type="password" name="password" />
-    </label>
-<button type="submit">Register</button>
-</form>
+        <label class="label">
+          <span class="label-text">Username</span>
+        </label>
+        <input type="text" placeholder="Username" name="username" class="input input-bordered input-{{borderColor}} w-full max-w-xs">
+
+        <label class="label">
+            <span class="label-text">Email</span>
+        </label>
+        <input type="text" placeholder="Email" name="email" class="input input-bordered input-{{borderColor}} w-full max-w-xs">
+
+        <label class="label">
+            <span class="label-text">Password</span>
+        </label>
+        <input type="password" placeholder="Password" name="password" class="input input-bordered input-{{borderColor}} w-full max-w-xs">
+
+        <button class="btn btn-primary btn-block btn-square mt-5" type="submit">Register</button>
+
+        </form>
+    </div>
+</section>
+@end

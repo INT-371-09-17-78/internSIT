@@ -28,6 +28,14 @@ Route.get('/pre-login', async ({ view }) => {
   return view.render('auth/pre-login')
 })
 
+Route.get('/register', async ({ view }) => {
+  return view.render('auth/register')
+}).as('auth.register.show')
+
+Route.get('/login', async ({ view }) => {
+  return view.render('auth/login')
+}).as('auth.login.show')
+
 //backend
 import Database from '@ioc:Adonis/Lucid/Database'
 
@@ -41,8 +49,6 @@ Route.get('/test', async () => {
 
 Route.resource('controller', 'UsersController').apiOnly()
 
-Route.get('register', 'AuthController.registerShow').as('auth.register.show')
 Route.post('register', 'AuthController.register').as('auth.register')
-Route.get('login', 'AuthController.loginShow').as('auth.login.show')
 Route.post('login', 'AuthController.login').as('auth.login')
 Route.get('logout', 'AuthController.logout').as('auth.logout')

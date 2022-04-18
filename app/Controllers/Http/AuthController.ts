@@ -4,9 +4,6 @@ import User from 'App/Models/User'
 
 export default class AuthController {
   //register
-  public async registerShow({ view }: HttpContextContract) {
-    return view.render('auth/register')
-  }
   public async register({ request, response, auth }): Promise<HttpContextContract> {
     const userSchema = schema.create({
       username: schema.string({ trim: true }, [
@@ -27,16 +24,13 @@ export default class AuthController {
     return response.redirect('/')
   }
   //login
-  public async loginShow({ view }: HttpContextContract) {
-    return view.render('auth/login')
-  }
 
   public async login({ request, response, auth, session }): Promise<HttpContextContract> {
     const { uid, password } = request.only(['uid', 'password'])
     try {
       await auth.attempt(uid, password)
     } catch (error) {
-      session.flash('form', 'Your email or password is incorrect')
+      session.flash('error', 'Your email or password is incorrect')
       return response.redirect().back()
     }
     return response.redirect('/')
