@@ -1,26 +1,13 @@
-@layout('layouts/app')
-@set('title', 'Login page')
+<form action="{{ route('auth.login') }}" method="POST">
+    <label for="">
+        Username or Email
+        <input type="text" name="uid" />
+    </label>
 
-@section('login')
-  <section>
-    <div class="login flex flex-col h-screen justify-center items-center space-y-16 px-5">
-        <img src="/assets/images/team-work.png" class="w-56 h-auto"/>
-        <div class="content text-center"> 
-            <header class="text-lg font-semibold">Information technology</header>
-            <p class="text-gray-400 text-base mt-6 font-semibold">Information Technology Information Technology Information Technology Information Technology</p>
-        </div>
-        <div class="button-group relative flex justify-center">
-            @!component('common/button', {
-                text: 'Sign in',
-                type: 'text',
-                class: 'btn btn-primary px-12 absolute z-10 -right-1 whitespace-nowrap',
-              })
-            @!component('common/button', {
-                text: 'Register',
-                type: 'text',
-                class: 'btn bg-white text-black px-12 -left-3 absolute hover:text-white',
-            })
-        </div>
-    </div>
-  </section>
-@end
+
+    <label for="">
+        Username
+        <input type="password" name="password" />
+    </label>
+<button type="submit">Login</button>
+</form>
