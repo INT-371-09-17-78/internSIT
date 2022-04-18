@@ -9,6 +9,9 @@
   @entryPointScripts('app')
 </head>
 <body>
+ @if (auth.user)
+ <a href="{{ route('auth.logout') }}">Logout</a>
+ @endif
 
   <main class="text-primary">
     <div>
