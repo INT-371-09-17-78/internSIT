@@ -24,9 +24,15 @@ Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
 
-Route.get('/pre-login', async ({ view }) => {
-  return view.render('auth/pre-login')
+Route.get('/login', async ({ view }) => {
+  return view.render('auth/login')
 })
+
+
+
+
+
+
 
 //backend
 import Database from '@ioc:Adonis/Lucid/Database'
@@ -34,15 +40,14 @@ import Database from '@ioc:Adonis/Lucid/Database'
 // import UsersController from 'App/Controllers/Http/UsersController'
 
 Route.get('/test', async () => {
-  Database.from('city').select('*')
-  // .where('id', params.id)
-  // .first()
-})
+  
+  Database
+    .from('city')
+    .select('*')
+    // .where('id', params.id)
+    // .first()
+  
+}
+)
 
-Route.resource('controller', 'UsersController').apiOnly()
-
-Route.get('register', 'AuthController.registerShow').as('auth.register.show')
-Route.post('register', 'AuthController.register').as('auth.register')
-Route.get('login', 'AuthController.loginShow').as('auth.login.show')
-Route.post('login', 'AuthController.login').as('auth.login')
-Route.get('logout', 'AuthController.logout').as('auth.logout')
+Route.resource('controller', 'UsersController').apiOnly();
