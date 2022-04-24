@@ -1,0 +1,50 @@
+@layout('layouts/app')
+@set('title', 'announcement page')
+@set('announcements',[
+  {
+    username: 'virk',
+    avatar:'92310'
+  },
+  {
+    username: 'romain',
+    avatar:'92311'
+  },
+  {
+    username: 'nikk',
+    avatar:'92312'
+  },
+])
+@section('announcement')
+  <section class="h-full w-full">
+      <div class="header-element flex flex-col space-y-3 px-8 mt-20">  
+        <div class="header text-black flex font-bold text-lg">
+          <i class="material-icons -rotate-45">
+            campaign
+          </i>
+          <p>Announcement</p> 
+        </div>
+        @!common.search({
+          text: 'Search',
+          btnProps: 'btn-block bg-white',
+        })
+      </div>
+      <div class="card-group grid grid-cols-1 gap-y-5 place-items-center px-8 mt-8">
+        @each(announcement in announcements)
+        <div class="card card-side w-full card-compact card-bordered bg-white text-black-content justify-center items-center border-0 shadow-lg">
+          <div class="avatar flex justify-center items-center pl-5">
+            <div class="w-16 h-16 rounded-full">
+              <img src="https://api.lorem.space/image/face?hash={{announcement.avatar}}" />
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="flex">
+              <p>{{announcement.username}}</p><p>dd/mm 00:00AM</p>
+            </div>
+                <h2 class="card-title">Card title!</h2>
+                <p>If a dog chews shoes whose shoes does he choose?</p>
+            </div>
+        </div>
+        @end
+      </div>
+  </section>
+@end
