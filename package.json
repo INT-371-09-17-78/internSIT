@@ -67,6 +67,7 @@
     "@adonisjs/shield": "^7.0.0",
     "@adonisjs/view": "^6.1.0",
     "daisyui": "^2.13.6",
+    "file-loader": "^6.2.0",
     "luxon": "^2.3.1",
     "mysql": "^2.18.1",
     "proxy-addr": "^2.0.7",
