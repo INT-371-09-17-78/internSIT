@@ -28,7 +28,10 @@ Route.get('/login', async ({ view }) => {
   return view.render('auth/login')
 })
 
-Route.get('/announcement', async ({ view }) => {
+Route.get('/announcement/:id?', async ({ view, params }) => {
+  if (params.id) {
+    return `<p>Viewing post with id ${params.id}</p>`
+  }
   return view.render('announcement')
 })
 
