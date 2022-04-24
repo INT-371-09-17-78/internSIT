@@ -1,3 +1,7 @@
+@set('menuColor', 'bg-white text-primary')
+@if(request.url()==='/')
+@set('menuColor', 'bg-base-200 text-white')
+@end
 <!DOCTYPE html>
 <html class="bg-white">
   <head>
@@ -10,6 +14,16 @@
     @entryPointScripts('app')
   </head>
   <body class="bg-white w-screen h-screen">
+    <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate absolute right-5 top-5 lg:hidden z-10">
+      <input type="checkbox"/>
+      <i class="swap-off fill-current material-symbols-outlined text-3xl font-bold">
+          menu
+      </i>
+      <i class="swap-on fill-current material-symbols-outlined text-3xl font-bold"">
+        close
+      </i>
+    </label>
     @!section('home')
+    @!section('announcement')
   </body>
 </html>
