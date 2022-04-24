@@ -2,27 +2,63 @@
 @set('title', 'home page')
 
 @section('home')
-  <section class="h-full w-full">
-    <div class="login h-full w-full flex justify-center items-center lg:flex-row lg:justify-center">
-        <div class="hidden lg:w-1/6 lg:h-full lg:shadow-2xl lg:flex lg:flex-col lg:items-center">
-            <p class="text-center text-primary font-semibold text-3xl pt-12">InternSIT</p>
+  <section class="h-full w-full lg:flex">
+    <div class="drawer drawer-mobile absolute lg:relative w-1/6 lg:shadow-2xl flex justify-center">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
+        <div class="drawer-side">
+          <label for="my-drawer-2" class="drawer-overlay"></label> 
+          <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content bg-white">
+            <!-- Sidebar content here -->
+            <p class="text-center text-primary font-semibold text-2xl">InternSIT</p>
             @!common.button({
                 text: 'Login',
                 type: 'text',
-                class: 'btn bg-base-200 border-none text-black normal-case px-8 rounded-full min-h-0 h-8 mt-5',
+                class: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5',
             })
+          </ul>
         </div>
-        <div class="home-detail lg:flex lg:items-center lg:justify-center lg:w-full lg:px-16">
-            <div class="img-container pl-6 lg:order-last lg:p-0">
-              <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto"/>  
+    </div>
+    <div class="login h-full w-full flex flex-col justify-center items-center relative lg:flex-row">
+        {{--  for no animated sidebar  --}}
+        {{--  <div class="hidden lg:w-1/6 lg:h-full lg:shadow-2xl lg:flex lg:flex-col lg:items-center">
+            <p class="text-center text-primary font-semibold text-2xl pt-12">InternSIT</p>
+            @!common.button({
+                text: 'Login',
+                type: 'text',
+                class: 'btn btn-sm bg-base-200 border-none text-black normal-case px-5 rounded-full mt-5',
+            })
+        </div>  --}}
+        <label class="btn btn-circle border-0 bg-base-200 swap swap-rotate absolute right-5 top-5 lg:hidden">
+  
+            <input type="checkbox"/>
+            
+            <!-- hamburger icon -->
+            <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/></svg>
+        
+            <!-- close icon -->
+            <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/></svg>
+            
+        </label>
+        <div class="home-element mt-20 lg:w-full lg:h-full lg:flex lg:flex-col lg:mt-0">
+            <div class="search-input hidden lg:flex items-center ml-10 mt-8">
+                <i class="material-symbols-outlined text-base-200 absolute pointer-events-none pl-2">
+                    search
+                </i>
+                <input type="text" placeholder="Search" class="input input-bordered bg-white pl-9">
             </div>
-            <div class="content font-semibold px-10 space-y-2 lg:p-0 lg:space-y-5"> 
-                <p class="title text-3xl font-bold lg:text-5xl">Manage your 
-                    internship task</p>
-                <p class="subtitle text-xl">Information technology</p>
-                <p class="text-gray-400 text-sm">Information Technology Information Technology Information Technology Information Technology</p>
+            <div class="home-content lg:flex lg:justify-center lg:w-full lg:px-16 lg:h-full lg:items-center lg:mb-20">
+                <div class="img-container pl-6 lg:order-last lg:p-0">
+                    <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto"/>  
+                </div>
+                <div class="content font-semibold px-10 space-y-2 lg:p-0 lg:space-y-5"> 
+                    <p class="title text-3xl font-bold lg:text-5xl">Manage your 
+                        internship task</p>
+                    <p class="subtitle text-xl">Information technology</p>
+                    <p class="text-gray-400 text-sm">Information Technology Information Technology Information Technology Information Technology</p>
+                </div>
             </div>
-        </d>
+        </div>
+       
         
         <div class="lg:hidden button-container flex justify-center mt-10">
             @!common.button({
