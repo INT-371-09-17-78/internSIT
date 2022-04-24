@@ -21,18 +21,16 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/', async ({ view }) => {
-  return view.render('welcome')
+  return view.render('home')
 })
 
 Route.get('/login', async ({ view }) => {
   return view.render('auth/login')
 })
 
-
-
-
-
-
+Route.get('/announcement', async ({ view }) => {
+  return view.render('announcement')
+})
 
 //backend
 import Database from '@ioc:Adonis/Lucid/Database'
@@ -40,14 +38,9 @@ import Database from '@ioc:Adonis/Lucid/Database'
 // import UsersController from 'App/Controllers/Http/UsersController'
 
 Route.get('/test', async () => {
-  
-  Database
-    .from('city')
-    .select('*')
-    // .where('id', params.id)
-    // .first()
-  
-}
-)
+  Database.from('city').select('*')
+  // .where('id', params.id)
+  // .first()
+})
 
-Route.resource('controller', 'UsersController').apiOnly();
+Route.resource('controller', 'UsersController').apiOnly()

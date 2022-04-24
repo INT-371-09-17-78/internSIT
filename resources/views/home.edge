@@ -1,0 +1,36 @@
+@layout('layouts/app')
+@set('title', 'home page')
+
+@section('home')
+  <section class="h-full w-full">
+    <div class="login h-full w-full flex justify-center items-center lg:flex-row lg:justify-center">
+        <div class="hidden lg:w-1/6 lg:h-full lg:shadow-2xl lg:flex lg:flex-col lg:items-center">
+            <p class="text-center text-primary font-semibold text-3xl pt-12">InternSIT</p>
+            @!common.button({
+                text: 'Login',
+                type: 'text',
+                class: 'btn bg-base-200 border-none text-black normal-case px-8 rounded-full min-h-0 h-8 mt-5',
+            })
+        </div>
+        <div class="home-detail lg:flex lg:items-center lg:justify-center lg:w-full lg:px-16">
+            <div class="img-container pl-6 lg:order-last lg:p-0">
+              <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto"/>  
+            </div>
+            <div class="content font-semibold px-10 space-y-2 lg:p-0 lg:space-y-5"> 
+                <p class="title text-3xl font-bold lg:text-5xl">Manage your 
+                    internship task</p>
+                <p class="subtitle text-xl">Information technology</p>
+                <p class="text-gray-400 text-sm">Information Technology Information Technology Information Technology Information Technology</p>
+            </div>
+        </d>
+        
+        <div class="lg:hidden button-container flex justify-center mt-10">
+            @!common.button({
+                text: 'Login',
+                type: 'text',
+                class: 'btn bg-base-200 border-none text-black normal-case px-12 rounded-full min-h-0 h-10',
+            })
+        </div>
+    </div>
+  </section>
+@end
