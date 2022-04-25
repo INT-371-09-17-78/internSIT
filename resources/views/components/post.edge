@@ -1,0 +1,31 @@
+@layout('layouts/app')
+@set('title', 'post page')
+@section('post')
+<section class="w-full h-full">
+    <a href="{{ route('/announcement') }}">
+        <i class="material-icons absolute left-8 top-8">
+            arrow_back_ios
+        </i>
+    </a>
+    <p class="text-center font-semibold w-full py-8">Announcement</p>
+    <div class="card-group grid grid-cols-1 gap-y-5 px-5">
+          <div class="card w-full card-compact card-bordered bg-white text-black-content justify-center items-center border-0 shadow-lg">
+          <div class="card-body">
+              <div class="flex space-x-5">
+                  <div class="avatar flex justify-center items-center">
+                <div class="w-16 h-16 rounded-full">
+                  <img src="{{ asset('assets/images/team-work.png') }}" />
+                </div>
+              </div>
+            <div class="grid grid-cols-2">
+              <p>{{postId}}</p>
+              <p>dd/mm 00:00AM</p><h2 class="card-title col-span-2">Card title!</h2>
+            </div>
+              </div>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                <button class="btn btn-primary btn-xs w-40 font-normal normal-case text-xs rounded-full px-5"><p class="truncate">filedasdsadada_of_somthing.pdf</p></button>           
+            </div>
+          </div>
+    </div>
+</section>
+@end

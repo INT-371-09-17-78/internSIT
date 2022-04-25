@@ -28,10 +28,16 @@ Route.get('/login', async ({ view }) => {
   return view.render('auth/login')
 })
 
-Route.get('/announcement/:id?', async ({ view, params }) => {
-  if (params.id) {
-    return `<p>Viewing post with id ${params.id}</p>`
-  }
+Route.get('/announcement/:id', async ({ view }) => {
+  return view.render('components/post')
+}).middleware(({ view, params }, next) => {
+  view.share({
+    postId: params.id,
+  })
+  return next()
+})
+
+Route.get('/announcement', async ({ view }) => {
   return view.render('announcement')
 })
 
