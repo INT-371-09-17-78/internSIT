@@ -25,13 +25,13 @@
         </div>
         @!common.search({
           text: 'Search',
-          btnProps: 'btn-block bg-white',
+          btnProps: 'btn-block',
         })
       </div>
       <div class="card-group grid grid-cols-1 gap-y-5 px-8 mt-8">
         @each(post in posts)
         <a href="{{ route('/announcement/:id', { id: post.id }) }}">
-          <div class="card card-side w-full card-compact card-bordered bg-white text-black-content justify-center items-center border-0 shadow-lg">
+          <div class="card card-side w-full card-compact card-bordered text-black-content justify-center items-center border-0 shadow-lg">
           <div class="avatar flex justify-center items-center pl-5">
             <div class="w-16 h-16 rounded-full">
               <img src="{{ asset('assets/images/team-work.png') }}" />

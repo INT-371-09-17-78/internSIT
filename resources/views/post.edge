@@ -2,14 +2,14 @@
 @set('title', 'post page')
 @section('post')
 <section class="w-full h-full">
-    <a href="{{ route('/announcement') }}">
+    <a class="lg:hidden" href="{{ route('/announcement') }}">
         <i class="material-icons absolute left-8 top-8">
             arrow_back_ios
         </i>
     </a>
     <p class="text-center font-semibold w-full py-8">Announcement</p>
     <div class="card-group grid grid-cols-1 gap-y-5 px-5">
-          <div class="card w-full card-compact card-bordered bg-white text-black-content justify-center items-center border-0 shadow-lg">
+          <div class="card w-full card-compact card-bordered text-black-content justify-center items-center border-0 shadow-lg">
           <div class="card-body">
               <div class="flex space-x-5">
                   <div class="avatar flex justify-center items-center">
