@@ -29,7 +29,7 @@ Route.get('/login', async ({ view }) => {
 })
 
 Route.get('/announcement/:id', async ({ view }) => {
-  return view.render('components/post')
+  return view.render('post')
 }).middleware(({ view, params }, next) => {
   view.share({
     postId: params.id,
