@@ -1,3 +1,7 @@
+@set('menuColor', 'bg-white text-primary')
+@if(request.url()==='/')
+@set('menuColor', 'bg-base-200 text-white')
+@end
 <!DOCTYPE html>
 <html class="bg-white">
   <head>
@@ -5,11 +9,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
-    <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    @entryPointStyles('app')
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     @entryPointScripts('app')
   </head>
   <body class="bg-white w-screen h-screen">
+    <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate absolute right-5 top-5 lg:hidden z-10">
+      <input type="checkbox"/>
+      <i class="swap-off fill-current material-icons text-3xl font-bold">
+        menu
+      </i>
+      <i class="swap-on fill-current  material-icons text-3xl font-bold"">
+        close
+      </i>
+    </label>
     @!section('home')
+    @!section('announcement')
   </body>
 </html>

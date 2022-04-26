@@ -19,36 +19,18 @@
         </div>
     </div>
     <div class="login h-full w-full flex flex-col justify-center items-center relative lg:flex-row">
-        {{--  for no animated sidebar  --}}
-        {{--  <div class="hidden lg:w-1/6 lg:h-full lg:shadow-2xl lg:flex lg:flex-col lg:items-center">
-            <p class="text-center text-primary font-semibold text-2xl pt-12">InternSIT</p>
-            @!common.button({
-                text: 'Login',
-                type: 'text',
-                class: 'btn btn-sm bg-base-200 border-none text-black normal-case px-5 rounded-full mt-5',
-            })
-        </div>  --}}
-        <label class="btn btn-circle border-0 bg-base-200 swap swap-rotate absolute right-5 top-5 lg:hidden">
-  
-            <input type="checkbox"/>
-            
-            <!-- hamburger icon -->
-            <i class="swap-off fill-current material-symbols-outlined text-3xl">
-                menu
-            </i>
-            <!-- close icon -->
-            <i class="swap-on fill-current material-symbols-outlined text-3xl"">
-                close
-            </i>
-            
-        </label>
         <div class="home-element mt-20 lg:w-full lg:h-full lg:flex lg:flex-col lg:mt-0">
-            <div class="search-input hidden lg:flex items-center ml-10 mt-8">
-                <i class="material-symbols-outlined text-base-200 absolute pointer-events-none pl-2">
+            @!common.search({
+                text: 'Search',
+                classProps: 'hidden lg:flex items-center ml-10 mt-8',
+                btnProps: 'bg-white',
+            })
+            {{--  <div class="search-input hidden lg:flex items-center ml-10 mt-8">
+                <i class="material-icons text-base-200 absolute pointer-events-none pl-2">
                     search
                 </i>
-                <input type="text" placeholder="Search" class="input input-bordered bg-white pl-9">
-            </div>
+                <input type="text" placeholder={{ text }} class="input input-bordered bg-white pl-9">
+            </div>  --}}
             <div class="home-content lg:flex lg:justify-center lg:w-full lg:px-16 lg:h-full lg:items-center lg:mb-20">
                 <div class="img-container pl-6 lg:order-last lg:p-0">
                     <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto"/>  
