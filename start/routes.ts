@@ -43,4 +43,10 @@ Route.get('/test', async () => {
   // .first()
 })
 
-Route.resource('controller', 'UsersController').apiOnly()
+Route.get('/verify', async () => {
+  
+})
+
+
+Route.resource('user', 'UsersController').apiOnly()
+Route.post('user/login', 'UsersController.verify')
