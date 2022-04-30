@@ -26,7 +26,7 @@ export default class UsersController {
  
                 response.redirect().toRoute('/home')
             } else {
-                const ldap_user:any = await this.authenticate(username,password,'st')
+                const ldap_user:any = await this.authenticate(username,password,'staff')
                 console.log(ldap_user);
                 if(ldap_user){
                     user = await User.findBy('username',username)
@@ -47,13 +47,13 @@ export default class UsersController {
             response.redirect().toRoute('/login')
         }
     }
-    public authenticate(username: string,password: string,role: string ='st'){ 
+    public authenticate(username: string,password: string,role: string ='staff'){ 
         return new Promise( (resolve,reject) =>{
             const options = {
                 'url': 'ldaps://ld0620.sit.kmutt.ac.th',
-                'bindDN': 'uid='+username+',ou=People,ou='+role+',dc=sit,dc=kmutt,dc=ac,dc=th',
+                'bindDN': 'uid='+username+',ou=People,ou=staff,dc=sit,dc=kmutt,dc=ac,dc=th',
                 'bindCredentials': password,
-                'searchBase': 'ou=People,ou='+role+',dc=sit,dc=kmutt,dc=ac,dc=th',
+                'searchBase': 'ou=People,ou=staff,dc=sit,dc=kmutt,dc=ac,dc=th',
                 'searchFilter': 'uid={{username}}'
             }
             const client = new LdapAuth(options)
