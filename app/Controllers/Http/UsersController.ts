@@ -1,5 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
+import User from 'app/Models/User'
 import LdapAuth from 'ldapauth-fork'
 
 export default class UsersController {
