@@ -6,18 +6,15 @@ RUN mkdir -p /home/node/app && chown node:node /home/node/app
 WORKDIR /home/node/app
 USER node
 RUN mkdir tmp
-RUN ls /home/node/app
 
 FROM base AS dependencies
 COPY --chown=node:node ./package*.json ./
-COPY --chown=node:node ./yarn.lock ./
 RUN yarn install
 COPY --chown=node:node . .
-RUN ls /home/node/app
 
 FROM dependencies AS build
 RUN node ace build --production
-COPY --chown=node:node . .
+COPY --chown=node:node .env ./build/
 
 FROM base AS production
 ENV NODE_ENV=production
@@ -28,8 +25,7 @@ ENV DRIVE_DISK=local
 ENV SESSION_DRIVER=cookie
 ENV CACHE_VIEWS=false
 COPY --chown=node:node ./package*.json ./
-COPY --chown=node:node ./yarn.lock ./
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --production
 COPY --chown=node:node --from=build /home/node/app/build .
 EXPOSE 3333
 CMD [ "dumb-init", "node", "server.js" ]
