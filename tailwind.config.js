@@ -966,7 +966,6 @@ module.exports = {
           'primary': '#4263EB',
           'primary-focus': '#2342C0',
           'error-content': '#F03D3E',
-          'base-100': '#495057',
           'base-200': '#ACB5BD',
           'base-300': '#DDE2E5',
         },

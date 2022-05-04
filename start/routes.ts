@@ -39,8 +39,14 @@ Route.get('/test', async () => {
   // .first()
 })
 
+
 Route.resource('controller', 'UsersController').apiOnly()
 
 Route.post('register', 'AuthController.register').as('auth.register')
-Route.post('login', 'AuthController.login').as('auth.login')
-Route.get('logout', 'AuthController.logout').as('auth.logout')
+// Route.post('login', 'AuthController.login').as('auth.login')
+// Route.get('logout', 'AuthController.logout').as('auth.logout')
+
+Route.resource('user', 'UsersController').apiOnly()
+Route.post('user/login', 'UsersController.verify').as('auth.login')
+Route.get('logout', 'UsersController.logout').as('auth.logout')
+
