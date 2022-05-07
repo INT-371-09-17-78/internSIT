@@ -28,14 +28,6 @@ Route.get('/announcement', async ({ view }) => {
   return view.render('announcement')
 })
 
-Route.get('/register', async ({ view }) => {
-  return view.render('auth/register')
-}).as('auth.register.show')
-
-Route.get('/login', async ({ view }) => {
-  return view.render('auth/login')
-}).as('auth.login.show')
-
 //backend
 import Database from '@ioc:Adonis/Lucid/Database'
 
