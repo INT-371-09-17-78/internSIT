@@ -2,6 +2,13 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import LdapAuth from 'ldapauth-fork'
 
+interface LdapOptions {
+  url: string
+  bindDN: string
+  bindCredentials: string
+  searchBase: string
+  searchFilter: string
+}
 export default class UsersController {
   public async index() {
     return await User.all()
@@ -10,13 +17,13 @@ export default class UsersController {
     return await User.create({
       username: 'nuchanart.boo',
       password: 'Fxig08',
-      email: 'nuchanart.boo'
+      email: 'nuchanart.boo',
     })
   }
   public async show({ params }: HttpContextContract) {
     return await User.find(params.id)
   }
-  public async verify({ auth, request, response, session }): Promise<HttpContextContract> {
+  public async verify({ auth, request, response, session }: HttpContextContract) {
     const { username, password } = request.only(['username', 'password'])
     let user: any
     try {
@@ -26,9 +33,7 @@ export default class UsersController {
       } else {
         const ldapUser: any = await this.authenticate(username, password, 'staff')
         if (ldapUser) {
-          console.log(ldapUser)
           user = await User.findBy('username', username)
-          // console.log(user.id);
           if (!user) {
             user = new User()
             user.username = username
@@ -41,20 +46,19 @@ export default class UsersController {
         return response.redirect('/announcement')
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
       session.flash({ message: 'Invalid creditials', type: 'negative' })
-      return response.redirect('/login')
+      return response.redirect('/')
     }
   }
-
-  public authenticate(username: string, password: string, role: string = 'staff') {
+  public authenticate(username: string, password: string, _role: string = 'staff') {
     return new Promise((resolve, reject) => {
-      const options = {
+      const options: LdapOptions = {
         url: 'ldaps://ld0620.sit.kmutt.ac.th',
-        'bindDN': 'uid=' + username + ',ou=People,ou=' + role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
-        'bindCredentials': password,
-        'searchBase': 'ou=People,ou=' + role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
-        'searchFilter': 'uid={{username}}'
+        bindDN: 'uid=' + username + ',ou=People,ou=' + _role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
+        bindCredentials: password,
+        searchBase: 'ou=People,ou=' + _role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
+        searchFilter: 'uid={{username}}',
       }
       const client = new LdapAuth(options)
       client.authenticate(username, password, (error, user) => {
@@ -66,9 +70,8 @@ export default class UsersController {
     })
   }
 
-  public async logout({ response, auth }): Promise<HttpContextContract> {
-    await auth.use('web').logout()
-    // return response.redirect().toRoute('auth.login.show')
-    return response.redirect('/login')
+  public async logout({ response, auth }: HttpContextContract) {
+    await auth.logout()
+    return response.redirect('/')
   }
 }
