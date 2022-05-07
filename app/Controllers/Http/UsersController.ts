@@ -42,7 +42,7 @@ export default class UsersController {
             await user.save()
           }
         }
-        console.log(user);
+        console.log(user)
         await auth.login(user)
         return response.redirect('/announcement')
       }
