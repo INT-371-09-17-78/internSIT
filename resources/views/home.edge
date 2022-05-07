@@ -1,14 +1,18 @@
 @layout('layouts/app')
 @set('title', 'home page')
-
 @section('home')
+@set('borderColor', '')
+@if(flashMessages.has('error'))
+@set('borderColor', 'input-error')
+@else
+@set('borderColor', '')
+@end 
   <section class="h-full w-full lg:flex">
     <div class="drawer drawer-mobile absolute lg:relative w-1/6 lg:shadow-2xl flex justify-center">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
         <div class="drawer-side">
           <label for="my-drawer-2" class="drawer-overlay"></label> 
           <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content bg-white">
-            <!-- Sidebar content here -->
             <p class="text-center text-primary font-semibold text-2xl">InternSIT</p>
             @!common.button({
                 text: 'Login',
@@ -25,12 +29,6 @@
                 classProps: 'hidden lg:flex items-center ml-10 mt-8',
                 btnProps: 'bg-white',
             })
-            {{--  <div class="search-input hidden lg:flex items-center ml-10 mt-8">
-                <i class="material-icons text-base-200 absolute pointer-events-none pl-2">
-                    search
-                </i>
-                <input type="text" placeholder={{ text }} class="input input-bordered bg-white pl-9">
-            </div>  --}}
             <div class="home-content lg:flex lg:justify-center lg:w-full lg:px-16 lg:h-full lg:items-center lg:mb-20">
                 <div class="img-container pl-6 lg:order-last lg:p-0">
                     <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto"/>  
@@ -46,11 +44,39 @@
        
         
         <div class="lg:hidden button-container flex justify-center mt-10">
-            @!common.button({
-                text: 'Login',
-                type: 'text',
-                class: 'btn bg-base-200 border-none text-black normal-case px-12 rounded-full min-h-0 h-10',
-            })
+            <label for="my-modal-3" class="btn modal-button rounded-full px-10">Login</label>
+            <input type="checkbox" id="my-modal-3" class="modal-toggle">
+            <div class="modal">
+            <div class="modal-box relative max-w-xs rounded-2xl">
+                <label for="my-modal-3" class="absolute right-4 top-4">
+                    <i class="material-icons">
+                        close
+                    </i>
+                </label>
+                <h5 class="text-lg font-bold">Welcome</h5>
+                <h3 class="py-2">Login Now!</h3>
+                <div class="form-control w-full mt-6">    
+                    <form action="{{ route('auth.login') }}" method="POST">
+                        <div class="space-y-4">
+                            <input type="text" name="username" placeholder="Username or Email" class="input input-bordered {{borderColor}} w-full rounded-2xl">
+                            <input type="password" name="password" placeholder="Password" class="input input-bordered {{borderColor}} w-full rounded-2xl">
+                        </div>
+                        <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
+                        <div class="flex justify-between">
+                            <label class="label cursor-pointer">
+                                <div class="flex">
+                                <input type="checkbox" checked="checked" class="checkbox checkbox-primary mr-2 checkbox-sm">
+                                    <span class="label-text text-xs leading-5">Remember me</span>  
+                                </div>
+                            </label>
+                            <span class="btn btn-link normal-case text-xs flex items-center p-0">Forgot password?</span>  
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block btn-square mt-5 rounded-2xl" type="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+            </div>
         </div>
     </div>
   </section>

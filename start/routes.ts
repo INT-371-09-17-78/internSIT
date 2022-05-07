@@ -24,10 +24,6 @@ Route.get('/', async ({ view }) => {
   return view.render('home')
 })
 
-Route.get('/login', async ({ view }) => {
-  return view.render('auth/login')
-})
-
 Route.get('/announcement', async ({ view }) => {
   return view.render('announcement')
 })
@@ -43,5 +39,7 @@ Route.get('/test', async () => {
   // .first()
 })
 
-Route.resource('user', 'UsersController').apiOnly()
-Route.post('user/login', 'UsersController.verify')
+Route.resource('controller', 'UsersController').apiOnly()
+
+Route.post('login', 'UsersController.verify').as('auth.login')
+Route.get('logout', 'UsersController.logout').as('auth.logout')
