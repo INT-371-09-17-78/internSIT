@@ -29,7 +29,7 @@
        
         
         <div class="lg:hidden button-container flex justify-center mt-10">
-            <label for="my-modal-3" class="btn modal-button rounded-full px-10">Login</label>
+            <label for="my-modal-3" class="btn modal-button rounded-full px-10 bg-base-200 border-base-200 text-black normal-case text-base hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200">Login</label>
             <input type="checkbox" id="my-modal-3" class="modal-toggle">
             <div id="login-modal"class="modal {{modalToggle}}">
             <div class="modal-box relative max-w-xs rounded-2xl">
@@ -57,7 +57,11 @@
                             <span class="btn btn-link normal-case text-xs flex items-center p-0">Forgot password?</span>  
                         </div>
                         
-                        <button class="btn btn-primary btn-block btn-square mt-5 rounded-2xl" type="submit">Login</button>
+                        @!common.button({
+                            text: 'Login',
+                            type: 'submit',
+                            class: 'btn btn-primary btn-block btn-square mt-5 rounded-2xl normal-case',
+                        })
                     </form>
                 </div>
             </div>
