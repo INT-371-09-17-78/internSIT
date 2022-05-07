@@ -52,6 +52,7 @@ export default class UsersController {
       return response.redirect('/')
     }
   }
+
   public authenticate(username: string, password: string, _role: string = 'staff') {
     return new Promise((resolve, reject) => {
       const options: LdapOptions = {

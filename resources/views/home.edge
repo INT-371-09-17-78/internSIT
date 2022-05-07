@@ -31,9 +31,9 @@
         <div class="lg:hidden button-container flex justify-center mt-10">
             <label for="my-modal-3" class="btn modal-button rounded-full px-10">Login</label>
             <input type="checkbox" id="my-modal-3" class="modal-toggle">
-            <div class="modal {{modalToggle}}">
+            <div id="login-modal"class="modal {{modalToggle}}">
             <div class="modal-box relative max-w-xs rounded-2xl">
-                <label for="my-modal-3" class="absolute right-4 top-4" onclick="()=> {@set('modalToggle', '')}">
+                <label id="close-btn" for="my-modal-3" class="absolute right-4 top-4" onclick="closeModal()">
                     <i class="material-icons">
                         close
                     </i>
@@ -65,4 +65,10 @@
         </div>
     </div>
   </section>
+  <script>
+      const closeModal = () => {
+        document.getElementById("login-modal").classList.remove('modal-open');
+        window.location.reload()
+      }
+  </script>
 @end
