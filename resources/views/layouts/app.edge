@@ -1,18 +1,22 @@
 @set('menuColor', 'bg-white text-primary')
+@set('activeAnnouncement', '')
 @if(request.url()==='/')
-@set('menuColor', 'hidden')
+  @set('menuColor', 'bg-base-200 text-white')
+@elseif(request.url()==='/announcement')
+  @set('activeAnnouncement', 'btn-active bg-primary text-white')
 @end
 <!DOCTYPE html>
-<html class="bg-white">
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     @entryPointScripts('app')
   </head>
-  <body class="bg-white w-screen h-screen">
+  <body class="w-screen h-screen">
     <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate absolute right-5 top-5 lg:hidden z-10">
       <input type="checkbox"/>
       <i class="swap-off fill-current material-icons text-3xl font-bold">
@@ -22,10 +26,57 @@
         close
       </i>
     </label>
-    @!section('home')
-    @!section('announcement')
-    @!section('pre-login')
-    @!section('login')
-    @!section('register')
+    <div class="flex">
+        <div class="drawer drawer-mobile absolute lg:relative w-72 lg:shadow-2xl lg:flex justify-center hidden">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
+        <div class="drawer-side">
+          <label for="my-drawer-2" class="drawer-overlay"/></label> 
+          <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content">
+            <p class="text-center text-primary font-semibold text-2xl">InternSIT</p>
+            @if(request.url()==='/')
+              @!common.button({
+                  text: 'Login',
+                  type: 'text',
+                  class: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5',
+              })
+            @else
+              <div class="avatar flex justify-center my-5">
+                <div class="w-16 h-16 rounded-full">
+                  <img src="{{ asset('assets/images/team-work.png') }}" />
+                </div>
+              </div>
+              <li>
+                <a class="{{activeAnnouncement}}" href="{{ route('/announcement') }}">
+                <i class="material-icons-outlined">
+                  campaign
+                </i>
+                <p>Announcement</p> 
+                </a>
+              </li>
+              <li>
+                <a>
+                  <i class="material-icons-outlined">
+                    file_upload
+                    </i>
+                <p>upload & download</p> 
+                </a>
+              </li>
+              <li>
+                <a>
+                  <i class="material-icons-outlined">
+                    dashboard
+                    </i>
+                <p>dashboard</p> 
+                </a>
+              </li>
+            @end
+          </ul>
+        </div>
+      </div>
+      @!section('home')
+      @!section('announcement')
+      @!section('post')
+    </div>
+    
   </body>
 </html>

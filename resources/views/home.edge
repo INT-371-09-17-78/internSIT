@@ -7,29 +7,14 @@
 @else
 @set('borderColor', '')
 @end 
-  <section class="h-full w-full lg:flex">
-    <div class="drawer drawer-mobile absolute lg:relative w-1/6 lg:shadow-2xl flex justify-center">
-        <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
-        <div class="drawer-side">
-          <label for="my-drawer-2" class="drawer-overlay"></label> 
-          <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content bg-white">
-            <p class="text-center text-primary font-semibold text-2xl">InternSIT</p>
-            @!common.button({
-                text: 'Login',
-                type: 'text',
-                class: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5',
-            })
-          </ul>
-        </div>
-    </div>
-    <div class="login h-full w-full flex flex-col justify-center items-center relative lg:flex-row">
-        <div class="home-element mt-20 lg:w-full lg:h-full lg:flex lg:flex-col lg:mt-0">
+  <section class="h-screen w-full lg:flex">
+        <div class="home-container flex flex-col justify-center items-center h-full w-full">
             @!common.search({
                 text: 'Search',
-                classProps: 'hidden lg:flex items-center ml-10 mt-8',
-                btnProps: 'bg-white',
+                classProps: 'lg:flex self-start hidden items-center ml-10 mt-8',
             })
             <div class="home-content lg:flex lg:justify-center lg:w-full lg:px-16 lg:h-full lg:items-center lg:mb-20">
+            <div class="home-content lg:flex lg:justify-center lg:w-full lg:px-16 lg:h-full lg:items-center">
                 <div class="img-container pl-6 lg:order-last lg:p-0">
                     <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto"/>  
                 </div>

@@ -24,6 +24,15 @@ Route.get('/', async ({ view }) => {
   return view.render('home')
 })
 
+Route.get('/announcement/:id', async ({ view }) => {
+  return view.render('post')
+}).middleware(({ view, params }, next) => {
+  view.share({
+    postId: params.id,
+  })
+  return next()
+})
+
 Route.get('/announcement', async ({ view }) => {
   return view.render('announcement')
 })
