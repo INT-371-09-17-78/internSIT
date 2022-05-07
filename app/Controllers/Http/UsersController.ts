@@ -42,12 +42,13 @@ export default class UsersController {
             await user.save()
           }
         }
+        console.log(user);
         await auth.login(user)
         return response.redirect('/announcement')
       }
     } catch (error) {
       console.log(error)
-      session.flash({ message: 'Invalid creditials', type: 'negative' })
+      session.flash({ error: 'Invalid creditials', type: 'negative' })
       return response.redirect('/')
     }
   }
