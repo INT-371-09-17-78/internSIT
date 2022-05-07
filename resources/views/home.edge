@@ -2,8 +2,10 @@
 @set('title', 'home page')
 @section('home')
 @set('borderColor', '')
+@set('modalToggle', '')
 @if(flashMessages.has('error'))
 @set('borderColor', 'input-error')
+@set('modalToggle', 'modal-open')
 @else
 @set('borderColor', '')
 @end 
@@ -31,9 +33,9 @@
         <div class="lg:hidden button-container flex justify-center mt-10">
             <label for="my-modal-3" class="btn modal-button rounded-full px-10">Login</label>
             <input type="checkbox" id="my-modal-3" class="modal-toggle">
-            <div class="modal">
+            <div class="modal {{modalToggle}}">
             <div class="modal-box relative max-w-xs rounded-2xl">
-                <label for="my-modal-3" class="absolute right-4 top-4">
+                <label for="my-modal-3" class="absolute right-4 top-4" onclick="()=> {@set('modalToggle', '')}">
                     <i class="material-icons">
                         close
                     </i>
