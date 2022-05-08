@@ -1,15 +1,40 @@
 version: '3.8'
 
 services:
-  adonis_app:
+  db:
+    image: mysql/mysql-server
+    restart: always
+    env_file: ./.env.db
+      
+    expose:
+      #running inside container
+      - 3306
+    networks:
+      intern-sit-network:
+        ipv4_address: 172.24.0.12
+    # volumes:
+    #   - ./mysqldump:/docker-entrypoint-initdb.d/
+  intern-sit:
+    depends_on:
+      - db
     container_name: intern-sit
     restart: always
     build:
       context: .
       #target: build
-    image: intern_sit:production
+    image: intern_sit:dev
     ports:
       - 3333:3333
+    networks:
+      intern-sit-network:
+        ipv4_address: 172.24.0.11
+networks:
+  intern-sit-network:
+    # external: true
+    name: intern-sit-network
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16
       # - 9229:9229
     #env_file:
       #- .env
