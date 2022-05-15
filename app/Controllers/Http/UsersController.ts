@@ -42,13 +42,21 @@ export default class UsersController {
             await user.save()
           }
         }
-        console.log(user)
         await auth.login(user)
         return response.redirect('/announcement')
       }
     } catch (error) {
-      console.log(error)
-      session.flash({ error: 'Invalid creditials', type: 'negative' })
+      if (error.message === 'no password given' || error.message === 'empty username') {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      } else {
+        session.flash({
+          error: 'Invalid creditials',
+          type: 'negative',
+        })
+      }
       return response.redirect('/')
     }
   }

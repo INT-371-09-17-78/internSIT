@@ -27,12 +27,13 @@
       </i>
     </label>
     <div class="flex">
-        <div class="drawer drawer-mobile absolute lg:relative w-72 lg:shadow-2xl lg:flex justify-center hidden">
+       @if(request.url()!=='/')
+        <div class="drawer drawer-mobile absolute lg:relative w-64 lg:shadow-2xl lg:flex justify-center py-10">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
         <div class="drawer-side">
           <label for="my-drawer-2" class="drawer-overlay"/></label> 
           <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content">
-            <p class="text-center text-primary font-semibold text-2xl">InternSIT</p>
+            <p class="text-center text-primary font-semibold text-4xl">internSIT</p>
             @if(request.url()==='/')
               @!common.button({
                   text: 'Login',
@@ -50,7 +51,7 @@
                 <i class="material-icons-outlined">
                   campaign
                 </i>
-                <p>Announcement</p> 
+                <p class="capitalize">Announcement</p> 
                 </a>
               </li>
               <li>
@@ -58,7 +59,7 @@
                   <i class="material-icons-outlined">
                     file_upload
                     </i>
-                <p>upload & download</p> 
+                <p class="capitalize">upload & download</p> 
                 </a>
               </li>
               <li>
@@ -66,13 +67,23 @@
                   <i class="material-icons-outlined">
                     dashboard
                     </i>
-                <p>dashboard</p> 
+                <p class="capitalize">dashboard</p> 
                 </a>
               </li>
+              @if(auth.user)
+                <a href="{{route('auth.logout')}}" class="self-center mt-auto">
+                  @!common.button({
+                    text: 'Logout',
+                    type: 'text',
+                    class: 'btn btn-outline text-black normal-case rounded-full border-base-200 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 w-36',
+                  })
+                </a>
+              @endif
             @end
           </ul>
         </div>
       </div>
+      @end
       @!section('home')
       @!section('announcement')
       @!section('post')
