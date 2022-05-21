@@ -22,7 +22,7 @@
       <i class="swap-off fill-current material-icons text-3xl font-bold">
         menu
       </i>
-      <i class="swap-on fill-current  material-icons text-3xl font-bold"">
+      <i class="swap-on fill-current  material-icons text-3xl font-bold">
         close
       </i>
     </label>
@@ -59,7 +59,7 @@
                   <i class="material-icons-outlined">
                     file_upload
                     </i>
-                <p class="capitalize">upload & download</p> 
+                <p class="capitalize">file</p> 
                 </a>
               </li>
               <li>
@@ -71,13 +71,12 @@
                 </a>
               </li>
               @if(auth.user)
-                <a href="{{route('auth.logout')}}" class="self-center mt-auto">
                   @!common.button({
                     text: 'Logout',
                     type: 'text',
-                    class: 'btn btn-outline text-black normal-case rounded-full border-base-200 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 w-36',
+                    class: 'btn btn-outline text-black normal-case rounded-full border-base-200 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 w-36 self-center mt-auto',
+                    onclick: 'openAlertConfirmlogout()',
                   })
-                </a>
               @endif
             @end
           </ul>
@@ -88,6 +87,33 @@
       @!section('announcement')
       @!section('post')
     </div>
-    
   </body>
 </html>
+<script>
+  const openAlertConfirmlogout = () => {
+    const alertLogout = 
+    `<div id="modal-confirm-logout" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+      <div class="alert-logout absolute z-20 top-5 w-full pr-5 pl-56">
+        <div class="alert bg-base-100 shadow-lg font-bold">
+          <div>
+            <i class="material-icons-outlined text-info">
+              info
+            </i>
+            <span>Are you sure to logout?</span>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-ghost" onclick="closeAlertConfirmlogout()">no</button>
+            <a href="{{route('auth.logout')}}">
+            <button class="btn btn-sm btn-primary">yes</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertLogout
+  }
+  const closeAlertConfirmlogout = () => {
+    const element = document.getElementById('modal-confirm-logout');
+    element.remove();
+  }
+</script>
