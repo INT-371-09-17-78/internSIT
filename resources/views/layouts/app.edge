@@ -26,11 +26,11 @@
         close
       </i>
     </label>
-    <div class="flex">
+    <div class="flex bg-gradient-to-tr from-violet-400/75 via-transparent to-blue-200/75 bg-opacity-10">
        @if(request.url()!=='/')
-        <div class="drawer drawer-mobile absolute lg:relative w-64 lg:shadow-2xl lg:flex justify-center py-10">
+        <div class="drawer drawer-mobile absolute lg:relative w-64 lg:shadow-2xl lg:flex justify-center py-10 -translate-x-[120%] lg:translate-x-0 bg-white">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
-        <div class="drawer-side">
+        <div class="drawer-side w-full">
           <label for="my-drawer-2" class="drawer-overlay"/></label> 
           <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content">
             <p class="text-center text-primary font-semibold text-4xl">internSIT</p>
@@ -75,7 +75,7 @@
                   @!common.button({
                     text: 'Logout',
                     type: 'text',
-                    class: 'btn btn-outline text-black normal-case rounded-full border-base-200 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 w-36',
+                    class: 'btn border-2 btn-outline text-black normal-case rounded-full border-base-200 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 w-36',
                   })
                 </a>
               @endif
