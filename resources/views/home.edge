@@ -28,7 +28,7 @@
             <label for="my-modal-3" class="btn modal-button rounded-full px-10 bg-base-200 border-base-200 text-black normal-case text-base hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 lg:btn-lg lg:px-16">Login</label>
             <input type="checkbox" id="my-modal-3" class="modal-toggle">
             <div id="login-modal"class="modal {{modalToggle}}">
-            <div class="modal-box relative max-w-xs rounded-2xl">
+            <div class="modal-box relative max-w-xs rounded-2xl py-10">
                 <label id="close-btn" for="my-modal-3" class="absolute right-4 top-4" onclick="closeModal()">
                     <i class="material-icons">
                         close
@@ -39,7 +39,7 @@
                 <div class="form-control w-full mt-6">    
                     <form action="{{ route('auth.login') }}" method="POST">
                         <div class="space-y-4">
-                            <input type="text" name="username" placeholder="Username or Email" class="input input-bordered {{borderColor}} w-full rounded-2xl">
+                            <input type="text" name="username" placeholder="Username" class="input input-bordered {{borderColor}} w-full rounded-2xl">
                             <input type="password" name="password" placeholder="Password" class="input input-bordered {{borderColor}} w-full rounded-2xl">
                         </div>
                         <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>

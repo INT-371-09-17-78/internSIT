@@ -20,12 +20,14 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async ({ view }) => {
-  return view.render('home')
+Route.get('/', async ({ view, auth, response }) => {
+  if (auth.user) response.redirect('/announcement')
+  else return view.render('home')
 })
 
-Route.get('/announcement/:id', async ({ view }) => {
-  return view.render('post')
+Route.get('/announcement/:id', async ({ view, auth, response }) => {
+  if (!auth.user) response.redirect('/')
+  else return view.render('post')
 }).middleware(({ view, params }, next) => {
   view.share({
     postId: params.id,
@@ -33,8 +35,9 @@ Route.get('/announcement/:id', async ({ view }) => {
   return next()
 })
 
-Route.get('/announcement', async ({ view }) => {
-  return view.render('announcement')
+Route.get('/announcement', async ({ view, auth, response }) => {
+  if (!auth.user) response.redirect('/')
+  else return view.render('announcement')
 })
 
 //backend
