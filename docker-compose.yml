@@ -12,8 +12,10 @@ services:
     networks:
       intern-sit-network:
         ipv4_address: 172.24.0.12
-    # volumes:
-    #   - ./mysqldump:/docker-entrypoint-initdb.d/
+    volumes:
+       #- ./db:/var/lib/mysql
+       - ./mysqlinit:/docker-entrypoint-initdb.d/
+    # command: mysql -udbuser -phelloDEV371_
   intern-sit:
     depends_on:
       - db
