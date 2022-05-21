@@ -2,7 +2,6 @@
   "assets/app.css": "http://localhost:8080/assets/app.css",
   "assets/app.js": "http://localhost:8080/assets/app.js",
   "assets/images/bg.jpg": "http://localhost:8080/assets/images/bg.5a9ffc61.jpg",
-  "assets/images/team-work.png": "http://localhost:8080/assets/images/team-work.1fcdc71a.png",
-  "assets/images/b7a61be153dd3b9b.jpg": "http://localhost:8080/assets/images/b7a61be153dd3b9b.d5edd61c.jpg",
-  "assets/images/nui.jpg": "http://localhost:8080/assets/images/nui.d5edd61c.jpg"
+  "assets/images/nui.jpg": "http://localhost:8080/assets/images/nui.d5edd61c.jpg",
+  "assets/images/team-work.png": "http://localhost:8080/assets/images/team-work.1fcdc71a.png"
 }
