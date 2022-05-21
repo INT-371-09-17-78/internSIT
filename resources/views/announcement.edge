@@ -1,0 +1,75 @@
+@layout('layouts/app')
+@set('title', 'announcement page')
+@set('posts',[
+  {
+    id: 1,
+    username: 'virk',
+  },
+  {
+    id: 2,
+    username: 'romain',
+  },
+  {
+    id: 3,
+    username: 'nikk',
+  },
+  {
+    id: 4,
+    username: 'be',
+  },
+  {
+    id: 5,
+    username: 'go',
+  },
+  {
+    id: 6,
+    username: 'eo',
+  },
+  {
+    id: 7,
+    username: 'o',
+  },
+])
+@section('announcement')
+  <section class="h-screen w-full">
+    <div class="header-element flex flex-col space-y-7 px-8 mt-24">  
+        <div class="header text-black flex font-bold text-4xl">
+          <i class="material-icons md-36 -rotate-45 text-base-content">
+            campaign
+          </i>
+          <p class="text-3xl text-base-content">Announcement</p> 
+          @component('components/common/button',{
+            text: 'Add new post',
+            type: 'text',
+            class: 'btn bg-white text-base-content gap-2 rounded-4xl text-lg normal-case h-14 ml-auto border-0 hover:bg-secondary hover:text-white hidden md:flex group',
+          })
+          <i class="material-icons-outlined md-36 text-[#A8B0B8] group-hover:text-white">
+            add_circle
+          </i>
+          @end
+        </div>  
+      </div>
+      <div class="card-group grid grid-cols-1 gap-y-5 mx-8 mt-4 overflow-y-auto h-[76.5%]">
+        @each(post in posts)
+        <a href="{{ route('/announcement/:id', { id: post.id }) }}">
+          <div class="card card-side w-full h-40 card-compact card-bordered text-black-content flex justify-center items-center border-0 bg-white/60 rounded-3xl">
+            <div class="avatar pl-5 self-start pt-10">
+              <div class="w-14 h-14 rounded-full">
+                <img src="{{ asset('assets/images/nui.jpg') }}" />
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="flex">
+                <p>{{post.username}}</p><p>dd/mm 00:00AM</p>
+              </div>
+                  <h2 class="card-title">Card title!</h2>
+                  <p>If a dog chews shoes whose shoes does he choose?</p>
+            </div>
+          </div>
+        </a>
+        @end
+       </div>
+    <div>
+    </div>
+  </section>
+@end

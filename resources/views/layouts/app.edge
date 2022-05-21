@@ -1,28 +1,126 @@
 @set('menuColor', 'bg-white text-primary')
+@set('activeAnnouncement', '')
 @if(request.url()==='/')
-@set('menuColor', 'hidden')
+  @set('menuColor', 'hidden')
+@elseif(request.url()==='/announcement')
+  @set('activeAnnouncement', 'btn-active bg-primary text-white')
 @end
 <!DOCTYPE html>
-<html class="bg-white">
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     @entryPointScripts('app')
   </head>
-  <body class="bg-white w-screen h-screen">
-    <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate absolute right-5 top-5 lg:hidden z-10">
-      <input type="checkbox"/>
-      <i class="swap-off fill-current material-icons text-3xl font-bold">
-        menu
-      </i>
-      <i class="swap-on fill-current  material-icons text-3xl font-bold"">
-        close
-      </i>
-    </label>
-    @!section('home')
-    @!section('announcement')
+  <body class="w-screen h-full bg-[url('http://localhost:8080/assets/images/bg.5a9ffc61.jpg')] bg-no-repeat bg-cover bg-fixed overflow-hidden">
+        <div class="flex absolute w-full px-5 space-x-5 top-5 lg:p-0 lg:space-x-0 lg:w-auto lg:left-[14.5rem] lg:top-7">
+            @!common.search({
+              text: 'Search',
+              btnProps: 'btn-block lg:w-64 text-base-content',
+              classProps: 'grow'
+            })
+            <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate lg:hidden">
+              <input type="checkbox"/>
+              <i class="swap-off fill-current material-icons text-3xl font-bold">
+                menu
+              </i>
+              <i class="swap-on fill-current material-icons text-3xl font-bold">
+                close
+              </i>
+            </label>
+        </div>
+    <div class="flex">
+       @if(request.url()!=='/')
+        <div class="drawer drawer-mobile absolute lg:relative w-64 lg:shadow-2xl lg:flex justify-center py-10 -translate-x-[120%] lg:translate-x-0 bg-white">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
+        <div class="drawer-side w-full">
+          <label for="my-drawer-2" class="drawer-overlay"/></label> 
+          <ul class="menu p-4 overflow-y-auto w-full h-full text-base-content">
+            <p class="text-center text-primary font-semibold text-4xl">internSIT</p>
+            @if(request.url()==='/')
+              @!common.button({
+                  text: 'Login',
+                  type: 'text',
+                  class: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200',
+              })
+            @else
+              <div class="avatar flex justify-center my-5">
+                <div class="w-16 h-16 rounded-full">
+                  <img src="{{ asset('assets/images/team-work.png') }}" />
+                </div>
+              </div>
+              <li>
+                <a class="{{activeAnnouncement}}" href="{{ route('/announcement') }}">
+                <i class="material-icons-outlined">
+                  campaign
+                </i>
+                <p class="capitalize">Announcement</p> 
+                </a>
+              </li>
+              <li>
+                <a>
+                  <i class="material-icons-outlined">
+                    file_upload
+                    </i>
+                <p class="capitalize">file</p> 
+                </a>
+              </li>
+              <li>
+                <a>
+                  <i class="material-icons-outlined">
+                    dashboard
+                    </i>
+                <p class="capitalize">dashboard</p> 
+                </a>
+              </li>
+              @if(auth.user)
+                  @!common.button({
+                    text: 'Logout',
+                    type: 'text',
+                    class: 'btn btn-outline text-black normal-case rounded-full border-base-200 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 w-36 self-center mt-auto',
+                    onclick: 'openAlertConfirmlogout()',
+                  })
+              @endif
+            @end
+          </ul>
+        </div>
+      </div>
+      @end
+      @!section('home')
+      @!section('announcement')
+      @!section('post')
+    </div>
   </body>
 </html>
+<script>
+  const openAlertConfirmlogout = () => {
+    const alertLogout = 
+    `<div id="modal-confirm-logout" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+      <div class="alert-logout absolute z-20 top-5 w-full pr-5 pl-56">
+        <div class="alert bg-base-100 shadow-lg font-bold">
+          <div>
+            <i class="material-icons-outlined text-info">
+              info
+            </i>
+            <span>Are you sure to logout?</span>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-ghost" onclick="closeAlertConfirmlogout()">no</button>
+            <a href="{{route('auth.logout')}}">
+            <button class="btn btn-sm btn-primary">yes</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertLogout
+  }
+  const closeAlertConfirmlogout = () => {
+    const element = document.getElementById('modal-confirm-logout');
+    element.remove();
+  }
+</script>

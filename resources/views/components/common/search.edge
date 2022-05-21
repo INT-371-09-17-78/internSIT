@@ -1,6 +1,6 @@
-<div class="search-input flex items-center {{ classProps }}">
-    <i class="material-icons text-base-200 absolute pointer-events-none pl-2">
+<div class="search-input flex items-center {{ classProps ? classProps : "" }}">
+    <i class="material-icons text-base-content absolute pointer-events-none pl-3">
         search
     </i>
-    <input type="text" placeholder="{{ text }}" class="input input-bordered pl-9 {{ btnProps }}">
+    <input type="text" placeholder="{{ text }}" class="input input-bordered pl-10 rounded-2xl placeholder-base-content placeholder:font-semibold {{ btnProps }}">
 </div>

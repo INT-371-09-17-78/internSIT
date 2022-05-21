@@ -20,16 +20,24 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async ({ view }) => {
-  return view.render('home')
+Route.get('/', async ({ view, auth, response }) => {
+  if (auth.user) response.redirect('/announcement')
+  else return view.render('home')
 })
 
-Route.get('/login', async ({ view }) => {
-  return view.render('auth/login')
+Route.get('/announcement/:id', async ({ view, auth, response }) => {
+  if (!auth.user) response.redirect('/')
+  else return view.render('post')
+}).middleware(({ view, params }, next) => {
+  view.share({
+    postId: params.id,
+  })
+  return next()
 })
 
-Route.get('/announcement', async ({ view }) => {
-  return view.render('announcement')
+Route.get('/announcement', async ({ view, auth, response }) => {
+  if (!auth.user) response.redirect('/')
+  else return view.render('announcement')
 })
 
 //backend
@@ -43,5 +51,7 @@ Route.get('/test', async () => {
   // .first()
 })
 
-Route.resource('user', 'UsersController').apiOnly()
-Route.post('user/login', 'UsersController.verify')
+Route.resource('controller', 'UsersController').apiOnly()
+
+Route.post('login', 'UsersController.verify').as('auth.login')
+Route.get('logout', 'UsersController.logout').as('auth.logout')
