@@ -1,3 +1,4 @@
 <button {{ $props.serialize() }}>
+    {{{ await $slots.main() }}}
     {{ text }}
 </button>

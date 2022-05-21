@@ -16,17 +16,24 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     @entryPointScripts('app')
   </head>
-  <body class="w-screen h-screen">
-    <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate absolute right-5 top-5 lg:hidden z-10">
-      <input type="checkbox"/>
-      <i class="swap-off fill-current material-icons text-3xl font-bold">
-        menu
-      </i>
-      <i class="swap-on fill-current  material-icons text-3xl font-bold">
-        close
-      </i>
-    </label>
-    <div class="flex bg-gradient-to-tr from-violet-400/75 via-transparent to-blue-200/75 bg-opacity-10">
+  <body class="w-screen h-full bg-[url('http://localhost:8080/assets/images/bg.5a9ffc61.jpg')] bg-no-repeat bg-cover bg-fixed overflow-hidden">
+        <div class="flex absolute w-full px-5 space-x-5 top-5 lg:p-0 lg:space-x-0 lg:w-auto lg:left-[14.5rem] lg:top-7">
+            @!common.search({
+              text: 'Search',
+              btnProps: 'btn-block lg:w-64 text-base-content',
+              classProps: 'grow'
+            })
+            <label class="btn btn-circle border-0 {{menuColor}} swap swap-rotate lg:hidden">
+              <input type="checkbox"/>
+              <i class="swap-off fill-current material-icons text-3xl font-bold">
+                menu
+              </i>
+              <i class="swap-on fill-current material-icons text-3xl font-bold">
+                close
+              </i>
+            </label>
+        </div>
+    <div class="flex">
        @if(request.url()!=='/')
         <div class="drawer drawer-mobile absolute lg:relative w-64 lg:shadow-2xl lg:flex justify-center py-10 -translate-x-[120%] lg:translate-x-0 bg-white">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle">
