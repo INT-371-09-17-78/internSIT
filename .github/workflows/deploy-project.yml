@@ -45,6 +45,10 @@ jobs:
           directory: .
         # file_name: .env
         # fail_on_empty: false
+      - name: 'direct'
+        run: |
+          ls -la
+          pwd
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
