@@ -67,6 +67,7 @@
     "@adonisjs/session": "^6.2.0",
     "@adonisjs/shield": "^7.0.0",
     "@adonisjs/view": "^6.1.0",
+    "@tailwindcss/line-clamp": "^0.4.0",
     "daisyui": "^2.13.6",
     "file-loader": "^6.2.0",
     "ldapauth-fork": "^5.0.2",

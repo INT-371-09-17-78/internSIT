@@ -25,20 +25,25 @@ Route.get('/', async ({ view, auth, response }) => {
   else return view.render('home')
 })
 
-Route.get('/announcement/:id', async ({ view, auth, response }) => {
-  if (!auth.user) response.redirect('/')
-  else return view.render('post')
-}).middleware(({ view, params }, next) => {
-  view.share({
-    postId: params.id,
+Route.group(() => {
+  Route.get('/', async ({ view, auth, response }) => {
+    if (!auth.user) response.redirect('/')
+    else return view.render('announcement')
   })
-  return next()
-})
-
-Route.get('/announcement', async ({ view, auth, response }) => {
-  if (!auth.user) response.redirect('/')
-  else return view.render('announcement')
-})
+  Route.get('/create', async ({ view, auth, response }) => {
+    if (!auth.user) response.redirect('/')
+    else return view.render('add-post')
+  })
+  Route.get('/:id', async ({ view, auth, response }) => {
+    if (!auth.user) response.redirect('/')
+    else return view.render('post')
+  }).middleware(({ view, params }, next) => {
+    view.share({
+      postId: params.id,
+    })
+    return next()
+  })
+}).prefix('/announcement')
 
 //backend
 import Database from '@ioc:Adonis/Lucid/Database'
