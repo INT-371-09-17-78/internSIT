@@ -13,6 +13,7 @@ RUN yarn install
 COPY --chown=node:node . .
 
 FROM dependencies AS build
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 RUN node ace build --production
 COPY --chown=node:node .env ./build/
 WORKDIR ./build
