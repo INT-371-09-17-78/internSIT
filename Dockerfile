@@ -15,7 +15,7 @@ COPY --chown=node:node . .
 FROM dependencies AS build
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 RUN node ace build --production
-COPY --chown=node:node ./.env ./build/
+COPY --chown=node:node ./.env.dev ./build/
 WORKDIR ./build
 EXPOSE 3333
 CMD [ "dumb-init", "node", "server.js" ]
