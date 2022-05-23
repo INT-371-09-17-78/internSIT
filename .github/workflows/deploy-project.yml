@@ -22,34 +22,34 @@ jobs:
           # password: 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
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Make envfile
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-        # envkey_DEBUG: false
-        # envkey_SOME_API_KEY: "123456abcdef"
-        # envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        # some_other_variable: foobar
-          envkey_PORT: ${{ secrets.ENV_PORT }}
-          envkey_HOST: ${{ secrets.ENV_HOST }}
-          envkey_NODE_ENV: ${{ secrets.ENV_NODE }}
-          envkey_APP_KEY: ${{ secrets.ENV_APP_KEY }}
-          envkey_DRIVE_DISK: ${{ secrets.ENV_DRIVE_DISK }}
-          envkey_SESSION_DRIVER: ${{ secrets.ENV_SESSION_DRIVER }}
-          envkey_CACHE_VIEWS: ${{ secrets.ENV_CACHE_VIEWS }}
-          envkey_DB_CONNECTION: ${{ secrets.ENV_DB_CONNECTION }}
-          envkey_MYSQL_HOST: ${{ secrets.ENV_MYSQL_HOST }}
-          envkey_MYSQL_PORT: ${{ secrets.ENV_MYSQL_PORT }}
-          envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }}
-          envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }}
-          envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }}
-        # directory: internSIT/internSIT
-        # file_name: .env
-        # fail_on_empty: false
-      - name: 'direct'
-        run: |
-          ls -la
-          pwd
-          ls -la
+      # - name: Make envfile
+      #   uses: SpicyPizza/create-envfile@v1.3
+      #   with:
+      #   # envkey_DEBUG: false
+      #   # envkey_SOME_API_KEY: "123456abcdef"
+      #   # envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      #   # some_other_variable: foobar
+      #     envkey_PORT: ${{ secrets.ENV_PORT }}
+      #     envkey_HOST: ${{ secrets.ENV_HOST }}
+      #     envkey_NODE_ENV: ${{ secrets.ENV_NODE }}
+      #     envkey_APP_KEY: ${{ secrets.ENV_APP_KEY }}
+      #     envkey_DRIVE_DISK: ${{ secrets.ENV_DRIVE_DISK }}
+      #     envkey_SESSION_DRIVER: ${{ secrets.ENV_SESSION_DRIVER }}
+      #     envkey_CACHE_VIEWS: ${{ secrets.ENV_CACHE_VIEWS }}
+      #     envkey_DB_CONNECTION: ${{ secrets.ENV_DB_CONNECTION }}
+      #     envkey_MYSQL_HOST: ${{ secrets.ENV_MYSQL_HOST }}
+      #     envkey_MYSQL_PORT: ${{ secrets.ENV_MYSQL_PORT }}
+      #     envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }}
+      #     envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }}
+      #     envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }}
+      #   # directory: internSIT/internSIT
+      #   # file_name: .env
+      #   # fail_on_empty: false
+      # - name: 'direct'
+      #   run: |
+      #     ls -la
+      #     pwd
+      #     ls -la
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
