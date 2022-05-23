@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/INT-371-09-17-78/internSIT:1.0.0
+          tags: ghcr.io/INT-371-09-17-78/intern-sit:1.0.0
           
 #test
   # executing-ssh-commands:
