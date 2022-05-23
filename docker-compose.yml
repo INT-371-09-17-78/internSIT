@@ -3,6 +3,7 @@ version: '3.8'
 services:
   db:
     image: mysql/mysql-server
+    container_name: intern-sit-db
     restart: always
     env_file: ./.env.db
       
@@ -19,12 +20,13 @@ services:
   intern-sit:
     depends_on:
       - db
-    container_name: intern-sit
+    container_name: intern-sit-app
     restart: always
     build:
       context: .
       #target: build
-    image: intern_sit:dev
+    # image: intern_sit:dev
+    image: ghcr.io/int371-09-17-78/intern-sit:1.0.0
     #volumes:
      # - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
      # - ./mysqlinit:/etc/ssl/certs/

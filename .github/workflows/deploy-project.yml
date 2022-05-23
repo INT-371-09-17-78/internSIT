@@ -57,25 +57,25 @@ jobs:
           tags: ghcr.io/int-371-09-17-78/intern-sit:1.0.0
           
 #test
-  # executing-ssh-commands:
-  #   needs:
-  #     - build
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: executing remote ssh commands using ssh key
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.HOSTNAME }}
-  #         username: ${{ secrets.USERNAME }}
-  #         password: ${{ secrets.PASSWORD }}
-  #         port: ${{ secrets.PORT }}
-  #         script: |
-  #           echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{github.actor}} --password-stdin
-  #           cd ./Product-DevOps
-  #           docker stop backend && docker rm backend
-  #           docker image rm ghcr.io/int222-09-17-78/backend:1.0.0
-  #           docker-compose up --build -d   
-  #           docker image prune -af
+  executing-ssh-commands:
+    needs:
+      - build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{github.actor}} --password-stdin
+            cd ./internSIT
+            docker stop intern-sit-app && docker rm intern-sit-app
+            docker image rm ghcr.io/int371-09-17-78/intern-sit:1.0.0
+            docker-compose up --build -d   
+            docker image prune -af
            
 # test
 #test
