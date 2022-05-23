@@ -5,11 +5,7 @@ on:
 
 jobs:
 
-    
-
   build:
-    needs: 
-      - create-envfile
     runs-on: ubuntu-20.04
     steps:
       # Github action to checks-out your repository. 
