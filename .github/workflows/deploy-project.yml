@@ -76,7 +76,7 @@ jobs:
           script: |
             echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{github.actor}} --password-stdin
             cd ./internSIT
-            git pull origin devops
+            git pull https://${{secrets.GITHUB_TOKEN}}@github.com/INT-371-09-17-78/internSIT.git
             docker stop intern-sit-app && docker rm intern-sit-app
             docker image rm ghcr.io/int371-09-17-78/intern-sit:1.0.0
             docker compose up --build -d   
