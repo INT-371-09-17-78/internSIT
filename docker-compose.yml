@@ -22,11 +22,11 @@ services:
       - db
     container_name: intern-sit-app
     restart: always
-    build:
-      context: .
+    # build:
+    #   context: .
       #target: build
     # image: intern_sit:dev
-    image: ghcr.io/int371-09-17-78/intern-sit:1.0.0
+    image: ghcr.io/int-371-09-17-78/intern-sit:1.0.0
     #volumes:
      # - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
      # - ./mysqlinit:/etc/ssl/certs/
