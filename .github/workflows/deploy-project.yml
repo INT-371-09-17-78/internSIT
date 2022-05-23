@@ -42,13 +42,14 @@ jobs:
           envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }}
           envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }}
           envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }}
-          directory: internSIT/internSIT
+        # directory: internSIT/internSIT
         # file_name: .env
         # fail_on_empty: false
       - name: 'direct'
         run: |
           ls -la
           pwd
+          ls -la
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
