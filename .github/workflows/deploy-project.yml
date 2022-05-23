@@ -63,7 +63,7 @@ jobs:
       - name: Git CheckOut
         uses: actions/checkout@v2
         with:
-          ref: devops
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
