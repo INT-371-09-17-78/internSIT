@@ -1,0 +1,67 @@
+name: deploy-project
+
+on:
+  push
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      # Github action to checks-out your repository. 
+      - name: Git CheckOut
+        uses: actions/checkout@v2
+        
+      # GitHub Action to login against a Docker registry. (image repository)
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          # username: wajanapnap 
+          username: ${{ github.actor }}
+          # password: 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
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ghcr.io/INT-371-09-17-78/internSIT:1.0.0
+          
+#test
+  # executing-ssh-commands:
+  #   needs:
+  #     - build
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: executing remote ssh commands using ssh key
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.HOSTNAME }}
+  #         username: ${{ secrets.USERNAME }}
+  #         password: ${{ secrets.PASSWORD }}
+  #         port: ${{ secrets.PORT }}
+  #         script: |
+  #           echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{github.actor}} --password-stdin
+  #           cd ./Product-DevOps
+  #           docker stop backend && docker rm backend
+  #           docker image rm ghcr.io/int222-09-17-78/backend:1.0.0
+  #           docker-compose up --build -d   
+  #           docker image prune -af
+           
+# test
+#test
+# az acr login -n suesiRegistry
+            
+            # docker-compose -f backend-sit.yaml down && docker rmi -f $(docker images -a -q)
+            # docker-compose pull
+            # docker-compose -f backend-sit.yaml up -d
+            # docker image prune -af
+  # health-check:
+  #   needs:
+  #     - executing-ssh-commands
+  #     - build
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: health-check
+  #       run: sleep 30 && curl http://20.205.212.121:5000/api/show/products
