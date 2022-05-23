@@ -17,9 +17,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          # username: wajanapnap 
           username: ${{ github.actor }}
-          # password: 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
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Make envfile
@@ -74,7 +72,7 @@ jobs:
             cd ./internSIT
             docker stop intern-sit-app && docker rm intern-sit-app
             docker image rm ghcr.io/int371-09-17-78/intern-sit:1.0.0
-            docker-compose up --build -d   
+            docker compose up --build -d   
             docker image prune -af
            
 # test
