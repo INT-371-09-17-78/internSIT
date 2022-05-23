@@ -25,6 +25,7 @@ jobs:
       - name: 'Create env file'
         run: |
           ls -la
+          pwd
           touch .env
           echo PORT=${{ secrets.ENV_PORT }} >> .env
           echo HOST=${{ secrets.ENV_HOST }} >> .env
