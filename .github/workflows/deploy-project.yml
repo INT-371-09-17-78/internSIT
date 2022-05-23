@@ -39,7 +39,8 @@ jobs:
           echo MYSQL_PASSWORD=${{ secrets.ENV_MYSQL_PASSWORD }} >> .env
           echo MYSQL_DB_NAME=${{ secrets.ENV_MYSQL_DB_NAME }} >> .env
           ls -la
-
+          cat /.env
+        if: success() || failure()
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
