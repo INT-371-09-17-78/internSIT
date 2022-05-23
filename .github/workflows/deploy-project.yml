@@ -2,6 +2,8 @@ name: deploy-project
 
 on:
   push
+    branches:
+      - 'devops'
 
 jobs:
 
@@ -60,8 +62,8 @@ jobs:
       - build
     runs-on: ubuntu-20.04
     steps:
-      # - name: Git CheckOut
-      #   uses: actions/checkout@v2
+      - name: Git CheckOut
+        uses: actions/checkout@v2
       #   with:
       #     ref: ${{ github.event.pull_request.head.sha }}
       - name: executing remote ssh commands using ssh key
