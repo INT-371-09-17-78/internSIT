@@ -62,6 +62,8 @@ jobs:
     steps:
       - name: Git CheckOut
         uses: actions/checkout@v2
+        with:
+          ref: devops
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
