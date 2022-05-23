@@ -4,8 +4,38 @@ on:
   push
 
 jobs:
+  create-envfile:
+ 
+    runs-on: ubuntu-20.04
+ 
+    steps:
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@v1.3
+      with:
+        # envkey_DEBUG: false
+        # envkey_SOME_API_KEY: "123456abcdef"
+        # envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        # some_other_variable: foobar
+        envkey_PORT: ${{ secrets.ENV_PORT }} >> /.env.dev
+        envkey_HOST: ${{ secrets.ENV_HOST }} >> /.env.dev
+        envkey_NODE_ENV: ${{ secrets.ENV_NODE }} >> /.env.dev
+        envkey_APP_KEY: ${{ secrets.ENV_APP_KEY }} >> /.env.dev
+        envkey_DRIVE_DISK: ${{ secrets.ENV_DRIVE_DISK }} >> /.env.dev
+        envkey_SESSION_DRIVER: ${{ secrets.ENV_SESSION_DRIVER }} >> /.env.dev
+        envkey_CACHE_VIEWS: ${{ secrets.ENV_CACHE_VIEWS }} >> /.env.dev
+        envkey_DB_CONNECTION: ${{ secrets.ENV_DB_CONNECTION }} >> /.env.dev
+        envkey_MYSQL_HOST: ${{ secrets.ENV_MYSQL_HOST }} >> /.env.dev
+        envkey_MYSQL_PORT: ${{ secrets.ENV_MYSQL_PORT }} >> /.env.dev
+        envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }} >> /.env.dev
+        envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }} >> /.env.dev
+        envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }} >> /.env.dev
+        # directory: <directory_name>
+        # file_name: .env
+        # fail_on_empty: false
 
   build:
+    needs: 
+      - create-envfile
     runs-on: ubuntu-20.04
     steps:
       # Github action to checks-out your repository. 
@@ -22,27 +52,27 @@ jobs:
           # password: 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
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Create env file'
-        run: |
-          ls -la
-          pwd
-          sudo touch /.env.dev
-          sudo echo PORT=${{ secrets.ENV_PORT }} >> /.env.dev
-          sudo echo HOST=${{ secrets.ENV_HOST }} >> /.env.dev
-          sudo echo NODE_ENV=${{ secrets.ENV_NODE }} >> /.env.dev
-          sudo echo APP_KEY=${{ secrets.ENV_APP_KEY }} >> /.env.dev
-          sudo echo DRIVE_DISK=${{ secrets.ENV_DRIVE_DISK }} >> /.env.dev
-          sudo echo SESSION_DRIVER=${{ secrets.ENV_SESSION_DRIVER }} >> /.env.dev
-          sudo echo CACHE_VIEWS=${{ secrets.ENV_CACHE_VIEWS }} >> /.env.dev
-          sudo echo DB_CONNECTION=${{ secrets.ENV_DB_CONNECTION }} >> /.env.dev
-          sudo echo MYSQL_HOST=${{ secrets.ENV_MYSQL_HOST }} >> /.env.dev
-          sudo echo MYSQL_PORT=${{ secrets.ENV_MYSQL_PORT }} >> /.env.dev
-          sudo echo MYSQL_USER=${{ secrets.ENV_MYSQL_USER }} >> /.env.dev
-          sudo echo MYSQL_PASSWORD=${{ secrets.ENV_MYSQL_PASSWORD }} >> /.env.dev
-          sudo echo MYSQL_DB_NAME=${{ secrets.ENV_MYSQL_DB_NAME }} >> /.env.dev
-          ls -la
-          sudo cat /.env.dev
-        if: success() || failure()
+      # - name: 'Create env file'
+      #   run: |
+      #     ls -la
+      #     pwd
+      #     sudo touch /.env.dev
+      #     sudo echo PORT=${{ secrets.ENV_PORT }} >> /.env.dev
+      #     sudo echo HOST=${{ secrets.ENV_HOST }} >> /.env.dev
+      #     sudo echo NODE_ENV=${{ secrets.ENV_NODE }} >> /.env.dev
+      #     sudo echo APP_KEY=${{ secrets.ENV_APP_KEY }} >> /.env.dev
+      #     sudo echo DRIVE_DISK=${{ secrets.ENV_DRIVE_DISK }} >> /.env.dev
+      #     sudo echo SESSION_DRIVER=${{ secrets.ENV_SESSION_DRIVER }} >> /.env.dev
+      #     sudo echo CACHE_VIEWS=${{ secrets.ENV_CACHE_VIEWS }} >> /.env.dev
+      #     sudo echo DB_CONNECTION=${{ secrets.ENV_DB_CONNECTION }} >> /.env.dev
+      #     sudo echo MYSQL_HOST=${{ secrets.ENV_MYSQL_HOST }} >> /.env.dev
+      #     sudo echo MYSQL_PORT=${{ secrets.ENV_MYSQL_PORT }} >> /.env.dev
+      #     sudo echo MYSQL_USER=${{ secrets.ENV_MYSQL_USER }} >> /.env.dev
+      #     sudo echo MYSQL_PASSWORD=${{ secrets.ENV_MYSQL_PASSWORD }} >> /.env.dev
+      #     sudo echo MYSQL_DB_NAME=${{ secrets.ENV_MYSQL_DB_NAME }} >> /.env.dev
+      #     ls -la
+      #     sudo cat /.env.dev
+      #   if: success() || failure()
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
