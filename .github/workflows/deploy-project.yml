@@ -38,7 +38,7 @@ jobs:
           echo MYSQL_USER=${{ secrets.ENV_MYSQL_USER }} >> .env
           echo MYSQL_PASSWORD=${{ secrets.ENV_MYSQL_PASSWORD }} >> .env
           echo MYSQL_DB_NAME=${{ secrets.ENV_MYSQL_DB_NAME }} >> .env
-          ls
+          ls -la
 
       - name: Build and push
         uses: docker/build-push-action@v2
