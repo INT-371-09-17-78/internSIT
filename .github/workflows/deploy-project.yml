@@ -29,19 +29,19 @@ jobs:
         # envkey_SOME_API_KEY: "123456abcdef"
         # envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
         # some_other_variable: foobar
-          envkey_PORT: ${{ secrets.ENV_PORT }} >> /.env.dev
-          envkey_HOST: ${{ secrets.ENV_HOST }} >> /.env.dev
-          envkey_NODE_ENV: ${{ secrets.ENV_NODE }} >> /.env.dev
-          envkey_APP_KEY: ${{ secrets.ENV_APP_KEY }} >> /.env.dev
-          envkey_DRIVE_DISK: ${{ secrets.ENV_DRIVE_DISK }} >> /.env.dev
-          envkey_SESSION_DRIVER: ${{ secrets.ENV_SESSION_DRIVER }} >> /.env.dev
-          envkey_CACHE_VIEWS: ${{ secrets.ENV_CACHE_VIEWS }} >> /.env.dev
-          envkey_DB_CONNECTION: ${{ secrets.ENV_DB_CONNECTION }} >> /.env.dev
-          envkey_MYSQL_HOST: ${{ secrets.ENV_MYSQL_HOST }} >> /.env.dev
-          envkey_MYSQL_PORT: ${{ secrets.ENV_MYSQL_PORT }} >> /.env.dev
-          envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }} >> /.env.dev
-          envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }} >> /.env.dev
-          envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }} >> /.env.dev
+          envkey_PORT: ${{ secrets.ENV_PORT }}
+          envkey_HOST: ${{ secrets.ENV_HOST }}
+          envkey_NODE_ENV: ${{ secrets.ENV_NODE }}
+          envkey_APP_KEY: ${{ secrets.ENV_APP_KEY }}
+          envkey_DRIVE_DISK: ${{ secrets.ENV_DRIVE_DISK }}
+          envkey_SESSION_DRIVER: ${{ secrets.ENV_SESSION_DRIVER }}
+          envkey_CACHE_VIEWS: ${{ secrets.ENV_CACHE_VIEWS }}
+          envkey_DB_CONNECTION: ${{ secrets.ENV_DB_CONNECTION }}
+          envkey_MYSQL_HOST: ${{ secrets.ENV_MYSQL_HOST }}
+          envkey_MYSQL_PORT: ${{ secrets.ENV_MYSQL_PORT }}
+          envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }}
+          envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }}
+          envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }}
         # directory: <directory_name>
         # file_name: .env
         # fail_on_empty: false
