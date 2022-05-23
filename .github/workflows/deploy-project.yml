@@ -42,7 +42,7 @@ jobs:
           envkey_MYSQL_USER: ${{ secrets.ENV_MYSQL_USER }}
           envkey_MYSQL_PASSWORD: ${{ secrets.ENV_MYSQL_PASSWORD }}
           envkey_MYSQL_DB_NAME: ${{ secrets.ENV_MYSQL_DB_NAME }}
-          directory: .
+          directory: internSIT/internSIT
         # file_name: .env
         # fail_on_empty: false
       - name: 'direct'
