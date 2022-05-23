@@ -22,6 +22,23 @@ jobs:
           # password: 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
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo PORT=${{ secrets.ENV_PORT }} >> .env
+          echo HOST=${{ secrets.ENV_HOST }} >> .env
+          echo NODE_ENV=${{ secrets.ENV_NODE }} >> .env
+          echo APP_KEY=${{ secrets.ENV_APP_KEY }} >> .env
+          echo DRIVE_DISK=${{ secrets.DRIVE_DISK }} >> .env
+          echo SESSION_DRIVER=${{ secrets.SESSION_DRIVER }} >> .env
+          echo CACHE_VIEWS=${{ secrets.CACHE_VIEWS }} >> .env
+          echo DB_CONNECTION=${{ secrets.DB_CONNECTION }} >> .env
+          echo MYSQL_HOST=${{ secrets.ENV_MYSQL_HOST }} >> .env
+          echo MYSQL_PORT=${{ secrets.MYSQL_PORT }} >> .env
+          echo MYSQL_USER=${{ secrets.ENV_MYSQL_USER }} >> .env
+          echo MYSQL_PASSWORD=${{ secrets.ENV_MYSQL_PASSWORD }} >> .env
+          echo MYSQL_DB_NAME=${{ secrets.ENV_MYSQL_DB_NAME }} >> .env
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
