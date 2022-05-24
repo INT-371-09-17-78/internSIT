@@ -80,6 +80,51 @@ const authConfig: AuthConfig = {
         model: () => import('App/Models/user'),
       },
     },
+    authStudent: {
+      driver: 'session',
+      provider: {
+
+        driver: 'lucid',
+
+        identifierKey: 'student_id',
+
+        uids: ['student_id'],
+
+        model: () => import('App/Models/Student'),
+
+      },
+
+    },
+    authAdviser: {
+      driver: 'session',
+      provider: {
+
+        driver: 'lucid',
+
+        identifierKey: 'adviser_id',
+
+        uids: ['adviser_id'],
+
+        model: () => import('App/Models/Adviser'),
+
+      },
+
+    },
+    authStaff: {
+      driver: 'session',
+      provider: {
+
+        driver: 'lucid',
+
+        identifierKey: 'staff_id',
+
+        uids: ['staff_id'],
+
+        model: () => import('App/Models/Staff'),
+
+      },
+
+    },
   },
 }
 

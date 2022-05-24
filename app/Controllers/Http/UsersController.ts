@@ -1,5 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import Student from 'App/Models/Student'
+import Adviser from 'App/Models/Adviser'
+import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
 
 interface LdapOptions {
@@ -7,7 +10,7 @@ interface LdapOptions {
   bindDN: string
   bindCredentials: string
   searchBase: string
-  searchFilter: string
+  searchFilter: string,
 }
 export default class UsersController {
   public async index() {
@@ -24,35 +27,64 @@ export default class UsersController {
     return await User.find(params.id)
   }
   public async verify({ auth, request, response, session }: HttpContextContract) {
-    console.log(request)
-    const { username, password, isRemember } = request.only(['username', 'password', 'isRemember'])
-    let rememberMe: boolean = false
-    if (isRemember && isRemember === 'yes') {
-      rememberMe = true
-    } else {
-      rememberMe = false
-    }
+    const { username, password, isRemember, role } = request.only(['username', 'password', 'isRemember', 'role'])
+    let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
+    let ldRole: string = role == 'adviser' || role == 'staff'? 'staff' : 'st'
     let user: any
     try {
       if (username === 'admin') {
         await auth.attempt(username, password, rememberMe)
         return response.redirect('/announcement')
       } else {
-        const ldapUser: any = await this.authenticate(username, password, 'staff')
+        const ldapUser: any = await this.authenticate(username, password, ldRole)
+        const fullname = ldapUser.cn.split(' ');
         if (ldapUser) {
-          user = await User.findBy('username', username)
-          if (!user) {
-            user = new User()
-            user.username = username
-            user.email = ldapUser.mail
-            user.password = password
-            await user.save()
+          switch (role) {
+            case 'staff':
+              user = await Staff.findBy('staff_id', username)
+              if (!user) {
+                user = new Staff()
+                user.staff_id = ldapUser.uid
+                user.firstname = fullname[0]
+                user.lastname = fullname[1]
+                user.email = ldapUser.mail
+                user.password = password
+                await user.save()
+              }
+              await auth.use('authStaff').login(user, rememberMe)
+              break;
+            case 'adviser':
+              user = await Adviser.findBy('adviser_id', username)
+              if (!user) {
+                user = new Adviser()
+                user.adviser_id = ldapUser.uid
+                user.firstname = fullname[0]
+                user.lastname = fullname[1]
+                user.email = ldapUser.mail
+                user.password = password
+                await user.save()
+              }
+              await auth.use('authAdviser').login(user, rememberMe)
+              break;
+            default:
+              user = await Student.findBy('student_id', username)
+              if (!user) {
+                user = new Student()
+                user.student_id = ldapUser.uid
+                user.firstname = fullname[0]
+                user.lastname = fullname[1]
+                user.email = ldapUser.mail
+                user.password = password
+                await user.save()
+              }
+              await auth.use('authStudent').login(user, rememberMe)
           }
         }
-        await auth.login(user, rememberMe)
         return response.redirect('/announcement')
       }
     } catch (error) {
+      console.log(error.message);
+
       if (error.message === 'no password given' || error.message === 'empty username') {
         session.flash({
           error: 'All fields are required',
@@ -68,13 +100,13 @@ export default class UsersController {
     }
   }
 
-  public authenticate(username: string, password: string, _role: string = 'staff') {
+  public authenticate(username: string, password: string, role: string) {
     return new Promise((resolve, reject) => {
       const options: LdapOptions = {
         url: 'ldaps://ld0620.sit.kmutt.ac.th',
-        bindDN: 'uid=' + username + ',ou=People,ou=' + _role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
+        bindDN: 'uid=' + username + ',ou=People,ou=' + role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
         bindCredentials: password,
-        searchBase: 'ou=People,ou=' + _role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
+        searchBase: 'ou=People,ou=' + role + ',dc=sit,dc=kmutt,dc=ac,dc=th',
         searchFilter: 'uid={{username}}',
       }
       const client = new LdapAuth(options)
