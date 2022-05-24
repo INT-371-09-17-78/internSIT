@@ -20,7 +20,7 @@ services:
   intern-sit:
     depends_on:
       - db
-    container_name: intern-sit-app-test
+    container_name: intern-sit-app
     restart: always
     # build:
     #   context: .
