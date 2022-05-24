@@ -1,12 +1,15 @@
 @set('hideSearch', '')
 @set('activeAnnouncement', '')
 @set('background', 'block')
+@set('hideMunu', '')
 @if(request.url()==='/' || request.url()==='/announcement/create')
   @set('hideSearch', 'hidden')
-@elseif(request.url()==='/' || request.url()==='/announcement/create')
-  @set('background', 'hidden')
 @elseif(request.url()==='/announcement')
   @set('activeAnnouncement', 'btn-active bg-base-300')
+@end
+@if(request.url()==='/')
+  @set('background', 'hidden')
+  @set('hideMunu', 'hidden')
 @end
 <!DOCTYPE html>
 <html>
@@ -19,23 +22,23 @@
   </head>
   <body class="w-screen h-full overflow-hidden">
     <img src="{{ asset('assets/images/bg.jpg') }}" class="absolute w-full h-full -z-10 {{background}}"/>
-        <div class="flex absolute w-full top-5 pl-10 lg:p-0 lg:space-x-0 lg:w-auto lg:ml-52 lg:top-7 {{hideSearch}}">
-            @!common.search({
-              text: 'Search',
-              btnProps: 'btn-block lg:w-64 text-base-content',
-              classProps: 'grow hideSearch mx-8 z-10'
-            })
+        <div class="flex absolute w-full top-5 lg:space-x-0 lg:w-auto lg:left-56 lg:top-7 z-10 px-5">
+            <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 lg:hidden no-animation hover:bg-transparent {{hideMunu}}">
+              <svg class="w-8 h-8 fill-current font-bold" width="48px" height="48px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><title>70 Basic icons by Xicons.co</title><path d="M41,14H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,14Z" fill="#6f7380"/><path d="M41,26H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,26Z" fill="#6f7380"/><path d="M41,38H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,38Z" fill="#6f7380"/></svg>
+            </label>
+            <div class="{{hideSearch}}">
+              @!common.search({
+                text: 'Search',
+                btnProps: 'btn-block lg:w-64 text-base-content',
+                classProps: 'grow'
+              })
+            </div>
+
         </div>
     <div class="flex">
        @if(request.url()!=='/')
        <div class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>
-        <div class="drawer-content flex flex-col items-center justify-center">
-          <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 p-0 lg:hidden no-animation hover:bg-transparent absolute left-7 top-5 z-50">
-            <svg class="w-8 h-8 fill-current font-bold" width="48px" height="48px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><title>70 Basic icons by Xicons.co</title><path d="M41,14H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,14Z" fill="#6f7380"/><path d="M41,26H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,26Z" fill="#6f7380"/><path d="M41,38H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,38Z" fill="#6f7380"/></svg>
-          </label>
-        
-        </div> 
         <div class="drawer-side">
           <label for="my-drawer-2" class="drawer-overlay"></label> 
           <ul class="menu p-4 overflow-y-auto w-full bg-base-100 text-base-content">
@@ -47,7 +50,7 @@
               @!common.button({
                   text: 'Login',
                   type: 'text',
-                  class: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200',
+                  classProps: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200',
               })
               @else
               <div class="avatar flex justify-center my-5">
@@ -84,7 +87,7 @@
                   @!common.button({
                     text: 'Logout',
                     type: 'text',
-                    class: 'btn btn-sm btn-outline border-2 text-black w-24 h-10 normal-case rounded-full border-base-200 self-center mt-auto',
+                    classProps: 'btn-sm btn-outline border-2 w-24 h-10 border-base-200 self-center mt-auto mb-10',
                     onclick: 'openAlertConfirmlogout()',
                   })
               @endif
