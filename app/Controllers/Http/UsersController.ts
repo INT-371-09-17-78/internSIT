@@ -24,11 +24,18 @@ export default class UsersController {
     return await User.find(params.id)
   }
   public async verify({ auth, request, response, session }: HttpContextContract) {
-    const { username, password } = request.only(['username', 'password'])
+    console.log(request)
+    const { username, password, isRemember } = request.only(['username', 'password', 'isRemember'])
+    let rememberMe: boolean = false
+    if (isRemember && isRemember === 'yes') {
+      rememberMe = true
+    } else {
+      rememberMe = false
+    }
     let user: any
     try {
       if (username === 'admin') {
-        await auth.attempt(username, password)
+        await auth.attempt(username, password, rememberMe)
         return response.redirect('/announcement')
       } else {
         const ldapUser: any = await this.authenticate(username, password, 'staff')
@@ -42,7 +49,7 @@ export default class UsersController {
             await user.save()
           }
         }
-        await auth.login(user)
+        await auth.login(user, rememberMe)
         return response.redirect('/announcement')
       }
     } catch (error) {
