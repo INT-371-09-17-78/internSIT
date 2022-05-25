@@ -31,13 +31,11 @@ Route.group(() => {
   }).middleware('auth:authStudent')
   Route.get('/create', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
-    else 
-    return view.render('add-post')
+    else return view.render('add-post')
   }).middleware('auth:authStudent')
   Route.get('/:id', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
-    else 
-    return view.render('post')
+    else return view.render('post')
   }).middleware('auth:authStudent')
 }).prefix('/announcement')
 
