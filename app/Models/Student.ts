@@ -3,7 +3,7 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import { column, beforeSave, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 export default class Student extends BaseModel {
-  @column({ isPrimary: true})
+  @column({ isPrimary: true })
   public student_id: number
 
   @column()
@@ -48,7 +48,7 @@ export default class Student extends BaseModel {
   @column()
   public rememberMeToken?: string
 
-  @hasMany(() => Post,{foreignKey: 'student_id'})
+  @hasMany(() => Post, { foreignKey: 'student_id' })
   public posts: HasMany<typeof Post>
 
   @column.dateTime({ autoCreate: true })
@@ -60,7 +60,7 @@ export default class Student extends BaseModel {
   @beforeSave()
   public static async hashPassword(student: Student) {
     if (student.$dirty.password) {
-        student.password = await Hash.make(student.password)
+      student.password = await Hash.make(student.password)
     }
   }
 }

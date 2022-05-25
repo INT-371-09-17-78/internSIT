@@ -43,11 +43,11 @@ declare module '@ioc:Adonis/Addons/Auth' {
     student: {
       implementation: LucidProviderContract<typeof student>
       config: LucidProviderConfig<typeof student>
-    },
+    }
     adviser: {
       implementation: LucidProviderContract<typeof adviser>
       config: LucidProviderConfig<typeof adviser>
-    },
+    }
     staff: {
       implementation: LucidProviderContract<typeof staff>
       config: LucidProviderConfig<typeof staff>

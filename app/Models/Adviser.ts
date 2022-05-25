@@ -3,7 +3,7 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Advisers extends BaseModel {
-  @column({ isPrimary: true})
+  @column({ isPrimary: true })
   public adviser_id: string
 
   @column()
@@ -30,7 +30,7 @@ export default class Advisers extends BaseModel {
   @beforeSave()
   public static async hashPassword(adviser: Advisers) {
     if (adviser.$dirty.password) {
-        adviser.password = await Hash.make(adviser.password)
+      adviser.password = await Hash.make(adviser.password)
     }
   }
 }

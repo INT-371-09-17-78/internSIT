@@ -10,7 +10,7 @@ interface LdapOptions {
   bindDN: string
   bindCredentials: string
   searchBase: string
-  searchFilter: string,
+  searchFilter: string
 }
 export default class UsersController {
   public async index() {
@@ -27,9 +27,14 @@ export default class UsersController {
     return await User.find(params.id)
   }
   public async verify({ auth, request, response, session }: HttpContextContract) {
-    const { username, password, isRemember, role } = request.only(['username', 'password', 'isRemember', 'role'])
+    const { username, password, isRemember, role } = request.only([
+      'username',
+      'password',
+      'isRemember',
+      'role',
+    ])
     let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
-    let ldRole: string = role == 'adviser' || role == 'staff'? 'staff' : 'st'
+    let ldRole: string = role === 'adviser' || role === 'staff' ? 'staff' : 'st'
     let user: any
     try {
       if (username === 'admin') {
@@ -37,7 +42,7 @@ export default class UsersController {
         return response.redirect('/announcement')
       } else {
         const ldapUser: any = await this.authenticate(username, password, ldRole)
-        const fullname = ldapUser.cn.split(' ');
+        const fullname = ldapUser.cn.split(' ')
         if (ldapUser) {
           switch (role) {
             case 'staff':
@@ -52,7 +57,7 @@ export default class UsersController {
                 await user.save()
               }
               await auth.use('authStaff').login(user, rememberMe)
-              break;
+              break
             case 'adviser':
               user = await Adviser.findBy('adviser_id', username)
               if (!user) {
@@ -65,7 +70,7 @@ export default class UsersController {
                 await user.save()
               }
               await auth.use('authAdviser').login(user, rememberMe)
-              break;
+              break
             default:
               user = await Student.findBy('student_id', username)
               // user = await User.findBy('username', username)
@@ -86,17 +91,16 @@ export default class UsersController {
                 // await user.save()
               }
               await auth.use('authStudent').login(user, rememberMe)
-              // await auth.use('web').login(user, rememberMe)
+            // await auth.use('web').login(user, rememberMe)
           }
           // await auth.use('authStudent').authenticate()
           // console.log((auth.user));
-          
+
           return response.redirect('/announcement')
         }
-       
       }
     } catch (error) {
-      console.log(error.message);
+      console.log(error.message)
 
       if (error.message === 'no password given' || error.message === 'empty username') {
         session.flash({

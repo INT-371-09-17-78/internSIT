@@ -3,7 +3,7 @@ import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import Student from 'App/Models/Student'
 
 export default class Post extends BaseModel {
-  @column({ isPrimary: true})
+  @column({ isPrimary: true })
   public post_id: number
 
   @column()
@@ -26,5 +26,4 @@ export default class Post extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
-
 }
