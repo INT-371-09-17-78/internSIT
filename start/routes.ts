@@ -17,7 +17,6 @@
 | import './routes/customer''
 |
 */
-
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/', async ({ view, auth, response }) => {
@@ -29,34 +28,33 @@ Route.group(() => {
   Route.get('/', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
     else return view.render('announcement')
-  })
+  }).middleware('auth:authStudent')
   Route.get('/create', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
-    else return view.render('add-post')
-  })
+    else 
+    return view.render('add-post')
+  }).middleware('auth:authStudent')
   Route.get('/:id', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
-    else return view.render('post')
-  }).middleware(({ view, params }, next) => {
-    view.share({
-      postId: params.id,
-    })
-    return next()
-  })
+    else 
+    return view.render('post')
+  }).middleware('auth:authStudent')
 }).prefix('/announcement')
 
 //backend
-import Database from '@ioc:Adonis/Lucid/Database'
+// import Database from '@ioc:Adonis/Lucid/Database'
 
 // import UsersController from 'App/Controllers/Http/UsersController'
 
-Route.get('/test', async () => {
-  Database.from('city').select('*')
-  // .where('id', params.id)
-  // .first()
-})
+// Route.get('/test', async () => {
+//   Database.from('city').select('*')
+//   // .where('id', params.id)
+//   // .first()
+// })
 
 Route.resource('controller', 'UsersController').apiOnly()
 
-Route.post('login', 'UsersController.verify').as('auth.login')
-Route.get('logout', 'UsersController.logout').as('auth.logout')
+Route.post('/api/login', 'UsersController.verify').as('auth.login')
+Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
+Route.post('/api/post', 'PostsController.store')
+Route.get('/api/post', 'PostsController.show')

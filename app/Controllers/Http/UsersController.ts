@@ -68,6 +68,7 @@ export default class UsersController {
               break;
             default:
               user = await Student.findBy('student_id', username)
+              // user = await User.findBy('username', username)
               if (!user) {
                 user = new Student()
                 user.student_id = ldapUser.uid
@@ -76,11 +77,23 @@ export default class UsersController {
                 user.email = ldapUser.mail
                 user.password = password
                 await user.save()
+                // user = new User()
+                // user.id = ldapUser.uid
+                // user.username = username
+                // // user.lastname = fullname[1]
+                // user.email = ldapUser.mail
+                // user.password = password
+                // await user.save()
               }
               await auth.use('authStudent').login(user, rememberMe)
+              // await auth.use('web').login(user, rememberMe)
           }
+          // await auth.use('authStudent').authenticate()
+          // console.log((auth.user));
+          
+          return response.redirect('/announcement')
         }
-        return response.redirect('/announcement')
+       
       }
     } catch (error) {
       console.log(error.message);

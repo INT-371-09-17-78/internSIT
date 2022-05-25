@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
-
+import { column, beforeSave, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import Post from 'App/Models/Post'
 export default class Student extends BaseModel {
   @column({ isPrimary: true})
   public student_id: number
@@ -47,6 +47,9 @@ export default class Student extends BaseModel {
 
   @column()
   public rememberMeToken?: string
+
+  @hasMany(() => Post,{foreignKey: 'student_id'})
+  public posts: HasMany<typeof Post>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
