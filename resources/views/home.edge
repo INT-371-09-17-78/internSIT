@@ -41,11 +41,11 @@
                             <input type="password" name="password" placeholder="Password" class="input input-bordered {{borderColor}} w-full rounded-2xl">
                         </div>
                         <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
-                        <select class="select select-bordered w-full rounded-2xl {{borderColor}} my-1">
+                        <select name="role" class="select select-bordered w-full rounded-2xl {{borderColor}} my-1">
                             <option disabled selected>Please choose your role</option>
-                            <option>Student</option>
-                            <option>Adviser</option>
-                            <option>Staff</option>
+                            <option value="student">Student</option>
+                            <option value="adviser">Adviser</option>
+                            <option value="staff">Staff</option>
                           </select>
                         <label class="label cursor-pointer">
                                 <div class="flex">
