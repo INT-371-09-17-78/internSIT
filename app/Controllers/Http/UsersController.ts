@@ -29,12 +29,7 @@ export default class UsersController {
   // }
   public async verify({ auth, request, response, session }: HttpContextContract) {
     try {
-      const { username, password, isRemember, role } = request.only([
-        'username',
-        'password',
-        'isRemember',
-        'role',
-      ])
+      const { username, password, isRemember, role } = request.all()
 
       if (!role) {
         throw new Error('empty role')

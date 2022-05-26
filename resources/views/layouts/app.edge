@@ -23,7 +23,7 @@
   <body class="w-screen h-full overflow-hidden">
     <img src="{{ asset('assets/images/bg.jpg') }}" class="absolute w-full h-full -z-10 {{background}}"/>
         <div class="flex absolute w-full top-5 lg:space-x-0 lg:w-auto lg:left-56 lg:top-7 z-10 px-5">
-            <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 lg:hidden no-animation hover:bg-transparent {{hideMunu}}">
+            <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 lg:hidden no-animation hover:bg-transparent {{hideMunu}}" onclick="openDrawer()">
               <svg class="w-8 h-8 fill-current font-bold" width="48px" height="48px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><title>70 Basic icons by Xicons.co</title><path d="M41,14H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,14Z" fill="#6f7380"/><path d="M41,26H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,26Z" fill="#6f7380"/><path d="M41,38H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,38Z" fill="#6f7380"/></svg>
             </label>
             <div class="{{hideSearch}}">
@@ -37,7 +37,7 @@
         </div>
     <div class="flex">
        @if(request.url()!=='/')
-       <div class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64">
+       <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64 hide">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>
         <div class="drawer-side">
           <label for="my-drawer-2" class="drawer-overlay"></label> 
@@ -129,7 +129,14 @@
     element.remove();
   }
   const closeDrawer = () => {
-  const checkBox = document.getElementById("my-drawer-2");
-  checkBox.checked = false
-}
+    const checkBox = document.getElementById("my-drawer-2");
+    const sidebar = document.getElementById('sidebar');
+    checkBox.checked = false
+    setTimeout(()=> sidebar.classList.toggle('hide'), 500);
+  }
+
+  const openDrawer = () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('hide')
+  }
 </script>

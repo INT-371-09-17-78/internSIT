@@ -13,7 +13,7 @@ export default class PostsController {
   //       email: 'nuchanart.boo',
   //     })
   //   }
-  public async store({ auth, request, response, session }: HttpContextContract) {
+  public async store({ auth, request, response }: HttpContextContract) {
     try {
       const { content, topic } = request.only(['content', 'topic'])
       const user = await User.find(auth.user?.user_id)
@@ -25,13 +25,14 @@ export default class PostsController {
       } else {
         response.status(401).send({ message: 'invalid user' })
       }
-      response.status(200).send({ message: 'success' })
+      // response.status(200).send({ message: 'success' })
+      return response.redirect('/announcement')
     } catch (error) {
       response.status(400).send({ message: error.message })
     }
   }
 
-  public async update({ auth, request, response, session }: HttpContextContract) {
+  public async update({ auth, request, response }: HttpContextContract) {
     try {
       const { postData } = request.only(['postData'])
       const user = await User.find(auth.user?.user_id)
@@ -46,7 +47,7 @@ export default class PostsController {
     }
   }
 
-  public async remove({ auth, request, response, session }: HttpContextContract) {
+  public async remove({ request, response }: HttpContextContract) {
     try {
       const { postData } = request.only(['postData'])
       const post = await Post.find(postData.post_id)

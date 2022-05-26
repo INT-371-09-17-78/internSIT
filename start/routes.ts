@@ -19,6 +19,7 @@
 */
 import Route from '@ioc:Adonis/Core/Route'
 import Post from 'App/Models/Post'
+import moment from 'moment'
 
 Route.get('/', async ({ view, auth, response }) => {
   if (auth.user) response.redirect('/announcement')
@@ -32,14 +33,23 @@ Route.group(() => {
   Route.get('/', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
     else {
-      const result = await Post.all()
-      return view.render('announcement', { result })
+      const results = await Post.all()
+      const resultsJSON = results.map((result) => result.serialize())
+      // console.log(resultsJSON)
+      const posts = resultsJSON.map((result) => ({
+        ...result,
+        updatedAt: moment(result.updatedAt).format('MMMM D, YYYY h:mm A'),
+      }))
+      console.log(posts)
+      return view.render('announcement', { posts })
     }
   })
+
   Route.get('/create', async ({ view, auth, response }) => {
-    if (!auth.user) response.redirect('/')
+    if (!auth.user || auth.user.role === 'student') response.redirect('/')
     else return view.render('add-post')
   })
+
   Route.get('/:id', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
     else return view.render('post')
