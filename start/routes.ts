@@ -18,16 +18,23 @@
 |
 */
 import Route from '@ioc:Adonis/Core/Route'
+import Post from 'App/Models/Post'
 
 Route.get('/', async ({ view, auth, response }) => {
   if (auth.user) response.redirect('/announcement')
-  else return view.render('home')
+  else {
+    const roles = ['Student', 'Adviser', 'Staff']
+    return view.render('home', { roles })
+  }
 })
 
 Route.group(() => {
   Route.get('/', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
-    else return view.render('announcement')
+    else {
+      const result = await Post.all()
+      return view.render('announcement', { result })
+    }
   })
   Route.get('/create', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')

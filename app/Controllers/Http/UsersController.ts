@@ -28,19 +28,23 @@ export default class UsersController {
   //   return await User.find(params.id)
   // }
   public async verify({ auth, request, response, session }: HttpContextContract) {
-    const { username, password, isRemember, role } = request.only([
-      'username',
-      'password',
-      'isRemember',
-      'role',
-    ])
-    let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
-    let ldRole: string = role === 'adviser' || role === 'staff' ? 'staff' : 'st'
-    console.log(ldRole)
-
-    let user: any
-    let student: any
     try {
+      const { username, password, isRemember, role } = request.only([
+        'username',
+        'password',
+        'isRemember',
+        'role',
+      ])
+
+      if (!role) {
+        throw new Error('empty role')
+      }
+
+      let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
+      let ldRole: string = role === 'adviser' || role === 'staff' ? 'staff' : 'st'
+      let user: any
+      let student: any
+
       if (username === 'admin') {
         await auth.attempt(username, password, rememberMe)
         return response.redirect('/announcement')
@@ -59,20 +63,24 @@ export default class UsersController {
             user.role = role
             await user.save()
           }
+
           await auth.use('web').login(user, rememberMe)
-          student = await Student.findBy('user_id', ldapUser.uid)
-          console.log(student)
-          if (!student && user && ldRole === 'st') {
-            await user?.related('student').create({})
+          if (user && ldRole === 'st') {
+            student = await Student.findBy('user_id', ldapUser.uid)
+            if (!student) {
+              await user?.related('student').create({})
+            }
           }
 
           return response.redirect('/announcement')
         }
       }
     } catch (error) {
-      console.log(error.message)
-
-      if (error.message === 'no password given' || error.message === 'empty username') {
+      if (
+        error.message === 'no password given' ||
+        error.message === 'empty username' ||
+        error.message === 'empty role'
+      ) {
         session.flash({
           error: 'All fields are required',
           type: 'negative',

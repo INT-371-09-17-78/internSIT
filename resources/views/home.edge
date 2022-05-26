@@ -43,9 +43,11 @@
                         <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
                         <select name="role" class="select select-bordered w-full rounded-2xl {{borderColor}} my-1">
                             <option disabled selected>Please choose your role</option>
-                            <option value="student">Student</option>
-                            <option value="adviser">Adviser</option>
-                            <option value="staff">Staff</option>
+                            @each(role in roles)
+                            <option value={{ role.toLowerCase() }}>{{ role }}</option>
+                            {{--  <option value="adviser">Adviser</option>
+                            <option value="staff">Staff</option>  --}}
+                            @end
                           </select>
                         <label class="label cursor-pointer">
                                 <div class="flex">
