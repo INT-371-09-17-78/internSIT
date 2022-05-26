@@ -1,22 +1,8 @@
 import { DateTime } from 'luxon'
-import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
-import Post from 'App/Models/Post'
+import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 export default class Student extends BaseModel {
   @column({ isPrimary: true })
   public student_id: number
-
-  @column()
-  public firstname: string
-
-  @column()
-  public lastname: string
-
-  @column()
-  public email: string
-
-  @column({ serializeAs: null })
-  public password: string
 
   @column()
   public department: string
@@ -48,8 +34,13 @@ export default class Student extends BaseModel {
   @column()
   public rememberMeToken?: string
 
-  @hasMany(() => Post, { foreignKey: 'student_id' })
-  public posts: HasMany<typeof Post>
+  @column()
+  public user_id: string
+
+  @column()
+  public adviser_id: string
+  // @hasMany(() => Post, { foreignKey: 'student_id' })
+  // public posts: HasMany<typeof Post>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -57,10 +48,10 @@ export default class Student extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @beforeSave()
-  public static async hashPassword(student: Student) {
-    if (student.$dirty.password) {
-      student.password = await Hash.make(student.password)
-    }
-  }
+  // @beforeSave()
+  // public static async hashPassword(student: Student) {
+  //   if (student.$dirty.password) {
+  //     student.password = await Hash.make(student.password)
+  //   }
+  // }
 }

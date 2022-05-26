@@ -1,8 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Student from 'App/Models/Student'
-import Adviser from 'App/Models/Adviser'
-import Staff from 'App/Models/Staff'
+// import Adviser from 'App/Models/Adviser'
+// import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
 
 interface LdapOptions {
@@ -12,20 +12,21 @@ interface LdapOptions {
   searchBase: string
   searchFilter: string
 }
+
 export default class UsersController {
-  public async index() {
-    return await User.all()
-  }
-  public async store() {
-    return await User.create({
-      username: 'nuchanart.boo',
-      password: 'Fxig08',
-      email: 'nuchanart.boo',
-    })
-  }
-  public async show({ params }: HttpContextContract) {
-    return await User.find(params.id)
-  }
+  // public async index() {
+  //   return await User.all()
+  // }
+  // public async store() {
+  //   return await User.create({
+  //     username: 'nuchanart.boo',
+  //     password: 'Fxig08',
+  //     email: 'nuchanart.boo',
+  //   })
+  // }
+  // public async show({ params }: HttpContextContract) {
+  //   return await User.find(params.id)
+  // }
   public async verify({ auth, request, response, session }: HttpContextContract) {
     const { username, password, isRemember, role } = request.only([
       'username',
@@ -35,7 +36,10 @@ export default class UsersController {
     ])
     let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
     let ldRole: string = role === 'adviser' || role === 'staff' ? 'staff' : 'st'
+    console.log(ldRole)
+
     let user: any
+    let student: any
     try {
       if (username === 'admin') {
         await auth.attempt(username, password, rememberMe)
@@ -44,57 +48,23 @@ export default class UsersController {
         const ldapUser: any = await this.authenticate(username, password, ldRole)
         const fullname = ldapUser.cn.split(' ')
         if (ldapUser) {
-          switch (role) {
-            case 'staff':
-              user = await Staff.findBy('staff_id', username)
-              if (!user) {
-                user = new Staff()
-                user.staff_id = ldapUser.uid
-                user.firstname = fullname[0]
-                user.lastname = fullname[1]
-                user.email = ldapUser.mail
-                user.password = password
-                await user.save()
-              }
-              await auth.use('authStaff').login(user, rememberMe)
-              break
-            case 'adviser':
-              user = await Adviser.findBy('adviser_id', username)
-              if (!user) {
-                user = new Adviser()
-                user.adviser_id = ldapUser.uid
-                user.firstname = fullname[0]
-                user.lastname = fullname[1]
-                user.email = ldapUser.mail
-                user.password = password
-                await user.save()
-              }
-              await auth.use('authAdviser').login(user, rememberMe)
-              break
-            default:
-              user = await Student.findBy('student_id', username)
-              // user = await User.findBy('username', username)
-              if (!user) {
-                user = new Student()
-                user.student_id = ldapUser.uid
-                user.firstname = fullname[0]
-                user.lastname = fullname[1]
-                user.email = ldapUser.mail
-                user.password = password
-                await user.save()
-                // user = new User()
-                // user.id = ldapUser.uid
-                // user.username = username
-                // // user.lastname = fullname[1]
-                // user.email = ldapUser.mail
-                // user.password = password
-                // await user.save()
-              }
-              await auth.use('authStudent').login(user, rememberMe)
-            // await auth.use('web').login(user, rememberMe)
+          user = await User.findBy('user_id', username)
+          if (!user) {
+            user = new User()
+            user.user_id = ldapUser.uid
+            user.firstname = fullname[0]
+            user.lastname = fullname[1]
+            user.email = ldapUser.mail
+            user.password = password
+            user.role = role
+            await user.save()
           }
-          // await auth.use('authStudent').authenticate()
-          // console.log((auth.user));
+          await auth.use('web').login(user, rememberMe)
+          student = await Student.findBy('user_id', ldapUser.uid)
+          console.log(student)
+          if (!student && user && ldRole === 'st') {
+            await user?.related('student').create({})
+          }
 
           return response.redirect('/announcement')
         }

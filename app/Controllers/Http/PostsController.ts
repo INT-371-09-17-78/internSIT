@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Post from 'App/Models/Post'
-import Student from 'App/Models/Student'
+import User from 'App/Models/User'
 
 export default class PostsController {
   //   public async index() {
@@ -13,24 +13,60 @@ export default class PostsController {
   //       email: 'nuchanart.boo',
   //     })
   //   }
-  public async store() {
-    // return await User.find(params.id)
-    // console.log((auth.user instanceof Student));
-    const user = await Student.find(65130000003)
-    if (user) {
-      await user.related('posts').create({
-        post_id: 1124,
-        content: 'test',
-        topic: 'asdasdasd',
-      })
+  public async store({ auth, request, response, session }: HttpContextContract) {
+    try {
+      const { content, topic } = request.only(['content', 'topic'])
+      const user = await User.find(auth.user?.user_id)
+      if (user) {
+        await user.related('posts').create({
+          content: content,
+          topic: topic,
+        })
+      } else {
+        response.status(401).send({ message: 'invalid user' })
+      }
+      response.status(200).send({ message: 'success' })
+    } catch (error) {
+      response.status(400).send({ message: error.message })
+    }
+  }
+
+  public async update({ auth, request, response, session }: HttpContextContract) {
+    try {
+      const { postData } = request.only(['postData'])
+      const user = await User.find(auth.user?.user_id)
+      if (user) {
+        await user.related('posts').updateOrCreate({ post_id: postData.post_id }, postData)
+      } else {
+        response.status(401).send({ message: 'invalid user' })
+      }
+      response.status(200).send({ message: 'success' })
+    } catch (error) {
+      response.status(400).send({ message: error.message })
+    }
+  }
+
+  public async remove({ auth, request, response, session }: HttpContextContract) {
+    try {
+      const { postData } = request.only(['postData'])
+      const post = await Post.find(postData.post_id)
+      if (post) {
+        await post.delete()
+      } else {
+        throw new Error('invalid post')
+      }
+      response.status(200).send({ message: 'success' })
+    } catch (error) {
+      response.status(400).send({ message: error.message })
     }
   }
 
   public async show() {
-    // return await User.find(params.id)
-    // const user = await Student.find(65130000003)
-    // const posts = await user?.related('posts').query()
-    // return posts
     return await Post.all()
+  }
+
+  public async showById({ request, response }: HttpContextContract) {
+    const post = await Post.find(request.param('post_id'))
+    response.status(200).send({ result: post })
   }
 }

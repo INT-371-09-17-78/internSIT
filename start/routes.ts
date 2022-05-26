@@ -28,15 +28,15 @@ Route.group(() => {
   Route.get('/', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
     else return view.render('announcement')
-  }).middleware('auth:authStudent')
+  })
   Route.get('/create', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
     else return view.render('add-post')
-  }).middleware('auth:authStudent')
+  })
   Route.get('/:id', async ({ view, auth, response }) => {
     if (!auth.user) response.redirect('/')
     else return view.render('post')
-  }).middleware('auth:authStudent')
+  })
 }).prefix('/announcement')
 
 //backend
@@ -50,9 +50,12 @@ Route.group(() => {
 //   // .first()
 // })
 
-Route.resource('controller', 'UsersController').apiOnly()
+// Route.resource('controller', 'UsersController').apiOnly()
 
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
-Route.post('/api/post', 'PostsController.store')
 Route.get('/api/post', 'PostsController.show')
+Route.get('/api/post/:post_id', 'PostsController.showById')
+Route.post('/api/post', 'PostsController.store').middleware('role')
+Route.patch('/api/post', 'PostsController.update').middleware('role')
+Route.delete('/api/post', 'PostsController.remove').middleware('role')
