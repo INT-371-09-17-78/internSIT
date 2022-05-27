@@ -1,0 +1,48 @@
+@layout('layouts/app')
+@set('title', 'Edit post page')
+@section('edit-post')
+<section class="w-full h-full">
+  @include('partials/announcement-header')
+  <form action="{{ route('/api/post') }}" method="POST">
+  <div class="bg-white bg-opacity-50 lg:p-10 mt-5 lg:mx-10 mx-7 p-5 rounded-[20px]">
+      <p class="font-semibold text-xl">Edit the post</p>
+      <hr class="border-base-200 my-3"/>
+      <p class="font-semibold text-lg">Title</p>
+      <input type="text" id="topic" name="topic" placeholder="Write your topic..." class="input w-full my-2" oncanplay="validateInput(this.value, this.name)" onkeyup="validateInput(this.value, this.name)" value="{{post.topic}}"/>
+      <p class="font-semibold text-lg">Subject</p>
+      <textarea onkeyup="validateInput(this.value, this.name)" name="content" class="textarea w-full h-48 my-2" placeholder="Write your subject...">{{post.content}}</textarea>
+    <div class="flex w-full justify-end">   
+      @!common.button({
+      text: 'Publish',
+      type: 'submit',
+      id: 'sendButton',
+      classProps: 'btn-sm btn-primary px-6',
+      disabled,
+    })
+    </div>
+  </div>
+</form>
+</section>
+<script>
+//   window.onload = {
+//       validateInput("asasd",'topic')
+//       validateInput("asdasd",'content')
+//     }
+  let topic = ''
+  let content = ''
+ const isEmpty = str => !str.trim().length;
+ const validateInput = (value, name) => {
+    console.log("test");
+    if(name === 'topic'){
+        topic = value
+    }else{
+        content = value
+    }
+    if(!isEmpty(topic) && !isEmpty(content)) {
+      document.getElementById('sendButton').disabled = false
+    }else{
+      document.getElementById('sendButton').disabled = true
+    }
+  }
+</script>
+@end

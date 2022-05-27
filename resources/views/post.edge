@@ -6,7 +6,7 @@
     <div class="card-group grid grid-cols-1 gap-y-5 mx-8 mt-4 overflow-y-auto h-[83.5%] lg:h-[80%]">
            <div class="card card-side w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-3xl py-5 relative">
               <div class="menu-icon absolute right-4 top-4 flex justify-center items-center space-x-2">
-                <svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 50 50"><path d="M5.75 42.6V36L35.15 6.55Q36.15 5.55 37.6 5.55Q39.05 5.55 40.2 6.6L41.85 8.15Q43 9.25 42.925 10.7Q42.85 12.15 41.85 13.15L12.35 42.6ZM36.7 13 39.1 10.65 37.65 9.15 35.25 11.55Z"/></svg>
+                <a href="{{ route('/announcement/edit/:id', { id: post.post_id }) }}"><svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 50 50"><path d="M5.75 42.6V36L35.15 6.55Q36.15 5.55 37.6 5.55Q39.05 5.55 40.2 6.6L41.85 8.15Q43 9.25 42.925 10.7Q42.85 12.15 41.85 13.15L12.35 42.6ZM36.7 13 39.1 10.65 37.65 9.15 35.25 11.55Z"/></svg></a>
                 <svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
               </div>
             <div class="avatar pl-5 self-start lg:pt-5 pt-7">
@@ -16,10 +16,10 @@
             </div>
             <div class="card-body py-10 gap-0">
               <div class="flex text-xs">
-                <p class="flex-grow-0">{{postId}}</p><p class="ml-7">dd/mm 00:00AM</p>
+                <p class="flex-grow-0">{{post.user_id}}</p><p class="ml-7">{{post.updated_at}}</p>
               </div>
-                  <h2 class="card-title text-base">Card title!</h2>
-                  <p class="text-xs leading-5 h-fit">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                  <h2 class="card-title text-base">{{post.topic}}</h2>
+                  <p class="text-xs leading-5 h-fit">{{post.content}}</p>
             </div>
           </div>
     </div>

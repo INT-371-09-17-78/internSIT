@@ -30,30 +30,27 @@ Route.get('/', async ({ view, auth, response }) => {
 })
 
 Route.group(() => {
-  Route.get('/', async ({ view, auth, response }) => {
-    if (!auth.user) response.redirect('/')
-    else {
-      const results = await Post.all()
-      const resultsJSON = results.map((result) => result.serialize())
-      // console.log(resultsJSON)
-      const posts = resultsJSON.map((result) => ({
-        ...result,
-        updatedAt: moment(result.updatedAt).format('MMMM D, YYYY h:mm A'),
-      }))
-      console.log(posts)
-      return view.render('announcement', { posts })
-    }
-  })
+  Route.get('/', 'PostsController.show')
 
   Route.get('/create', async ({ view, auth, response }) => {
     if (!auth.user || auth.user.role === 'student') response.redirect('/')
     else return view.render('add-post')
   })
 
-  Route.get('/:id', async ({ view, auth, response }) => {
-    if (!auth.user) response.redirect('/')
-    else return view.render('post')
+  Route.get('/edit/:id', async ({ view, auth, request, response }) => {
+    if (!auth.user || auth.user.role === 'student') response.redirect('/')
+    else {
+      const result = await Post.find(request.param('id'))
+      let post = result?.serialize()
+      post = {
+        ...post,
+        updated_at: moment(post?.updated_at).format('MMMM D, YYYY h:mm A'),
+      }
+      return view.render('edit-post', { post })
+    }
   })
+
+  Route.get('/:id', 'PostsController.showById')
 }).prefix('/announcement')
 
 //backend
@@ -71,8 +68,8 @@ Route.group(() => {
 
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
-Route.get('/api/post', 'PostsController.show')
-Route.get('/api/post/:post_id', 'PostsController.showById')
+// Route.get('/api/post', 'PostsController.show')
+// Route.get('/api/post/:post_id', 'PostsController.showById')
 Route.post('/api/post', 'PostsController.store').middleware('role')
 Route.patch('/api/post', 'PostsController.update').middleware('role')
 Route.delete('/api/post', 'PostsController.remove').middleware('role')

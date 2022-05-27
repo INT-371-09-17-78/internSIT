@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Post from 'App/Models/Post'
 import User from 'App/Models/User'
+import moment from 'moment'
 
 export default class PostsController {
   //   public async index() {
@@ -24,12 +25,18 @@ export default class PostsController {
           topic: topic,
         })
       } else {
-        response.status(401).send({ message: 'invalid user' })
+        return response.status(401).send({ message: 'invalid user' })
+        // response.abort('invalid user', 401)
+        // return response.redirect().status(401).toPath('/announcement')
+        // response.status(401).send()
       }
-      // response.status(200).send({ message: 'success' })
       return response.redirect('/announcement')
+      // response.status(200).send({ message: 'success' })
+      // response.abort('test', 401)
     } catch (error) {
-      response.status(400).send({ message: error.message })
+      // response.abort(error.message, error.status)
+      // return response.status(400).redirect('/announcement')
+      return response.status(400).send({ message: error.message })
     }
   }
 
@@ -63,12 +70,36 @@ export default class PostsController {
     }
   }
 
-  public async show() {
-    return await Post.all()
+  public async show({ view, auth, response }: HttpContextContract) {
+    // return await Post.all()
+    if (!auth.user) response.redirect('/')
+    else {
+      const results = await Post.all()
+      const resultsJSON = results.map((result) => result.serialize())
+      // console.log(resultsJSON)
+      const posts = resultsJSON.map((result) => ({
+        ...result,
+        updated_at: moment(result.updated_at).format('MMMM D, YYYY h:mm A'),
+      }))
+      console.log(posts)
+      return view.render('announcement', { posts })
+    }
   }
 
-  public async showById({ request, response }: HttpContextContract) {
-    const post = await Post.find(request.param('post_id'))
-    response.status(200).send({ result: post })
+  public async showById({ view, auth, request, response }: HttpContextContract) {
+    // const post = await Post.find(request.param('post_id'))
+    // response.status(200).send({ result: post })
+    if (!auth.user) response.redirect('/')
+    else {
+      const result = await Post.find(request.param('id'))
+      let post = result?.serialize()
+      // console.log(resultsJSON)
+      post = {
+        ...post,
+        updated_at: moment(post?.updated_at).format('MMMM D, YYYY h:mm A'),
+      }
+      console.log(post)
+      return view.render('post', { post })
+    }
   }
 }
