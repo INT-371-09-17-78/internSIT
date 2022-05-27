@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 export default class Student extends BaseModel {
   @column({ isPrimary: true })
-  public student_id: number
+  public student_id: string
 
   @column()
   public department: string
@@ -34,8 +34,8 @@ export default class Student extends BaseModel {
   @column()
   public rememberMeToken?: string
 
-  @column()
-  public user_id: string
+  // @column()
+  // public user_id: string
 
   @column()
   public adviser_id: string

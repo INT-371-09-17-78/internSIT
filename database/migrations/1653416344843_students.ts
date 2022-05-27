@@ -5,7 +5,7 @@ export default class Students extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('student_id').primary()
+      table.string('student_id').primary().references('users.user_id').onDelete('CASCADE')
       table.string('department', 80).nullable()
       table.string('position', 80).nullable()
       table.string('company', 80).nullable()
@@ -16,7 +16,7 @@ export default class Students extends BaseSchema {
       table.string('mentor_email', 80).nullable()
       table.string('mentor_tel_no', 10).nullable()
       table.string('remember_me_token').nullable()
-      table.string('user_id').references('users.user_id').onDelete('CASCADE')
+      // table.string('user_id')
       table.string('adviser_id').references('users.user_id').onDelete('CASCADE')
 
       table.timestamp('created_at', { useTz: true }).notNullable()

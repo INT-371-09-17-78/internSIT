@@ -37,7 +37,7 @@ export default class User extends BaseModel {
   @hasMany(() => Post, { foreignKey: 'user_id' })
   public posts: HasMany<typeof Post>
 
-  @hasOne(() => Student, { foreignKey: 'user_id' })
+  @hasOne(() => Student, { foreignKey: 'student_id' })
   public student: HasOne<typeof Student>
 
   @hasOne(() => Student, { foreignKey: 'adviser_id' })

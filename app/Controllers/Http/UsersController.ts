@@ -61,7 +61,7 @@ export default class UsersController {
 
           await auth.use('web').login(user, rememberMe)
           if (user && ldRole === 'st') {
-            student = await Student.findBy('user_id', ldapUser.uid)
+            student = await Student.findBy('student_id', ldapUser.uid)
             if (!student) {
               await user?.related('student').create({})
             }

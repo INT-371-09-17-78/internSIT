@@ -19,6 +19,7 @@ export default class PostsController {
       const user = await User.find(auth.user?.user_id)
       if (user) {
         await user.related('posts').create({
+          // user_id: user.user_id,
           content: content,
           topic: topic,
         })
