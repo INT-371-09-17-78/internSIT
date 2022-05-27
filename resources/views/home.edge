@@ -2,9 +2,11 @@
 @set('title', 'home page')
 @section('home')
 @set('borderColor', '')
+@set('selectError', '')
 @set('modalToggle', '')
 @if(flashMessages.has('error'))
 @set('borderColor', 'input-error')
+@set('selectError', 'select-error')
 @set('modalToggle', 'modal-open')
 @else
 @set('borderColor', '')
@@ -39,16 +41,14 @@
                         <div class="space-y-4">
                             <input type="text" name="username" placeholder="Username" class="input input-bordered {{borderColor}} w-full rounded-2xl">
                             <input type="password" name="password" placeholder="Password" class="input input-bordered {{borderColor}} w-full rounded-2xl">
-                        </div>
-                        <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
-                        <select name="role" class="select select-bordered w-full rounded-2xl {{borderColor}} my-1">
+                        <select name="role" class="select w-full rounded-2xl select-bordered focus:my-1 {{selectError}}">
                             <option disabled selected>Please choose your role</option>
                             @each(role in roles)
                             <option value={{ role.toLowerCase() }}>{{ role }}</option>
-                            {{--  <option value="adviser">Adviser</option>
-                            <option value="staff">Staff</option>  --}}
                             @end
-                          </select>
+                        </select>
+                        </div>
+                        <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
                         <label class="label cursor-pointer">
                                 <div class="flex">
                                 <input type="checkbox" name="isRemember" checked="checked" class="checkbox checkbox-primary mr-2 checkbox-sm" value="yes">

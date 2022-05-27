@@ -5,13 +5,34 @@
   @include('partials/announcement-header')
     <div class="card-group grid grid-cols-1 gap-y-5 mx-8 mt-4 overflow-y-auto h-[83.5%] lg:h-[80%]">
            <div class="card card-side w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-3xl py-5 relative">
+              @if(auth.user.user_id === post.user_id)
               <div class="menu-icon absolute right-4 top-4 flex justify-center items-center space-x-2">
-                <a href="{{ route('/announcement/edit/:id', { id: post.post_id }) }}"><svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 50 50"><path d="M5.75 42.6V36L35.15 6.55Q36.15 5.55 37.6 5.55Q39.05 5.55 40.2 6.6L41.85 8.15Q43 9.25 42.925 10.7Q42.85 12.15 41.85 13.15L12.35 42.6ZM36.7 13 39.1 10.65 37.65 9.15 35.25 11.55Z"/></svg></a>
-                <svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+                <a href="{{ route('/announcement/edit/:id', { id: post.post_id }) }}">
+                  @component('components/common/button',{
+                    type: 'submit',
+                    classProps: 'btn-ghost bg-transparent border-0 p-0',
+                  })
+                  <svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 50 50"><path d="M5.75 42.6V36L35.15 6.55Q36.15 5.55 37.6 5.55Q39.05 5.55 40.2 6.6L41.85 8.15Q43 9.25 42.925 10.7Q42.85 12.15 41.85 13.15L12.35 42.6ZM36.7 13 39.1 10.65 37.65 9.15 35.25 11.55Z"/></svg>
+                  @end
+                </a>
+                  @component('components/common/button',{
+                    type: 'text',
+                    classProps: 'btn-ghost bg-transparent border-0 p-0',
+                    onclick: 'openAlertDeletePost()'
+                  })
+                  <svg class="fill-base-content w-8 h-8" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+                  @end
               </div>
+              @end
             <div class="avatar pl-5 self-start lg:pt-5 pt-7">
               <div class="w-12 h-12 lg:w-14 lg:h-14 rounded-full">
-                <img src="{{ asset('assets/images/nui.jpg') }}" />
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 258.75 258.75" style="enable-background:new 0 0 258.75 258.75;" xml:space="preserve" class="fill-base-content/[.65]">
+                  <g>
+                    <circle cx="129.375" cy="60" r="60"/>
+                    <path d="M129.375,150c-60.061,0-108.75,48.689-108.75,108.75h217.5C238.125,198.689,189.436,150,129.375,150z"/>
+                  </g>
+                  </svg>
               </div>
             </div>
             <div class="card-body py-10 gap-0">
@@ -24,4 +45,30 @@
           </div>
     </div>
 </section>
+<script>
+    const openAlertDeletePost = () => {
+    const alertDeletePost = 
+    `<div id="modal-confirm" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+      <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
+        <div class="alert bg-base-100 shadow-lg font-bold">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-error flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Are you sure delete this post ?</span>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertDeletePost()">no</button>
+            <form method="POST" action="/api/post/{{post.post_id}}?_method=DELETE">
+            <button class="btn btn-sm btn-error rounded-3xl text-white">yes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertDeletePost
+  }
+  const closeAlertDeletePost = () => {
+    const element = document.getElementById('modal-confirm');
+    element.remove();
+  }
+</script>
 @end

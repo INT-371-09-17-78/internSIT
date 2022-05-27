@@ -22,7 +22,7 @@ import Post from 'App/Models/Post'
 import moment from 'moment'
 
 Route.get('/', async ({ view, auth, response }) => {
-  if (auth.user) response.redirect('/announcement')
+  if (auth.user) return response.redirect('/announcement')
   else {
     const roles = ['Student', 'Adviser', 'Staff']
     return view.render('home', { roles })
@@ -34,19 +34,16 @@ Route.group(() => {
 
   Route.get('/create', async ({ view, auth, response }) => {
     if (!auth.user || auth.user.role === 'student') response.redirect('/')
-    else return view.render('add-post')
+    else return view.render('add-edit-post')
   })
 
   Route.get('/edit/:id', async ({ view, auth, request, response }) => {
     if (!auth.user || auth.user.role === 'student') response.redirect('/')
     else {
       const result = await Post.find(request.param('id'))
-      let post = result?.serialize()
-      post = {
-        ...post,
-        updated_at: moment(post?.updated_at).format('MMMM D, YYYY h:mm A'),
-      }
-      return view.render('edit-post', { post })
+      const post = result?.serialize()
+      if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+      return view.render('add-edit-post', { post })
     }
   })
 
@@ -71,5 +68,5 @@ Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 Route.post('/api/post', 'PostsController.store').middleware('role')
-Route.patch('/api/post', 'PostsController.update').middleware('role')
-Route.delete('/api/post', 'PostsController.remove').middleware('role')
+Route.patch('/api/post/:id', 'PostsController.update').middleware('role')
+Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')

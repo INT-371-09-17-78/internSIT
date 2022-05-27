@@ -1,35 +1,5 @@
 @layout('layouts/app')
 @set('title', 'announcement page')
-{{--  @set('posts',[
-  {
-    id: 1,
-    username: 'virk',
-  },
-  {
-    id: 2,
-    username: 'romain',
-  },
-  {
-    id: 3,
-    username: 'nikk',
-  },
-  {
-    id: 4,
-    username: 'be',
-  },
-  {
-    id: 5,
-    username: 'go',
-  },
-  {
-    id: 6,
-    username: 'eo',
-  },
-  {
-    id: 7,
-    username: 'o',
-  },
-])  --}}
 @section('announcement')
   <section class="h-screen w-full">
     @include('partials/announcement-header')
@@ -39,7 +9,13 @@
           <div class="card card-side w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-3xl py-5">
             <div class="avatar pl-5 self-start lg:pt-5 pt-7">
               <div class="w-12 h-12 lg:w-14 lg:h-14 rounded-full">
-                <img src="{{ asset('assets/images/nui.jpg') }}" />
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 258.75 258.75" style="enable-background:new 0 0 258.75 258.75;" xml:space="preserve" class="fill-base-content/[.65]">
+                  <g>
+                    <circle cx="129.375" cy="60" r="60"/>
+                    <path d="M129.375,150c-60.061,0-108.75,48.689-108.75,108.75h217.5C238.125,198.689,189.436,150,129.375,150z"/>
+                  </g>
+                  </svg>
               </div>
             </div>
             <div class="card-body py-10 gap-0">
