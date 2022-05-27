@@ -42,7 +42,7 @@ export default class UsersController {
 
       if (username === 'admin') {
         await auth.attempt(username, password, rememberMe)
-        return response.status(200).redirect('/announcement')
+        return response.redirect('/announcement')
       } else {
         const ldapUser: any = await this.authenticate(username, password, ldRole)
         const fullname = ldapUser.cn.split(' ')
@@ -67,7 +67,7 @@ export default class UsersController {
             }
           }
 
-          return response.status(200).redirect('/announcement')
+          return response.redirect('/announcement')
         }
       }
     } catch (error) {
@@ -86,7 +86,7 @@ export default class UsersController {
           type: 'negative',
         })
       }
-      return response.status(400).redirect('/')
+      return response.redirect('/')
     }
   }
 
@@ -111,6 +111,6 @@ export default class UsersController {
 
   public async logout({ response, auth }: HttpContextContract) {
     await auth.logout()
-    return response.status(200).redirect('/')
+    return response.redirect('/')
   }
 }

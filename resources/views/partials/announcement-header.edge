@@ -1,5 +1,5 @@
 @set('hidePostButton', '')
-@if(request.url()==='/announcement/create')
+@if(request.matchesRoute(['/announcement/create', '/announcement/edit/:id']))
     @set('hidePostButton', 'hidden')
 @end
 <div class="header-element flex flex-col space-y-7 mx-8 mt-24">
