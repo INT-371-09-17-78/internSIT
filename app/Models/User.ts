@@ -40,8 +40,11 @@ export default class User extends BaseModel {
   @hasOne(() => Student, { foreignKey: 'student_id' })
   public student: HasOne<typeof Student>
 
-  @hasOne(() => Student, { foreignKey: 'adviser_id' })
-  public student_adviser: HasOne<typeof Student>
+  // @hasOne(() => Student, { foreignKey: 'adviser_id' })
+  // public student_adviser: HasOne<typeof Student>
+
+  @hasMany(() => Student, { foreignKey: 'adviser_id' })
+  public student_adviser: HasMany<typeof Student>
 
   @column.dateTime({ autoCreate: true })
   public created_at: DateTime
