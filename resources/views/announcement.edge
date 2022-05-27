@@ -3,7 +3,7 @@
 @section('announcement')
   <section class="h-screen w-full">
     @include('partials/announcement-header')
-      <div class="card-group grid grid-cols-1 gap-y-5 mx-8 mt-4 overflow-y-auto h-[83.5%] lg:h-[80%]">
+      <div class="card-group flex flex-col space-y-5 mx-8 mt-4 overflow-y-auto h-[83.5%] lg:h-[80%]">
         @each(post in posts)
         <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
           <div class="card card-side w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-3xl py-5">
