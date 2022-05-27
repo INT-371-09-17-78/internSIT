@@ -52,7 +52,7 @@ const authConfig: AuthConfig = {
         | the primary key is the right choice.
         |
         */
-        identifierKey: 'id',
+        identifierKey: 'user_id',
 
         /*
         |--------------------------------------------------------------------------
@@ -64,7 +64,7 @@ const authConfig: AuthConfig = {
         | of the mentioned columns to find their user record.
         |
         */
-        uids: ['username'],
+        uids: ['user_id'],
 
         /*
         |--------------------------------------------------------------------------
@@ -80,6 +80,42 @@ const authConfig: AuthConfig = {
         model: () => import('App/Models/User'),
       },
     },
+    // authStudent: {
+    //   driver: 'session',
+    //   provider: {
+    //     driver: 'lucid',
+
+    //     identifierKey: 'student_id',
+
+    //     uids: ['student_id'],
+
+    //     model: () => import('App/Models/Student'),
+    //   },
+    // },
+    // authAdviser: {
+    //   driver: 'session',
+    //   provider: {
+    //     driver: 'lucid',
+
+    //     identifierKey: 'adviser_id',
+
+    //     uids: ['adviser_id'],
+
+    //     model: () => import('App/Models/Adviser'),
+    //   },
+    // },
+    // authStaff: {
+    //   driver: 'session',
+    //   provider: {
+    //     driver: 'lucid',
+
+    //     identifierKey: 'staff_id',
+
+    //     uids: ['staff_id'],
+
+    //     model: () => import('App/Models/Staff'),
+    //   },
+    // },
   },
 }
 

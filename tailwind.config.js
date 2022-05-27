@@ -973,9 +973,10 @@ module.exports = {
           'base-300': '#DDE2E5',
           'base-content': '#495057',
           'info': '#74C0FC',
+          'error': '#FF6B6B',
         },
       },
     ],
   },
-  plugins: [require('daisyui')],
+  plugins: [require('daisyui'), require('@tailwindcss/line-clamp')],
 }

@@ -17,41 +17,48 @@
 | import './routes/customer''
 |
 */
-
 import Route from '@ioc:Adonis/Core/Route'
+// import Post from 'App/Models/Post'
+// import moment from 'moment'
 
 Route.get('/', async ({ view, auth, response }) => {
-  if (auth.user) response.redirect('/announcement')
-  else return view.render('home')
+  if (auth.user) return response.redirect('/announcement')
+  else {
+    const roles = ['Student', 'Adviser', 'Staff']
+    return view.render('home', { roles })
+  }
 })
 
-Route.get('/announcement/:id', async ({ view, auth, response }) => {
-  if (!auth.user) response.redirect('/')
-  else return view.render('post')
-}).middleware(({ view, params }, next) => {
-  view.share({
-    postId: params.id,
-  })
-  return next()
-})
+Route.group(() => {
+  Route.get('/', 'PostsController.show')
 
-Route.get('/announcement', async ({ view, auth, response }) => {
-  if (!auth.user) response.redirect('/')
-  else return view.render('announcement')
-})
+  Route.get('/create', 'PostsController.showCreate')
 
+  Route.get('/edit/:id', 'PostsController.showEdit')
+
+  Route.get('/:id', 'PostsController.showById')
+}).prefix('/announcement')
+
+// Route.get('/err', async ({ view, auth, response }) => {
+//     return view.render('errors/unauthorized')
+// })
 //backend
-import Database from '@ioc:Adonis/Lucid/Database'
+// import Database from '@ioc:Adonis/Lucid/Database'
 
 // import UsersController from 'App/Controllers/Http/UsersController'
 
-Route.get('/test', async () => {
-  Database.from('city').select('*')
-  // .where('id', params.id)
-  // .first()
-})
+// Route.get('/test', async () => {
+//   Database.from('city').select('*')
+//   // .where('id', params.id)
+//   // .first()
+// })
 
-Route.resource('controller', 'UsersController').apiOnly()
+// Route.resource('controller', 'UsersController').apiOnly()
 
-Route.post('login', 'UsersController.verify').as('auth.login')
-Route.get('logout', 'UsersController.logout').as('auth.logout')
+Route.post('/api/login', 'UsersController.verify').as('auth.login')
+Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
+// Route.get('/api/post', 'PostsController.show')
+// Route.get('/api/post/:post_id', 'PostsController.showById')
+Route.post('/api/post', 'PostsController.store').middleware('role')
+Route.patch('/api/post/:id', 'PostsController.update').middleware('role')
+Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')

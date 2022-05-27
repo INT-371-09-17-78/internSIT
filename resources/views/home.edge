@@ -2,9 +2,11 @@
 @set('title', 'home page')
 @section('home')
 @set('borderColor', '')
+@set('selectError', '')
 @set('modalToggle', '')
 @if(flashMessages.has('error'))
 @set('borderColor', 'input-error')
+@set('selectError', 'select-error')
 @set('modalToggle', 'modal-open')
 @else
 @set('borderColor', '')
@@ -30,9 +32,7 @@
             <div id="login-modal"class="modal {{modalToggle}}">
             <div class="modal-box relative max-w-xs rounded-2xl py-10">
                 <label id="close-btn" for="my-modal-3" class="absolute right-4 top-4" onclick="closeModal()">
-                    <i class="material-icons">
-                        close
-                    </i>
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 2"><g data-name="close"><rect width="24" height="24" transform="rotate(180 12 12)" opacity="0"/><path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/></g></g></svg>
                 </label>
                 <h5 class="text-lg font-bold">Welcome</h5>
                 <h3 class="py-2">Login Now!</h3>
@@ -41,22 +41,24 @@
                         <div class="space-y-4">
                             <input type="text" name="username" placeholder="Username" class="input input-bordered {{borderColor}} w-full rounded-2xl">
                             <input type="password" name="password" placeholder="Password" class="input input-bordered {{borderColor}} w-full rounded-2xl">
+                        <select name="role" class="select w-full rounded-2xl select-bordered focus:my-1 {{selectError}}">
+                            <option disabled selected>Please choose your role</option>
+                            @each(role in roles)
+                            <option value={{ role.toLowerCase() }}>{{ role }}</option>
+                            @end
+                        </select>
                         </div>
                         <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
-                        <div class="flex justify-between">
-                            <label class="label cursor-pointer">
+                        <label class="label cursor-pointer">
                                 <div class="flex">
-                                <input type="checkbox" checked="checked" class="checkbox checkbox-primary mr-2 checkbox-sm">
+                                <input type="checkbox" name="isRemember" checked="checked" class="checkbox checkbox-primary mr-2 checkbox-sm" value="yes">
                                     <span class="label-text text-xs leading-5">Remember me</span>  
                                 </div>
-                            </label>
-                            <span class="btn btn-link normal-case text-xs flex items-center p-0">Forgot password?</span>  
-                        </div>
-                        
+                        </label>
                         @!common.button({
                             text: 'Login',
                             type: 'submit',
-                            class: 'btn btn-primary btn-block btn-square mt-5 rounded-2xl normal-case',
+                            classProps: 'btn-primary btn-block mt-5',
                         })
                     </form>
                 </div>
