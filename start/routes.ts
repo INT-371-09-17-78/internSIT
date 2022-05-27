@@ -18,8 +18,8 @@
 |
 */
 import Route from '@ioc:Adonis/Core/Route'
-import Post from 'App/Models/Post'
-import moment from 'moment'
+// import Post from 'App/Models/Post'
+// import moment from 'moment'
 
 Route.get('/', async ({ view, auth, response }) => {
   if (auth.user) return response.redirect('/announcement')
@@ -32,24 +32,16 @@ Route.get('/', async ({ view, auth, response }) => {
 Route.group(() => {
   Route.get('/', 'PostsController.show')
 
-  Route.get('/create', async ({ view, auth, response }) => {
-    if (!auth.user || auth.user.role === 'student') response.redirect('/')
-    else return view.render('add-edit-post')
-  })
+  Route.get('/create', 'PostsController.showCreate')
 
-  Route.get('/edit/:id', async ({ view, auth, request, response }) => {
-    if (!auth.user || auth.user.role === 'student') response.redirect('/')
-    else {
-      const result = await Post.find(request.param('id'))
-      const post = result?.serialize()
-      if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
-      return view.render('add-edit-post', { post })
-    }
-  })
+  Route.get('/edit/:id', 'PostsController.showEdit')
 
   Route.get('/:id', 'PostsController.showById')
 }).prefix('/announcement')
 
+// Route.get('/err', async ({ view, auth, response }) => {
+//     return view.render('errors/unauthorized')
+// })
 //backend
 // import Database from '@ioc:Adonis/Lucid/Database'
 
