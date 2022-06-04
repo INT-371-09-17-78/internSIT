@@ -19,14 +19,21 @@
         <input type="text" id="topic" name="topic" placeholder="Write your topic..." class="input w-full my-2" onkeyup="validateInput()" value="{{post ? post.topic : ''}}"/>
         <p class="font-semibold text-lg">Subject</p>
         <textarea onkeyup="validateInput()" id="content" name="content" class="textarea w-full h-48 my-2" placeholder="Write your subject...">{{post ? post.content : ''}}</textarea>
-      <div class="flex w-full justify-end">   
+      <div class="flex w-full justify-end space-x-2">  
+        <a href="{{ route('/announcement') }}">        
+          @!common.button({
+            text: 'Cancel',
+            type: 'button',
+            classProps: 'btn-sm btn-outline border-2 border-base-200 px-6',
+          })
+        </a>
         @!common.button({
           text: `${buttonName}`,
           type: 'submit',
           id: 'sendButton',
           classProps: 'btn-sm btn-primary px-6',
           disabled,
-      })
+        })
       </div>
     </div>
 </form>
