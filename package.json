@@ -6,7 +6,7 @@
     "dev": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& echo %NODE_TLS_REJECT_UNAUTHORIZED%&& node ace serve --watch",
     "build": "node ace build --production --ignore-ts-errors",
     "migrate:up": "node ace migration:fresh",
-    "start": "node server.js",
+    "start": "node server.js && node ace migration:run",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write ."
   },
