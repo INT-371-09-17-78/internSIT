@@ -18,6 +18,6 @@ RUN node ace build --production
 COPY --chown=node:node ./.env ./build/
 WORKDIR ./build
 EXPOSE 3333
-CMD [ "dumb-init", "node", "server.js" ]
+CMD [ "dumb-init", "yarn", "start" ]
 #CMD dumb-init node server.js ; node ace migration:run
 #CMD dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
