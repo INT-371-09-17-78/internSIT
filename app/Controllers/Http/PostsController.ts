@@ -24,7 +24,7 @@ export default class PostsController {
           topic: topic,
         })
       } else {
-        return response.status(401).send({ message: 'invalid user' })
+        return response.status(403).send({ message: 'invalid user' })
       }
       return response.redirect('/announcement')
     } catch (error) {
@@ -36,6 +36,10 @@ export default class PostsController {
     try {
       const { content, topic } = request.only(['content', 'topic'])
       const user = await User.find(auth.user?.user_id)
+      const post = await Post.find(request.param('id'))
+      if (post?.user_id !== auth.user?.user_id) {
+        return response.status(403).send({ message: 'invalid post' })
+      }
       if (user) {
         await user.related('posts').updateOrCreate(
           { post_id: request.param('id') },
@@ -45,7 +49,7 @@ export default class PostsController {
           }
         )
       } else {
-        response.status(401).send({ message: 'invalid user' })
+        return response.status(403).send({ message: 'invalid user' })
       }
       return response.redirect('/announcement')
     } catch (error) {
@@ -53,43 +57,84 @@ export default class PostsController {
     }
   }
 
-  public async remove({ request, response }: HttpContextContract) {
+  public async remove({ auth, request, response }: HttpContextContract) {
     try {
       const post = await Post.find(request.param('id'))
       if (post) {
+        if (post?.user_id !== auth.user?.user_id) {
+          return response.status(403).send({ message: 'invalid post' })
+        }
         await post.delete()
       } else {
         throw new Error('invalid post')
       }
       return response.redirect('/announcement')
     } catch (error) {
-      response.status(400).send({ message: error.message })
+      return response.status(400).send({ message: error.message })
     }
   }
 
   public async show({ view, auth, response }: HttpContextContract) {
-    if (!auth.user) response.redirect('/')
-    else {
-      const results = await Post.all()
-      const resultsJSON = results.map((result) => result.serialize())
-      const posts = resultsJSON.map((result) => ({
-        ...result,
-        updated_at: moment(result.updated_at).format('MMMM D, YYYY h:mm A'),
-      }))
-      return view.render('announcement', { posts })
+    try {
+      if (!auth.user) return response.redirect('/')
+      else {
+        const results = await Post.all()
+        const resultsJSON = results.map((result) => result.serialize())
+        const posts = resultsJSON.map((result) => ({
+          ...result,
+          updated_at: moment(result.updated_at).format('MMMM D, YYYY h:mm A'),
+        }))
+        return view.render('announcement', { posts })
+      }
+    } catch (error) {
+      return response.status(400).send({ message: error.message })
+    }
+  }
+
+  public async showCreate({ view, auth, response }: HttpContextContract) {
+    try {
+      if (!auth.user || auth.user.role === 'student') response.redirect('/')
+      else return view.render('add-edit-post')
+    } catch (error) {
+      return response.status(400).send({ message: error.message })
+    }
+  }
+
+  public async showEdit({ view, auth, request, response }: HttpContextContract) {
+    try {
+      if (!auth.user || auth.user.role === 'student') response.redirect('/')
+      else {
+        const result = await Post.find(request.param('id'))
+        if (!result) {
+          return response
+            .status(404)
+            .send({ message: 'not found maybe this post has been deleted T^T' })
+        }
+        const post = result?.serialize()
+        if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        return view.render('add-edit-post', { post })
+      }
+    } catch (error) {
+      return response.status(400).send({ message: error.message })
     }
   }
 
   public async showById({ view, auth, request, response }: HttpContextContract) {
-    if (!auth.user) response.redirect('/')
-    else {
-      const result = await Post.find(request.param('id'))
-      let post = result?.serialize()
-      post = {
-        ...post,
-        updated_at: moment(post?.updated_at).format('MMMM D, YYYY h:mm A'),
+    try {
+      if (!auth.user) response.redirect('/')
+      else {
+        const result = await Post.find(request.param('id'))
+        if (!result) {
+          return response
+            .status(404)
+            .send({ message: 'not found maybe this post has been deleted T^T' })
+        }
+        const post = result?.serialize()
+        if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        return view.render('post', { post })
       }
-      return view.render('post', { post })
+    } catch (error) {
+      return response.status(400).send({ message: error.message })
     }
   }
 }
