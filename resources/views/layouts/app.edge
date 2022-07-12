@@ -20,7 +20,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
     @entryPointScripts('app')
   </head>
-  <body class="w-screen h-full overflow-hidden">
+  <body class="w-screen h-screen overflow-auto bg-[#F0F3F8]">
     <img src="{{ asset('assets/images/bg.jpg') }}" class="absolute w-full h-full -z-10 {{background}}"/>
         <div class="flex absolute w-full top-5 lg:space-x-0 lg:w-auto lg:left-56 lg:top-7 z-10 px-5">
             <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 lg:hidden no-animation hover:bg-transparent {{hideMunu}}" onclick="openDrawer()">
@@ -35,7 +35,7 @@
             </div>
 
         </div>
-    <div class="flex">
+    <div class="flex w-full h-full justify-center">
        @if(!request.matchesRoute('/'))
        <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64 hide">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>

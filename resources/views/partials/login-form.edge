@@ -1,0 +1,40 @@
+@set('borderColor', '')
+@set('borderWidth', '')
+@set('selectError', '')
+@if(flashMessages.has('error'))
+@set('borderColor', 'input-error')
+@set('borderWidth', 'border-2')
+@set('selectError', 'select-error')
+@else
+@end 
+<div class="login-form bg-white h-fit rounded-xl p-5 mt-5 shadow-md md:mt-0 md:w-80 lg:p-8 lg:w-[400px] max-w-xs md:max-w-none">
+    <div class="container space-y-2">
+        <p class="login-title font-bold text-sm lg:text-2xl">Welcome back</p>
+        <p class="login-subtitle text-xs lg:text-xl">Login Now!</p>
+    </div>
+    <div class="form-control py-3">    
+        <form action="{{ route('auth.login') }}" method="POST">
+            <div class="space-y-4">
+                <input type="text" name="username" placeholder="Username" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <input type="password" name="password" placeholder="Password" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <select name="role" class="select select-xs w-full lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 {{selectError}} {{borderWidth}} lg:text-base">
+                    <option disabled selected>Please choose your role</option>
+                    @each(role in roles)
+                    <option value={{ role.toLowerCase() }}>{{ role }}</option>
+                    @end
+                </select>
+            </div>
+            @if(flashMessages.get('error', ''))
+            <p class="text-error-content text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
+            @end
+            <label class="flex cursor-pointer py-3">
+                    <input type="checkbox" name="isRemember" checked="checked" class="checkbox checkbox-primary mr-2 checkbox-sm" value="yes">
+                    <span class="label-text text-[10px] lg:text-sm leading-5">Remember me</span>  
+            </label>
+            @!common.button({
+                text: 'Login',
+                type: 'submit',
+                classProps: 'btn-primary btn-block text-base btn-xs h-9 lg:text-xl lg:h-14',
+            })
+        </form>
+</div>

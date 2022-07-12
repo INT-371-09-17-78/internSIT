@@ -1,76 +1,17 @@
 @layout('layouts/app')
 @set('title', 'home page')
 @section('home')
-@set('borderColor', '')
-@set('selectError', '')
-@set('modalToggle', '')
-@if(flashMessages.has('error'))
-@set('borderColor', 'input-error')
-@set('selectError', 'select-error')
-@set('modalToggle', 'modal-open')
-@else
-@set('borderColor', '')
-@end 
-  <section class="h-screen w-full">
-        <p class="hidden text-center text-primary font-semibold text-4xl absolute left-10 top-10 lg:flex">internSIT</p>
-        <div class="home-container flex flex-col justify-center items-center h-full w-full lg:px-20 lg:mt-20">
-            <div class="home-content lg:flex">
-                <div class="img-container pl-6 lg:order-last">
-                    <img src="{{ asset('assets/images/team-work.png') }}" class="w-56 lg:w-80 h-auto "/>  
-                </div>
-                <div class="content font-semibold px-10 space-y-5 lg:flex lg:flex-col"> 
-                    <p class="title text-3xl font-bold lg:text-5xl">Manage your 
-                        internship task</p>
-                    <p class="subtitle text-xl">Information technology</p>
-                    <p class="text-gray-400 text-sm">Information Technology Information Technology Information Technology Information Technology</p>
-                </div>
+  <section class="h-full w-fit p-9 md:pr-16 md:py-16 md:pl-0 flex flex-col md:flex-row">
+    <div class="flex flex-col">
+        <div class="container h-fit font-semibold space-y-2 md:mr-10 md:pl-16">
+            <p class="app-name text-primary tracking-tighter text-2xl md:text-4xl lg:text-[40px]">internSIT</p>
+            <p class="app-title md:text-3xl mr-16 lg:text-4xl">Manage your internship task</p>
+            <p class="app-subtitle text-sm md:text-base lg:text-lg">School of Information Technology</p>
         </div>
-       
-        <div class="button-container flex justify-center mt-10 lg:mt-36">
-            <label for="my-modal-3" class="btn modal-button rounded-full px-10 bg-base-200 border-base-200 text-black normal-case text-base hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200 lg:btn-lg lg:px-16">Login</label>
-            <input type="checkbox" id="my-modal-3" class="modal-toggle">
-            <div id="login-modal"class="modal {{modalToggle}}">
-            <div class="modal-box relative max-w-xs rounded-2xl py-10">
-                <label id="close-btn" for="my-modal-3" class="absolute right-4 top-4" onclick="closeModal()">
-                    <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 2"><g data-name="close"><rect width="24" height="24" transform="rotate(180 12 12)" opacity="0"/><path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/></g></g></svg>
-                </label>
-                <h5 class="text-lg font-bold">Welcome</h5>
-                <h3 class="py-2">Login Now!</h3>
-                <div class="form-control w-full mt-6">    
-                    <form action="{{ route('auth.login') }}" method="POST">
-                        <div class="space-y-4">
-                            <input type="text" name="username" placeholder="Username" class="input input-bordered {{borderColor}} w-full rounded-2xl">
-                            <input type="password" name="password" placeholder="Password" class="input input-bordered {{borderColor}} w-full rounded-2xl">
-                        <select name="role" class="select w-full rounded-2xl select-bordered focus:my-1 {{selectError}}">
-                            <option disabled selected>Please choose your role</option>
-                            @each(role in roles)
-                            <option value={{ role.toLowerCase() }}>{{ role }}</option>
-                            @end
-                        </select>
-                        </div>
-                        <p class="text-error-content my-3 text-sm">{{ flashMessages.get('error', '') }}</p>
-                        <label class="label cursor-pointer">
-                                <div class="flex">
-                                <input type="checkbox" name="isRemember" checked="checked" class="checkbox checkbox-primary mr-2 checkbox-sm" value="yes">
-                                    <span class="label-text text-xs leading-5">Remember me</span>  
-                                </div>
-                        </label>
-                        @!common.button({
-                            text: 'Login',
-                            type: 'submit',
-                            classProps: 'btn-primary btn-block mt-5',
-                        })
-                    </form>
-                </div>
-            </div>
-            </div>
+        <div class="hidden home-image-container md:flex justify-center mt-16">
+            <img src="{{ asset('assets/images/home.svg') }}" class="h-16 w-56 lg:h-28 lg:w-[414px]"/>  
         </div>
     </div>
+    @include('partials/login-form')
   </section>
-  <script>
-      const closeModal = () => {
-        document.getElementById("login-modal").classList.remove('modal-open');
-        window.location.reload()
-      }
-  </script>
 @end
