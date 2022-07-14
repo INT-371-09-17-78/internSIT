@@ -968,7 +968,7 @@ module.exports = {
           'secondary': '#7950F2',
           'secondary-focus': '#582DD8',
           'accent': '#ff8787',
-          'error-content': '#F03D3E',
+          'error-content': '#FFFFFF',
           'base-200': '#ACB5BD',
           'base-300': '#DDE2E5',
           'base-content': '#495057',

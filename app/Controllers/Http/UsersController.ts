@@ -71,6 +71,7 @@ export default class UsersController {
         }
       }
     } catch (error) {
+      console.log(error.message)
       if (
         error.message === 'no password given' ||
         error.message === 'empty username' ||
