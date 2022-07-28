@@ -1,7 +1,8 @@
 @layout('layouts/app')
 @set('title', request.matchesRoute('/announcement/edit/:id') ? 'Edit post page' : 'Create post page')
 @section('add-edit-post')
-@set('title', 'Create new post')
+@set('title', 'Create post')
+@set('selectedFile', '')
 @set('method', '')
 @set('buttonName', 'Publish')
 @if(request.matchesRoute('/announcement/edit/:id'))
@@ -9,16 +10,30 @@
     @set('title', 'Edit post')
     @set('buttonName', 'Edit')
 @end
-<section class="w-full h-full">
-  @include('partials/announcement-header')
+<section class="w-full h-full z-[5]">
   <form method="POST" action="/api/post/{{post ? post.post_id : ''}}{{method}}">
-    <div class="bg-white bg-opacity-50 lg:p-10 mt-5 lg:mx-10 mx-7 p-5 rounded-[20px]">
-        <p class="font-semibold text-xl">{{title}}</p>
-        <hr class="border-base-200 my-3"/>
-        <p class="font-semibold text-lg">Title</p>
-        <input type="text" id="topic" name="topic" placeholder="Write your topic..." class="input w-full my-2" onkeyup="validateInput()" value="{{post ? post.topic : ''}}"/>
-        <p class="font-semibold text-lg">Subject</p>
-        <textarea onkeyup="validateInput()" id="content" name="content" class="textarea w-full h-48 my-2" placeholder="Write your subject...">{{post ? post.content : ''}}</textarea>
+    <div class="bg-white bg-opacity-50 m-5 mt-20 p-2">
+        <p class="font-semibold text-xl text-center">{{title}}</p>
+        <hr class="border-base-200 my-2"/>
+        <div class="space-y-2">
+          <div class="flex items-center space-x-2">
+            <div class="avatar">
+              <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
+                <img src="{{ asset('assets/images/avatar.svg') }}"/>  
+              </div>
+            </div>
+            <p class="font-medium">{{auth.user?.user_id}}</p>
+          </div>
+          <input type="text" id="topic" name="topic" placeholder="Write your title..." class="input input-sm w-full text-xs" onkeyup="validateInput()" value="{{post ? post.topic : ''}}"/>
+          <div class="relative">
+            <textarea onkeyup="validateInput()" id="content" name="content" class="p-3 w-full h-28 text-xs rounded-lg" placeholder="Write your content...">{{post ? post.content : ''}}</textarea>
+            <div class="absolute bottom-2 right-0 w-8 h-8">
+              <label for="myfile" class="cursor-pointer"><img src="{{ asset('assets/images/paperclip.svg') }}"/></label>
+              <input type="file" id="myfile" name="myfile" class="hidden">
+            </div>
+          </div>
+          <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2"></div>
+        </div>
       <div class="flex w-full justify-end space-x-2">  
         <a href="{{ route('/announcement') }}">        
           @!common.button({
@@ -49,6 +64,36 @@
       document.getElementById('sendButton').disabled = false
     }else{
       document.getElementById('sendButton').disabled = true
+    }
+  }
+  const  middleEllipsis = (str) => {
+    if (str.length > 35) {
+      return str.substr(0, 20) + '...' + str.substr(str.length-10);
+    }
+    return str;
+  }
+  const input = document.getElementById("myfile")
+  let showFiles = []
+  input.onchange = (e) => {
+    const [file] = e.target.files
+    if(file){
+      const selectedFile = document.getElementById("selectedFile")
+      input.value = ""
+      selectedFile.innerHTML = ""
+      showFiles.push(file.name)
+      showFiles.forEach((file, index) => {
+        const warpper = document.createElement('p')
+        warpper.classList = "badge badge-secondary mr-2 p-3"
+        warpper.id = index
+        warpper.innerHTML = middleEllipsis(file) + `<img id="deleteFile${index}" class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}"/>`
+        selectedFile.appendChild(warpper)
+        const deleteFile = document.getElementById(`deleteFile${index}`)
+        deleteFile.onclick = () => {
+          showFiles = showFiles.filter(newFile => newFile !== file)
+          document.getElementById(index).remove()
+          input.value = ""
+        };
+      });
     }
   }
 </script>

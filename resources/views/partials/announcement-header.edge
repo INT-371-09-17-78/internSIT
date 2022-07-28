@@ -2,8 +2,8 @@
 @if(request.matchesRoute(['/announcement/create', '/announcement/edit/:id']))
     @set('hidePostButton', 'hidden')
 @end
-<div class="header-element flex flex-col mt-12">
-        <div class="header text-black flex font-bold text-4xl items-center flex-shrink-0">
+<div class="header-element flex flex-col mt-12 px-5">
+        <div class="header text-black flex font-bold text-4xl flex-shrink-0 lg:items-start items-center mt-5 lg:mt-0">
           <p class="text-base lg:text-3xl text-base-content">Announcement</p>
           @if(auth.user.role!=="student")
           <a class="ml-auto flex-shrink-0 {{hidePostButton}}" href="{{ route('/announcement/create')}}">

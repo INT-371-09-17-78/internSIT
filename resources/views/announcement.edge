@@ -1,9 +1,9 @@
 @layout('layouts/app')
 @set('title', 'announcement page')
 @section('announcement')
-  <section class="h-full w-full p-5">
+  <section class="h-full w-full z-[5]">
     @include('partials/announcement-header')
-      <div class="card-group grid grid-cols-1 gap-y-5 mt-2 overflow-y-auto h-[85%]">
+      <div class="card-group grid grid-cols-1 gap-y-5 mt-2 overflow-y-auto h-[85%] px-5">
         @each(post in posts)
         <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
           <div class="card card-side w-full max-h-32 card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-xl p-2 space-x-2">
