@@ -62,3 +62,7 @@ Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
 Route.post('/api/post', 'PostsController.store').middleware('role')
 Route.patch('/api/post/:id', 'PostsController.update').middleware('role')
 Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')
+
+Route.post('/api/file', 'FilesController.store')
+// Route.get('/api/file/:id', 'FilesController.showFilesByPostId')
+Route.get('/api/file/:fileName', 'FilesController.downloadFile')
