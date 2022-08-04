@@ -7,13 +7,12 @@ export default class FilesController {
     const post = await Post.find(post_id)
 
     const images = request.files('images', {
-      size: '50kb',
+      size: '10mb',
       extnames: ['jpg', 'png', 'gif'],
     })
     let err: Object[] = []
     for (let image of images) {
       if (!images) {
-        console.log('test')
         return
       }
       if (!image.isValid) {
@@ -25,9 +24,7 @@ export default class FilesController {
           await post.related('files').create({
             file_name: image.fileName,
           })
-          // console.log(file)
         }
-        // console.log(image.fileName)
       }
     }
     return err

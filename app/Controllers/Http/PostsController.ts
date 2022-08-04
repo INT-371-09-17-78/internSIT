@@ -17,14 +17,13 @@ export default class PostsController {
   //   }
   public async store({ auth, request, response }: HttpContextContract) {
     try {
-      const { content, topic } = request.only(['content', 'topic'])
+      const { content, topic } = request.all()
       const user = await User.find(auth.user?.user_id)
       if (user) {
         const post = await user.related('posts').create({
           content: content,
           topic: topic,
         })
-        console.log(post.post_id)
         const con = new FilesController()
         const resultErr = await con.store(request, post.post_id)
         if (resultErr) {
@@ -91,9 +90,6 @@ export default class PostsController {
           ...result,
           updated_at: moment(result.updated_at).format('MMMM D, YYYY h:mm A'),
         }))
-        // console.log(posts[8].files)
-        // console.log(results[8].$extras.files_count)
-        // console.log('test')
         return view.render('announcement', { posts })
       }
     } catch (error) {

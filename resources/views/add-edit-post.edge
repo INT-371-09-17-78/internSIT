@@ -11,7 +11,7 @@
     @set('buttonName', 'Edit')
 @end
 <section class="w-full h-full z-[5]">
-  <form method="POST" action="/api/post/{{post ? post.post_id : ''}}{{method}}">
+  <form id="formElem" name="formElem">
     <div class="bg-white bg-opacity-50 m-5 mt-20 p-2">
         <p class="font-semibold text-xl text-center">{{title}}</p>
         <hr class="border-base-200 my-2"/>
@@ -28,8 +28,8 @@
           <div class="relative">
             <textarea onkeyup="validateInput()" id="content" name="content" class="p-3 w-full h-28 text-xs rounded-lg" placeholder="Write your content...">{{post ? post.content : ''}}</textarea>
             <div class="absolute bottom-2 right-0 w-8 h-8">
-              <label for="myfile" class="cursor-pointer"><img src="{{ asset('assets/images/paperclip.svg') }}"/></label>
-              <input type="file" id="myfile" name="myfile" class="hidden">
+              <label for="images" class="cursor-pointer"><img src="{{ asset('assets/images/paperclip.svg') }}"/></label>
+              <input type="file" id="images" name="images" class="hidden">
             </div>
           </div>
           <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2"></div>
@@ -72,7 +72,7 @@
     }
     return str;
   }
-  const input = document.getElementById("myfile")
+  const input = document.getElementById("images")
   let showFiles = []
   input.onchange = (e) => {
     const [file] = e.target.files
@@ -80,21 +80,32 @@
       const selectedFile = document.getElementById("selectedFile")
       input.value = ""
       selectedFile.innerHTML = ""
-      showFiles.push(file.name)
+      showFiles.push(file)
       showFiles.forEach((file, index) => {
         const warpper = document.createElement('p')
         warpper.classList = "badge badge-secondary mr-2 p-3"
         warpper.id = index
-        warpper.innerHTML = middleEllipsis(file) + `<img id="deleteFile${index}" class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}"/>`
+        warpper.innerHTML = middleEllipsis(file.name) + `<img id="deleteFile${index}" class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}"/>`
         selectedFile.appendChild(warpper)
         const deleteFile = document.getElementById(`deleteFile${index}`)
         deleteFile.onclick = () => {
-          showFiles = showFiles.filter(newFile => newFile !== file)
+          showFiles = showFiles.filter(newFile => newFile.name !== file.name)
           document.getElementById(index).remove()
           input.value = ""
         };
       });
     }
   }
+
+  formElem.onsubmit = async (e) => {
+    const formData = new FormData(formElem)
+    showFiles.forEach((file) => {
+      formData.append('images', file, file.name);
+    })
+    let response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
+        method: 'POST',
+        body: formData
+    });
+  };
 </script>
 @end
