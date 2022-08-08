@@ -12,13 +12,12 @@
                 <img src="{{ asset('assets/images/avatar.svg') }}"/>  
               </div>
             </div>
-            <div class="space-y-2">
-              <div class="flex text-xs">
-                <p class="flex-grow-0">{{post.user_id}}</p><p class="ml-7">{{post.updated_at}}</p>
-              </div>
-              <h2 class="font-semibold text-xs">{{post.topic}}</h2>
-              <p class="text-xs leading-5 line-clamp-3">{{post.content}}</p>
+            <div class="space-y-2 text-xs">
+              <p class="font-semibold">{{post.user_id}}</p>
+              <p class="font-semibold">{{post.topic}}</p>
+              <p class="leading-5 line-clamp-3">{{post.content}}</p>
             </div>
+            <p class="text-xs ml-7">{{post.updated_at}}</p>
           </div>
         </a>
         @end
