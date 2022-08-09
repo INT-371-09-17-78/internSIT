@@ -129,14 +129,19 @@ export default class PostsController {
     try {
       if (!auth.user) response.redirect('/')
       else {
-        const result = await Post.find(request.param('id'))
+        // const result = await Post.find(request.param('id'))
+        const result = await Post.query().where('post_id', request.param('id')).preload('files')
+        // console.log(result)
+        const post = result[0].serialize()
+        post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         if (!result) {
           return response
             .status(404)
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
-        const post = result?.serialize()
-        if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        console.log(post)
+        // const post = result?.serialize()
+        // if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         return view.render('post', { post })
       }
     } catch (error) {

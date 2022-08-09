@@ -7,12 +7,15 @@ export default class FilesController {
     const post = await Post.find(post_id)
 
     const images = request.files('images', {
-      size: '10mb',
+      size: '2mb',
       extnames: ['jpg', 'png', 'gif'],
     })
     let err: Object[] = []
+    if (!images) {
+      return
+    }
     for (let image of images) {
-      if (!images) {
+      if (!image) {
         return
       }
       if (!image.isValid) {

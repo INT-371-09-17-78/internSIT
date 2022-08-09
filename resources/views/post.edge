@@ -14,6 +14,13 @@
           <p class="font-semibold">{{post.user_id}}</p>
           <p class="font-semibold">{{post.topic}}</p>
           <p class="leading-5 line-clamp-3">{{post.content}}</p>
+          
+            <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2 ">
+              @each(file in post.files)
+              <p id="fileName" class="badge badge-secondary mr-2 p-3">{{file.file_name}}</p>
+              @end
+            </div>
+            
         </div>
         <p class="text-xs ml-7">{{post.updated_at}}</p>
               @if(auth.user.user_id === post.user_id)
