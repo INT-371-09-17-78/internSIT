@@ -18,8 +18,15 @@
 |
 */
 import Route from '@ioc:Adonis/Core/Route'
+import View from '@ioc:Adonis/Core/View'
 // import Post from 'App/Models/Post'
 // import moment from 'moment'
+View.global('middleEllipsis', (str: string) => {
+  if (str.length > 30) {
+    return str.substring(0, 20) + '...' + str.substring(str.length - 10)
+  }
+  return str
+})
 
 Route.get('/', async ({ view, auth, response }) => {
   if (auth.user) return response.redirect('/announcement')

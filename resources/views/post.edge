@@ -18,7 +18,7 @@
         @end
       </div>  
     </div>
-    <div class="card-group grid grid-cols-1 gap-y-5 mt-2 overflow-y-auto h-[85%] px-5">
+    <div class="card-group flex flex-col space-y-5 mt-2 px-5">
       <div class="card card-side overflow-visible w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-xl p-2 space-x-2">
         <div class="avatar">
           <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
@@ -28,17 +28,15 @@
         <div class="space-y-2 text-xs">
           <p class="font-semibold">{{post.user_id}}</p>
           <p class="leading-5 line-clamp-3">{{post.content}}</p>
-          
-            <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2 ">
+          <div id="selectedFile" class="flex flex-wrap gap-y-2">
               @each(file in post.files)
-              <p id="fileName" class="badge badge-secondary mr-2 p-3">{{file.file_name}}</p>
+                <p id="fileName" class="badge badge-secondary mr-2 p-3">{{middleEllipsis(file.file_name)}}</p>
               @end
-            </div>
-            
+          </div>
         </div>
-        <p class="text-xs ml-7">{{post.updated_at}}</p>
+        <p class="text-xs absolute left-36 ml-7">{{post.updated_at}}</p>
               @if(auth.user.user_id === post.user_id)
-              <div class="dropdown dropdown-end" style="margin-left: auto">
+              <div class="dropdown dropdown-end absolute right-2" style="margin-left: auto">
                 <label tabindex="0">
                   <div class="w-5 h-5 cursor-pointer">
                     <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z"/></svg>
