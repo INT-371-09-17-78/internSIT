@@ -96,16 +96,38 @@
       });
     }
   }
+  const toastify = () => {
+    const toast = document.createElement('div')
+    toast.innerHTML = 
+    `<div class="toast toast-center absolute bottom-5 left-5 z-10">
+        <div class="alert alert-success bg-[#EAF7D5] text-[#219653] rounded-lg">
+          <div>
+            <img src="{{ asset('assets/images/success.svg') }}"/>  
+            <span>Create post success</span>
+          </div>
+        </div>
+     </div>`
+    document.body.appendChild(toast)
+    setTimeout((()=>{
+      toast.innerHTML = ""
+    }), 3000);
+  }
 
-  formElem.onsubmit = async (e) => {
+  formElem.onsubmit = async (event) => {
+    event.preventDefault() 
     const formData = new FormData(formElem)
     showFiles.forEach((file) => {
-      formData.append('images', file, file.name);
+      formData.append('images', file, file.name)
     })
     let response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
         method: 'POST',
         body: formData
-    });
+    })
+    document.getElementById('topic').value = ""
+    document.getElementById('content').value = ""
+    selectedFile.innerHTML = ""
+    validateInput()
+    toastify()
   };
 </script>
 @end
