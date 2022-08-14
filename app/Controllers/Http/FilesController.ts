@@ -16,9 +16,9 @@ export default class FilesController {
     let err: Object[] = []
     if (images.length === 0) {
       // console.log('err')
-      err.push({ message: 'invalid files' })
+      // err.push({ message: 'invalid files' })
       // console.log(err)
-      return err
+      return
     }
     for (let image of images) {
       if (!image.isValid) {

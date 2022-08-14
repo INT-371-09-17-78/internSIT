@@ -13,11 +13,13 @@
               </div>
             </div>
             <div class="space-y-2 text-xs">
-              <p class="font-semibold">{{post.user_id}}</p>
+              <div class="flex">
+                <p class="font-semibold">{{post.user_id}}</p>
+                <p class="text-xs ml-7">{{post.updated_at}}</p>
+              </div>
               <p class="font-semibold">{{post.topic}}</p>
               <p class="leading-5 line-clamp-3">{{post.content}}</p>
             </div>
-            <p class="text-xs ml-7">{{post.updated_at}}</p>
           </div>
         </a>
         @end

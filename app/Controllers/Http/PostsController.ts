@@ -19,8 +19,9 @@ export default class PostsController {
     try {
       const { content, topic } = request.all()
       const user = await User.find(auth.user?.user_id)
+      let post: Post
       if (user) {
-        const post = await user.related('posts').create({
+        post = await user.related('posts').create({
           content: content,
           topic: topic,
         })
@@ -32,7 +33,10 @@ export default class PostsController {
       } else {
         return response.status(403).send({ message: 'invalid user' })
       }
-      return response.redirect('/announcement')
+      console.log('asdjkasjdks')
+
+      return response.json({ id: post.post_id })
+      // return response.redirect().toRoute('PostsController.showById', { post_id: 32 })
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }
