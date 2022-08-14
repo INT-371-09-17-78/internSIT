@@ -26,8 +26,8 @@ export default class PostsController {
         })
         const con = new FilesController()
         const resultErr = await con.store(request, post.post_id)
-        if (resultErr) {
-          throw { message: resultErr }
+        if (resultErr && resultErr.length > 0) {
+          return { message: resultErr }
         }
       } else {
         return response.status(403).send({ message: 'invalid user' })
@@ -40,24 +40,46 @@ export default class PostsController {
 
   public async update({ auth, request, response }: HttpContextContract) {
     try {
-      const { content, topic } = request.only(['content', 'topic'])
+      const { content, topic } = request.only(['content', 'topic', 'files'])
       const user = await User.find(auth.user?.user_id)
       const post = await Post.find(request.param('id'))
       if (post?.user_id !== auth.user?.user_id) {
         return response.status(403).send({ message: 'invalid post' })
       }
       if (user) {
-        await user.related('posts').updateOrCreate(
+        const post = await user.related('posts').updateOrCreate(
           { post_id: request.param('id') },
           {
             content: content,
             topic: topic,
           }
         )
+        if (post) {
+          const con = new FilesController()
+          const resultErr = await con.store(request, post.post_id)
+          if (resultErr && resultErr.length > 0) {
+            return response.status(400).send({ resultErr })
+          } else {
+            return response.redirect('/announcement')
+            // return response.status(400).send({ message: 'invalid file' })
+          }
+
+          // console.log(resultErr);
+        } else {
+          return response.status(404).send({ message: 'invalid post' })
+        }
+        // for (const file of files) {
+        //   await post?.related('files').updateOrCreate(
+        //     { file_id: file.file_id },
+        //     {
+        //       file_name: file.file_name,
+        //     }
+        //   )
+        // }
       } else {
         return response.status(403).send({ message: 'invalid user' })
       }
-      return response.redirect('/announcement')
+      // return response.redirect('/announcement')
     } catch (error) {
       response.status(400).send({ message: error.message })
     }
@@ -84,7 +106,10 @@ export default class PostsController {
     try {
       if (!auth.user) return response.redirect('/')
       else {
-        const results = await Post.query().preload('files').withCount('files')
+        const results = await Post.query()
+          .orderBy('updated_at', 'desc')
+          .preload('files')
+          .withCount('files')
         const resultsJSON = results.map((result) => result.serialize())
         const posts = resultsJSON.map((result) => ({
           ...result,

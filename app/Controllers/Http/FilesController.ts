@@ -1,35 +1,37 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Application from '@ioc:Adonis/Core/Application'
 import Post from 'App/Models/Post'
+import File from 'App/Models/File'
 
 export default class FilesController {
   public async store(request: any, post_id: number) {
     const post = await Post.find(post_id)
-
+    await File.query() // 👈now have access to all query builder methods
+      .where('post_id', post_id)
+      .delete()
     const images = request.files('images', {
       size: '2mb',
       extnames: ['jpg', 'png', 'gif'],
     })
     let err: Object[] = []
-    if (!images) {
-      return
+    if (images.length === 0) {
+      // console.log('err')
+      err.push({ message: 'invalid files' })
+      // console.log(err)
+      return err
     }
     for (let image of images) {
-      if (!image) {
-        return
-      }
       if (!image.isValid) {
-        console.log(image.errors)
         err.push(image.errors)
       } else {
         await image.move(Application.tmpPath('uploads'))
         if (post) {
-          await post.related('files').create({
-            file_name: image.fileName,
-          })
+          await post.related('files').create({ file_name: image.fileName })
         }
       }
     }
+    // console.log('-------------')
+    // console.log(err)
     return err
   }
 

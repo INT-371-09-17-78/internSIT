@@ -10,7 +10,7 @@ export default class File extends BaseModel {
   public file_name: string
 
   @column()
-  public post_id: string
+  public post_id: number
 
   @belongsTo(() => Post)
   public post: BelongsTo<typeof Post>
