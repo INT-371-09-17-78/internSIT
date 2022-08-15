@@ -32,7 +32,16 @@
               <input type="file" id="images" name="images" class="hidden">
             </div>
           </div>
-          <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2"></div>
+          <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2">
+            @if(post)
+              @each((file, index) in post.files)
+              <p id="{{index}}" class="badge badge-secondary mr-2 p-3">
+                {{middleEllipsis(file.file_name)}}
+                <img class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}" onclick="deleteFile({{index}},'{{file.file_name}}')"/>
+              </p>
+              @end
+            @end
+          </div>
         </div>
       <div class="flex w-full justify-end space-x-2">  
         <a href="{{ route('/announcement') }}">        
@@ -72,8 +81,25 @@
     }
     return str;
   }
+
+  const deleteFile = (index, fileName) => {
+    showFiles = showFiles.filter(newFile => newFile.file_name !== fileName)
+    document.getElementById(index).remove()
+    input.value = ""
+  }
+  
   const input = document.getElementById("images")
   let showFiles = []
+  const getFiles = async () => {
+    if(window.location.pathname !== '/announcement/create'){
+      const response = await fetch('/api/post/{{post ? post.post_id : ''}}')
+      const { post } = await response.json()
+      showFiles = post.files
+    }
+  }
+  
+  getFiles()
+
   input.onchange = (e) => {
     const [file] = e.target.files
     if(file){
@@ -85,7 +111,7 @@
         const warpper = document.createElement('p')
         warpper.classList = "badge badge-secondary mr-2 p-3"
         warpper.id = index
-        warpper.innerHTML = middleEllipsis(file.name) + `<img id="deleteFile${index}" class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}"/>`
+        warpper.innerHTML = middleEllipsis(file.name || file.file_name) + `<img id="deleteFile${index}" class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}"/>`
         selectedFile.appendChild(warpper)
         const deleteFile = document.getElementById(`deleteFile${index}`)
         deleteFile.onclick = () => {
@@ -119,7 +145,7 @@
     showFiles.forEach((file) => {
       formData.append('images', file, file.name)
     })
-    let response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
+    const response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
         method: 'POST',
         body: formData,
     })

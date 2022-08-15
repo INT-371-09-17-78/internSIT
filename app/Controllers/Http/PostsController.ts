@@ -64,7 +64,7 @@ export default class PostsController {
           if (resultErr && resultErr.length > 0) {
             return response.status(400).send({ resultErr })
           } else {
-            return response.redirect('/announcement')
+            return response.json({ id: post.post_id })
             // return response.status(400).send({ message: 'invalid file' })
           }
 
@@ -101,6 +101,26 @@ export default class PostsController {
         throw new Error('invalid post')
       }
       return response.redirect('/announcement')
+    } catch (error) {
+      return response.status(400).send({ message: error.message })
+    }
+  }
+
+  public async getById({ view, auth, request, response }: HttpContextContract) {
+    try {
+      if (!auth.user || auth.user.role === 'student') response.redirect('/')
+      else {
+        const result = await Post.query().where('post_id', request.param('id')).preload('files')
+        if (!result) {
+          return response
+            .status(404)
+            .send({ message: 'not found maybe this post has been deleted T^T' })
+        }
+        const post = result[0]?.serialize()
+        // console.log(post)
+        if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        return response.json({ post })
+      }
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }
@@ -146,7 +166,7 @@ export default class PostsController {
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
         const post = result[0]?.serialize()
-        console.log(post)
+        // console.log(post)
         if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         return view.render('add-edit-post', { post })
       }
@@ -169,7 +189,7 @@ export default class PostsController {
             .status(404)
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
-        console.log(post)
+        // console.log(post)
         // const post = result?.serialize()
         // if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         return view.render('post', { post })

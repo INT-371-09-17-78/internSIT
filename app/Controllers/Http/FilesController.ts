@@ -51,7 +51,7 @@ export default class FilesController {
       const filePath = Application.tmpPath(
         'uploads/' + decodeURIComponent(request.param('fileName'))
       )
-      console.log(filePath)
+      // console.log(filePath)
 
       response.download(filePath, true, (error) => {
         if (error.code === 'ENOENT') {
