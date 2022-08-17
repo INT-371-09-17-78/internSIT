@@ -34,8 +34,9 @@ export default class PostsController {
         return response.status(403).send({ message: 'invalid user' })
       }
       console.log('asdjkasjdks')
+      console.log(post.post_id)
 
-      return response.json({ id: post.post_id })
+      return response.json(post)
       // return response.redirect().toRoute('PostsController.showById', { post_id: 32 })
     } catch (error) {
       return response.status(400).send({ message: error.message })
@@ -64,7 +65,7 @@ export default class PostsController {
           if (resultErr && resultErr.length > 0) {
             return response.status(400).send({ resultErr })
           } else {
-            return response.json({ id: post.post_id })
+            return response.json(post)
             // return response.status(400).send({ message: 'invalid file' })
           }
 
@@ -183,7 +184,8 @@ export default class PostsController {
         const result = await Post.query().where('post_id', request.param('id')).preload('files')
         // console.log(result)
         const post = result[0]?.serialize()
-        post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        // post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        console.log(post)
         if (!result) {
           return response
             .status(404)

@@ -91,7 +91,7 @@
   const input = document.getElementById("images")
   let showFiles = []
   const getFiles = async () => {
-    if(window.location.pathname !== '/announcement/create'){
+    if(window.location.pathname !== '/announcement/create' && window.location.pathname !== '/announcement/undefined'){
       const response = await fetch('/api/post/{{post ? post.post_id : ''}}')
       const { post } = await response.json()
       showFiles = post.files
@@ -142,15 +142,23 @@
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
     const formData = new FormData(formElem)
+    // let show2 = new Blob(showFiles, {type : "application/json"})
     showFiles.forEach((file) => {
-      formData.append('images', file, file.name)
+      // const jsonProduct = JSON.stringify(file)
+      // let show2 = new Blob([file], {type : "application/json"})
+      formData.append('images', show2, file.name)
     })
     const response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
         method: 'POST',
         body: formData,
     })
-    const data = await response.json()
-    window.location.href = `/announcement/${data.id}`
+    const  data  = await response.json()
+    // console.log(data.post_id);
+    // if(data.post_id){
+      // console.log(data.post_id);
+      window.location.href = `/announcement/${data.post_id}`
+    // }
+    
   };
 </script>
 @end
