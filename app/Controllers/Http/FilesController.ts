@@ -11,8 +11,9 @@ export default class FilesController {
       .delete()
     const images = request.files('images', {
       size: '2mb',
-      extnames: ['jpg', 'png', 'gif'],
+      extnames: ['jpg', 'png', 'gif', 'blob'],
     })
+    console.log(images.length )
     let err: Object[] = []
     if (images.length === 0) {
       // console.log('err')
@@ -21,6 +22,7 @@ export default class FilesController {
       return
     }
     for (let image of images) {
+      console.log(image.extname)
       if (!image.isValid) {
         err.push(image.errors)
       } else {
@@ -32,6 +34,7 @@ export default class FilesController {
     }
     // console.log('-------------')
     // console.log(err)
+    console.log(err)
     return err
   }
 

@@ -145,8 +145,9 @@
     // let show2 = new Blob(showFiles, {type : "application/json"})
     showFiles.forEach((file) => {
       // const jsonProduct = JSON.stringify(file)
-      // let show2 = new Blob([file], {type : "application/json"})
-      formData.append('images', show2, file.name)
+      // let show2 = new Blob([file], {type : "image/png"})
+      // console.log(show2)
+      formData.append('images', file, file.name)
     })
     const response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
         method: 'POST',

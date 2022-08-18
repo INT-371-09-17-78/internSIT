@@ -63,8 +63,10 @@ export default class PostsController {
           const con = new FilesController()
           const resultErr = await con.store(request, post.post_id)
           if (resultErr && resultErr.length > 0) {
+            console.log("test")
             return response.status(400).send({ resultErr })
           } else {
+            console.log(post)
             return response.json(post)
             // return response.status(400).send({ message: 'invalid file' })
           }
@@ -185,7 +187,7 @@ export default class PostsController {
         // console.log(result)
         const post = result[0]?.serialize()
         // post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
-        console.log(post)
+        // console.log(post)
         if (!result) {
           return response
             .status(404)
