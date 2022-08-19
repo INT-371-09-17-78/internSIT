@@ -2,18 +2,31 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Application from '@ioc:Adonis/Core/Application'
 import Post from 'App/Models/Post'
 import File from 'App/Models/File'
+import { v4 as uuidv4 } from 'uuid'
 
 export default class FilesController {
-  public async store(request: any, post_id: number) {
+  public async store(request: any, post_id: number, oldImages: any) {
+    // console.log(oldImages)
+    let allImages: any[] = []
+    if (typeof oldImages === 'string') {
+      allImages.push(oldImages)
+    } else {
+      allImages = oldImages
+    }
     const post = await Post.find(post_id)
-    await File.query() // 👈now have access to all query builder methods
+    const files = await File.query() // 👈now have access to all query builder methods
       .where('post_id', post_id)
-      .delete()
     const images = request.files('images', {
       size: '2mb',
-      extnames: ['jpg', 'png', 'gif', 'blob'],
+      extnames: ['jpg', 'png', 'gif'],
     })
-    console.log(images.length )
+    const newItems = files.filter((b) => !allImages.some((a) => a === b.file_name))
+    for (let newItem of newItems) {
+      await File.query() // 👈now have access to all query builder methods
+        .where('post_id', post_id)
+        .where('file_name', '=', newItem.file_name)
+        .delete()
+    }
     let err: Object[] = []
     if (images.length === 0) {
       // console.log('err')
@@ -22,19 +35,19 @@ export default class FilesController {
       return
     }
     for (let image of images) {
-      console.log(image.extname)
       if (!image.isValid) {
         err.push(image.errors)
       } else {
-        await image.move(Application.tmpPath('uploads'))
+        const newFileName = uuidv4()
+        await image.move(Application.tmpPath('uploads'), {
+          name: newFileName + '.' + image.extname,
+          overwrite: true, // overwrite in case of conflict
+        })
         if (post) {
-          await post.related('files').create({ file_name: image.fileName })
+          await post.related('files').create({ file_name: image.clientName })
         }
       }
     }
-    // console.log('-------------')
-    // console.log(err)
-    console.log(err)
     return err
   }
 
@@ -51,9 +64,13 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const filePath = Application.tmpPath(
-        'uploads/' + decodeURIComponent(request.param('fileName'))
-      )
+      const file = await File.find(request.param('fileId'))
+      console.log(file)
+      let filePath = ''
+      if (file) {
+        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_name))
+      }
+
       // console.log(filePath)
 
       response.download(filePath, true, (error) => {
@@ -63,6 +80,9 @@ export default class FilesController {
 
         return ['Cannot download file', 400]
       })
+      // const image = fs.createReadStream(filePath)
+      // console.log(image.file_name)
+      // response.stream(image)
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }

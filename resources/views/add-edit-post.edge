@@ -142,22 +142,24 @@
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
     const formData = new FormData(formElem)
-    // let show2 = new Blob(showFiles, {type : "application/json"})
+    let allFiles = []
     showFiles.forEach((file) => {
-      // const jsonProduct = JSON.stringify(file)
-      // let show2 = new Blob([file], {type : "image/png"})
-      // console.log(show2)
-      formData.append('images', file, file.name)
+      allFiles.push(file.name)
+      formData.append('oldImages', file.name || file.file_name)
+      if(file instanceof File){
+        formData.append('images', file, file.name)
+      }
     })
     const response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
         method: 'POST',
         body: formData,
     })
-    const  data  = await response.json()
+    
+    const data = await response.json()
     // console.log(data.post_id);
     // if(data.post_id){
       // console.log(data.post_id);
-      window.location.href = `/announcement/${data.post_id}`
+      // window.location.href = `/announcement/${data.post_id}`
     // }
     
   };

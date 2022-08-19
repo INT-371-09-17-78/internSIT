@@ -26,7 +26,7 @@ export default class PostsController {
           topic: topic,
         })
         const con = new FilesController()
-        const resultErr = await con.store(request, post.post_id)
+        const resultErr = await con.store(request, post.post_id, [])
         if (resultErr && resultErr.length > 0) {
           return { message: resultErr }
         }
@@ -45,7 +45,7 @@ export default class PostsController {
 
   public async update({ auth, request, response }: HttpContextContract) {
     try {
-      const { content, topic } = request.only(['content', 'topic', 'files'])
+      const { content, topic, oldImages } = request.only(['content', 'topic', 'oldImages'])
       const user = await User.find(auth.user?.user_id)
       const post = await Post.find(request.param('id'))
       if (post?.user_id !== auth.user?.user_id) {
@@ -61,12 +61,12 @@ export default class PostsController {
         )
         if (post) {
           const con = new FilesController()
-          const resultErr = await con.store(request, post.post_id)
+          const resultErr = await con.store(request, post.post_id, oldImages)
           if (resultErr && resultErr.length > 0) {
-            console.log("test")
+            // console.log("test")
             return response.status(400).send({ resultErr })
           } else {
-            console.log(post)
+            // console.log(post)
             return response.json(post)
             // return response.status(400).send({ message: 'invalid file' })
           }
@@ -120,7 +120,7 @@ export default class PostsController {
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
         const post = result[0]?.serialize()
-        // console.log(post)
+        
         if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         return response.json({ post })
       }
@@ -186,7 +186,7 @@ export default class PostsController {
         const result = await Post.query().where('post_id', request.param('id')).preload('files')
         // console.log(result)
         const post = result[0]?.serialize()
-        // post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         // console.log(post)
         if (!result) {
           return response

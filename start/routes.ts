@@ -74,4 +74,4 @@ Route.get('/api/post/:id', 'PostsController.getById').middleware('role')
 
 Route.post('/api/file', 'FilesController.store')
 // Route.get('/api/file/:id', 'FilesController.showFilesByPostId')
-Route.get('/api/file/:fileName', 'FilesController.downloadFile')
+Route.get('/api/file/:fileId', 'FilesController.downloadFile')
