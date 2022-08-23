@@ -6,7 +6,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
-    // console.log(oldImages)
+    console.log(oldImages)
+    // console.log(typeof oldImages)
+    // console.log(typeof oldImages[0])
     let allImages: any[] = []
     if (typeof oldImages === 'string') {
       allImages.push(oldImages)
@@ -20,11 +22,13 @@ export default class FilesController {
       size: '2mb',
       extnames: ['jpg', 'png', 'gif'],
     })
-    const newItems = files.filter((b) => !allImages.some((a) => a === b.file_name))
+    const newItems = files.filter((b) => !allImages.some((a) => Number(a) === Number(b.file_id)))
+    console.log(newItems.length)
     for (let newItem of newItems) {
+      // console.log(newItem)
       await File.query() // 👈now have access to all query builder methods
         .where('post_id', post_id)
-        .where('file_name', '=', newItem.file_name)
+        .where('file_id', '=', newItem.file_id)
         .delete()
     }
     let err: Object[] = []

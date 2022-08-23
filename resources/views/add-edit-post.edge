@@ -37,7 +37,7 @@
               @each((file, index) in post.files)
               <p id="{{index}}" class="badge badge-secondary mr-2 p-3">
                 {{middleEllipsis(file.file_name)}}
-                <img class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}" onclick="deleteFile({{index}},'{{file.file_name}}')"/>
+                <img class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}" onclick="deleteFile({{index}},'{{file.file_id}}')"/>
               </p>
               @end
             @end
@@ -82,8 +82,11 @@
     return str;
   }
 
-  const deleteFile = (index, fileName) => {
-    showFiles = showFiles.filter(newFile => newFile.file_name !== fileName)
+  const deleteFile = (index, fileId) => {
+    // console.log(typeof fileId);
+    showFiles = showFiles.filter(newFile => newFile.file_id !== parseInt(fileId))
+    // console.log(showFiles)
+    // showFiles.splice(index, 1)
     document.getElementById(index).remove()
     input.value = ""
   }
@@ -97,6 +100,13 @@
       showFiles = post.files
     }
   }
+
+  function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
   
   getFiles()
 
@@ -106,6 +116,8 @@
       const selectedFile = document.getElementById("selectedFile")
       input.value = ""
       selectedFile.innerHTML = ""
+      if(!file.file_id){ file.file_id = uuidv4()}
+      // console.log(file);
       showFiles.push(file)
       showFiles.forEach((file, index) => {
         const warpper = document.createElement('p')
@@ -115,7 +127,8 @@
         selectedFile.appendChild(warpper)
         const deleteFile = document.getElementById(`deleteFile${index}`)
         deleteFile.onclick = () => {
-          showFiles = showFiles.filter(newFile => newFile.name !== file.name)
+          showFiles = showFiles.filter(newFile => newFile.file_id !== file.file_id)
+          showFiles.splice(index, 1)
           document.getElementById(index).remove()
           input.value = ""
         };
@@ -142,10 +155,11 @@
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
     const formData = new FormData(formElem)
-    let allFiles = []
+    // let allFiles = []
     showFiles.forEach((file) => {
-      allFiles.push(file.name)
-      formData.append('oldImages', file.name || file.file_name)
+      // console.log(file)
+      // allFiles.push(file.name)
+      if(file.file_id) formData.append('oldImages', file.file_id)
       if(file instanceof File){
         formData.append('images', file, file.name)
       }
@@ -157,11 +171,7 @@
     
     const data = await response.json()
     // console.log(data.post_id);
-    // if(data.post_id){
-      // console.log(data.post_id);
-      // window.location.href = `/announcement/${data.post_id}`
-    // }
-    
+    window.location.href = `/announcement/${data.post_id}`
   };
 </script>
 @end

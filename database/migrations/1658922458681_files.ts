@@ -7,12 +7,8 @@ export default class Files extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('file_id').primary()
       table.string('file_name', 80).notNullable()
-      table
-        .integer('post_id')
-        .references('posts.post_id')
-        .onDelete('CASCADE')
-        .notNullable()
-        .unsigned()
+      table.integer('post_id').references('posts.post_id').onDelete('CASCADE').nullable().unsigned()
+      table.string('user_id').references('users.user_id').onDelete('CASCADE').nullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
