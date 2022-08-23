@@ -117,7 +117,6 @@
       const selectedFile = document.getElementById("selectedFile")
       input.value = ""
       selectedFile.innerHTML = ""
-      if(!file.file_id){ file.file_id = uuidv4()}
       const counts = {}
       showFiles.forEach((file) => { 
         counts[removeExtFromFile(file.name || file.file_name)] = (counts[removeExtFromFile(file.name || file.file_name)] || 0) + 1
@@ -125,8 +124,10 @@
       if(counts[removeExtFromFile(file.name || file.file_name)] > 0){
         const noDupFileName = removeExtFromFile(file.name) + ` (${counts[removeExtFromFile(file.name)]})`.concat('.',file.name.split('.').pop())
         const myNewFile = new File([file], noDupFileName, {type: file.type})
+        if(!myNewFile.file_id){ myNewFile.file_id = uuidv4()}
         showFiles.push(myNewFile)
       }else{
+        if(!file.file_id){ file.file_id = uuidv4()}
         showFiles.push(file)
       }
       console.log(showFiles)
