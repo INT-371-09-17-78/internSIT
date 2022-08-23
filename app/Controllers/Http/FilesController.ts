@@ -6,9 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
-    console.log(oldImages)
-    // console.log(typeof oldImages)
-    // console.log(typeof oldImages[0])
+    // console.log(oldImages)
     let allImages: any[] = []
     if (typeof oldImages === 'string') {
       allImages.push(oldImages)

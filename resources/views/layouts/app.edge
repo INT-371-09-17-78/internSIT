@@ -59,7 +59,7 @@
                   </a>
               </li>
               <li>
-                  <a class="p-2 text-xs active:bg-base-300 active:text-base-content">
+                  <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route('/file') }}">
                     <img src="{{ asset('assets/images/file.svg') }}" class="fill-base-content w-5 h-5"/>  
                     <p class="capitalize">file</p> 
                   </a>
@@ -100,6 +100,7 @@
       @!section('announcement')
       @!section('post')
       @!section('add-edit-post')
+      @!section('file')
     </div>
   </body>
 </html>

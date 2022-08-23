@@ -120,7 +120,7 @@ export default class PostsController {
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
         const post = result[0]?.serialize()
-        
+
         if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
         return response.json({ post })
       }

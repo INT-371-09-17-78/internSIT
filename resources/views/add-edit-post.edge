@@ -90,23 +90,24 @@
     document.getElementById(index).remove()
     input.value = ""
   }
-  
   const input = document.getElementById("images")
   let showFiles = []
   const getFiles = async () => {
-    if(window.location.pathname !== '/announcement/create' && window.location.pathname !== '/announcement/undefined'){
+    if(window.location.pathname !== '/announcement/create'){
       const response = await fetch('/api/post/{{post ? post.post_id : ''}}')
       const { post } = await response.json()
       showFiles = post.files
     }
   }
 
+  const removeExtFromFile = (fileName) => fileName.replace(/\.[^/.]+$/, "").replace(/\s.*/, '')
+
   function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
-}
+  }
   
   getFiles()
 
@@ -117,8 +118,18 @@
       input.value = ""
       selectedFile.innerHTML = ""
       if(!file.file_id){ file.file_id = uuidv4()}
-      // console.log(file);
-      showFiles.push(file)
+      const counts = {}
+      showFiles.forEach((file) => { 
+        counts[removeExtFromFile(file.name || file.file_name)] = (counts[removeExtFromFile(file.name || file.file_name)] || 0) + 1
+      })
+      if(counts[removeExtFromFile(file.name || file.file_name)] > 0){
+        const noDupFileName = removeExtFromFile(file.name) + ` (${counts[removeExtFromFile(file.name)]})`.concat('.',file.name.split('.').pop())
+        const myNewFile = new File([file], noDupFileName, {type: file.type})
+        showFiles.push(myNewFile)
+      }else{
+        showFiles.push(file)
+      }
+      console.log(showFiles)
       showFiles.forEach((file, index) => {
         const warpper = document.createElement('p')
         warpper.classList = "badge badge-secondary mr-2 p-3"
@@ -155,10 +166,7 @@
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
     const formData = new FormData(formElem)
-    // let allFiles = []
     showFiles.forEach((file) => {
-      // console.log(file)
-      // allFiles.push(file.name)
       if(file.file_id) formData.append('oldImages', file.file_id)
       if(file instanceof File){
         formData.append('images', file, file.name)
@@ -170,7 +178,6 @@
     })
     
     const data = await response.json()
-    // console.log(data.post_id);
     window.location.href = `/announcement/${data.post_id}`
   };
 </script>
