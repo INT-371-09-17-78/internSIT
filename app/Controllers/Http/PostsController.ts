@@ -109,7 +109,7 @@ export default class PostsController {
     }
   }
 
-  public async getById({ view, auth, request, response }: HttpContextContract) {
+  public async getById({ auth, request, response }: HttpContextContract) {
     try {
       if (!auth.user || auth.user.role === 'student') response.redirect('/')
       else {

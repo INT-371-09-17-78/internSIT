@@ -134,6 +134,15 @@ export default class FilesController {
     }
   }
 
+  public async showAllFile({ view, response }: HttpContextContract) {
+    try {
+      const files = await File.query()
+      return view.render('file', { files })
+    } catch (error) {
+      return response.status(400).send({ message: error.message })
+    }
+  }
+
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
       const file = await File.find(request.param('fileId'))

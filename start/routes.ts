@@ -36,9 +36,7 @@ Route.get('/', async ({ view, auth, response }) => {
   }
 })
 
-Route.get('/file', async ({ view }) => {
-  return view.render('file')
-})
+Route.get('/file', 'FilesController.showAllFile')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')

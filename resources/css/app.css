@@ -6,3 +6,7 @@
             overflow-y: visible;
     }
 }
+
+.table :where(thead, tfoot) :where(th, td) {
+    text-transform: capitalize;
+}
