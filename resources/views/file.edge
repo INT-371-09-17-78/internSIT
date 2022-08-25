@@ -4,6 +4,19 @@
   <section class="h-full w-full z-[5]">
     <div class="bg-white h-full mt-20 mx-5 rounded-lg lg:mt-10 lg:mx-20">
         <p class="capitalize text-center p-3 font-semibold border-b-2 mx-2">upload file</p>
+        <form action="/target" class="dropzone" style="border-color: red"></form>
     </div>
   </section>
+  <script>
+    Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+      paramName: "file", // The name that will be used to transfer the file
+      maxFilesize: 2, // MB
+      accept: function(file, done) {
+        if (file.name == "justinbieber.jpg") {
+          done("Naha, you don't.");
+        }
+        else { done(); }
+      }
+    };
+  </script>
 @end
