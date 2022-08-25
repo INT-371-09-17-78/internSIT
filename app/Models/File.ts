@@ -11,6 +11,9 @@ export default class File extends BaseModel {
   public file_name: string
 
   @column()
+  public user_id: string
+
+  @column()
   public post_id: number
 
   @belongsTo(() => Post)

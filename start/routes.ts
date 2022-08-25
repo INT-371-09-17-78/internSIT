@@ -77,5 +77,6 @@ Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')
 Route.get('/api/post/:id', 'PostsController.getById').middleware('role')
 
 Route.post('/api/file', 'FilesController.store')
-// Route.get('/api/file/:id', 'FilesController.showFilesByPostId')
+Route.post('/target', 'FilesController.storeDirect')
+Route.get('/api/file/user/:id', 'FilesController.showFilesByUserId')
 Route.get('/api/file/:fileId', 'FilesController.downloadFile')
