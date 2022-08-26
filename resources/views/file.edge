@@ -2,50 +2,32 @@
 @set('title', 'file page')
 @section('file')
   <section class="h-full w-full z-[5] overflow-x-hidden">
-    <div class="bg-white h-fit max-h-[43rem] mt-20 mx-5 rounded-lg lg:mt-10 lg:mx-20 overflow-hidden">
-        <p class="capitalize text-center p-3 font-semibold border-b-2 mx-2">upload file</p>
-        <form action="/target" class="dropzone mt-5 rounded-md mx-32 h-80 flex justify-center items-center" style="border:2px dashed #619EF1;">
-          <div class="dz-message flex flex-col justify-center items-center" style="margin:1rem 0 0 0;" data-dz-message>
-            <img src="{{ asset('assets/images/drop-file.svg') }}" class="h-14 w-14"/>  
-            <p class="font-medium mt-3">Drag and drop file here or Browse file</p>
-          </div>
-        </form>
-        <div class="px-4 mt-10 w-full h-full max-h-40 overflow-auto flex justify-center items-center">
-          <table class="table w-full h-full">
-            <!-- head -->
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Date</th>
-                <th>Owner</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- row 1 -->
-              @each((file) in files)
-                <tr>
-                  <td>{{middleEllipsis(file.file_name)}}</td>
-                  <td>{{file.size}}</td>
-                  <td>{{file.updated_at}}</td>
-                  <td>{{file.user_id}}</td>
-                </tr>
-              @end
-              {{--  <!-- row 2 -->
-              <tr>
-                <td>Hart Hagerty</td>
-                <td>Desktop Support Technician</td>
-                <td>Purple</td>
-              </tr>
-              <!-- row 3 -->
-              <tr>
-                <td>Brice Swyre</td>
-                <td>Tax Accountant</td>
-                <td>Red</td>
-              </tr>  --}}
-            </tbody>
-          </table>
-        </div>
+    <div class="bg-white h-fit max-h-[43rem] mt-20 mx-5 rounded-lg lg:mt-10 lg:mx-20 overflow-auto">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Date</th>
+              <th>Owner</th>
+            </tr>
+          </thead>
+          <tbody>
+            @each((file,index) in files)
+            <tr>
+              <th>{{index+1}}</th>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_name}}</td>
+            </tr>
+            @end
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 @end
