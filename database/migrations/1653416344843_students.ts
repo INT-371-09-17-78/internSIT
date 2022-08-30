@@ -15,7 +15,8 @@ export default class Students extends BaseSchema {
       table.string('mentor_name', 80).nullable()
       table.string('mentor_email', 80).nullable()
       table.string('mentor_tel_no', 10).nullable()
-      table.string('remember_me_token').nullable()
+      table.string('status', 30).notNullable().defaultTo('ยังไม่ได้เลือก')
+      // table.string('remember_me_token').nullable()
       // table.string('user_id')
       table.string('adviser_id').references('users.user_id').onDelete('CASCADE')
 

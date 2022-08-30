@@ -34,7 +34,10 @@ export default class Student extends BaseModel {
   public mentor_tel_no: string
 
   @column()
-  public rememberMeToken?: string
+  public status: string
+
+  // @column()
+  // public rememberMeToken?: string
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
