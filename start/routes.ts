@@ -38,9 +38,7 @@ Route.get('/', async ({ view, auth, response }) => {
 
 Route.get('/file', 'FilesController.showAllFile')
 
-Route.get('/students', ({ view }) => {
-  return view.render('students')
-})
+Route.get('/students', 'UsersController.showStudentUser')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')
@@ -70,7 +68,7 @@ Route.group(() => {
 
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
-Route.get('/api/user/:role', 'UsersController.getUserByRole').middleware('role')
+Route.get('/api/user/:role', 'UsersController.getUserByRole')
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 
