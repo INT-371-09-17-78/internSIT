@@ -36,6 +36,9 @@ export default class Student extends BaseModel {
   @column()
   public status: string
 
+  @column()
+  public reasons: string
+
   // @column()
   // public rememberMeToken?: string
 
