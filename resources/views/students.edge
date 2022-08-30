@@ -1,0 +1,30 @@
+@layout('layouts/app')
+@set('title', 'students page')
+@section('students')
+  <section class="h-full w-full z-[5]">
+    <p class="text-base lg:text-3xl text-base-content font-bold pl-11 pt-9">Student Information</p>
+    <div class="overflow-x-auto px-11">
+        <table class="table w-full">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Name</th>
+              <th>Lastest status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @each((file,index) in files)
+            <tr>
+              <th>{{index+1}}</th>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_name}}</td>
+            </tr>
+            @end
+          </tbody>
+        </table>
+      </div>
+  </section>
+@end
