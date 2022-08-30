@@ -8,19 +8,19 @@
           <!-- head -->
           <thead>
             <tr>
+              <th></th>
               <th>No.</th>
               <th>Name</th>
               <th>Lastest status</th>
             </tr>
           </thead>
           <tbody>
-            @each((file,index) in files)
+            @each((student,index) in studentUser)
             <tr>
               <th>{{index+1}}</th>
-              <td>{{file.file_name}}</td>
-              <td>{{file.file_name}}</td>
-              <td>{{file.file_name}}</td>
-              <td>{{file.file_name}}</td>
+              <td>{{student.user_id}}</td>
+              <td>{{student.firstname + " " + student.lastname}}</td>
+              <td>{{student.status}}</td>
             </tr>
             @end
           </tbody>
