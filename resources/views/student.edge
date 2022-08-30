@@ -1,0 +1,21 @@
+@layout('layouts/app')
+@set('title', 'students page')
+@section('students')
+  <section class="h-full w-full z-[5]">
+    <div class="flex pt-9 pl-11">
+        <p class="text-base lg:text-3xl text-base-content font-bold">{{studentUser.user_id}}</p>
+        <p class="text-base lg:text-3xl text-base-content font-bold pl-8">{{studentUser.firstname + " " + studentUser.lastname}}</p>
+    </div>
+    <form method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH">
+        <select name="study" class="select select-xs ml-11 mt-10 lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 lg:text-base">
+            <option disabled selected>Please choose your plan</option>
+            @if(studentUser.student.status === "ยังไม่ได้เลือก")
+                @each(plan in plans)
+                        <option value={{ plan }}>{{ plan + " month" }}</option>
+                @end
+            @end
+        </select>
+        <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
+    </form>
+  </section>
+@end

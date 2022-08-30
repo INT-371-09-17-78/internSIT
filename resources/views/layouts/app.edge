@@ -67,7 +67,7 @@
                   </a>
               </li>
               <li>
-                <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route('/students') }}">
+                <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route(auth.user.role!=="student" ? '/students' : '/student/:id', { id: auth.user.user_id }) }}">
                   <img src="{{ asset('assets/images/student-info.svg') }}" class="fill-base-content w-5 h-5"/>  
                   <p class="capitalize">student information</p> 
                 </a>

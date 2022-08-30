@@ -3,24 +3,21 @@
 @section('students')
   <section class="h-full w-full z-[5]">
     <p class="text-base lg:text-3xl text-base-content font-bold pl-11 pt-9">Student Information</p>
-    <div class="overflow-x-auto px-11">
+    <div class="overflow-x-auto px-11 mt-5">
         <table class="table w-full">
-          <!-- head -->
           <thead>
             <tr>
-              <th></th>
               <th>No.</th>
               <th>Name</th>
-              <th>Lastest status</th>
+              <th>Latest status</th>
             </tr>
           </thead>
           <tbody>
             @each((student,index) in studentUser)
             <tr>
-              <th>{{index+1}}</th>
               <td>{{student.user_id}}</td>
               <td>{{student.firstname + " " + student.lastname}}</td>
-              <td>{{student.status}}</td>
+              <td>{{student.student.status}}</td>
             </tr>
             @end
           </tbody>
