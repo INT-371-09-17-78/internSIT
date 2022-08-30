@@ -137,7 +137,11 @@ export default class UsersController {
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
       const plans = [2, 4, 6]
-      return view.render('student', { studentUser, plans })
+      const disabled = studentUser.student.status === 'ยังไม่ได้เลือก' ? '' : 'disabled'
+      // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
+      //   disabled = 'disabled'
+      // }
+      return view.render('student', { studentUser, plans, disabled })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -149,10 +153,11 @@ export default class UsersController {
       console.log(status)
       console.log(study)
       const studentUser = await Student.findOrFail(request.param('id'))
-      studentUser.status = status
+      studentUser.status = 'เลือกแล้วครับ'
       studentUser.study = study
       const result = await studentUser.save()
-      return response.status(200).json(result)
+      response.redirect('/student/' + result.student_id)
+      // return response.status(200).json(result)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
