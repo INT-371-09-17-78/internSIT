@@ -5,10 +5,13 @@ import User from 'App/Models/User'
 
 export default class File extends BaseModel {
   @column({ isPrimary: true })
-  public file_id: number
+  public file_id: string
 
   @column()
   public file_name: string
+
+  @column()
+  public file_size: string
 
   @column()
   public user_id: string

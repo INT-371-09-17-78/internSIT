@@ -114,4 +114,14 @@ export default class UsersController {
     await auth.logout()
     return response.redirect('/')
   }
+
+  public async getUserByRole({ request, response }: HttpContextContract) {
+    try {
+      const role = request.param('role')
+      const result = await User.query().where('role', role)
+      return response.status(200).json(result)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 }

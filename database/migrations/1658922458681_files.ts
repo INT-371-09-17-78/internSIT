@@ -5,8 +5,10 @@ export default class Files extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('file_id').primary()
+      table.string('file_id', 80).primary()
+      // table.increments('file_id').primary()
       table.string('file_name', 80).notNullable()
+      table.string('file_size', 10).notNullable()
       table.integer('post_id').references('posts.post_id').onDelete('CASCADE').nullable().unsigned()
       table.string('user_id').references('users.user_id').onDelete('CASCADE').nullable()
       /**

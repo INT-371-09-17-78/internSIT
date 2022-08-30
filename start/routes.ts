@@ -66,6 +66,7 @@ Route.group(() => {
 
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
+Route.get('/api/user/:role', 'UsersController.getUserByRole').middleware('role')
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 
@@ -78,3 +79,4 @@ Route.post('/api/file', 'FilesController.store')
 Route.post('/target', 'FilesController.storeDirect')
 Route.get('/api/file/user/:id', 'FilesController.showFilesByUserId')
 Route.get('/api/file/:fileId', 'FilesController.downloadFile')
+Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect')
