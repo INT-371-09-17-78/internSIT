@@ -34,6 +34,9 @@ export default class Student extends BaseModel {
   public mentor_tel_no: string
 
   @column()
+  public study: string
+
+  @column()
   public status: string
 
   @column()

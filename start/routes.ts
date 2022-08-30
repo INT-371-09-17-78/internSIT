@@ -70,7 +70,8 @@ Route.group(() => {
 
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
-Route.get('/api/user/:role', 'UsersController.getUserByRole')
+// Route.get('/api/user/:role', 'UsersController.getUserByRole')
+Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus')
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 

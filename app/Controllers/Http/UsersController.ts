@@ -136,7 +136,21 @@ export default class UsersController {
         .preload('student')
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
-      return view.render('student', studentUser)
+      const plan = [2, 4, 6]
+      return view.render('student', { studentUser, plan })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async updateStudentUserStatus({ request, response }: HttpContextContract) {
+    try {
+      const { study, status } = request.only(['study', 'status'])
+      const studentUser = await Student.findOrFail(request.param('id'))
+      studentUser.status = status
+      studentUser.study = study
+      const result = await studentUser.save()
+      return response.status(200).json(result)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
