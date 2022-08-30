@@ -125,4 +125,20 @@ export default class UsersController {
       return response.status(400).json({ message: error.message })
     }
   }
+
+  public async showStudentUserById({ request, response, view }: HttpContextContract) {
+    try {
+      // const role = request.param('role')
+      console.log(request.param('id'))
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      // return response.status(200).json(studentUser)
+      return view.render('student', studentUser)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 }

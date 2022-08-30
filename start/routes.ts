@@ -40,6 +40,8 @@ Route.get('/file', 'FilesController.showAllFile')
 
 Route.get('/students', 'UsersController.showStudentUser')
 
+Route.get('/students/:id', 'UsersController.showStudentUserById')
+
 Route.group(() => {
   Route.get('/', 'PostsController.show')
 
