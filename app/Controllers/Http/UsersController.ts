@@ -156,7 +156,15 @@ export default class UsersController {
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
       // }
-      return view.render('student', { studentUser, plans, disabled, steps })
+      const student = await Student.findOrFail(request.param('id'))
+      // studentUser.related('')
+      const documentStatus = await student
+        .related('document_status')
+        .query()
+        .where('student_id', request.param('id'))
+      // console.log(documentStatus)
+      // return response.send(documentStatus)
+      return view.render('student', { studentUser, plans, disabled, steps, documentStatus })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
