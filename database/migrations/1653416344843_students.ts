@@ -9,7 +9,7 @@ export default class Students extends BaseSchema {
       table.string('department', 80).nullable()
       table.string('position', 80).nullable()
       table.string('company', 80).nullable()
-      table.integer('duration').nullable()
+      table.integer('plan').nullable()
       table.date('start_date').nullable()
       table.date('end_date').nullable()
       table.string('mentor_name', 80).nullable()

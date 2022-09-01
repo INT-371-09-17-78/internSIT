@@ -1,6 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Student from 'App/Models/Student'
+import Status from 'App/Models/Status'
+import Document from 'App/Models/Document'
+import Document_Status from 'App/Models/DocumentStatus'
 // import Adviser from 'App/Models/Adviser'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
@@ -118,8 +121,12 @@ export default class UsersController {
   public async showStudentUser({ response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
-      const studentUser = await User.query().where('role', 'student').preload('student')
+      const studentUser = await Student.query().preload('document_status')
+
       // return response.status(200).json(result)
+      // console.log(studentUser)
+      // const result = await document.related('statuses').query().where('status_id', 'test2')
+      // return response.send(studentUser)
       return view.render('students', { studentUser })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -137,7 +144,7 @@ export default class UsersController {
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
       const plans = [2, 4, 6]
-      const disabled = studentUser.student.status === 'ยังไม่ได้เลือก' ? '' : 'disabled'
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
       // }
@@ -149,15 +156,97 @@ export default class UsersController {
 
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
-      const { study, status } = request.only(['study', 'status'])
-      console.log(status)
-      console.log(study)
+      const { study, status, doc } = request.only(['study', 'status', 'doc'])
       const studentUser = await Student.findOrFail(request.param('id'))
-      studentUser.status = 'เลือกแล้วครับ'
-      studentUser.study = study
-      const result = await studentUser.save()
-      response.redirect('/student/' + result.student_id)
+      const statusResult = await Status.findOrFail(status)
+      const docResult = await Document.findOrFail(doc)
+      studentUser.plan = study
+      await studentUser.save()
+      const result = await studentUser.related('document_status').create({
+        document_id: docResult.doc_name,
+        status_id: statusResult.status_name,
+      })
+      console.log(result)
+
+      response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async test({ request, response }: HttpContextContract) {
+    try {
+      await Document.create({
+        doc_name: 'test1',
+      })
+      await Status.create({
+        status_name: 'test2',
+      })
+      const student = await Student.find('65130000001')
+      console.log(student)
+      if (student) {
+        const result = student.related('document_status').create({
+          document_id: 'test1',
+          status_id: 'test2',
+        })
+        return response.status(200).json({ 1: result })
+      }
+      // const result = Document
+      // const document = await Document.find('test1')
+      // const status = await Status.find('test2')
+
+      // let result = []
+      // if (status && document) {
+      //   //   await document?.related('statuses').attach([status.status_name])
+      //   const result = await document.related('statuses').query().where('status_id', 'test2')
+      //   return response.status(200).json({ 1: result })
+      // }
+
+      // const result = await Document_Status.find('test2')
+      // const terst = await Document.query().where('doc_name', 'test2')
+      // terst.statuses()
+
+      // const { study, status } = request.only(['study', 'status'])
+      // console.log(status)
+      // console.log(study)
+      // const studentUser = await Student.findOrFail(request.param('id'))
+      // studentUser.status = 'เลือกแล้วครับ'
+      // studentUser.study = study
+      // const result = await studentUser.save()
+      // response.redirect('/student/' + result.student_id)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async gen({ request, response }: HttpContextContract) {
+    try {
+      await Document.createMany([
+        {
+          doc_name: 'TR-01',
+        },
+        {
+          doc_name: 'selectPlan',
+        },
+      ])
+      await Status.createMany([
+        {
+          status_name: 'Pending',
+        },
+        {
+          status_name: 'Not Approve',
+        },
+        {
+          status_name: 'Approve',
+        },
+        {
+          status_name: 'not select plan yet',
+        },
+        {
+          status_name: 'selected plan',
+        },
+      ])
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

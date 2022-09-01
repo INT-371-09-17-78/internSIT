@@ -85,3 +85,6 @@ Route.post('/target', 'FilesController.storeDirect')
 Route.get('/api/file/user/:id', 'FilesController.showFilesByUserId')
 Route.get('/api/file/:fileId', 'FilesController.downloadFile')
 Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect')
+
+Route.get('/api/test', 'UsersController.test')
+Route.get('/api/gen', 'UsersController.gen')

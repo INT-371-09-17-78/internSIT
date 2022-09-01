@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
+import Document_Status from 'App/Models/DocumentStatus'
 
 export default class Student extends BaseModel {
   @column({ isPrimary: true })
@@ -16,7 +17,7 @@ export default class Student extends BaseModel {
   public company: string
 
   @column()
-  public duration: number
+  public plan: number
 
   @column.date()
   public start_date: DateTime
@@ -41,6 +42,9 @@ export default class Student extends BaseModel {
 
   @column()
   public reasons: string
+
+  @hasMany(() => Document_Status, { foreignKey: 'student_id' })
+  public document_status: HasMany<typeof Document_Status>
 
   // @column()
   // public rememberMeToken?: string
