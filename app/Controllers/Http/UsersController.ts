@@ -144,11 +144,19 @@ export default class UsersController {
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
       const plans = [2, 4, 6]
+      const steps = [
+        'Accepted by firm',
+        'Sent TR-01',
+        'TR-01 approve',
+        'Sent TR-02',
+        'TR-02 approve',
+        'Sent TR-03 and TR-05',
+      ]
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
       // }
-      return view.render('student', { studentUser, plans, disabled })
+      return view.render('student', { studentUser, plans, disabled, steps })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
