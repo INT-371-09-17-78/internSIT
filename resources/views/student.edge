@@ -21,11 +21,13 @@
     @if(studentUser.student.plan)
       <ul class="steps mt-5">
         <li class="step {{studentUser.student.plan && "step-primary text-green-700 font-bold"}}">Accepted by Company</li>
-        <li class="step {{studentUser.student.plan && "step-primary text-green-700 font-bold"}}">TR-01</li>
+        <li class="step">TR-01</li>
         <li class="step">Purchase</li>
         <li class="step">Receive Product</li>
       </ul>
     @end
+    <input type="file" id="myPdf" /><br>
+    <canvas id="pdfViewer"></canvas>
   </section>
   <script>
   // const closeAlertDeletePost = () => {
