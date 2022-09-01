@@ -162,11 +162,14 @@ export default class UsersController {
       const docResult = await Document.findOrFail(doc)
       studentUser.plan = study
       await studentUser.save()
-      const result = await studentUser.related('document_status').create({
-        document_id: docResult.doc_name,
-        status_id: statusResult.status_name,
-      })
-      console.log(result)
+      if (statusResult && docResult) {
+        await studentUser.related('document_status').create({
+          document_id: docResult.doc_name,
+          status_id: statusResult.status_name,
+        })
+      }
+
+      // console.log(result)
 
       response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
