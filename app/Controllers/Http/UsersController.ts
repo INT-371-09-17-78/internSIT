@@ -158,21 +158,20 @@ export default class UsersController {
     try {
       const { study, status, doc } = request.only(['study', 'status', 'doc'])
       const studentUser = await Student.findOrFail(request.param('id'))
-      let statusResult = {}
-      let docResult = {}
+      let statusResult: Status
+      let docResult: Document
       if (status && doc) {
         statusResult = await Status.findOrFail(status)
         docResult = await Document.findOrFail(doc)
-      }
-      studentUser.plan = study
-      await studentUser.save()
-      if (statusResult && docResult) {
+
+        studentUser.plan = study
+        await studentUser.save()
+
         await studentUser.related('document_status').create({
           document_id: docResult.doc_name,
           status_id: statusResult.status_name,
         })
       }
-
       // console.log(result)
 
       response.redirect('/student/' + studentUser.student_id)
