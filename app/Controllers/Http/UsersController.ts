@@ -158,13 +158,13 @@ export default class UsersController {
       // }
       const student = await Student.findOrFail(request.param('id'))
       // studentUser.related('')
-      const documentStatus = await student
+      const documentStatuses = await student
         .related('document_status')
         .query()
         .where('student_id', request.param('id'))
       // console.log(documentStatus)
       // return response.send(documentStatus)
-      return view.render('student', { studentUser, plans, disabled, steps, documentStatus })
+      return view.render('student', { studentUser, plans, disabled, steps, documentStatuses })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -173,20 +173,46 @@ export default class UsersController {
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
       const { study, status, doc } = request.only(['study', 'status', 'doc'])
+      console.log(status)
       const studentUser = await Student.findOrFail(request.param('id'))
       let statusResult: Status
       let docResult: Document
+      if (study) {
+        studentUser.plan = study
+        await studentUser.save()
+      }
       if (status && doc) {
         statusResult = await Status.findOrFail(status)
         docResult = await Document.findOrFail(doc)
 
-        studentUser.plan = study
-        await studentUser.save()
+        // console.log(studentUser);
 
-        await studentUser.related('document_status').create({
-          document_id: docResult.doc_name,
-          status_id: statusResult.status_name,
-        })
+        const docStat = await Document_Status.query()
+          .where('student_id', studentUser.student_id)
+          .andWhere('document_id', docResult.doc_name)
+        // await studentUser.related('document_status').updateOrCreate(
+        //   { student_id: studentUser.student_id },
+        //   {
+        //     document_id: docResult.doc_name,
+        //     status_id: statusResult.status_name,
+        //   }
+        // )
+        // console.log(docStat)
+
+        if (docStat && docStat.length > 0) {
+          await studentUser
+            .related('document_status')
+            .query()
+            .where('student_id', studentUser.student_id)
+            .andWhere('document_id', docResult.doc_name)
+            .update({ status_id: statusResult.status_name })
+        } else {
+          await studentUser.related('document_status').create({
+            student_id: studentUser.student_id,
+            document_id: docResult.doc_name,
+            status_id: statusResult.status_name,
+          })
+        }
       }
       // console.log(result)
 
@@ -247,6 +273,12 @@ export default class UsersController {
       await Document.createMany([
         {
           doc_name: 'TR-01',
+        },
+        {
+          doc_name: 'TR-02',
+        },
+        {
+          doc_name: 'TR-03 and TR-05',
         },
         {
           doc_name: 'selectPlan',

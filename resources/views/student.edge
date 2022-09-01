@@ -1,39 +1,70 @@
 @layout('layouts/app')
 @set('title', 'students page')
 @section('students')
-  <section class="h-full w-full z-[5]">
-    <div class="flex pt-9 pl-11">
-        <p class="text-base lg:text-3xl text-base-content font-bold">{{studentUser.user_id}}</p>
-        <p class="text-base lg:text-3xl text-base-content font-bold pl-8">{{studentUser.firstname + " " + studentUser.lastname}}</p>
-    </div>
-    <form method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH">
-        <select {{disabled}} id="study" name="study" class="select select-xs ml-11 mt-10 lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 lg:text-base disabled:w-56">
-        
-            <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please choose your plan"}}</option>
-              @if(studentUser.student.status === "ยังไม่ได้เลือก")
-                @each(plan in plans)
-                        <option value={{ plan }}>{{ plan + " month" }}</option>
-                @end
-            @end
-        </select>
-        <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
-    </form>
-    @if(studentUser.student.plan)
-      <ul class="steps mt-5">
-        <li class="step {{studentUser.student.plan && "step-primary text-green-700 font-bold"}}">Accepted by Company</li>
-        <li class="step">TR-01</li>
-        <li class="step">Purchase</li>
-        <li class="step">Receive Product</li>
-      </ul>
+<section class="h-full w-full z-[5]">
+  <div class="flex pt-9 pl-11">
+    <p class="text-base lg:text-3xl text-base-content font-bold">{{studentUser.user_id}}</p>
+    <p class="text-base lg:text-3xl text-base-content font-bold pl-8">{{studentUser.firstname + " " + studentUser.lastname}}</p>
+  </div>
+  <form method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH">
+    <select {{disabled}} id="study" name="study"
+      class="select select-xs ml-11 mt-10 lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 lg:text-base disabled:w-56">
+
+      <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please choose your plan"}}</option>
+      {{-- @if(!studentUser.student.plan) --}}
+      @each(plan in plans)
+      <option value={{ plan }}>{{ plan + " month" }}</option>
+      {{-- @end --}}
+      @end
+    </select>
+    <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
+  </form>
+  @if(studentUser.student.plan)
+  <ul class="steps mt-5">
+    <li class="step {{studentUser.student.plan && " step-primary text-green-700 font-bold"}}">Accepted by Company</li>
+    @each(documentStatus in documentStatuses)
+    @if(documentStatus.document_id === 'TR-01')
+    <li class="step {{documentStatus.document_id === 'TR-01' && " step-primary text-green-700 font-bold"}}">TR-01
+      {{documentStatus.status_id}}</li>
     @end
+    @if(documentStatus.document_id === 'TR-02')
+    <li class="step {{documentStatus.document_id === 'TR-02' && " step-primary text-green-700 font-bold"}}">TR-02
+      {{documentStatus.status_id}}</li>
+    @end
+    @if(documentStatus.document_id === 'TR-03 and TR-05')
+    <li class="step {{documentStatus.document_id === 'TR-03 and TR-05' && " step-primary text-green-700 font-bold"}}">
+      TR-03 and TR-05 {{documentStatus.status_id}}</li>
+    @end
+    @end
+    <li class="step">Receive Product</li>
+
+  </ul>
+  @end
+  <form id="formElem">
     <input type="file" id="myPdf" /><br>
     <canvas id="pdfViewer"></canvas>
-  </section>
-  <script>
-  // const closeAlertDeletePost = () => {
-    // const element = document.getElementById('study');
-    // if(studentUser.student.status === "ยังไม่ได้เลือก")
-    console.log(studentUser.student.status);
-  // }
+    <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
+  </form>
+</section>
+<script>
+  formElem.onsubmit = async (event) => {
+    // event.preventDefault() 
+    const body = {
+      status : 'Pending',
+      doc: 'TR-01'
+    }
+    const response = await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
+        method: 'POST',
+        headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+        body: JSON.stringify(body),
+    })
+    
+    // const data = await response.json()
+    // console.log(data);
+
+  };
 </script>
 @end
