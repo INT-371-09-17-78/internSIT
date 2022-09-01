@@ -158,8 +158,12 @@ export default class UsersController {
     try {
       const { study, status, doc } = request.only(['study', 'status', 'doc'])
       const studentUser = await Student.findOrFail(request.param('id'))
-      const statusResult = await Status.find(status)
-      const docResult = await Document.find(doc)
+      let statusResult = {}
+      let docResult = {}
+      if (status && doc) {
+        statusResult = await Status.findOrFail(status)
+        docResult = await Document.findOrFail(doc)
+      }
       studentUser.plan = study
       await studentUser.save()
       if (statusResult && docResult) {
