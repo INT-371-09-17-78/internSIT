@@ -9,7 +9,7 @@
     <form method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH">
         <select {{disabled}} id="study" name="study" class="select select-xs ml-11 mt-10 lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 lg:text-base disabled:w-56">
         
-            <option disabled selected>{{studentUser.student.status === "ยังไม่ได้เลือก" ? "Please choose your plan" : studentUser.student.study + " month"}}</option>
+            <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please choose your plan"}}</option>
               @if(studentUser.student.status === "ยังไม่ได้เลือก")
                 @each(plan in plans)
                         <option value={{ plan }}>{{ plan + " month" }}</option>
@@ -18,12 +18,14 @@
         </select>
         <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
     </form>
-    <ul class="steps">
-      <li class="step step-primary">{{studentUser.student.status}}</li>
-      <li class="step step-primary">Choose plan</li>
-      <li class="step">Purchase</li>
-      <li class="step">Receive Product</li>
-    </ul>
+    @if(studentUser.student.plan)
+      <ul class="steps mt-5">
+        <li class="step {{studentUser.student.plan && "step-primary text-green-700 font-bold"}}">Accepted by Company</li>
+        <li class="step {{studentUser.student.plan && "step-primary text-green-700 font-bold"}}">TR-01</li>
+        <li class="step">Purchase</li>
+        <li class="step">Receive Product</li>
+      </ul>
+    @end
   </section>
   <script>
   // const closeAlertDeletePost = () => {
