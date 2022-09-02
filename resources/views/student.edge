@@ -13,7 +13,7 @@
       <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please choose your plan"}}</option>
       {{-- @if(!studentUser.student.plan) --}}
       @each(plan in plans)
-      <option value={{ plan }}>{{ plan + " month" }}</option>
+        <option value={{ plan }}>{{ plan + " month" }}</option>
       {{-- @end --}}
       @end
     </select>
@@ -21,30 +21,16 @@
   </form>
   @if(studentUser.student.plan)
   <ul class="steps mt-5">
-    <li class="step {{studentUser.student.plan && " step-primary text-green-700 font-bold"}}">Accepted by Company</li>
-    @each(documentStatus in documentStatuses)
-    @if(documentStatus.document_id === 'TR-01')
-    <li class="step {{documentStatus.document_id === 'TR-01' && " step-primary text-green-700 font-bold"}}">TR-01
-      {{documentStatus.status_id}}</li>
-    @end
-    @if(documentStatus.document_id === 'TR-02')
-    <li class="step {{documentStatus.document_id === 'TR-02' && " step-primary text-green-700 font-bold"}}">TR-02
-      {{documentStatus.status_id}}</li>
-    @end
-    @if(documentStatus.document_id === 'TR-03 and TR-05')
-    <li class="step {{documentStatus.document_id === 'TR-03 and TR-05' && " step-primary text-green-700 font-bold"}}">
-      TR-03 and TR-05 {{documentStatus.status_id}}</li>
-    @end
-    @end
-    <li class="step">Receive Product</li>
-
+      @each(step in steps)
+          <li class="step font-bold">{{step}}</li>
+      @end
   </ul>
-  @end
   <form id="formElem">
+    <button class="btn btn-sm btn-primary rounded-3xl text-white">submit file</button>
     <input type="file" id="myPdf" /><br>
-    <canvas id="pdfViewer"></canvas>
-    <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
+    <canvas id="pdfViewer" class="w-1/2"></canvas>
   </form>
+  @end
 </section>
 <script>
   formElem.onsubmit = async (event) => {

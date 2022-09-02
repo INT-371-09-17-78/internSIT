@@ -144,14 +144,40 @@ export default class UsersController {
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
       const plans = [2, 4, 6]
-      const steps = [
-        'Accepted by firm',
-        'Sent TR-01',
-        'TR-01 approve',
-        'Sent TR-02',
-        'TR-02 approve',
-        'Sent TR-03 and TR-05',
-      ]
+      const steps =
+        studentUser.student.plan === 6
+          ? [
+              'Accepted by firm',
+              'TR-01',
+              'TR-02',
+              'TR-03 and TR-05 (1/6)',
+              'Informed supervision (1/6) ',
+              'TR-03 and TR-05 (2/6)',
+              'Informed supervision (2/6)',
+              'TR-03 and TR-05 (3/6)',
+              'Informed supervision (3/6)',
+              'TR-03 and TR-05 (4/6)',
+              'Informed supervision (4/6)',
+              'TR-03 and TR-05 (5/6)',
+              'Informed supervision (5/6)',
+              'Sent Presentation',
+              'Presentation',
+              'TR-03 and TR-06 (6/6)',
+            ]
+          : [
+              'Accepted by firm',
+              'TR-01',
+              'TR-02',
+              'TR-03 and TR-05 (1/4)',
+              'Informed supervision (1/4) ',
+              'TR-03 and TR-05 (2/4)',
+              'Informed supervision (2/4)',
+              'TR-03 and TR-05 (3/4)',
+              'Informed supervision (3/4)',
+              'Sent Presentation',
+              'Presentation',
+              'TR-03 and TR-06 (4/4)',
+            ]
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
