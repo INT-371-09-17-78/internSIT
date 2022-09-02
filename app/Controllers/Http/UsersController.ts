@@ -118,10 +118,14 @@ export default class UsersController {
     return response.redirect('/')
   }
 
-  public async showStudentUser({ response, view }: HttpContextContract) {
+  public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
-      const studentUser = await Student.query().preload('document_status')
+      // const studentUser = await Student.query().preload('document_status')
+      const studentUser = await User.query()
+        .where('role', 'student')
+        // .andWhere('user_id', request.param('id'))
+        .preload('student')
 
       // return response.status(200).json(result)
       // console.log(studentUser)
@@ -144,40 +148,70 @@ export default class UsersController {
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
       const plans = [2, 4, 6]
-      const steps =
-        studentUser.student.plan === 6
-          ? [
-              'Accepted by firm',
-              'TR-01',
-              'TR-02',
-              'TR-03 and TR-05 (1/6)',
-              'Informed supervision (1/6) ',
-              'TR-03 and TR-05 (2/6)',
-              'Informed supervision (2/6)',
-              'TR-03 and TR-05 (3/6)',
-              'Informed supervision (3/6)',
-              'TR-03 and TR-05 (4/6)',
-              'Informed supervision (4/6)',
-              'TR-03 and TR-05 (5/6)',
-              'Informed supervision (5/6)',
-              'Sent Presentation',
-              'Presentation',
-              'TR-03 and TR-06 (6/6)',
-            ]
-          : [
-              'Accepted by firm',
-              'TR-01',
-              'TR-02',
-              'TR-03 and TR-05 (1/4)',
-              'Informed supervision (1/4) ',
-              'TR-03 and TR-05 (2/4)',
-              'Informed supervision (2/4)',
-              'TR-03 and TR-05 (3/4)',
-              'Informed supervision (3/4)',
-              'Sent Presentation',
-              'Presentation',
-              'TR-03 and TR-06 (4/4)',
-            ]
+      let steps: any =
+        // studentUser.student.plan === 6
+        //   ?
+        [
+          {
+            steps: 'Accepted by firm',
+            result: true,
+          },
+          {
+            steps: 'TR-01',
+            result: true,
+          },
+          {
+            steps: 'TR-02',
+            result: true,
+          },
+          {
+            steps: 'TR-03 and TR-05 (1/6)',
+            result: true,
+          },
+          {
+            steps: 'Informed supervision (1/6)',
+            result: true,
+          },
+        ]
+      // :
+      // ? {
+      //     steps: [
+      //       'Accepted by firm',
+      //       'TR-01',
+      //       'TR-02',
+      //       'TR-03 and TR-05 (1/6)',
+      //       'Informed supervision (1/6) ',
+      //       'TR-03 and TR-05 (2/6)',
+      //       'Informed supervision (2/6)',
+      //       'TR-03 and TR-05 (3/6)',
+      //       'Informed supervision (3/6)',
+      //       'TR-03 and TR-05 (4/6)',
+      //       'Informed supervision (4/6)',
+      //       'TR-03 and TR-05 (5/6)',
+      //       'Informed supervision (5/6)',
+      //       'Sent Presentation',
+      //       'Presentation',
+      //       'TR-03 and TR-06 (6/6)',
+      //     ],
+      //     testResult: [],
+      //   }
+      // {
+      //   steps: [
+      //     'Accepted by firm',
+      //     'TR-01',
+      //     'TR-02',
+      //     'TR-03 and TR-05 (1/4)',
+      //     'Informed supervision (1/4) ',
+      //     'TR-03 and TR-05 (2/4)',
+      //     'Informed supervision (2/4)',
+      //     'TR-03 and TR-05 (3/4)',
+      //     'Informed supervision (3/4)',
+      //     'Sent Presentation',
+      //     'Presentation',
+      //     'TR-03 and TR-06 (4/4)',
+      //   ],
+      //   testResult: [],
+      // }
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
@@ -190,6 +224,32 @@ export default class UsersController {
         .where('student_id', request.param('id'))
       // console.log(documentStatus)
       // return response.send(documentStatus)
+      // let testResult: string[] = []
+      for (let i = 0; i < steps.length; i++) {
+        // console.log(steps[i].steps)
+        for (let j = 0; j < documentStatuses.length; j++) {
+          console.log(steps[i].steps)
+          //   console.log(documentStatuses[j].document_id)
+          // steps[i] === documentStatuses[j].document_id
+          //   ? (return testResult[i] = true )
+          //   : (testResult[i] = false)
+          if (
+            steps[i].steps === documentStatuses[j].document_id ||
+            (i === 0 && studentUser.student.plan)
+          ) {
+            steps[i].result = true
+            if (i > 0) {
+              steps[i]['status'] = documentStatuses[j].status_id
+            }
+
+            break
+          } else {
+            steps[i].result = false
+          }
+        }
+      }
+      console.log(steps)
+
       return view.render('student', { studentUser, plans, disabled, steps, documentStatuses })
     } catch (error) {
       return response.status(400).json({ message: error.message })

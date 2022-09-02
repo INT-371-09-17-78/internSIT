@@ -21,8 +21,8 @@
   </form>
   @if(studentUser.student.plan)
   <ul class="steps mt-5">
-      @each(step in steps)
-          <li class="step font-bold">{{step}}</li>
+      @each((step,index) in steps)
+          <li class="step font-bold {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approve" || step.steps === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Not Approve" ? "text-red-700 step-primary" : ""}}">{{step.steps}} {{step.status ? step.status : ""}}</li>
       @end
   </ul>
   <form id="formElem">
@@ -34,7 +34,7 @@
 </section>
 <script>
   formElem.onsubmit = async (event) => {
-    // event.preventDefault() 
+    event.preventDefault() 
     const body = {
       status : 'Pending',
       doc: 'TR-01'
@@ -50,6 +50,7 @@
     
     // const data = await response.json()
     // console.log(data);
+    window.location.reload()
 
   };
 </script>
