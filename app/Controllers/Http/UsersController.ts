@@ -233,6 +233,7 @@ export default class UsersController {
       //   ],
       //   testResult: [],
       // }
+      let nextStep: any
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
@@ -246,10 +247,11 @@ export default class UsersController {
       // console.log(documentStatus)
       // return response.send(documentStatus)
       // let testResult: string[] = []
+
       for (let i = 0; i < steps.length; i++) {
         // console.log(steps[i].steps)
         for (let j = 0; j < documentStatuses.length; j++) {
-          console.log(steps[i].steps)
+          // console.log(steps[i].steps)
           //   console.log(documentStatuses[j].document_id)
           // steps[i] === documentStatuses[j].document_id
           //   ? (return testResult[i] = true )
@@ -258,9 +260,15 @@ export default class UsersController {
             steps[i].steps === documentStatuses[j].document_id ||
             (i === 0 && studentUser.student.plan)
           ) {
+            // console.log('เข้าอันนี้')
             steps[i].result = true
+            // nextStep = steps[i]
             if (i > 0) {
+              // console.log('เข้า')
               steps[i]['status'] = documentStatuses[j].status_id
+              // documentStatuses[j].status_id === 'Approve'
+              //   ? (nextStep = steps[i + 1])
+              //   : (nextStep = steps[i])
             }
 
             break
@@ -269,9 +277,21 @@ export default class UsersController {
           }
         }
       }
+      const index = steps.map((ele) => ele.result).lastIndexOf(true)
+      console.log(index)
       console.log(steps)
+      if (index > 0) {
+        steps[index].status === 'Approve'
+          ? (nextStep = steps[index + 1].steps)
+          : (nextStep = steps[index]).steps
+      } else {
+        nextStep = steps[index + 2].steps
+      }
 
-      return view.render('student', { studentUser, plans, disabled, steps, documentStatuses })
+      // console.log(steps)
+      console.log(nextStep)
+
+      return view.render('student', { studentUser, plans, disabled, steps, nextStep })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -280,7 +300,7 @@ export default class UsersController {
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
       const { study, status, doc } = request.only(['study', 'status', 'doc'])
-      console.log(status)
+      console.log(doc)
       const studentUser = await Student.findOrFail(request.param('id'))
       let statusResult: Status
       let docResult: Document
@@ -297,6 +317,7 @@ export default class UsersController {
         const docStat = await Document_Status.query()
           .where('student_id', studentUser.student_id)
           .andWhere('document_id', docResult.doc_name)
+          .orderBy('updated_at', 'desc')
         // await studentUser.related('document_status').updateOrCreate(
         //   { student_id: studentUser.student_id },
         //   {

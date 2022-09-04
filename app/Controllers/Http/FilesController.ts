@@ -167,7 +167,7 @@ export default class FilesController {
 
   public async showAllFile({ view, response }: HttpContextContract) {
     try {
-      const files = await File.query()
+      const files = await File.query().whereNull('doc_id')
       return view.render('file', { files })
     } catch (error) {
       return response.status(400).send({ message: error.message })

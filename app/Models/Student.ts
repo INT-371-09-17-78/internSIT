@@ -37,8 +37,8 @@ export default class Student extends BaseModel {
   @column()
   public study: string
 
-  @column()
-  public status: string
+  // @column()
+  // public status: string
 
   @column()
   public reasons: string
