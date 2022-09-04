@@ -1,9 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Application from '@ioc:Adonis/Core/Application'
 import Post from 'App/Models/Post'
+import User from 'App/Models/User'
 import File from 'App/Models/File'
 import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
+import Document from 'App/Models/Document'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
@@ -51,13 +53,78 @@ export default class FilesController {
           await post.related('files').create({
             file_id: newFileName + '.' + image.extname,
             file_name: image.clientName,
-            user_id: post.user_id,
+            // user_id: post.user_id,
             file_size: image.size,
           })
         }
       }
     }
     return err
+  }
+
+  public async storeDirect({ auth, request, response }: HttpContextContract) {
+    try {
+      const files = request.files('files', {
+        size: '3mb',
+        // extnames: ['jpg', 'png', 'gif'],
+      })
+      let err: Object[] = []
+      if (files.length === 0) {
+        throw new Error('not have files')
+      }
+      for (let file of files) {
+        if (!file.isValid) {
+          err.push(file.errors)
+        } else {
+          const newFileName = uuidv4()
+          await file.move(Application.tmpPath('uploads/steps'), {
+            name: newFileName + '.' + file.extname,
+            overwrite: true, // overwrite in case of conflict
+          })
+          const user = await User.find(auth.user?.user_id)
+          const doc = await Document.find(request.param('docId'))
+          if (user && doc) {
+            const fileSize = this.convertFileSize(file.size)
+            // await File.create({
+            //   file_id: newFileName + '.' + file.extname,
+            //   file_name: file.clientName,
+            //   user_id: user.user_id,
+            //   file_size: fileSize,
+            // })
+            let userIdCache: any
+            const result = await File.query()
+              .where('user_id', user.user_id)
+              .andWhere('doc_id', doc.doc_name)
+            if (result && result.length > 0) {
+              userIdCache = result[0].user_id
+              this.deleteFile(result, 'steps/')
+            }
+            if (user.role === 'staff' || user.role === 'adviser') {
+              await File.create({
+                file_id: newFileName + '.' + file.extname,
+                file_name: file.clientName,
+                user_id: userIdCache,
+                file_size: fileSize,
+                doc_id: doc.doc_name,
+              })
+            } else {
+              await File.create({
+                file_id: newFileName + '.' + file.extname,
+                file_name: file.clientName,
+                user_id: user.user_id,
+                file_size: fileSize,
+                doc_id: doc.doc_name,
+              })
+            }
+
+            return response.status(200).json({ message: 'success' })
+          }
+        }
+      }
+      return response.status(400).json({ message: 'something went wrong maybe cant find data' })
+    } catch (error) {
+      return response.status(400).json({ message: error.messages })
+    }
   }
 
   private convertFileSize(bytes: number, decimals = 2) {
@@ -71,32 +138,6 @@ export default class FilesController {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
   }
-
-  // public async storeDirect({ auth, request, response }: HttpContextContract) {
-  //   const files = request.files('file', {
-  //     size: '3mb',
-  //     // extnames: ['jpg', 'png', 'gif'],
-  //   })
-  //   let err: Object[] = []
-  //   // if (file.length === 0) { return }
-  //   for (let file of files) {
-  //     if (!file.isValid) {
-  //       err.push(file.errors)
-  //     } else {
-  //       const newFileName = uuidv4()
-  //       await file.move(Application.tmpPath('uploads/direct'), {
-  //         name: newFileName + '.' + file.extname,
-  //         overwrite: true, // overwrite in case of conflict
-  //       })
-  //       const user = await User.find(auth.user?.user_id)
-  //       if (user) {
-  //         await File.create({ file_name: file.clientName, user_id: user.user_id })
-  //       }
-
-  //     }
-  //   }
-  //   return response.status(200).json({ message: 'success' })
-  // }
   // // public async showFilesByPostId({ view, auth, request, response }: HttpContextContract) {
   // //   try {
   // //     const posts = await Post.query().whereHas('files', (query) => {
@@ -135,17 +176,37 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const file = await File.find(request.param('fileId'))
+      const { userId, docId } = request.qs()
+      let file: any
+      let path = ''
+      console.log(userId)
+      if (userId && docId) {
+        const result = await File.query().where('user_id', userId).andWhere('doc_id', docId)
+        console.log(result)
+        if (result && result.length > 0) {
+          file = result[0]
+          path = 'steps/'
+        }
+      } else {
+        console.log('เข้า')
+        file = await File.find(request.param('fileId'))
+      }
+      // console.log(file);
+
       let filePath = ''
       if (file) {
-        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_id))
-        response.attachment(filePath, file.file_name, undefined, undefined, (error) => {
+        filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
+        console.log(filePath)
+
+        response.download(filePath, file.file_name, (error) => {
           if (error.code === 'ENOENT') {
             return ['File does not exists', 404]
           }
 
           return ['Cannot download file', 400]
         })
+      } else {
+        return response.status(404).send({ message: 'cannot find file' })
       }
     } catch (error) {
       return response.status(400).send({ message: error.message })
@@ -170,14 +231,14 @@ export default class FilesController {
     }
   }
 
-  public async deleteFile(files: Array<any>) {
+  public async deleteFile(files: Array<any>, path = '') {
     try {
       if (!files || files.length <= 0) {
         throw new Error('files are invalid')
       }
       let filePath = ''
       for (const file of files) {
-        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_id))
+        filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
         fs.unlink(filePath, (error) => {
           if (error) {
             throw new Error(error.message)

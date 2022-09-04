@@ -9,8 +9,10 @@ export default class Files extends BaseSchema {
       // table.increments('file_id').primary()
       table.string('file_name', 80).notNullable()
       table.string('file_size', 10).notNullable()
+      table.string('doc_id').references('documents.doc_name').onDelete('CASCADE').nullable()
       table.integer('post_id').references('posts.post_id').onDelete('CASCADE').nullable().unsigned()
       table.string('user_id').references('users.user_id').onDelete('CASCADE').nullable()
+      table.unique(['user_id', 'doc_id'])
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

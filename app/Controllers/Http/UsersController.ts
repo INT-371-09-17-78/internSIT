@@ -126,7 +126,28 @@ export default class UsersController {
         .where('role', 'student')
         // .andWhere('user_id', request.param('id'))
         .preload('student')
+      for (let i = 0; i < studentUser.length; i++) {
+        const documentStatus = await Document_Status.query()
+          .where('student_id', studentUser[i].user_id)
+          .orderBy('updated_at', 'desc')
+        if (documentStatus && documentStatus.length > 0) {
+          console.log('เข้า')
+          studentUser[i].serialize()
+          studentUser[i]['lastestStatus'] =
+            documentStatus[0].document_id + ' ' + documentStatus[0].status_id
+        } else {
+          studentUser[i].serialize()
+          studentUser[i].student.plan
+            ? (studentUser[i]['lastestStatus'] = 'Accepted by firm')
+            : (studentUser[i]['lastestStatus'] = 'ยังไม่ได้เลือก plan')
+        }
+        // console.log(documentStatus)
 
+        // studentUser[i].toJSON()
+        // studentUser[i]['lastestStatus'] = documentStatus[0].document_id
+      }
+
+      // const document_status = await Document_Status.query().where('student_id')
       // return response.status(200).json(result)
       // console.log(studentUser)
       // const result = await document.related('statuses').query().where('status_id', 'test2')
@@ -154,23 +175,23 @@ export default class UsersController {
         [
           {
             steps: 'Accepted by firm',
-            result: true,
+            result: false,
           },
           {
             steps: 'TR-01',
-            result: true,
+            result: false,
           },
           {
             steps: 'TR-02',
-            result: true,
+            result: false,
           },
           {
             steps: 'TR-03 and TR-05 (1/6)',
-            result: true,
+            result: false,
           },
           {
             steps: 'Informed supervision (1/6)',
-            result: true,
+            result: false,
           },
         ]
       // :
