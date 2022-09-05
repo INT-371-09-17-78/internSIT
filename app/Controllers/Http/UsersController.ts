@@ -285,7 +285,7 @@ export default class UsersController {
           ? (nextStep = steps[index + 1].steps)
           : (nextStep = steps[index]).steps
       } else {
-        nextStep = steps[index + 2].steps
+        nextStep = steps[1].steps
       }
 
       // console.log(steps)

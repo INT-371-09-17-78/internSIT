@@ -64,6 +64,7 @@ export default class FilesController {
 
   public async storeDirect({ auth, request, response }: HttpContextContract) {
     try {
+      const { docId, studentId } = request.only(['docId', 'studentId'])
       const files = request.files('files', {
         size: '3mb',
         // extnames: ['jpg', 'png', 'gif'],
@@ -81,8 +82,8 @@ export default class FilesController {
             name: newFileName + '.' + file.extname,
             overwrite: true, // overwrite in case of conflict
           })
-          const user = await User.find(auth.user?.user_id)
-          const doc = await Document.find(request.param('docId'))
+          const user = await User.find(studentId)
+          const doc = await Document.find(docId)
           if (user && doc) {
             const fileSize = this.convertFileSize(file.size)
             // await File.create({
@@ -91,31 +92,31 @@ export default class FilesController {
             //   user_id: user.user_id,
             //   file_size: fileSize,
             // })
-            let userIdCache: any
+            // let userIdCache: any
             const result = await File.query()
               .where('user_id', user.user_id)
               .andWhere('doc_id', doc.doc_name)
             if (result && result.length > 0) {
-              userIdCache = result[0].user_id
+              // userIdCache = result[0].user_id
               this.deleteFile(result, 'steps/')
             }
-            if (user.role === 'staff' || user.role === 'adviser') {
-              await File.create({
-                file_id: newFileName + '.' + file.extname,
-                file_name: file.clientName,
-                user_id: userIdCache,
-                file_size: fileSize,
-                doc_id: doc.doc_name,
-              })
-            } else {
-              await File.create({
-                file_id: newFileName + '.' + file.extname,
-                file_name: file.clientName,
-                user_id: user.user_id,
-                file_size: fileSize,
-                doc_id: doc.doc_name,
-              })
-            }
+            // if (user.role === 'staff' || user.role === 'adviser') {
+            //   await File.create({
+            //     file_id: newFileName + '.' + file.extname,
+            //     file_name: file.clientName,
+            //     user_id: userIdCache,
+            //     file_size: fileSize,
+            //     doc_id: doc.doc_name,
+            //   })
+            // } else {
+            await File.create({
+              file_id: newFileName + '.' + file.extname,
+              file_name: file.clientName,
+              user_id: user.user_id,
+              file_size: fileSize,
+              doc_id: doc.doc_name,
+            })
+            // }
 
             return response.status(200).json({ message: 'success' })
           }
