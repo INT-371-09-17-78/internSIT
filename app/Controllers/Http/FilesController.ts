@@ -199,13 +199,15 @@ export default class FilesController {
         filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
         console.log(filePath)
 
-        response.download(filePath, file.file_name, (error) => {
-          if (error.code === 'ENOENT') {
-            return ['File does not exists', 404]
-          }
+        // response.download(filePath, file.file_name, (error) => {
+        //   if (error.code === 'ENOENT') {
+        //     return ['File does not exists', 404]
+        //   }
 
-          return ['Cannot download file', 400]
-        })
+        //   return ['Cannot download file', 400]
+        // })
+        const contents = fs.readFileSync(filePath, { encoding: 'base64' })
+        response.status(200).json('data:application/pdf;base64,' + contents)
       } else {
         return response.status(404).send({ message: 'cannot find file' })
       }
