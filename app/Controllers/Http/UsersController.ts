@@ -280,7 +280,7 @@ export default class UsersController {
       if (index > 0) {
         steps[index].status === 'Approve'
           ? (nextStep = steps[index + 1].steps)
-          : (nextStep = steps[index]).steps
+          : (nextStep = steps[index].steps)
       } else {
         nextStep = steps[1].steps
       }

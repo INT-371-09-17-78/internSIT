@@ -14,11 +14,11 @@
           </thead>
           <tbody>
             @each((student,index) in studentUser)
-            <tr>
-              <td>{{student.user_id}}</td>
-              <td>{{student.firstname + " " + student.lastname}}</td>
-              <td>{{student.student.plan}}</td>
-            </tr>
+              <tr class="cursor-pointer" onclick="window.location='/student/{{student.user_id }}';">
+                <td>{{student.user_id}}</td>
+                <td>{{student.firstname + " " + student.lastname}}</td>
+                <td>{{student.lastestStatus}}</td>
+              </tr>
             @end
           </tbody>
         </table>
