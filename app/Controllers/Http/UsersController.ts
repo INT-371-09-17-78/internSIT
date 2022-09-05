@@ -161,7 +161,6 @@ export default class UsersController {
   public async showStudentUserById({ request, response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
-      console.log(request.param('id'))
       const studentUsers = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
@@ -278,8 +277,6 @@ export default class UsersController {
         }
       }
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
-      console.log(index)
-      console.log(steps)
       if (index > 0) {
         steps[index].status === 'Approve'
           ? (nextStep = steps[index + 1].steps)
@@ -287,9 +284,6 @@ export default class UsersController {
       } else {
         nextStep = steps[1].steps
       }
-
-      // console.log(steps)
-      console.log(nextStep)
 
       return view.render('student', { studentUser, plans, disabled, steps, nextStep })
     } catch (error) {
