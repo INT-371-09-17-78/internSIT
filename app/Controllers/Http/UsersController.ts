@@ -233,6 +233,7 @@ export default class UsersController {
       //   testResult: [],
       // }
       let nextStep: any
+      let currentSteps: any
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
       //   disabled = 'disabled'
@@ -279,13 +280,16 @@ export default class UsersController {
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
       if (index > 0) {
         steps[index].status === 'Approve'
-          ? (nextStep = steps[index + 1].steps)
-          : (nextStep = steps[index].steps)
+          ? ((nextStep = steps[index + 1]), (currentSteps = steps[index]))
+          : ((nextStep = steps[index]), (currentSteps = nextStep))
       } else {
-        nextStep = steps[1].steps
+        nextStep = steps[1]
+        currentSteps = steps[0]
+        currentSteps.status = ''
       }
+      console.log(currentSteps)
 
-      return view.render('student', { studentUser, plans, disabled, steps, nextStep })
+      return view.render('student', { studentUser, plans, disabled, steps, nextStep, currentSteps })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

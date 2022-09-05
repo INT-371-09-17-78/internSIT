@@ -33,6 +33,7 @@
       <canvas id="pdfViewer" class="w-1/2"></canvas>
     </form>
     <form id="formElem2">
+      @if(auth.user.role != "student" && currentSteps.status != "Approve")
       <div class="form-control w-fit">
         <label class="label cursor-pointer">
           <span class="label-text">Approve</span> 
@@ -40,6 +41,7 @@
         </label>
       </div>   
       <button class="btn btn-sm btn-primary rounded-3xl text-white">submit</button>
+      @end
         {{--  <button class="btn btn-sm btn-primary rounded-3xl text-white">not approve</button>
         <textarea onkeyup="validateInput()" id="no_approve_reason" name="no_approve_reason" class="p-3 w-full h-28 text-xs rounded-lg border-2 border-red-500 placeholder="Write your content...">{{post ? post.content : ''}}</textarea>  --}}
     </form>
@@ -59,7 +61,7 @@
     console.log(document.getElementById('approve').value)
     const body = {
       status : document.getElementById('approve').value === 'approve' ? 'Approve' : 'Not Approve',
-      doc: '{{nextStep}}' ? '{{nextStep}}' : 'TR-01',
+      doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
     }
 
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
@@ -71,18 +73,18 @@
         body: JSON.stringify(body),
     })
     
-    // window.location.reload()
+    window.location.reload()
   };
 
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
     const body = {
       status : 'Pending',
-      doc: '{{nextStep}}' ? '{{nextStep}}' : 'TR-01',
+      doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
     }
     const formData = new FormData(formElem)
     formData.append('files', pdfFile)
-    formData.append('docId', '{{nextStep}}')
+    formData.append('docId', '{{nextStep.steps}}')
     formData.append('studentId', {{studentUser.user_id}})
     await fetch('/api/file/steps?_method=POST', {
         method: 'POST',
@@ -100,13 +102,13 @@
     window.location.reload()
   };
 
-var url = '/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{nextStep}}'
+var url = '/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{nextStep.steps}}'
     // Loaded via <script> tag, create shortcut to access PDF.js exports.
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';  
-
-var loadingTask = pdfjsLib.getDocument(url);
+if({{nextStep.result}}){
+  var loadingTask = pdfjsLib.getDocument(url);
 loadingTask.promise.then(function(pdf) {
   console.log('PDF loaded');
   
@@ -138,6 +140,8 @@ loadingTask.promise.then(function(pdf) {
   // PDF loading error
   console.error(reason);
 });
+}
+
 
 $("#myPdf").on("change", async function(e){
 	var file = e.target.files[0]
