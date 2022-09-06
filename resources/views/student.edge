@@ -33,7 +33,7 @@
       <canvas id="pdfViewer" class="w-1/2"></canvas>
     </form>
     <form id="formElem2">
-      @if(auth.user.role != "student" && currentSteps.status != "Approve")
+      @if(auth.user.role != "student")
       <div class="form-control w-fit">
         <label class="label cursor-pointer">
           <span class="label-text">Approve</span> 
@@ -150,7 +150,7 @@ $("#myPdf").on("change", async function(e){
 		fileReader.onload = function() {
 			var pdfData = new Uint8Array(this.result);
 			// Using DocumentInitParameters object to load binary data.
-			var loadingTask = pdfjsLib.getDocument(url);
+			var loadingTask = pdfjsLib.getDocument({data: pdfData});
 			loadingTask.promise.then(function(pdf) {
 			  console.log('PDF loaded');
 			  
