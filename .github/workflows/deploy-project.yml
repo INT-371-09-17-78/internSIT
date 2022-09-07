@@ -71,9 +71,11 @@ jobs:
         with:
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          # password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            whoami
             echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{github.actor}} --password-stdin
             cd ./internSIT
             docker stop intern-sit-app && docker rm intern-sit-app
