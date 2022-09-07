@@ -1,4 +1,4 @@
-<button {{ $props.serializeExcept(['class']) }} class="btn rounded-3xl normal-case {{classProps}}">
+<button {{ $props.serializeExcept(['classProps']) }} class="btn normal-case {{classProps}}">
     {{{ await $slots.main() }}}
-    <p>{{ text ? text : '' }}</p>
+    {{ text ? text : '' }}
 </button>

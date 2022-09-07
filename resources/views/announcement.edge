@@ -1,29 +1,24 @@
 @layout('layouts/app')
 @set('title', 'announcement page')
 @section('announcement')
-  <section class="h-screen w-full">
+  <section class="h-full w-full z-[5]">
     @include('partials/announcement-header')
-      <div class="card-group flex flex-col space-y-5 mx-8 mt-4 overflow-y-auto h-[83.5%] lg:h-[80%]">
+      <div class="card-group flex flex-col space-y-5 mt-2 overflow-y-auto h-[85%] px-5">
         @each(post in posts)
         <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
-          <div class="card card-side w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-3xl py-5">
-            <div class="avatar pl-5 self-start lg:pt-5 pt-7">
-              <div class="w-12 h-12 lg:w-14 lg:h-14 rounded-full">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                    viewBox="0 0 258.75 258.75" style="enable-background:new 0 0 258.75 258.75;" xml:space="preserve" class="fill-base-content/[.65]">
-                  <g>
-                    <circle cx="129.375" cy="60" r="60"/>
-                    <path d="M129.375,150c-60.061,0-108.75,48.689-108.75,108.75h217.5C238.125,198.689,189.436,150,129.375,150z"/>
-                  </g>
-                  </svg>
+          <div class="card card-side w-full max-h-32 card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-xl p-2 space-x-2">
+            <div class="avatar">
+              <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
+                <img src="{{ asset('assets/images/avatar.svg') }}"/>  
               </div>
             </div>
-            <div class="card-body py-10 gap-0">
-              <div class="flex text-xs">
-                <p class="flex-grow-0">{{post.user_id}}</p><p class="ml-7">{{post.updated_at}}</p>
+            <div class="space-y-2 text-xs">
+              <div class="flex">
+                <p class="font-semibold">{{post.user_id}}</p>
+                <p class="text-xs ml-7">{{post.updated_at}}</p>
               </div>
-                  <h2 class="card-title text-base">{{post.topic}}</h2>
-                  <p class="text-xs leading-5 font-semibold line-clamp-3">{{post.content}}</p>
+              <p class="font-semibold">{{post.topic}}</p>
+              <p class="leading-5 line-clamp-3">{{post.content}}</p>
             </div>
           </div>
         </a>

@@ -1,0 +1,190 @@
+@layout('layouts/app')
+@set('title', 'students page')
+@section('students')
+<section class="h-full w-full z-[5]">
+  <div class="flex pt-9 pl-11">
+    <p class="text-base lg:text-3xl text-base-content font-bold">{{studentUser.user_id}}</p>
+    <p class="text-base lg:text-3xl text-base-content font-bold pl-8">{{studentUser.firstname + " " + studentUser.lastname}}</p>
+  </div>
+  <form method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH">
+    <select {{disabled}} id="study" name="study"
+      class="select select-xs ml-11 mt-10 lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 lg:text-base disabled:w-56">
+
+      <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please choose your plan"}}</option>
+      {{-- @if(!studentUser.student.plan) --}}
+      @each(plan in plans)
+        <option value={{ plan }}>{{ plan + " month" }}</option>
+      {{-- @end --}}
+      @end
+    </select>
+    <button class="btn btn-sm btn-error rounded-3xl text-white">submit</button>
+  </form>
+  @if(studentUser.student.plan)
+    <ul class="steps mt-5">
+        @each((step,index) in steps)
+            <li class="step font-bold {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approve" || step.steps === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Not Approve" ? "text-red-700 step-primary" : ""}}">{{step.steps}} {{step.status ? step.status : ""}}</li>
+        @end
+    </ul>
+    <form id="formElem">
+      @if(auth.user.role === "student")
+        <button class="btn btn-sm btn-primary rounded-3xl text-white">submit file</button>
+        <input type="file" id="myPdf" /><br>
+       @end
+      <canvas id="pdfViewer" class="w-1/2"></canvas>
+    </form>
+    <form id="formElem2">
+      @if(auth.user.role != "student" && currentSteps.status != "Approve" && currentSteps.steps != "Accepted by firm")
+      <div class="form-control w-fit">
+        <label class="label cursor-pointer">
+          <span class="label-text">Approve</span> 
+          <input type="radio" id="approve" name="approve" value="approve" class="radio checked:bg-blue-500" checked/>
+        </label>
+      </div>   
+      <button class="btn btn-sm btn-primary rounded-3xl text-white">submit</button>
+      @end
+        {{--  <button class="btn btn-sm btn-primary rounded-3xl text-white">not approve</button>
+        <textarea onkeyup="validateInput()" id="no_approve_reason" name="no_approve_reason" class="p-3 w-full h-28 text-xs rounded-lg border-2 border-red-500 placeholder="Write your content...">{{post ? post.content : ''}}</textarea>  --}}
+    </form>
+  @end
+</section>
+<script>
+  let pdfFile
+  const input = document.getElementById("myPdf")
+  if(input){  
+    input.onchange = (e) => {
+    const [file] = e.target.files
+    pdfFile = file
+  }
+  }
+  formElem2.onsubmit = async (event) => {
+    event.preventDefault() 
+    console.log(document.getElementById('approve').value)
+    const body = {
+      status : document.getElementById('approve').value === 'approve' ? 'Approve' : 'Not Approve',
+      doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
+    }
+
+    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    })
+    
+    window.location.reload()
+  };
+
+  formElem.onsubmit = async (event) => {
+    event.preventDefault() 
+    const body = {
+      status : 'Pending',
+      doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
+    }
+    const formData = new FormData(formElem)
+    formData.append('files', pdfFile)
+    formData.append('docId', '{{nextStep.steps}}')
+    formData.append('studentId', {{studentUser.user_id}})
+    await fetch('/api/file/steps?_method=POST', {
+        method: 'POST',
+        body: formData,
+    })
+    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    })
+    
+    window.location.reload()
+  };
+
+var url ='/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}' 
+    // Loaded via <script> tag, create shortcut to access PDF.js exports.
+var pdfjsLib = window['pdfjs-dist/build/pdf'];
+// The workerSrc property shall be specified.
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';  
+if({{currentSteps.steps != "Accepted by firm"}}){
+  var loadingTask = pdfjsLib.getDocument(url);
+loadingTask.promise.then(function(pdf) {
+  console.log('PDF loaded');
+  
+  // Fetch the first page
+  var pageNumber = 1;
+  pdf.getPage(pageNumber).then(function(page) {
+    console.log('Page loaded');
+    
+    var scale = 1.5;
+    var viewport = page.getViewport({scale: scale});
+
+    // Prepare canvas using PDF page dimensions
+    var canvas = document.getElementById('pdfViewer');
+    var context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render PDF page into canvas context
+    var renderContext = {
+      canvasContext: context,
+      viewport: viewport
+    };
+    var renderTask = page.render(renderContext);
+    renderTask.promise.then(function () {
+      console.log('Page rendered');
+    });
+  });
+}, function (reason) {
+  // PDF loading error
+  console.error(reason);
+});
+}
+
+
+$("#myPdf").on("change", async function(e){
+	var file = e.target.files[0]
+	if(file.type == "application/pdf"){
+		var fileReader = new FileReader();  
+		fileReader.onload = function() {
+			var pdfData = new Uint8Array(this.result);
+			// Using DocumentInitParameters object to load binary data.
+			var loadingTask = pdfjsLib.getDocument({data: pdfData});
+			loadingTask.promise.then(function(pdf) {
+			  console.log('PDF loaded');
+			  
+			  // Fetch the first page
+			  var pageNumber = 1;
+			  pdf.getPage(pageNumber).then(function(page) {
+				console.log('Page loaded');
+				
+				var scale = 1.5;
+				var viewport = page.getViewport({scale: scale});
+
+				// Prepare canvas using PDF page dimensions
+				var canvas = document.getElementById('pdfViewer');
+				var context = canvas.getContext('2d');
+				canvas.height = viewport.height;
+				canvas.width = viewport.width;
+
+				// Render PDF page into canvas context
+				var renderContext = {
+				  canvasContext: context,
+				  viewport: viewport
+				};
+				var renderTask = page.render(renderContext);
+				renderTask.promise.then(function () {
+				  console.log('Page rendered');
+				});
+			  });
+			}, function (reason) {
+			  // PDF loading error
+			  console.error(reason);
+			});
+		};
+		fileReader.readAsArrayBuffer(file);
+	}
+});
+</script>
+@end

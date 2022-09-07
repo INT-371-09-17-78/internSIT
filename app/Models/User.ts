@@ -11,6 +11,7 @@ import {
 } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 import Student from 'App/Models/Student'
+import File from 'App/Models/File'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -36,6 +37,9 @@ export default class User extends BaseModel {
 
   @hasMany(() => Post, { foreignKey: 'user_id' })
   public posts: HasMany<typeof Post>
+
+  @hasMany(() => File, { foreignKey: 'file_id' })
+  public files: HasMany<typeof File>
 
   @hasOne(() => Student, { foreignKey: 'student_id' })
   public student: HasOne<typeof Student>

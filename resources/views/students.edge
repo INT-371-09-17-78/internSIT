@@ -1,0 +1,27 @@
+@layout('layouts/app')
+@set('title', 'students page')
+@section('students')
+  <section class="h-full w-full z-[5]">
+    <p class="text-base lg:text-3xl text-base-content font-bold pl-11 pt-9">Student Information</p>
+    <div class="overflow-x-auto px-11 mt-5">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Name</th>
+              <th>Latest status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @each((student,index) in studentUser)
+              <tr class="cursor-pointer" onclick="window.location='/student/{{student.user_id }}';">
+                <td>{{student.user_id}}</td>
+                <td>{{student.firstname + " " + student.lastname}}</td>
+                <td>{{student.lastestStatus}}</td>
+              </tr>
+            @end
+          </tbody>
+        </table>
+      </div>
+  </section>
+@end

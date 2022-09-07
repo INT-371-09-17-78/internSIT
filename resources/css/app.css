@@ -1,8 +1,12 @@
 @import "./tailwind.css";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
 
-.menu[class*=" p-"] li > *, .menu[class^="p-"] li > *{
-    border-radius: 10rem;
-    margin-top: 0.5rem;
+@media (min-width: 1024px){
+    .drawer-mobile > .drawer-toggle ~ .drawer-side {
+            overflow-y: visible;
+    }
 }
 
+.table :where(thead, tfoot) :where(th, td) {
+    text-transform: capitalize;
+}

@@ -1,7 +1,7 @@
 @set('hideSearch', '')
 @set('activeAnnouncement', '')
 @set('background', 'block')
-@set('hideMunu', '')
+@set('hideMenu', '')
 @if(request.matchesRoute(['/announcement/create','/']))
   @set('hideSearch', 'hidden')
 @elseif(request.matchesRoute(['/announcement/create','/announcement/edit/:id']))
@@ -9,7 +9,7 @@
 @end
 @if(request.matchesRoute('/'))
   @set('background', 'hidden')
-  @set('hideMunu', 'hidden')
+  @set('hideMenu', 'hidden')
 @end
 <!DOCTYPE html>
 <html>
@@ -18,86 +18,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
     @entryPointScripts('app')
   </head>
-  <body class="w-screen h-full overflow-hidden">
+  <body class="w-screen h-screen bg-[#F0F3F8]">
     <img src="{{ asset('assets/images/bg.jpg') }}" class="absolute w-full h-full -z-10 {{background}}"/>
-        <div class="flex absolute w-full top-5 lg:space-x-0 lg:w-auto lg:left-56 lg:top-7 z-10 px-5">
-            <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 lg:hidden no-animation hover:bg-transparent {{hideMunu}}" onclick="openDrawer()">
+        <div class="flex absolute w-full top-5 lg:space-x-0 lg:w-auto lg:left-56 lg:top-7 z-10">
+            <label for="my-drawer-2" class="btn btn-ghost drawer-button border-0 lg:hidden no-animation hover:bg-transparent {{hideMenu}}">
               <svg class="w-8 h-8 fill-current font-bold" width="48px" height="48px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><title>70 Basic icons by Xicons.co</title><path d="M41,14H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,14Z" fill="#6f7380"/><path d="M41,26H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,26Z" fill="#6f7380"/><path d="M41,38H7a2,2,0,0,1,0-4H41A2,2,0,0,1,41,38Z" fill="#6f7380"/></svg>
             </label>
-            <div class="{{hideSearch}}">
-              @!common.search({
-                text: 'Search',
-                btnProps: 'btn-block lg:w-64 text-base-content',
-                classProps: 'grow'
-              })
-            </div>
-
         </div>
-    <div class="flex">
+    <div class="flex w-full h-full justify-center">
        @if(!request.matchesRoute('/'))
-       <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64 hide">
+       <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64 lg:overflow-visible">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>
         <div class="drawer-side">
-          <label for="my-drawer-2" class="drawer-overlay"></label> 
-          <ul class="menu p-4 overflow-y-auto w-full bg-base-100 text-base-content">
-            <label id="close-btn" for="my-modal-3" class="lg:hidden absolute right-4 top-4" onclick="closeDrawer()">
+          <label for="my-drawer-2" class="drawer-overlay z-10"></label> 
+          <ul class="menu p-4 w-2/3 lg:w-full bg-base-100 text-base-content">
+            <label id="close-btn" for="my-modal-3" class="lg:hidden absolute right-2 top-2" onclick="closeDrawer()">
               <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 2"><g data-name="close"><rect width="24" height="24" transform="rotate(180 12 12)" opacity="0"/><path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/></g></g></svg>
             </label>
             <p class="text-center text-primary font-semibold text-4xl">internSIT</p>
-            @if(request.matchesRoute('/'))
-              @!common.button({
-                  text: 'Login',
-                  type: 'text',
-                  classProps: 'btn btn-sm bg-base-200 border-none text-black normal-case rounded-full mt-5 hover:border-0 active:border-0 focus:border-0 hover:bg-base-200 active:bg-base-200 focus:bg-base-200',
+            <div class="search mt-9 mb-2">
+              @!common.search({
+                text: 'Search',
+                btnProps: 'btn-block text-base-content',
               })
-              @else
-              <div class="avatar flex justify-center my-5">
-                <div class="w-16 h-16 rounded-full">
-                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                    viewBox="0 0 258.75 258.75" style="enable-background:new 0 0 258.75 258.75;" xml:space="preserve" class="fill-base-content/[.65]">
-                  <g>
-                    <circle cx="129.375" cy="60" r="60"/>
-                    <path d="M129.375,150c-60.061,0-108.75,48.689-108.75,108.75h217.5C238.125,198.689,189.436,150,129.375,150z"/>
-                  </g>
-                  </svg>
+            </div>
+            <div class="space-y-2">
+              <li>
+                  <a class='p-2 rounded-xs text-xs active:bg-base-300 active:text-base-content {{activeAnnouncement}}' href="{{ route('/announcement') }}">
+                    <svg class="fill-base-content w-5 h-5" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297.333 297.333" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 297.333 297.333">
+                      <g>
+                        <path d="M223.001,35.523l-102.99,45.06H10.333C4.833,80.584,0,84.968,0,90.468v79c0,5.5,4.833,10.116,10.333,10.116H16v72.884   c0,5.523,4.81,10.116,10.333,10.116h30c5.522,0,9.667-4.594,9.667-10.116v-72.884h54.011l102.99,44.943   c5.041,2.199,8.999-0.56,8.999-6.06v-177C232,35.968,228.042,33.324,223.001,35.523z M33,105.584h16v50H33V105.584z"/>
+                        <path d="m289.333,121.584h-17c-4.418,0-8,3.582-8,8 0,4.418 3.582,8 8,8h17c4.418,0 8-3.582 8-8 0-4.418-3.582-8-8-8z"/>
+                        <path d="m260.902,108.976c2.048,0 4.095-0.781 5.657-2.343l12.021-12.021c3.124-3.125 3.124-8.189 0-11.314-3.125-3.123-8.189-3.123-11.314,0l-12.021,12.021c-3.124,3.125-3.124,8.189 0,11.314 1.563,1.562 3.609,2.343 5.657,2.343z"/>
+                        <path d="m266.56,153.302c-3.125-3.123-8.19-3.123-11.314,0-3.124,3.125-3.124,8.189 0,11.314l12.021,12.021c1.563,1.561 3.609,2.343 5.657,2.343 2.048,0 4.095-0.781 5.657-2.343 3.124-3.125 3.124-8.189 0-11.314l-12.021-12.021z"/>
+                      </g>
+                    </svg>
+                    <p class="capitalize">Announcement</p> 
+                  </a>
+              </li>
+              <li>
+                  <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route('/file') }}">
+                    <img src="{{ asset('assets/images/file.svg') }}" class="fill-base-content w-5 h-5"/>  
+                    <p class="capitalize">file</p> 
+                  </a>
+              </li>
+              <li>
+                <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route(auth.user.role!=="student" ? '/students' : '/student/:id', { id: auth.user.user_id }) }}">
+                  <img src="{{ asset('assets/images/student-info.svg') }}" class="fill-base-content w-5 h-5"/>  
+                  <p class="capitalize">student information</p> 
+                </a>
+            </li>
+              <li>
+                  <a class="p-2 text-xs active:bg-base-300 active:text-base-content">
+                    <svg class="fill-base-content w-5 h-5" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z"/></svg>
+                    <p class="capitalize">dashboard</p> 
+                  </a>
+              </li>
+            </div>
+              <div class="flex items-center mt-auto">
+                <div class="avatar">
+                  <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
+                    <img src="{{ asset('assets/images/avatar.svg') }}"/>  
+                  </div>
+                </div>
+                <div class="content px-2 text-xs flex-1">
+                  <p class="font-medium">{{auth.user?.user_id}}</p>
+                  <p>{{auth.user?.role}}</p>
+                </div>
+                <div class="dropdown dropdown-top">
+                  <label tabindex="0">
+                    <div class="w-5 h-5 cursor-pointer">
+                      <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z"/></svg>
+                    </div>
+                  </label>
+                  <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
+                    <li><a onclick="openAlertConfirmlogout()" class="font-medium py-2 px-5 text-red-500 active:bg-transparent">Logout</a></li>
+                  </ul>
                 </div>
               </div>
-              <li>
-                <a class='active:bg-base-300 active:text-base-content {{activeAnnouncement}}' href="{{ route('/announcement') }}">
-                  <svg class="fill-base-content w-5 h-5" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297.333 297.333" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 297.333 297.333">
-                    <g>
-                      <path d="M223.001,35.523l-102.99,45.06H10.333C4.833,80.584,0,84.968,0,90.468v79c0,5.5,4.833,10.116,10.333,10.116H16v72.884   c0,5.523,4.81,10.116,10.333,10.116h30c5.522,0,9.667-4.594,9.667-10.116v-72.884h54.011l102.99,44.943   c5.041,2.199,8.999-0.56,8.999-6.06v-177C232,35.968,228.042,33.324,223.001,35.523z M33,105.584h16v50H33V105.584z"/>
-                      <path d="m289.333,121.584h-17c-4.418,0-8,3.582-8,8 0,4.418 3.582,8 8,8h17c4.418,0 8-3.582 8-8 0-4.418-3.582-8-8-8z"/>
-                      <path d="m260.902,108.976c2.048,0 4.095-0.781 5.657-2.343l12.021-12.021c3.124-3.125 3.124-8.189 0-11.314-3.125-3.123-8.189-3.123-11.314,0l-12.021,12.021c-3.124,3.125-3.124,8.189 0,11.314 1.563,1.562 3.609,2.343 5.657,2.343z"/>
-                      <path d="m266.56,153.302c-3.125-3.123-8.19-3.123-11.314,0-3.124,3.125-3.124,8.189 0,11.314l12.021,12.021c1.563,1.561 3.609,2.343 5.657,2.343 2.048,0 4.095-0.781 5.657-2.343 3.124-3.125 3.124-8.189 0-11.314l-12.021-12.021z"/>
-                    </g>
-                  </svg>
-                <p class="capitalize">Announcement</p> 
-                </a>
-              </li>
-              <li>
-                <a class="active:bg-base-300 active:text-base-content">
-                  <svg class="fill-base-content w-5 h-5" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><g><rect fill="none" height="24" width="24"/></g><g><path d="M18,15v3H6v-3H4v3c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-3H18z M7,9l1.41,1.41L11,7.83V16h2V7.83l2.59,2.58L17,9l-5-5L7,9z"/></g></svg>
-                <p class="capitalize">file</p> 
-                </a>
-              </li>
-              <li>
-                <a class="active:bg-base-300 active:text-base-content">
-                  <svg class="fill-base-content w-5 h-5" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z"/></svg>
-                <p class="capitalize">dashboard</p> 
-                </a>
-              </li>
-              @if(auth.user)
-                  @!common.button({
-                    text: 'Logout',
-                    type: 'text',
-                    classProps: 'btn-sm btn-outline border-2 w-24 h-10 border-base-200 self-center mt-auto mb-10',
-                    onclick: 'openAlertConfirmlogout()',
-                  })
-              @endif
-            @end
           </ul>
         </div>
       </div>
@@ -106,20 +108,23 @@
       @!section('announcement')
       @!section('post')
       @!section('add-edit-post')
+      @!section('file')
+      @!section('students')
     </div>
   </body>
 </html>
 <script>
   const openAlertConfirmlogout = () => {
-    const alertLogout = 
+    const alertLogout = document.createElement('div')
+    alertLogout.innerHTML = 
     `<div id="modal-confirm-logout" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
-      <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
+      <div class="alert-logout absolute z-20 top-1/2 left-1/2 w-9/12 md:w-1/2 lg:w-1/3 -translate-x-1/2 -translate-y-1/2">
         <div class="alert bg-base-100 shadow-lg font-bold">
-          <div>
+          <div class="flex md:self-start">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span>Are you sure to logout?</span>
           </div>
-          <div class="flex-none">
+          <div class="flex-none md:pt-5 lg:pt-16">
             <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertConfirmlogout()">no</button>
             <a href="{{route('auth.logout')}}">
             <button class="btn btn-sm btn-info rounded-3xl">yes</button>
@@ -128,7 +133,7 @@
         </div>
       </div>
     </div> `
-    document.body.innerHTML += alertLogout
+    document.body.appendChild(alertLogout)
   }
   const closeAlertConfirmlogout = () => {
     const element = document.getElementById('modal-confirm-logout');
@@ -136,13 +141,6 @@
   }
   const closeDrawer = () => {
     const checkBox = document.getElementById("my-drawer-2");
-    const sidebar = document.getElementById('sidebar');
     checkBox.checked = false
-    setTimeout(()=> sidebar.classList.toggle('hide'), 500);
-  }
-
-  const openDrawer = () => {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('hide')
   }
 </script>
