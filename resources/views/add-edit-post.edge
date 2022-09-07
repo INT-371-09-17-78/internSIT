@@ -84,7 +84,7 @@
 
   const deleteFile = (index, fileId) => {
     // console.log(typeof fileId);
-    showFiles = showFiles.filter(newFile => newFile.file_id !== parseInt(fileId))
+    showFiles = showFiles.filter(newFile => newFile.file_id !== String(fileId))
     // console.log(showFiles)
     // showFiles.splice(index, 1)
     document.getElementById(index).remove()
