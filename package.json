@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& echo %NODE_TLS_REJECT_UNAUTHORIZED%&& node ace serve --watch",
+    "dev": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& echo %NODE_TLS_REJECT_UNAUTHORIZED%&& yarn migrate:up&& node ace serve --watch",
     "build": "node ace build --production --ignore-ts-errors",
     "migrate:up": "node ace migration:fresh",
     "migrate:reset": "node ace migration:refresh",
-    "start": "node server.js",
+    "start": "node server.js && yarn migrate:up",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write ."
   },

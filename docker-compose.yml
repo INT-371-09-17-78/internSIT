@@ -16,6 +16,8 @@ services:
     volumes:
        #- ./db:/var/lib/mysql
        - ./mysqlinit:/docker-entrypoint-initdb.d/
+       - ./init.sh:/init.sh
+    entrypoint: sh -c "/init.sh"
     # command: mysql -udbuser -phelloDEV371_
   intern-sit:
     depends_on:
