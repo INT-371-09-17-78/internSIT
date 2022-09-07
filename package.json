@@ -7,7 +7,7 @@
     "build": "node ace build --production --ignore-ts-errors",
     "migrate:up": "node ace migration:fresh",
     "migrate:reset": "node ace migration:refresh",
-    "start": "node server.js && yarn migrate:up",
+    "start": "yarn migrate:up&& node server.js",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write ."
   },
