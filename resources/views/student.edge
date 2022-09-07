@@ -33,7 +33,7 @@
       <canvas id="pdfViewer" class="w-1/2"></canvas>
     </form>
     <form id="formElem2">
-      @if(auth.user.role != "student")
+      @if(auth.user.role != "student" && currentSteps.status != "Approve")
       <div class="form-control w-fit">
         <label class="label cursor-pointer">
           <span class="label-text">Approve</span> 
@@ -102,12 +102,12 @@
     window.location.reload()
   };
 
-var url = '/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{nextStep.steps}}'
+var url ='/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}' 
     // Loaded via <script> tag, create shortcut to access PDF.js exports.
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';  
-if({{nextStep.result}}){
+
   var loadingTask = pdfjsLib.getDocument(url);
 loadingTask.promise.then(function(pdf) {
   console.log('PDF loaded');
@@ -140,7 +140,7 @@ loadingTask.promise.then(function(pdf) {
   // PDF loading error
   console.error(reason);
 });
-}
+
 
 
 $("#myPdf").on("change", async function(e){
