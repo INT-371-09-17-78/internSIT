@@ -2,7 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Post from 'App/Models/Post'
 import User from 'App/Models/User'
 import FilesController from './FilesController'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default class PostsController {
   //   public async index() {

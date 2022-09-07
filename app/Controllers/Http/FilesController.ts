@@ -62,7 +62,7 @@ export default class FilesController {
     return err
   }
 
-  public async storeDirect({ auth, request, response }: HttpContextContract) {
+  public async storeDirect({ request, response }: HttpContextContract) {
     try {
       const { docId, studentId } = request.only(['docId', 'studentId'])
       const files = request.files('files', {
