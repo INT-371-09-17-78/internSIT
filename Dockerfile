@@ -18,6 +18,7 @@ RUN node ace build --production
 COPY --chown=node:node ./.env ./build/
 COPY --chown=node:node ./init.sh ./build/
 WORKDIR ./build
+RUN chmod +x ./init.sh
 EXPOSE 3333
 CMD [ "dumb-init", "yarn", "start" ]
 #CMD dumb-init node server.js ; node ace migration:run
