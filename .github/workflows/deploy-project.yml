@@ -84,8 +84,7 @@ jobs:
             docker image prune -af
             docker exec -it intern-sit-db mysql -uroot -proot -h localhost
             use mydb;
-            INSERT INTO documents (doc_name)
-            VALUES ('TR-01');
+            INSERT INTO documents (doc_name) VALUES ('TR-01');
 
            
 # test
