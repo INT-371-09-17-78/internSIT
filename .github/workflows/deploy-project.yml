@@ -83,7 +83,10 @@ jobs:
             docker compose up --build -d   
             docker image prune -af
             docker exec -it intern-sit-db mysql -uroot -proot -h localhost
-            show databases;
+            use mydb;
+            INSERT INTO documents (doc_name)
+            VALUES ('TR-01');
+
            
 # test
 #test
