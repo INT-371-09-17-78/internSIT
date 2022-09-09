@@ -3,7 +3,7 @@ version: '3.8'
 services:
   nginx:
     image: nginx:latest
-    container_name: webserver
+    container_name: intern-sit-nginx
     restart: unless-stopped
     ports:
       - 80:80

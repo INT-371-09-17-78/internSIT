@@ -85,7 +85,9 @@ jobs:
          
             
 
-# docker exec -it intern-sit-db mysql -uroot -phelloDEV371_ -h localhost          
+# docker exec -it intern-sit-db mysql -uroot -phelloDEV371_ -h localhost  
+            # docker stop intern-sit-app && docker rm intern-sit-app
+            # docker image rm ghcr.io/int-371-09-17-78/intern-sit:1.0.0        
 # test
 #test
 # az acr login -n suesiRegistry
