@@ -82,10 +82,10 @@ jobs:
             docker image rm ghcr.io/int-371-09-17-78/intern-sit:1.0.0
             docker compose up --build -d   
             docker image prune -af
-            docker exec -it intern-sit-db mysql -uroot -phelloDEV371_ -h localhost
+         
             
 
-           
+# docker exec -it intern-sit-db mysql -uroot -phelloDEV371_ -h localhost          
 # test
 #test
 # az acr login -n suesiRegistry
