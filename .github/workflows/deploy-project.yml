@@ -80,6 +80,8 @@ jobs:
             cd ./internSIT
             docker stop intern-sit-app && docker rm intern-sit-app
             docker image rm ghcr.io/int-371-09-17-78/intern-sit:1.0.0
+            docker stop intern-sit-nginx && docker rm intern-sit-nginx
+            docker image rm nginx:lastest
             docker compose up --build -d   
             docker image prune -af
          
