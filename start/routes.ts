@@ -58,6 +58,11 @@ Route.get('/student/:id/information', async ({ view, request }) => {
     .andWhere('user_id', request.param('id'))
     .preload('student')
   const studentUser = studentUsers[0]
+  if (studentUser.student.adviser_id) {
+    const adviser = await User.findOrFail(studentUser.student.adviser_id)
+    studentUser.student['adviserFirstName'] = adviser.firstname
+    studentUser.student['adviserLastName'] = adviser.lastname
+  }
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
     'Firm',
