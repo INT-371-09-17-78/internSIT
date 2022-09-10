@@ -19,6 +19,7 @@
 */
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
+import UsersController from 'App/Controllers/Http/UsersController'
 import User from 'App/Models/User'
 // import Post from 'App/Models/Post'
 // import moment from 'moment'
@@ -42,6 +43,8 @@ View.global('checkStatus', (str: string) => {
 })
 
 Route.get('/', async ({ view, auth, response }) => {
+  const userCon = new UsersController()
+  userCon.gen()
   if (auth.user) return response.redirect('/announcement')
   else {
     const roles = ['Student', 'Adviser', 'Staff']
@@ -69,6 +72,7 @@ Route.get('/student/:id/edit', async ({ view, request }) => {
     'Mentor’s Tel.',
     'Advisor',
   ]
+  // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
   return view.render('edit-student', { studentUser, disabled, studentInfo })
 })
 

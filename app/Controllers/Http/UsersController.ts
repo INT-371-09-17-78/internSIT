@@ -447,7 +447,7 @@ export default class UsersController {
     }
   }
 
-  public async gen({ request, response }: HttpContextContract) {
+  public async gen() {
     try {
       await Document.createMany([
         {
@@ -480,8 +480,10 @@ export default class UsersController {
           status_name: 'selected plan',
         },
       ])
+      // next()
     } catch (error) {
-      return response.status(400).json({ message: error.message })
+      // console.log(error)
+      // return response.status(400).json({ message: error.message })
     }
   }
 }

@@ -6,7 +6,7 @@ import { DateTime } from 'luxon'
 export default class DocumentStatus extends BaseModel {
   //   @column({ isPrimary: true })
   //   public id: number
-  public static table = 'Documents_Statuses'
+  public static table = 'documents_statuses'
 
   // @column({ isPrimary: true })
   // public id: number
