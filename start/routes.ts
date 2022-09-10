@@ -81,6 +81,7 @@ Route.get('/student/:id/edit', async ({ view, request }) => {
     .andWhere('user_id', request.param('id'))
     .preload('student')
   const studentUser = studentUsers[0]
+
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
     'Firm',
@@ -135,6 +136,7 @@ Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
 // Route.get('/api/user/:role', 'UsersController.getUserByRole')
 Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus')
+Route.patch('/api/user/student/info/:id', 'UsersController.updateStudentUserInfo')
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 

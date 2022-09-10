@@ -402,6 +402,73 @@ export default class UsersController {
     }
   }
 
+  public async updateStudentUserInfo({ request, response }: HttpContextContract) {
+    try {
+      const {
+        firm,
+        email,
+        tel,
+        department,
+        position,
+        duration,
+        menter,
+        menterPosition,
+        menterEmail,
+        menterTel,
+        adviserFirstName,
+        adviserLastName,
+      } = request.only([
+        'firm',
+        'email',
+        'tel',
+        'department',
+        'position',
+        'duration',
+        'menter',
+        'menterPosition',
+        'menterEmail',
+        'menterTel',
+        'adviserFirstName',
+        'adviserLastName',
+      ])
+      const studentUsers = await User.query()
+        .where('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      // const studentUser = await Student.findOrFail(request.param('id'))
+      studentUser.student.company = firm
+      studentUser.student.tel = tel
+      studentUser.student.department = department
+      studentUser.student.position = position
+      studentUser.student.plan = duration
+      studentUser.student.mentor_name = menter
+      studentUser.student.mentor_position = menterPosition
+      studentUser.student.mentor_email = menterEmail
+      studentUser.student.mentor_tel_no = menterTel
+      studentUser.email = email
+      // if (email) {
+      //   const studentUser = await User.query()
+      //     .where('user_id', request.param('id'))
+      //     .preload('student')
+      //   studentUser[0].email = email
+      //   await studentUser[0].save()
+      // }
+      const adviserUser = await User.query()
+        .where('firstName', adviserFirstName)
+        .andWhere('lastName', adviserLastName)
+        .andWhere('role', 'adviser')
+      if (adviserUser && adviserUser.length > 0) {
+        studentUser.student.adviser_id = adviserUser[0].user_id
+        // adviserUser[0].related('student')
+      }
+      await studentUser.save()
+      await studentUser.student.save()
+      response.status(200).json('update success')
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
   public async test({ request, response }: HttpContextContract) {
     try {
       await Document.create({

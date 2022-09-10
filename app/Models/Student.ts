@@ -19,6 +19,12 @@ export default class Student extends BaseModel {
   @column()
   public plan: number
 
+  @column()
+  public tel: string
+
+  // @column()
+  // public email: string
+
   @column.date()
   public start_date: DateTime
 
@@ -35,13 +41,16 @@ export default class Student extends BaseModel {
   public mentor_tel_no: string
 
   @column()
-  public study: string
+  public mentor_position: string
+
+  // @column()
+  // public study: string
 
   // @column()
   // public status: string
 
-  @column()
-  public reasons: string
+  // @column()
+  // public reasons: string
 
   @hasMany(() => Document_Status, { foreignKey: 'student_id' })
   public document_status: HasMany<typeof Document_Status>
