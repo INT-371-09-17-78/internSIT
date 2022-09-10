@@ -58,6 +58,7 @@ Route.get('/student/:id/information', async ({ view, request }) => {
     .andWhere('user_id', request.param('id'))
     .preload('student')
   const studentUser = studentUsers[0]
+  let adviser: User
   if (studentUser.student.adviser_id) {
     const adviser = await User.findOrFail(studentUser.student.adviser_id)
     studentUser.student['adviserFirstName'] = adviser.firstname
@@ -65,17 +66,23 @@ Route.get('/student/:id/information', async ({ view, request }) => {
   }
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
-    'Firm',
-    'Email',
-    'Tel.',
-    'Department',
-    'Position',
-    'Internship duration',
-    'Mentor',
-    'Mentor’s Position',
-    'Mentor’s Email',
-    'Mentor’s Tel.',
-    'Advisor',
+    { title: 'Firm', value: studentUser.student.company },
+    { title: 'Email', value: studentUser.email },
+    { title: 'Tel.', value: studentUser.student.tel },
+    { title: 'Department', value: studentUser.student.department },
+    { title: 'Position', value: studentUser.student.position },
+    { title: 'Internship duration', value: studentUser.student.plan },
+    { title: 'Mentor', value: studentUser.student.mentor_name },
+    { title: 'Mentor’s Position', value: studentUser.student.mentor_position },
+    { title: 'Mentor’s Email', value: studentUser.student.mentor_email },
+    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no },
+    {
+      title: 'Advisor',
+      value:
+        studentUser.student['adviserFirstName'] && studentUser.student['adviserLastName']
+          ? studentUser.student['adviserFirstName'] + ' ' + studentUser.student['adviserLastName']
+          : '',
+    },
   ]
   return view.render('student-info', { studentUser, disabled, studentInfo })
 })
@@ -89,17 +96,23 @@ Route.get('/student/:id/edit', async ({ view, request }) => {
 
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
-    'Firm',
-    'Email',
-    'Tel.',
-    'Department',
-    'Position',
-    'Internship duration',
-    'Mentor',
-    'Mentor’s Position',
-    'Mentor’s Email',
-    'Mentor’s Tel.',
-    'Advisor',
+    { title: 'Firm', value: studentUser.student.company },
+    { title: 'Email', value: studentUser.email },
+    { title: 'Tel.', value: studentUser.student.tel },
+    { title: 'Department', value: studentUser.student.department },
+    { title: 'Position', value: studentUser.student.position },
+    { title: 'Internship duration', value: studentUser.student.plan },
+    { title: 'Mentor', value: studentUser.student.mentor_name },
+    { title: 'Mentor’s Position', value: studentUser.student.mentor_position },
+    { title: 'Mentor’s Email', value: studentUser.student.mentor_email },
+    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no },
+    {
+      title: 'Advisor',
+      value:
+        studentUser.student['adviserFirstName'] && studentUser.student['adviserLastName']
+          ? studentUser.student['adviserFirstName'] + ' ' + studentUser.student['adviserLastName']
+          : '',
+    },
   ]
   // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
   return view.render('edit-student', { studentUser, disabled, studentInfo })

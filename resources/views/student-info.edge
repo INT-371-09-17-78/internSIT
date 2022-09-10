@@ -30,13 +30,10 @@
             </div>
           </a>
           <div class="bg-white rounded-xl w-full h-fit flex flex-col p-6">
-            <div class="grid grid-cols-2 w-96 gap-y-3" id="test">
+            <div class="grid grid-cols-2 gap-y-3 w-fit" id="test">
               @each(info in studentInfo)
-              <p class="font-bold">{{info}}</p>
-              <p class="break-words">-</p>
-              @if(eiei === '')
-              <input class="border border-[#ACB5BD] rounded-md"/>
-              @end
+              <p class="font-bold">{{info.title}}</p>
+              <p class="break-words">{{info.value || '-'}}</p>
               @end
             </div>
             @if(auth.user.role === "staff")

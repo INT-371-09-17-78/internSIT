@@ -2,7 +2,7 @@
 @set('title', 'students page')
 @section('students')
 <section class="h-full w-full z-[5] relative flex flex-col pl-11 pt-5">
-  <div class="flex flex-col">
+  <div class="flex flex-col z-10">
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <p class="text-base">{{studentUser.user_id}}</p>
     <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
