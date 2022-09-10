@@ -5,6 +5,7 @@
   <div class="flex flex-col">
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <p class="text-base">{{studentUser.user_id}}</p>
+    <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
   </div>
   @if(auth.user.role === "student" && !studentUser.student.plan)
     <div class="w-full h-full absolute top-0 flex justify-center items-center">
@@ -46,7 +47,7 @@
   </div>
   @if(studentUser.student.plan)
   <div class="flex flex-wrap w-full space-x-5 pt-9">
-    <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
+    {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
       <p class="font-bold">{{info}}</p>
       <p class="break-words">-</p>
@@ -54,7 +55,7 @@
       @if(auth.user.role === "staff")
       <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="underline">Edit student info</a>
       @end
-    </div>
+    </div>  --}}
     <div>
       <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96 w-72"></canvas>
       <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white">Previous</button>

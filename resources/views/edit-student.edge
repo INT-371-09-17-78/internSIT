@@ -1,12 +1,13 @@
 @layout('layouts/app')
 @set('title', 'edit-student page')
+@set('eiei', '')
 @section('edit-student')
   <section class="h-full w-full z-[5]">
         <div class="flex flex-col pt-5">
             <p class="text-xl font-bold pl-11">{{studentUser.firstname + " " + studentUser.lastname}}</p>
             <p class="text-base pl-11">{{studentUser.user_id}}</p>
         </div>
-        <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex pl-11 mt-5 space-x-2">
+        {{--  <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex pl-11 mt-5 space-x-2">
         <select {{disabled}} id="study" name="study"
           class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-64">
     
@@ -20,16 +21,29 @@
           @else
             <button id="submitButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">submit</button>
           @end
-        </form>
-        <div class="grid grid-cols-2 pl-11 pt-9 w-96 gap-y-3">
-            @each(info in studentInfo)
-            <p class="font-bold">{{info}}</p>
-            <input class="border border-[#ACB5BD] rounded-md"/>
-            @end
+        </form>  --}}
+        
+        <div class="px-16 py-5">
+          <a href="{{ route('/student/:id', { id: studentUser.user_id }) }}">
+            <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
+              <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
+              <p class="font-semibold">Back</p>
+            </div>
+          </a>
+          <div class="bg-white rounded-xl w-full h-fit flex flex-col p-6">
+            <div class="grid grid-cols-2 w-96 gap-y-3" id="test">
+              @each(info in studentInfo)
+              <p class="font-bold">{{info}}</p>
+              <p class="break-words">-</p>
+              @if(eiei !== '')
+              <input class="border border-[#ACB5BD] rounded-md"/>
+              @end
+              @end
+            </div>
             @if(auth.user.role === "staff")
-            <a href="{{ route('/student/:id', { id: studentUser.user_id }) }}" class="underline">Back</a>
-            <button type="submit" class="w-20 justify-self-end btn btn-sm btn-primary rounded-3xl text-white">submit</button>
+            <button type="submit" class="w-20 self-center btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="@set('eiei', 'ee');">edit</button>
             @end
+          </div>
         </div>
   </section>
 @end
