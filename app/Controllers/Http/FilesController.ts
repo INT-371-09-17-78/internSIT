@@ -199,7 +199,7 @@ export default class FilesController {
         filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
         console.log(filePath)
 
-        response.attachment(filePath, file.file_name, undefined, undefined, (error) => {
+        response.attachment(filePath, file.file_name, 'inline', undefined, (error) => {
           if (error.code === 'ENOENT') {
             return ['File does not exists', 404]
           }

@@ -19,6 +19,7 @@
 */
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
+import User from 'App/Models/User'
 // import Post from 'App/Models/Post'
 // import moment from 'moment'
 View.global('middleEllipsis', (str: string) => {
@@ -28,12 +29,47 @@ View.global('middleEllipsis', (str: string) => {
   return str
 })
 
+View.global('checkStatus', (str: string) => {
+  if (str.includes('Approve') || str.includes('Accepted by firm')) {
+    return 'text-green-700'
+  } else if (str.includes('Pending')) {
+    return 'text-yellow-700'
+  } else if (str.includes('Not approve')) {
+    return 'text-red-700'
+  } else {
+    return ''
+  }
+})
+
 Route.get('/', async ({ view, auth, response }) => {
   if (auth.user) return response.redirect('/announcement')
   else {
     const roles = ['Student', 'Adviser', 'Staff']
     return view.render('home', { roles })
   }
+})
+
+Route.get('/student/:id/edit', async ({ view, request }) => {
+  const studentUsers = await User.query()
+    .where('role', 'student')
+    .andWhere('user_id', request.param('id'))
+    .preload('student')
+  const studentUser = studentUsers[0]
+  const disabled = studentUser.student.plan === null ? '' : 'disabled'
+  const studentInfo = [
+    'Firm',
+    'Email',
+    'Tel.',
+    'Department',
+    'Position',
+    'Internship duration',
+    'Mentor',
+    'Mentor’s Position',
+    'Mentor’s Email',
+    'Mentor’s Tel.',
+    'Advisor',
+  ]
+  return view.render('edit-student', { studentUser, disabled, studentInfo })
 })
 
 Route.get('/file', 'FilesController.showAllFile')

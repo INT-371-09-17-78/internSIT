@@ -168,6 +168,19 @@ export default class UsersController {
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
       const plans = [2, 4, 6]
+      const studentInfo = [
+        'Firm',
+        'Email',
+        'Tel.',
+        'Department',
+        'Position',
+        'Internship duration',
+        'Mentor',
+        'Mentor’s Position',
+        'Mentor’s Email',
+        'Mentor’s Tel.',
+        'Advisor',
+      ]
       let steps: any =
         // studentUser.student.plan === 6
         //   ?
@@ -190,6 +203,38 @@ export default class UsersController {
           },
           {
             steps: 'Informed supervision (1/6)',
+            result: false,
+          },
+          {
+            steps: 'TR-03 and TR-05 (2/6)',
+            result: false,
+          },
+          {
+            steps: 'Informed supervision (2/6)',
+            result: false,
+          },
+          {
+            steps: 'TR-03 and TR-05 (3/6)',
+            result: false,
+          },
+          {
+            steps: 'Informed supervision (3/6)',
+            result: false,
+          },
+          {
+            steps: 'TR-03 and TR-05 (4/6)',
+            result: false,
+          },
+          {
+            steps: 'Informed supervision (4/6)',
+            result: false,
+          },
+          {
+            steps: 'TR-03 and TR-05 (5/6)',
+            result: false,
+          },
+          {
+            steps: 'Informed supervision (5/6)',
             result: false,
           },
         ]
@@ -289,7 +334,15 @@ export default class UsersController {
       }
       console.log(currentSteps)
 
-      return view.render('student', { studentUser, plans, disabled, steps, nextStep, currentSteps })
+      return view.render('student', {
+        studentUser,
+        plans,
+        disabled,
+        steps,
+        nextStep,
+        currentSteps,
+        studentInfo,
+      })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

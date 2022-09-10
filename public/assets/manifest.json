@@ -3,6 +3,7 @@
   "assets/app.js": "http://localhost:8080/assets/app.js",
   "assets/images/bg.jpg": "http://localhost:8080/assets/images/bg.5a9ffc61.jpg",
   "assets/images/nui.jpg": "http://localhost:8080/assets/images/nui.d5edd61c.jpg",
+  "assets/images/waiting.gif": "http://localhost:8080/assets/images/waiting.38e036df.gif",
   "assets/images/home.svg": "http://localhost:8080/assets/images/home.a1f1362c.svg",
   "assets/images/avatar.svg": "http://localhost:8080/assets/images/avatar.d04e51c6.svg",
   "assets/images/close.svg": "http://localhost:8080/assets/images/close.c18b9af4.svg",
