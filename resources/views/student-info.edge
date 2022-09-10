@@ -1,6 +1,6 @@
 @layout('layouts/app')
-@set('title', 'edit-student page')
-@section('edit-student')
+@set('title', 'student-info page')
+@section('student-info')
   <section class="h-full w-full z-[5]">
         <div class="flex flex-col pt-5">
             <p class="text-xl font-bold pl-11">{{studentUser.firstname + " " + studentUser.lastname}}</p>
@@ -33,13 +33,16 @@
             <div class="grid grid-cols-2 w-96 gap-y-3" id="test">
               @each(info in studentInfo)
               <p class="font-bold">{{info}}</p>
+              <p class="break-words">-</p>
+              @if(eiei === '')
               <input class="border border-[#ACB5BD] rounded-md"/>
+              @end
               @end
             </div>
             @if(auth.user.role === "staff")
-            <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="self-center mt-2">
-            <button type="submit" class="w-20 btn btn-sm btn-primary rounded-3xl text-white capitalize">submit</button>
-             </a>
+            <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="self-center mt-2">
+              <button type="submit" class="w-20 btn btn-sm btn-primary rounded-3xl text-white capitalize">edit</button>
+            </a>
             @end
           </div>
         </div>
