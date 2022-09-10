@@ -411,10 +411,10 @@ export default class UsersController {
         department,
         position,
         duration,
-        menter,
-        menterPosition,
-        menterEmail,
-        menterTel,
+        mentor,
+        mentorPosition,
+        mentorEmail,
+        mentorTel,
         adviserFullName,
       } = request.only([
         'firm',
@@ -423,10 +423,10 @@ export default class UsersController {
         'department',
         'position',
         'duration',
-        'menter',
-        'menterPosition',
-        'menterEmail',
-        'menterTel',
+        'mentor',
+        'mentorPosition',
+        'mentorEmail',
+        'mentorTel',
         'adviserFullName',
       ])
       const studentUsers = await User.query()
@@ -439,10 +439,10 @@ export default class UsersController {
       studentUser.student.department = department
       studentUser.student.position = position
       studentUser.student.plan = duration
-      studentUser.student.mentor_name = menter
-      studentUser.student.mentor_position = menterPosition
-      studentUser.student.mentor_email = menterEmail
-      studentUser.student.mentor_tel_no = menterTel
+      studentUser.student.mentor_name = mentor
+      studentUser.student.mentor_position = mentorPosition
+      studentUser.student.mentor_email = mentorEmail
+      studentUser.student.mentor_tel_no = mentorTel
       studentUser.email = email
       // if (email) {
       //   const studentUser = await User.query()
@@ -452,7 +452,6 @@ export default class UsersController {
       //   await studentUser[0].save()
       // }
       const adviserFullNameSplit = adviserFullName.split(' ')
-      console.log(adviserFullNameSplit[0], adviserFullNameSplit[1])
       const adviserUser = await User.query()
         .where('firstName', adviserFullNameSplit[0])
         .andWhere('lastName', adviserFullNameSplit[1])

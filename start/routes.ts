@@ -64,19 +64,24 @@ Route.get('/student/:id/information', async ({ view, request }) => {
   }
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
-    { title: 'Firm', value: studentUser.student.company },
-    { title: 'Email', value: studentUser.email },
-    { title: 'Tel.', value: studentUser.student.tel },
-    { title: 'Department', value: studentUser.student.department },
-    { title: 'Position', value: studentUser.student.position },
-    { title: 'Internship duration', value: studentUser.student.plan },
-    { title: 'Mentor', value: studentUser.student.mentor_name },
-    { title: 'Mentor’s Position', value: studentUser.student.mentor_position },
-    { title: 'Mentor’s Email', value: studentUser.student.mentor_email },
-    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no },
+    { title: 'Firm', value: studentUser.student.company, key: 'firm' },
+    { title: 'Email', value: studentUser.email, key: 'email' },
+    { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+    { title: 'Department', value: studentUser.student.department, key: 'department' },
+    { title: 'Position', value: studentUser.student.position, key: 'position' },
+    { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+    { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+    {
+      title: 'Mentor’s Position',
+      value: studentUser.student.mentor_position,
+      key: 'mentorPosition',
+    },
+    { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
     {
       title: 'Advisor',
       value: studentUser.student['adviserFullName'] ? studentUser.student['adviserFullName'] : '',
+      key: 'adviserFullName',
     },
   ]
   return view.render('student-info', { studentUser, disabled, studentInfo })
