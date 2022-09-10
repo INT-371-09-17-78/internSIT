@@ -56,7 +56,7 @@
       @end
     </div>
     <div>
-      <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96"></canvas>
+      <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96 w-72"></canvas>
       <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white">Previous</button>
       <button id="next" class="btn btn-sm btn-primary rounded-3xl text-white">Next</button>
       <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
@@ -310,48 +310,55 @@ if({{currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve
 // }
 
 
-// $("#myPdf").on("change", async function(e){
-// 	var file = e.target.files[0]
-// 	if(file.type == "application/pdf"){
-// 		var fileReader = new FileReader();  
-// 		fileReader.onload = function() {
-// 			var pdfData = new Uint8Array(this.result);
-// 			// Using DocumentInitParameters object to load binary data.
-// 			var loadingTask = pdfjsLib.getDocument({data: pdfData});
-// 			loadingTask.promise.then(function(pdf) {
-// 			  console.log('PDF loaded');
+$("#myPdf").on("change", async function(e){
+	var file = e.target.files[0]
+	if(file.type == "application/pdf"){
+		var fileReader = new FileReader();  
+		fileReader.onload = function() {
+			var pdfData = new Uint8Array(this.result);
+			// Using DocumentInitParameters object to load binary data.
+			// var loadingTask = pdfjsLib.getDocument({data: pdfData});
+      pdfjsLib.getDocument({data: pdfData}).promise.then(function(pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+        // Initial/first page rendering
+        renderPage(pageNum);
+      })
+			// loadingTask.promise.then(function(pdf) {
+			//   console.log('PDF loaded');
 			  
-// 			  // Fetch the first page
-// 			  var pageNumber = 1;
-// 			  pdf.getPage(pageNumber).then(function(page) {
-// 				console.log('Page loaded');
+			//   // Fetch the first page
+			//   var pageNumber = 1;
+			//   pdf.getPage(pageNumber).then(function(page) {
+			// 	console.log('Page loaded');
 				
-// 				var scale = 1.5;
-// 				var viewport = page.getViewport({scale: scale});
+			// 	var scale = 1.5;
+			// 	var viewport = page.getViewport({scale: scale});
 
-// 				// Prepare canvas using PDF page dimensions
-// 				var canvas = document.getElementById('pdfViewer');
-// 				var context = canvas.getContext('2d');
-// 				canvas.height = viewport.height;
-// 				canvas.width = viewport.width;
+			// 	// Prepare canvas using PDF page dimensions
+			// 	var canvas = document.getElementById('pdfViewer');
+			// 	var context = canvas.getContext('2d');
+			// 	canvas.height = viewport.height;
+			// 	canvas.width = viewport.width;
 
-// 				// Render PDF page into canvas context
-// 				var renderContext = {
-// 				  canvasContext: context,
-// 				  viewport: viewport
-// 				};
-// 				var renderTask = page.render(renderContext);
-// 				renderTask.promise.then(function () {
-// 				  console.log('Page rendered');
-// 				});
-// 			  });
-// 			}, function (reason) {
-// 			  // PDF loading error
-// 			  console.error(reason);
-// 			});
-// 		};
-// 		fileReader.readAsArrayBuffer(file);
-// 	}
-// });
+			// 	// Render PDF page into canvas context
+			// 	var renderContext = {
+			// 	  canvasContext: context,
+			// 	  viewport: viewport
+			// 	};
+			// 	var renderTask = page.render(renderContext);
+			// 	renderTask.promise.then(function () {
+			// 	  console.log('Page rendered');
+			// 	});
+			//   });
+			// }, function (reason) {
+			//   // PDF loading error
+			//   console.error(reason);
+			// });
+		};
+		fileReader.readAsArrayBuffer(file);
+	}
+});
 </script>
 @end
