@@ -451,15 +451,20 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
-      const adviserFullNameSplit = adviserFullName.split(' ')
-      const adviserUser = await User.query()
-        .where('firstName', adviserFullNameSplit[0])
-        .andWhere('lastName', adviserFullNameSplit[1])
-        .andWhere('role', 'adviser')
-      if (adviserUser && adviserUser.length > 0) {
-        studentUser.student.adviser_id = adviserUser[0].user_id
-        // adviserUser[0].related('student')
+      if (adviserFullName !== '') {
+        const adviserFullNameSplit = adviserFullName.split(' ')
+        if (adviserFullNameSplit && adviserFullNameSplit.length > 1) {
+          const adviserUser = await User.query()
+            .where('firstName', adviserFullNameSplit[0])
+            .andWhere('lastName', adviserFullNameSplit[1])
+            .andWhere('role', 'adviser')
+          if (adviserUser && adviserUser.length > 0) {
+            studentUser.student.adviser_id = adviserUser[0].user_id
+            // adviserUser[0].related('student')
+          }
+        }
       }
+
       await studentUser.save()
       await studentUser.student.save()
       response.status(200).json('update success')
