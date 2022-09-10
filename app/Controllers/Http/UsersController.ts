@@ -415,8 +415,7 @@ export default class UsersController {
         menterPosition,
         menterEmail,
         menterTel,
-        adviserFirstName,
-        adviserLastName,
+        adviserFullName,
       } = request.only([
         'firm',
         'email',
@@ -428,8 +427,7 @@ export default class UsersController {
         'menterPosition',
         'menterEmail',
         'menterTel',
-        'adviserFirstName',
-        'adviserLastName',
+        'adviserFullName',
       ])
       const studentUsers = await User.query()
         .where('user_id', request.param('id'))
@@ -453,9 +451,11 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
+      const adviserFullNameSplit = adviserFullName.split(' ')
+      console.log(adviserFullNameSplit[0], adviserFullNameSplit[1])
       const adviserUser = await User.query()
-        .where('firstName', adviserFirstName)
-        .andWhere('lastName', adviserLastName)
+        .where('firstName', adviserFullNameSplit[0])
+        .andWhere('lastName', adviserFullNameSplit[1])
         .andWhere('role', 'adviser')
       if (adviserUser && adviserUser.length > 0) {
         studentUser.student.adviser_id = adviserUser[0].user_id
