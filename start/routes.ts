@@ -49,6 +49,29 @@ Route.get('/', async ({ view, auth, response }) => {
   }
 })
 
+Route.get('/student/:id/information', async ({ view, request }) => {
+  const studentUsers = await User.query()
+    .where('role', 'student')
+    .andWhere('user_id', request.param('id'))
+    .preload('student')
+  const studentUser = studentUsers[0]
+  const disabled = studentUser.student.plan === null ? '' : 'disabled'
+  const studentInfo = [
+    'Firm',
+    'Email',
+    'Tel.',
+    'Department',
+    'Position',
+    'Internship duration',
+    'Mentor',
+    'Mentor’s Position',
+    'Mentor’s Email',
+    'Mentor’s Tel.',
+    'Advisor',
+  ]
+  return view.render('student-info', { studentUser, disabled, studentInfo })
+})
+
 Route.get('/student/:id/edit', async ({ view, request }) => {
   const studentUsers = await User.query()
     .where('role', 'student')
