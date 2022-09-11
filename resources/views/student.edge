@@ -113,7 +113,7 @@
 </section>
 <script>
   const showTextArea = () => {
-    const c = document.getElementById("content")
+    const c = document.getElementById("reason")
     if(c) return
     const referenceNode = document.getElementById("radio-group")
     const ele = document.createElement("textarea")
@@ -124,7 +124,7 @@
     referenceNode.parentNode.insertBefore(ele, referenceNode.nextSibling);
   }
   const removeTextArea = () => {
-    const c = document.getElementById("content")
+    const c = document.getElementById("reason")
     if(c) c.remove()
   }
   const editPlan = (event) => {

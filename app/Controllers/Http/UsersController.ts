@@ -393,8 +393,8 @@ export default class UsersController {
             student_id: studentUser.student_id,
             document_id: docResult.doc_name,
             status_id: statusResult.status_name,
-            no_approve_reason:
-              reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
+            // no_approve_reason:
+            //   reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
           })
         }
       }
