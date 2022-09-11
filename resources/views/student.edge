@@ -21,9 +21,9 @@
     @else
     <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2">
       <select {{disabled}} id="study" name="study"
-      class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-64">
+      class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
 
-      <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please choose student plan"}}</option>
+      <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Choose plan"}}</option>
       @each(plan in plans)
         <option value={{ plan }}>{{ plan + " month" }}</option>
       @end
@@ -72,8 +72,14 @@
           @if(currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve")
           <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}&&prev=prev">Open PDF file</a>
           @end
-        </div>
-        <p>{{currentSteps.status ==="Pending" ? "Submitted" : "Not Submitted"}}</p>
+        </div> 
+        <p>{{currentSteps.status ==="Pending" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
+        @if(currentSteps.status ==="Not Approve")
+        <div class="flex flex-col mt-5">
+          <p class="font-bold text-red-500">{{nextStep.steps}} disapprove</p>
+          <p>{{currentSteps.reason}}</p>
+        </div> 
+        @end
         @if(auth.user.role === "student")
           <input type="file" id="myPdf" class="mt-5" /><br>
           <button class="btn btn-sm btn-primary rounded-3xl text-white mt-2">submit</button>
@@ -81,7 +87,7 @@
       </form>
       <form id="formElem2">
         @if(auth.user.role != "student" && currentSteps.status != "Approve" && currentSteps.steps != "Accepted by firm")
-        <div class="flex" id="radio-group">
+        <div class="flex mt-5" id="radio-group">
           <div class="form-control w-fit">
             <label class="label cursor-pointer space-x-2">
               <input type="radio" id="approve" name="radio" value="Approve" class="radio checked:bg-blue-500" checked onclick="removeTextArea()"/>
@@ -111,8 +117,8 @@
     if(c) return
     const referenceNode = document.getElementById("radio-group")
     const ele = document.createElement("textarea")
-    ele.id = "content"
-    ele.name = "content"
+    ele.id = "reason"
+    ele.name = "reason"
     ele.className = "p-3 w-full h-28 text-xs rounded-lg"
     ele.placeholder = "Write your reasons why not approve..."
     referenceNode.parentNode.insertBefore(ele, referenceNode.nextSibling);
@@ -143,9 +149,11 @@
   if(formElem2)
   formElem2.onsubmit = async (event) => {
     event.preventDefault() 
+    const status = document.querySelector('input[name="radio"]:checked').value
     const body = {
-      status : document.querySelector('input[name="radio"]:checked').value,
+      status : status,
       doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
+      reason : status === "Approve" ? "" : document.getElementById('reason').value
     }
 
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
