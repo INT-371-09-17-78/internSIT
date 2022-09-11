@@ -110,7 +110,7 @@
     </div>
   </div>
   @end
-  @if(nextStep.name === 'Accepted by firm')
+  @if(nextStep.name === 'Accepted by firm' && studentUser.student.plan)
   @if(auth.user.role !== "student")
   <p class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">Waiting for student to confirm</p>
   @else
