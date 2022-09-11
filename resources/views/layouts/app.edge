@@ -40,13 +40,13 @@
               <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 2"><g data-name="close"><rect width="24" height="24" transform="rotate(180 12 12)" opacity="0"/><path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/></g></g></svg>
             </label>
             <p class="text-center text-primary font-semibold text-4xl">internSIT</p>
-            <div class="search mt-9 mb-2">
+            {{--  <div class="search mt-9 mb-2">
               @!common.search({
                 text: 'Search',
                 btnProps: 'btn-block text-base-content',
               })
-            </div>
-            <div class="space-y-2">
+            </div>  --}}
+            <div class="space-y-2 mt-5">
               <li>
                   <a class='p-2 rounded-xs text-xs active:bg-base-300 active:text-base-content {{activeAnnouncement}}' href="{{ route('/announcement') }}">
                     <svg class="fill-base-content w-5 h-5" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297.333 297.333" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 297.333 297.333">
@@ -110,6 +110,8 @@
       @!section('add-edit-post')
       @!section('file')
       @!section('students')
+      @!section('student-info')
+      @!section('edit-student')
     </div>
   </body>
 </html>

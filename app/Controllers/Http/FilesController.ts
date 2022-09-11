@@ -6,6 +6,7 @@ import File from 'App/Models/File'
 import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
 import Document from 'App/Models/Document'
+import moment from 'moment-timezone'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
@@ -23,7 +24,6 @@ export default class FilesController {
       size: '2mb',
       // extnames: ['jpg', 'png', 'gif'],
     })
-
     const newItems = files.filter((b) => !allImages.some((a) => String(a) === String(b.file_id)))
     if (newItems && newItems.length > 0) {
       for (let newItem of newItems) {
@@ -170,7 +170,19 @@ export default class FilesController {
   public async showAllFile({ view, response }: HttpContextContract) {
     try {
       const files = await File.query().whereNull('doc_id')
-      return view.render('file', { files })
+      for (const file of files) {
+        const post = await Post.find(file.post_id)
+        if (post) {
+          file.user_id = post.user_id
+        }
+        // file.updated_at = moment(file.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A')
+      }
+      const filesJSON = files.map((result) => result.serialize())
+      const filesDateTime = filesJSON.map((result) => ({
+        ...result,
+        updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
+      }))
+      return view.render('file', { files: filesDateTime })
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }
@@ -178,19 +190,17 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const { userId, docId } = request.qs()
+      const { userId, docId, prev } = request.qs()
       let file: any
       let path = ''
-      console.log(userId)
+      let preview: any = prev === 'prev' ? 'inline' : undefined
       if (userId && docId) {
         const result = await File.query().where('user_id', userId).andWhere('doc_id', docId)
-        console.log(result)
         if (result && result.length > 0) {
           file = result[0]
           path = 'steps/'
         }
       } else {
-        console.log('เข้า')
         file = await File.find(request.param('fileId'))
       }
       // console.log(file);
@@ -200,7 +210,7 @@ export default class FilesController {
         filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
         console.log(filePath)
 
-        response.attachment(filePath, file.file_name, undefined, undefined, (error) => {
+        response.attachment(filePath, file.file_name, preview, undefined, (error) => {
           if (error.code === 'ENOENT') {
             return ['File does not exists', 404]
           }

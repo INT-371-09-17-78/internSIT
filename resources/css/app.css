@@ -10,3 +10,7 @@
 .table :where(thead, tfoot) :where(th, td) {
     text-transform: capitalize;
 }
+
+.steps .step {
+    min-width: 10rem;
+}

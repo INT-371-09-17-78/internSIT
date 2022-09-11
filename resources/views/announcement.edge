@@ -4,6 +4,13 @@
   <section class="h-full w-full z-[5]">
     @include('partials/announcement-header')
       <div class="card-group flex flex-col space-y-5 mt-2 overflow-y-auto h-[85%] px-5">
+        @if(posts.length === 0)
+        <div class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">
+          <a href="{{ route('/announcement/create')}}" class="h-fit w-fit">
+            Click here to start a new post
+          </a>
+        </div>
+        @end
         @each(post in posts)
         <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
           <div class="card card-side w-full max-h-32 card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-xl p-2 space-x-2">

@@ -19,6 +19,8 @@
 */
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
+import UsersController from 'App/Controllers/Http/UsersController'
+import User from 'App/Models/User'
 // import Post from 'App/Models/Post'
 // import moment from 'moment'
 View.global('middleEllipsis', (str: string) => {
@@ -28,12 +30,97 @@ View.global('middleEllipsis', (str: string) => {
   return str
 })
 
+View.global('checkStatus', (str: string) => {
+  if (str.includes('Approved') || str.includes('Accepted by firm')) {
+    return 'text-green-700'
+  } else if (str.includes('Pending')) {
+    return 'text-yellow-700'
+  } else if (str.includes('Disapproved')) {
+    return 'text-red-700'
+  } else {
+    return ''
+  }
+})
+
 Route.get('/', async ({ view, auth, response }) => {
+  const userCon = new UsersController()
+  userCon.gen()
   if (auth.user) return response.redirect('/announcement')
   else {
     const roles = ['Student', 'Adviser', 'Staff']
     return view.render('home', { roles })
   }
+})
+
+Route.get('/student/:id/information', async ({ view, request }) => {
+  const studentUsers = await User.query()
+    .where('role', 'student')
+    .andWhere('user_id', request.param('id'))
+    .preload('student')
+  const studentUser = studentUsers[0]
+  if (studentUser.student.adviser_id) {
+    const adviser = await User.findOrFail(studentUser.student.adviser_id)
+    studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+  }
+  const disabled = studentUser.student.plan === null ? '' : 'disabled'
+  const studentInfo = [
+    { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+    { title: 'Email', value: studentUser.email, key: 'email' },
+    { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+    { title: 'Department', value: studentUser.student.department, key: 'department' },
+    { title: 'Position', value: studentUser.student.position, key: 'position' },
+    { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+    { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+    {
+      title: 'Mentor’s Position',
+      value: studentUser.student.mentor_position,
+      key: 'mentorPosition',
+    },
+    { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+    {
+      title: 'Advisor',
+      value: studentUser.student['adviserFullName'] ? studentUser.student['adviserFullName'] : '',
+      key: 'adviserFullName',
+    },
+  ]
+  return view.render('student-info', { studentUser, disabled, studentInfo })
+})
+
+Route.get('/student/:id/edit', async ({ view, request }) => {
+  const studentUsers = await User.query()
+    .where('role', 'student')
+    .andWhere('user_id', request.param('id'))
+    .preload('student')
+  const studentUser = studentUsers[0]
+  if (studentUser.student.adviser_id) {
+    const adviser = await User.findOrFail(studentUser.student.adviser_id)
+    studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+  }
+  const disabled = studentUser.student.plan === null ? '' : 'disabled'
+  const studentInfo = [
+    { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+    { title: 'Email', value: studentUser.email, key: 'email' },
+    { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+    { title: 'Department', value: studentUser.student.department, key: 'department' },
+    { title: 'Position', value: studentUser.student.position, key: 'position' },
+    { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+    { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+    {
+      title: 'Mentor’s Position',
+      value: studentUser.student.mentor_position,
+      key: 'mentorPosition',
+    },
+    { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+    {
+      title: 'Advisor',
+      value: studentUser.student['adviserFullName'] ? studentUser.student['adviserFullName'] : '',
+      key: 'adviserFullName',
+    },
+  ]
+  // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
+  return view.render('edit-student', { studentUser, disabled, studentInfo })
 })
 
 Route.get('/file', 'FilesController.showAllFile')
@@ -71,7 +158,10 @@ Route.group(() => {
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
 // Route.get('/api/user/:role', 'UsersController.getUserByRole')
-Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus')
+Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus').middleware('login')
+Route.patch('/api/user/student/info/:id', 'UsersController.updateStudentUserInfo').middleware(
+  'login'
+)
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 
@@ -80,11 +170,11 @@ Route.patch('/api/post/:id', 'PostsController.update').middleware('role')
 Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')
 Route.get('/api/post/:id', 'PostsController.getById').middleware('role')
 
-Route.post('/api/file', 'FilesController.store')
-Route.post('/api/file/steps', 'FilesController.storeDirect') //store file สำหรับ steps
+Route.post('/api/file', 'FilesController.store').middleware('login')
+Route.post('/api/file/steps', 'FilesController.storeDirect').middleware('login') //store file สำหรับ steps
 // Route.get('/api/file/user/:id', 'FilesController.showFilesByUserId')
-Route.get('/api/file/:fileId', 'FilesController.downloadFile') //downloadfile สำหรับ steps / อื่นๆ
-Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect')
+Route.get('/api/file/:fileId', 'FilesController.downloadFile').middleware('login') //downloadfile สำหรับ steps / อื่นๆ
+Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect').middleware('login')
 
-Route.get('/api/test', 'UsersController.test')
-Route.get('/api/gen', 'UsersController.gen')
+// Route.get('/api/test', 'UsersController.test')
+// Route.get('/api/gen', 'UsersController.gen')
