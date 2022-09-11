@@ -290,6 +290,12 @@ export default class UsersController {
           //   ? (return testResult[i] = true )
           //   : (testResult[i] = false)
           steps[i]['createAt'] = documentStatuses[j].created_at.toString()
+          // console.log(documentStatuses[j].no_approve_reason)
+          if (documentStatuses[j].no_approve_reason) {
+            steps[i]['reason'] = documentStatuses[j].no_approve_reason
+              ? documentStatuses[j].no_approve_reason
+              : ''
+          }
           if (
             steps[i].steps === documentStatuses[j].document_id ||
             (i === 0 && studentUser.student.plan)
@@ -321,7 +327,7 @@ export default class UsersController {
         currentSteps = steps[0]
         currentSteps.status = ''
       }
-      console.log(currentSteps.createAt)
+      console.log(currentSteps)
 
       return view.render('student', {
         studentUser,
