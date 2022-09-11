@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Student from 'App/Models/Student'
 import Status from 'App/Models/Status'
+import File from 'App/Models/File'
 import Document from 'App/Models/Document'
 import Document_Status from 'App/Models/DocumentStatus'
 // import Adviser from 'App/Models/Adviser'
@@ -288,6 +289,7 @@ export default class UsersController {
           // steps[i] === documentStatuses[j].document_id
           //   ? (return testResult[i] = true )
           //   : (testResult[i] = false)
+          steps[i]['createAt'] = documentStatuses[j].created_at
           if (
             steps[i].steps === documentStatuses[j].document_id ||
             (i === 0 && studentUser.student.plan)
@@ -319,7 +321,7 @@ export default class UsersController {
         currentSteps = steps[0]
         currentSteps.status = ''
       }
-      console.log(currentSteps)
+      console.log(currentSteps.createAt)
 
       return view.render('student', {
         studentUser,
@@ -345,6 +347,8 @@ export default class UsersController {
       if (study) {
         studentUser.plan = study
         await studentUser.save()
+        await Document_Status.query().where('student_id', studentUser.student_id).delete()
+        await File.query().where('user_id', studentUser.student_id).delete()
       }
       if (status && doc) {
         statusResult = await Status.findOrFail(status)
