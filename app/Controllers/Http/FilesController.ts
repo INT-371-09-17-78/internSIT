@@ -23,7 +23,7 @@ export default class FilesController {
       size: '2mb',
       // extnames: ['jpg', 'png', 'gif'],
     })
-    const newItems = files.filter((b) => !allImages.some((a) => Number(a) === Number(b.file_id)))
+    const newItems = files.filter((b) => !allImages.some((a) => String(a) === String(b.file_id)))
     if (newItems && newItems.length > 0) {
       for (let newItem of newItems) {
         await File.query() // 👈now have access to all query builder methods
