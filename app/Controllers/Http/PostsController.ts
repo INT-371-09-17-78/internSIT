@@ -2,7 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Post from 'App/Models/Post'
 import User from 'App/Models/User'
 import FilesController from './FilesController'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default class PostsController {
   //   public async index() {
@@ -118,7 +118,10 @@ export default class PostsController {
         }
         const post = result[0]?.serialize()
 
-        if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        if (post)
+          post['updated_at'] = moment(post.updated_at)
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
         return response.json({ post })
       }
     } catch (error) {
@@ -137,7 +140,7 @@ export default class PostsController {
         const resultsJSON = results.map((result) => result.serialize())
         const posts = resultsJSON.map((result) => ({
           ...result,
-          updated_at: moment(result.updated_at).format('MMMM D, YYYY h:mm A'),
+          updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
         }))
         return view.render('announcement', { posts })
       }
@@ -166,7 +169,10 @@ export default class PostsController {
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
         const post = result[0]?.serialize()
-        if (post) post['updated_at'] = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        if (post)
+          post['updated_at'] = moment(post.updated_at)
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
         return view.render('add-edit-post', { post })
       }
     } catch (error) {
@@ -180,7 +186,7 @@ export default class PostsController {
       else {
         const result = await Post.query().where('post_id', request.param('id')).preload('files')
         const post = result[0]?.serialize()
-        post.updated_at = moment(post.updated_at).format('MMMM D, YYYY h:mm A')
+        post.updated_at = moment(post.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A')
         if (!result) {
           return response
             .status(404)

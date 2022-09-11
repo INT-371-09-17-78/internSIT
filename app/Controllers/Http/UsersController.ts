@@ -8,6 +8,7 @@ import Document_Status from 'App/Models/DocumentStatus'
 // import Adviser from 'App/Models/Adviser'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
+import moment from 'moment-timezone'
 
 interface LdapOptions {
   url: string
@@ -311,7 +312,9 @@ export default class UsersController {
 
       for (let i = 0; i < steps.length; i++) {
         for (let j = 0; j < documentStatuses.length; j++) {
-          steps[i]['createAt'] = documentStatuses[j].created_at.toString()
+          steps[i]['createAt'] = moment(documentStatuses[j].created_at.toString())
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
           if (documentStatuses[j].no_approve_reason) {
             steps[i]['reason'] = documentStatuses[j].no_approve_reason
               ? documentStatuses[j].no_approve_reason
