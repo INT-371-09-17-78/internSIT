@@ -158,8 +158,10 @@ Route.group(() => {
 Route.post('/api/login', 'UsersController.verify').as('auth.login')
 Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
 // Route.get('/api/user/:role', 'UsersController.getUserByRole')
-Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus')
-Route.patch('/api/user/student/info/:id', 'UsersController.updateStudentUserInfo')
+Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus').middleware('login')
+Route.patch('/api/user/student/info/:id', 'UsersController.updateStudentUserInfo').middleware(
+  'login'
+)
 // Route.get('/api/post', 'PostsController.show')
 // Route.get('/api/post/:post_id', 'PostsController.showById')
 
@@ -168,11 +170,11 @@ Route.patch('/api/post/:id', 'PostsController.update').middleware('role')
 Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')
 Route.get('/api/post/:id', 'PostsController.getById').middleware('role')
 
-Route.post('/api/file', 'FilesController.store')
-Route.post('/api/file/steps', 'FilesController.storeDirect') //store file สำหรับ steps
+Route.post('/api/file', 'FilesController.store').middleware('login')
+Route.post('/api/file/steps', 'FilesController.storeDirect').middleware('login') //store file สำหรับ steps
 // Route.get('/api/file/user/:id', 'FilesController.showFilesByUserId')
-Route.get('/api/file/:fileId', 'FilesController.downloadFile') //downloadfile สำหรับ steps / อื่นๆ
-Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect')
+Route.get('/api/file/:fileId', 'FilesController.downloadFile').middleware('login') //downloadfile สำหรับ steps / อื่นๆ
+Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect').middleware('login')
 
 // Route.get('/api/test', 'UsersController.test')
-Route.get('/api/gen', 'UsersController.gen')
+// Route.get('/api/gen', 'UsersController.gen')
