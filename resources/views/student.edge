@@ -39,7 +39,7 @@
     <div class="w-full flex justify-center">
       <ul class="steps w-full max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl">
         @each((step,index) in steps)
-            <li class="step font-bold {{nextStep.steps === step.steps && "after:border-4 after:border-green-700"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approve" || step.steps === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Not Approve" ? "text-red-700 step-primary" : ""}}">{{step.steps}} {{step.status ? step.status : ""}}</li>
+            <li class="after:cursor-pointer step font-bold {{nextStep.steps === step.steps && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approve" || step.steps === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Not Approve" ? "text-red-700 step-primary" : ""}}">{{step.steps}} {{step.status ? step.status : ""}}</li>
         @end
     </ul>
     </div>
@@ -58,9 +58,11 @@
     </div>  --}}
     <div>
       <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96 w-72"></canvas>
-      <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white">Previous</button>
-      <button id="next" class="btn btn-sm btn-primary rounded-3xl text-white">Next</button>
-      <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+      <div class="mt-2">
+        <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white">Previous</button>
+        <button id="next" class="btn btn-sm btn-primary rounded-3xl text-white">Next</button>
+        <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+      </div>
     </div>
     
     <div class="flex flex-col pt-5">
@@ -68,7 +70,7 @@
         <div class="flex space-x-2">
           <p class="font-bold">{{nextStep.steps}}</p>
           @if(currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve")
-          <a class="link link-primary" href="/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}">Open PDF file</a>
+          <a class="link link-primary" href="/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}?prev=prev">Open PDF file</a>
           @end
         </div>
         <p>{{currentSteps.status ==="Pending" ? "Submitted" : "Not Submitted"}}</p>

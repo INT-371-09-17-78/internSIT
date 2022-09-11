@@ -451,7 +451,8 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
-      if (adviserFullName !== '') {
+      console.log(adviserFullName)
+      if (adviserFullName) {
         const adviserFullNameSplit = adviserFullName.split(' ')
         if (adviserFullNameSplit && adviserFullNameSplit.length > 1) {
           const adviserUser = await User.query()
@@ -467,7 +468,7 @@ export default class UsersController {
 
       await studentUser.save()
       await studentUser.student.save()
-      response.status(200).json('update success')
+      response.redirect(`/student/${studentUser.user_id}/information`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

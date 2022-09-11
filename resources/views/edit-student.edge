@@ -29,11 +29,11 @@
               <p class="font-semibold">Back</p>
             </div>
           </a>
-          <div class="bg-white rounded-xl w-full h-fit flex flex-col p-6">
+          <form method="POST" action="/api/user/student/info/{{studentUser.user_id}}?_method=PATCH" class="bg-white rounded-xl w-full h-fit flex flex-col p-6">
             <div class="grid grid-cols-2 w-fit gap-y-3">
               @each(info in studentInfo)
               <p class="font-bold">{{info.title}}</p>
-              <input class="border border-[#ACB5BD] rounded-md" value="{{info.value || ''}}"/>
+              <input type="{{info.key==='tel' ? 'tel' : 'text'}}" class="border border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}">
               @end
             </div>
             @if(auth.user.role === "staff")
@@ -41,7 +41,7 @@
             <button type="submit" class="w-20 btn btn-sm btn-primary rounded-3xl text-white capitalize">submit</button>
              </a>
             @end
-          </div>
+          </form>
         </div>
   </section>
 @end
