@@ -62,7 +62,7 @@ export default class FilesController {
     return err
   }
 
-  public async storeDirect({ auth, request, response }: HttpContextContract) {
+  public async storeDirect({ request, response }: HttpContextContract) {
     try {
       const { docId, studentId } = request.only(['docId', 'studentId'])
       const files = request.files('files', {
@@ -169,6 +169,13 @@ export default class FilesController {
   public async showAllFile({ view, response }: HttpContextContract) {
     try {
       const files = await File.query().whereNull('doc_id')
+      for (const file of files) {
+        const post = await Post.find(file.post_id)
+        if (post) {
+          file.user_id = post.user_id
+        }
+      }
+
       return view.render('file', { files })
     } catch (error) {
       return response.status(400).send({ message: error.message })
@@ -177,19 +184,17 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const { userId, docId } = request.qs()
+      const { userId, docId, prev } = request.qs()
       let file: any
       let path = ''
-      console.log(userId)
+      let preview: any = prev === 'prev' ? 'inline' : undefined
       if (userId && docId) {
         const result = await File.query().where('user_id', userId).andWhere('doc_id', docId)
-        console.log(result)
         if (result && result.length > 0) {
           file = result[0]
           path = 'steps/'
         }
       } else {
-        console.log('เข้า')
         file = await File.find(request.param('fileId'))
       }
       // console.log(file);
@@ -199,7 +204,7 @@ export default class FilesController {
         filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
         console.log(filePath)
 
-        response.attachment(filePath, file.file_name, 'inline', undefined, (error) => {
+        response.attachment(filePath, file.file_name, preview, undefined, (error) => {
           if (error.code === 'ENOENT') {
             return ['File does not exists', 404]
           }

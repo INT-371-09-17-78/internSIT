@@ -118,7 +118,7 @@ export default class UsersController {
     return response.redirect('/')
   }
 
-  public async showStudentUser({ request, response, view }: HttpContextContract) {
+  public async showStudentUser({ response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
       // const studentUser = await Student.query().preload('document_status')
@@ -473,7 +473,7 @@ export default class UsersController {
     }
   }
 
-  public async test({ request, response }: HttpContextContract) {
+  public async test({ response }: HttpContextContract) {
     try {
       await Document.create({
         doc_name: 'test1',
