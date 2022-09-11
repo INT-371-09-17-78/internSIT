@@ -1,8 +1,8 @@
 @layout('layouts/app')
 @set('title', 'students page')
 @section('students')
-<section class="h-full w-full z-[5] relative flex flex-col pl-11 pt-5">
-  <div class="flex flex-col z-10">
+<section class="h-full w-full z-[5] relative flex flex-col pt-5">
+  <div class="flex flex-col z-10 px-11">
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <p class="text-base">{{studentUser.user_id}}</p>
     <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
@@ -15,11 +15,11 @@
     </div>
   @end
 
-  <div class="flex mt-5">
+  <div class="flex mt-5 px-11">
     @if(auth.user.role === "student")
       <p class="font-bold whitespace-nowrap">{{studentUser.student.plan ? studentUser.student.plan + " month" : "" }}</p>
     @else
-    <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2">
+    <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2 z-10">
       <select {{disabled}} id="study" name="study"
       class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
 
@@ -46,7 +46,7 @@
     @end
   </div>
   @if(studentUser.student.plan)
-  <div class="flex flex-wrap w-full space-x-5 pt-9">
+  <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
     {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
       <p class="font-bold">{{info}}</p>
@@ -73,8 +73,8 @@
           <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
           @end
         </div> 
-        <p>{{currentSteps.status ==="Pending" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
-        @if(currentSteps.status ==="Disapproved")
+        <p>{{currentSteps.status ==="Pending" || currentSteps.status === "Not approve" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
+        @if(currentSteps.status ==="Not Approve")
         <div class="flex flex-col mt-5">
           <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
           <p>{{currentSteps.reason}}</p>

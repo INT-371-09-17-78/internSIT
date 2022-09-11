@@ -5,7 +5,7 @@
 <div class="header-element flex flex-col mt-12 px-5">
         <div class="header text-black flex font-bold text-4xl flex-shrink-0 lg:items-start items-center mt-5 lg:mt-0">
           <p class="text-base lg:text-3xl text-base-content">Announcement</p>
-          @if(auth.user.role!=="student")
+          @if(auth.user.role!=="student" && posts.length > 0)
           <a class="ml-auto flex-shrink-0 {{hidePostButton}}" href="{{ route('/announcement/create')}}">
             @component('components/common/button',{
               text: 'Post',
