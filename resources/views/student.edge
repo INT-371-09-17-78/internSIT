@@ -70,7 +70,7 @@
         <div class="flex space-x-2">
           <p class="font-bold">{{nextStep.steps}}</p>
           @if(currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve")
-          <a class="link link-primary" href="/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}?prev=prev">Open PDF file</a>
+          <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}&&prev=prev">Open PDF file</a>
           @end
         </div>
         <p>{{currentSteps.status ==="Pending" ? "Submitted" : "Not Submitted"}}</p>
@@ -188,7 +188,7 @@
     window.location.reload()
   };
 
-var url ='/api/file/asdasdasd?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}' 
+var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}' 
     // Loaded via <script> tag, create shortcut to access PDF.js exports.
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 

@@ -187,55 +187,42 @@ export default class UsersController {
         [
           {
             steps: 'Accepted by firm',
-            result: false,
           },
           {
             steps: 'TR-01',
-            result: false,
           },
           {
             steps: 'TR-02',
-            result: false,
           },
           {
             steps: 'TR-03 and TR-05 (1/6)',
-            result: false,
           },
           {
             steps: 'Informed supervision (1/6)',
-            result: false,
           },
           {
             steps: 'TR-03 and TR-05 (2/6)',
-            result: false,
           },
           {
             steps: 'Informed supervision (2/6)',
-            result: false,
           },
           {
             steps: 'TR-03 and TR-05 (3/6)',
-            result: false,
           },
           {
             steps: 'Informed supervision (3/6)',
-            result: false,
           },
           {
             steps: 'TR-03 and TR-05 (4/6)',
-            result: false,
           },
           {
             steps: 'Informed supervision (4/6)',
-            result: false,
           },
           {
             steps: 'TR-03 and TR-05 (5/6)',
-            result: false,
           },
           {
             steps: 'Informed supervision (5/6)',
-            result: false,
           },
         ]
       // :
@@ -306,7 +293,7 @@ export default class UsersController {
             (i === 0 && studentUser.student.plan)
           ) {
             // console.log('เข้าอันนี้')
-            steps[i].result = true
+            steps[i]['result'] = true
             // nextStep = steps[i]
             if (i > 0) {
               // console.log('เข้า')
@@ -318,7 +305,7 @@ export default class UsersController {
 
             break
           } else {
-            steps[i].result = false
+            steps[i]['result'] = false
           }
         }
       }
@@ -350,7 +337,7 @@ export default class UsersController {
 
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
-      const { study, status, doc } = request.only(['study', 'status', 'doc'])
+      const { study, status, doc, reason } = request.only(['study', 'status', 'doc', 'reason'])
       console.log(doc)
       const studentUser = await Student.findOrFail(request.param('id'))
       let statusResult: Status
@@ -384,16 +371,23 @@ export default class UsersController {
             .query()
             .where('student_id', studentUser.student_id)
             .andWhere('document_id', docResult.doc_name)
-            .update({ status_id: statusResult.status_name })
+            .update({
+              status_id: statusResult.status_name,
+              no_approve_reason:
+                reason && reason !== '' && statusResult.status_name === 'Not Approve'
+                  ? reason
+                  : null,
+            })
         } else {
           await studentUser.related('document_status').create({
             student_id: studentUser.student_id,
             document_id: docResult.doc_name,
             status_id: statusResult.status_name,
+            no_approve_reason:
+              reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
           })
         }
       }
-      // console.log(result)
 
       response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
