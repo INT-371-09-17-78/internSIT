@@ -6,7 +6,7 @@ export default class LoginDetector {
     if (auth.user) {
       await next()
     } else {
-      response.status(401).send('permission denied')
+      response.redirect('/')
     }
   }
 }

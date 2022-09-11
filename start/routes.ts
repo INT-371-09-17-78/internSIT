@@ -85,7 +85,7 @@ Route.get('/student/:id/information', async ({ view, request }) => {
     },
   ]
   return view.render('student-info', { studentUser, disabled, studentInfo })
-})
+}).middleware('login')
 
 Route.get('/student/:id/edit', async ({ view, request }) => {
   const studentUsers = await User.query()
@@ -121,13 +121,13 @@ Route.get('/student/:id/edit', async ({ view, request }) => {
   ]
   // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
   return view.render('edit-student', { studentUser, disabled, studentInfo })
-})
+}).middleware('role')
 
-Route.get('/file', 'FilesController.showAllFile')
+Route.get('/file', 'FilesController.showAllFile').middleware('login')
 
-Route.get('/students', 'UsersController.showStudentUser')
+Route.get('/students', 'UsersController.showStudentUser').middleware('role')
 
-Route.get('/student/:id', 'UsersController.showStudentUserById')
+Route.get('/student/:id', 'UsersController.showStudentUserById').middleware('login')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')
