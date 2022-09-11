@@ -1,7 +1,7 @@
 @layout('layouts/app')
 @set('title', 'students page')
 @section('students')
-<section class="h-full w-full z-[5] relative flex flex-col pl-11 pt-5">
+<section class="h-full w-full z-[5] relative flex flex-col px-11 pt-5">
   <div class="flex flex-col z-10">
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <p class="text-base">{{studentUser.user_id}}</p>
@@ -46,7 +46,7 @@
     @end
   </div>
   @if(studentUser.student.plan)
-  <div class="flex flex-wrap w-full space-x-5 pt-9">
+  <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
     {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
       <p class="font-bold">{{info}}</p>
@@ -69,11 +69,14 @@
       <form id="formElem">
         <div class="flex space-x-2">
           <p class="font-bold">{{nextStep.steps}}</p>
+          @if(currentSteps.status === "Not Approve")
+          <p class="font-semibold">(Waiting for resubmit)</p>
+          @end
           @if(currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve")
           <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}&&prev=prev">Open PDF file</a>
           @end
         </div> 
-        <p>{{currentSteps.status ==="Pending" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
+        <p>{{currentSteps.status ==="Pending" || "Not approve" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
         @if(currentSteps.status ==="Not Approve")
         <div class="flex flex-col mt-5">
           <p class="font-bold text-red-500">{{nextStep.steps}} disapprove</p>
@@ -86,7 +89,7 @@
         @end
       </form>
       <form id="formElem2">
-        @if(auth.user.role != "student" && currentSteps.status != "Approve" && currentSteps.steps != "Accepted by firm")
+        @if(auth.user.role != "student" && currentSteps.status != "Approve" && currentSteps.status != "Not Approve" && currentSteps.steps != "Accepted by firm")
         <div class="flex mt-5" id="radio-group">
           <div class="form-control w-fit">
             <label class="label cursor-pointer space-x-2">
