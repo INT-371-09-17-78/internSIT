@@ -39,13 +39,13 @@
     <div class="w-full flex justify-center">
       <ul class="steps w-full max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl">
         @each((step,index) in steps)
-            <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" || step.name === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
+            <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
         @end
     </ul>
     </div>
     @end
   </div>
-  @if(studentUser.student.plan)
+  @if(nextStep.name !== 'Accepted by firm')
   <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
     {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
@@ -109,6 +109,20 @@
     </form>
     </div>
   </div>
+  @end
+  @if(nextStep.name === 'Accepted by firm')
+  @if(auth.user.role !== "student")
+  <p class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">Waiting for student to confirm</p>
+  @else
+  <form id="formElem3" class="flex justify-center items-center w-full h-full flex-col">
+    <div class="w-fit space-y-2">
+      <p>Have you been accepted by firm?</p>
+      <button class="btn btn-sm btn-primary rounded-3xl text-white self-start">confirm</button>
+    </div>
+    
+  </form>
+  
+  @end
   @end
 </section>
 <script>
@@ -184,6 +198,27 @@
         method: 'POST',
         body: formData,
     })
+    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    })
+    
+    window.location.reload()
+  };
+
+  const formElem3 = document.getElementById('formElem3')
+  if(formElem3)
+  formElem3.onsubmit = async (event) => {
+    event.preventDefault() 
+    const body = {
+      status : 'Approved',
+      doc: '{{nextStep.name}}'
+    }
+
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
         method: 'POST',
         headers: {
