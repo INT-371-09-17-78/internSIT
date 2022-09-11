@@ -289,7 +289,7 @@ export default class UsersController {
           // steps[i] === documentStatuses[j].document_id
           //   ? (return testResult[i] = true )
           //   : (testResult[i] = false)
-          steps[i]['createAt'] = documentStatuses[j].created_at
+          steps[i]['createAt'] = documentStatuses[j].created_at.toString()
           if (
             steps[i].steps === documentStatuses[j].document_id ||
             (i === 0 && studentUser.student.plan)
