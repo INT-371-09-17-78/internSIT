@@ -1,7 +1,7 @@
 @layout('layouts/app')
 @set('title', 'students page')
 @section('students')
-<section class="h-full w-full z-[5] relative flex flex-col px-11 pt-5">
+<section class="h-full w-full z-[5] relative flex flex-col pl-11 pt-5">
   <div class="flex flex-col z-10">
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <p class="text-base">{{studentUser.user_id}}</p>
@@ -39,14 +39,14 @@
     <div class="w-full flex justify-center">
       <ul class="steps w-full max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl">
         @each((step,index) in steps)
-            <li class="after:cursor-pointer step font-bold {{nextStep.steps === step.steps && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approve" || step.steps === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Not Approve" ? "text-red-700 step-primary" : ""}}">{{step.steps}} {{step.status ? step.status : ""}}</li>
+            <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" || step.name === "Accepted by firm"? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
         @end
     </ul>
     </div>
     @end
   </div>
   @if(studentUser.student.plan)
-  <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
+  <div class="flex flex-wrap w-full space-x-5 pt-9">
     {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
       <p class="font-bold">{{info}}</p>
@@ -68,18 +68,15 @@
     <div class="flex flex-col pt-5">
       <form id="formElem">
         <div class="flex space-x-2">
-          <p class="font-bold">{{nextStep.steps}}</p>
-          @if(currentSteps.status === "Not Approve")
-          <p class="font-semibold">(Waiting for resubmit)</p>
-          @end
-          @if(currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve")
-          <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}&&prev=prev">Open PDF file</a>
+          <p class="font-bold">{{nextStep.name}}</p>
+          @if(currentSteps.name != "Accepted by firm" && currentSteps.status != "Approved")
+          <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
           @end
         </div> 
-        <p>{{currentSteps.status ==="Pending" || "Not approve" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
-        @if(currentSteps.status ==="Not Approve")
+        <p>{{currentSteps.status ==="Pending" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
+        @if(currentSteps.status ==="Disapproved")
         <div class="flex flex-col mt-5">
-          <p class="font-bold text-red-500">{{nextStep.steps}} disapprove</p>
+          <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
           <p>{{currentSteps.reason}}</p>
         </div> 
         @end
@@ -89,18 +86,18 @@
         @end
       </form>
       <form id="formElem2">
-        @if(auth.user.role != "student" && currentSteps.status != "Approve" && currentSteps.status != "Not Approve" && currentSteps.steps != "Accepted by firm")
+        @if(auth.user.role != "student" && currentSteps.status != "Approved" && currentSteps.name != "Accepted by firm")
         <div class="flex mt-5" id="radio-group">
           <div class="form-control w-fit">
             <label class="label cursor-pointer space-x-2">
-              <input type="radio" id="approve" name="radio" value="Approve" class="radio checked:bg-blue-500" checked onclick="removeTextArea()"/>
-              <span class="label-text font-bold">Approve</span> 
+              <input type="radio" id="approved" name="radio" value="Approved" class="radio checked:bg-blue-500" checked onclick="removeTextArea()"/>
+              <span class="label-text font-bold">Approved</span> 
             </label>
           </div>   
           <div class="form-control w-fit">
             <label class="label cursor-pointer space-x-2">
-              <input type="radio" id="not-approve" name="radio" value="Not Approve" class="radio checked:bg-blue-500" onclick="showTextArea()"/>
-              <span class="label-text font-bold text-red-500">Not Approve</span> 
+              <input type="radio" id="disapproved" name="radio" value="Disapproved" class="radio checked:bg-blue-500" onclick="showTextArea()"/>
+              <span class="label-text font-bold text-red-500">Disapproved</span> 
             </label>
           </div>  
         </div>
@@ -155,8 +152,8 @@
     const status = document.querySelector('input[name="radio"]:checked').value
     const body = {
       status : status,
-      doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
-      reason : status === "Approve" ? "" : document.getElementById('reason').value
+      doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
+      reason : status === "Approved" ? "" : document.getElementById('reason').value
     }
 
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
@@ -177,11 +174,11 @@
     // if(!pdfFile) return
     const body = {
       status : 'Pending',
-      doc: '{{nextStep.steps}}' ? '{{nextStep.steps}}' : 'TR-01',
+      doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
     }
     const formData = new FormData(formElem)
     formData.append('files', pdfFile)
-    formData.append('docId', '{{nextStep.steps}}')
+    formData.append('docId', '{{nextStep.name}}')
     formData.append('studentId', {{studentUser.user_id}})
     await fetch('/api/file/steps?_method=POST', {
         method: 'POST',
@@ -199,7 +196,7 @@
     window.location.reload()
   };
 
-var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.steps}}' 
+var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}' 
     // Loaded via <script> tag, create shortcut to access PDF.js exports.
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
@@ -279,7 +276,7 @@ function onNextPage() {
 }
 document.getElementById('next').addEventListener('click', onNextPage);
 // The workerSrc property shall be specified.
-if({{currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve"}}){
+if({{currentSteps.name != "Accepted by firm" && currentSteps.status != "Approved"}}){
   pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
     pdfDoc = pdfDoc_;
     document.getElementById('page_count').textContent = pdfDoc.numPages;

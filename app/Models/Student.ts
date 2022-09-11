@@ -14,7 +14,7 @@ export default class Student extends BaseModel {
   public position: string
 
   @column()
-  public company: string
+  public firm: string
 
   @column()
   public plan: number

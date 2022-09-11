@@ -8,7 +8,7 @@ export default class Students extends BaseSchema {
       table.string('student_id').primary().references('users.user_id').onDelete('CASCADE')
       table.string('department', 80).nullable()
       table.string('position', 80).nullable()
-      table.string('company', 80).nullable()
+      table.string('firm', 80).nullable()
       // table.string('email', 80).nullable()
       table.integer('plan').nullable()
       table.string('tel', 10).nullable()

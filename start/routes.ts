@@ -31,11 +31,11 @@ View.global('middleEllipsis', (str: string) => {
 })
 
 View.global('checkStatus', (str: string) => {
-  if (str.includes('Approve') || str.includes('Accepted by firm')) {
+  if (str.includes('Approved') || str.includes('Accepted by firm')) {
     return 'text-green-700'
   } else if (str.includes('Pending')) {
     return 'text-yellow-700'
-  } else if (str.includes('Not approve')) {
+  } else if (str.includes('Disapproved')) {
     return 'text-red-700'
   } else {
     return ''
@@ -64,7 +64,7 @@ Route.get('/student/:id/information', async ({ view, request }) => {
   }
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
-    { title: 'Firm', value: studentUser.student.company, key: 'firm' },
+    { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
     { title: 'Email', value: studentUser.email, key: 'email' },
     { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
     { title: 'Department', value: studentUser.student.department, key: 'department' },
@@ -99,7 +99,7 @@ Route.get('/student/:id/edit', async ({ view, request }) => {
   }
   const disabled = studentUser.student.plan === null ? '' : 'disabled'
   const studentInfo = [
-    { title: 'Firm', value: studentUser.student.company, key: 'firm' },
+    { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
     { title: 'Email', value: studentUser.email, key: 'email' },
     { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
     { title: 'Department', value: studentUser.student.department, key: 'department' },
@@ -174,5 +174,5 @@ Route.post('/api/file/steps', 'FilesController.storeDirect') //store file สำ
 Route.get('/api/file/:fileId', 'FilesController.downloadFile') //downloadfile สำหรับ steps / อื่นๆ
 Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect')
 
-Route.get('/api/test', 'UsersController.test')
+// Route.get('/api/test', 'UsersController.test')
 Route.get('/api/gen', 'UsersController.gen')

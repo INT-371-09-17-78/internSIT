@@ -140,7 +140,7 @@ export default class UsersController {
           studentUser[i].serialize()
           studentUser[i].student.plan
             ? (studentUser[i]['lastestStatus'] = 'Accepted by firm')
-            : (studentUser[i]['lastestStatus'] = 'ยังไม่ได้เลือก plan')
+            : (studentUser[i]['lastestStatus'] = 'not assign plan yet')
         }
         // console.log(documentStatus)
 
@@ -183,132 +183,147 @@ export default class UsersController {
         'Advisor',
       ]
       let steps: any =
-        // studentUser.student.plan === 6
-        //   ?
-        [
-          {
-            steps: 'Accepted by firm',
-          },
-          {
-            steps: 'TR-01',
-          },
-          {
-            steps: 'TR-02',
-          },
-          {
-            steps: 'TR-03 and TR-05 (1/6)',
-          },
-          {
-            steps: 'Informed supervision (1/6)',
-          },
-          {
-            steps: 'TR-03 and TR-05 (2/6)',
-          },
-          {
-            steps: 'Informed supervision (2/6)',
-          },
-          {
-            steps: 'TR-03 and TR-05 (3/6)',
-          },
-          {
-            steps: 'Informed supervision (3/6)',
-          },
-          {
-            steps: 'TR-03 and TR-05 (4/6)',
-          },
-          {
-            steps: 'Informed supervision (4/6)',
-          },
-          {
-            steps: 'TR-03 and TR-05 (5/6)',
-          },
-          {
-            steps: 'Informed supervision (5/6)',
-          },
-        ]
-      // :
-      // ? {
-      //     steps: [
-      //       'Accepted by firm',
-      //       'TR-01',
-      //       'TR-02',
-      //       'TR-03 and TR-05 (1/6)',
-      //       'Informed supervision (1/6) ',
-      //       'TR-03 and TR-05 (2/6)',
-      //       'Informed supervision (2/6)',
-      //       'TR-03 and TR-05 (3/6)',
-      //       'Informed supervision (3/6)',
-      //       'TR-03 and TR-05 (4/6)',
-      //       'Informed supervision (4/6)',
-      //       'TR-03 and TR-05 (5/6)',
-      //       'Informed supervision (5/6)',
-      //       'Sent Presentation',
-      //       'Presentation',
-      //       'TR-03 and TR-06 (6/6)',
-      //     ],
-      //     testResult: [],
-      //   }
-      // {
-      //   steps: [
-      //     'Accepted by firm',
-      //     'TR-01',
-      //     'TR-02',
-      //     'TR-03 and TR-05 (1/4)',
-      //     'Informed supervision (1/4) ',
-      //     'TR-03 and TR-05 (2/4)',
-      //     'Informed supervision (2/4)',
-      //     'TR-03 and TR-05 (3/4)',
-      //     'Informed supervision (3/4)',
-      //     'Sent Presentation',
-      //     'Presentation',
-      //     'TR-03 and TR-06 (4/4)',
-      //   ],
-      //   testResult: [],
-      // }
+        studentUser.student.plan === 6
+          ? [
+              {
+                name: 'Accepted by firm',
+              },
+              {
+                name: 'TR-01',
+              },
+              {
+                name: 'TR-02',
+              },
+              {
+                name: 'TR-03 and TR-05 (1/6)',
+              },
+              {
+                name: 'Informed supervision (1/6)',
+              },
+              {
+                name: 'TR-03 and TR-05 (2/6)',
+              },
+              {
+                name: 'Informed supervision (2/6)',
+              },
+              {
+                name: 'TR-03 and TR-05 (3/6)',
+              },
+              {
+                name: 'Informed supervision (3/6)',
+              },
+              {
+                name: 'TR-03 and TR-05 (4/6)',
+              },
+              {
+                name: 'Informed supervision (4/6)',
+              },
+              {
+                name: 'TR-03 and TR-05 (5/6)',
+              },
+              {
+                name: 'Informed supervision (5/6)',
+              },
+              {
+                name: 'Sent Presentation',
+              },
+              {
+                name: 'Presentation',
+              },
+              {
+                name: 'TR-03 and TR-06 (6/6)',
+              },
+            ]
+          : studentUser.student.plan === 4
+          ? [
+              {
+                name: 'Accepted by firm',
+              },
+              {
+                name: 'TR-01',
+              },
+              {
+                name: 'TR-02',
+              },
+              {
+                name: 'TR-03 and TR-05 (1/4)',
+              },
+              {
+                name: 'Informed supervision (1/4)',
+              },
+              {
+                name: 'TR-03 and TR-05 (2/4)',
+              },
+              {
+                name: 'Informed supervision (2/4)',
+              },
+              {
+                name: 'TR-03 and TR-05 (3/4)',
+              },
+              {
+                name: 'Informed supervision (3/4)',
+              },
+              {
+                name: 'Sent Presentation',
+              },
+              {
+                name: 'Presentation',
+              },
+              {
+                name: 'TR-03 and TR-06 (4/4)',
+              },
+            ]
+          : [
+              {
+                name: 'Accepted by firm',
+              },
+              {
+                name: 'TR-01',
+              },
+              {
+                name: 'TR-02',
+              },
+              {
+                name: 'Informed supervision',
+              },
+              {
+                name: 'Informed presentation day',
+              },
+              {
+                name: 'Presentation',
+              },
+              {
+                name: 'Sent Presentation',
+              },
+              {
+                name: 'TR-03 and TR-08',
+              },
+            ]
       let nextStep: any
       let currentSteps: any
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
-      // if (studentUser.student.status === 'ยังไม่ได้เลือก') {
-      //   disabled = 'disabled'
-      // }
       const student = await Student.findOrFail(request.param('id'))
-      // studentUser.related('')
+
       const documentStatuses = await student
         .related('document_status')
         .query()
         .where('student_id', request.param('id'))
-      // console.log(documentStatus)
-      // return response.send(documentStatus)
-      // let testResult: string[] = []
 
       for (let i = 0; i < steps.length; i++) {
-        // console.log(steps[i].steps)
         for (let j = 0; j < documentStatuses.length; j++) {
-          // console.log(steps[i].steps)
-          //   console.log(documentStatuses[j].document_id)
-          // steps[i] === documentStatuses[j].document_id
-          //   ? (return testResult[i] = true )
-          //   : (testResult[i] = false)
           steps[i]['createAt'] = documentStatuses[j].created_at.toString()
-          // console.log(documentStatuses[j].no_approve_reason)
           if (documentStatuses[j].no_approve_reason) {
             steps[i]['reason'] = documentStatuses[j].no_approve_reason
               ? documentStatuses[j].no_approve_reason
               : ''
           }
           if (
-            steps[i].steps === documentStatuses[j].document_id ||
+            steps[i].name === documentStatuses[j].document_id ||
             (i === 0 && studentUser.student.plan)
           ) {
-            // console.log('เข้าอันนี้')
             steps[i]['result'] = true
-            // nextStep = steps[i]
             if (i > 0) {
-              // console.log('เข้า')
               steps[i]['status'] = documentStatuses[j].status_id
-              // documentStatuses[j].status_id === 'Approve'
-              //   ? (nextStep = steps[i + 1])
-              //   : (nextStep = steps[i])
             }
 
             break
@@ -319,7 +334,7 @@ export default class UsersController {
       }
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
       if (index > 0) {
-        steps[index].status === 'Approve'
+        steps[index].status === 'Approved'
           ? ((nextStep = steps[index + 1]), (currentSteps = steps[index]))
           : ((nextStep = steps[index]), (currentSteps = nextStep))
       } else {
@@ -360,8 +375,6 @@ export default class UsersController {
         statusResult = await Status.findOrFail(status)
         docResult = await Document.findOrFail(doc)
 
-        // console.log(studentUser);
-
         const docStat = await Document_Status.query()
           .where('student_id', studentUser.student_id)
           .andWhere('document_id', docResult.doc_name)
@@ -373,7 +386,6 @@ export default class UsersController {
         //     status_id: statusResult.status_name,
         //   }
         // )
-        // console.log(docStat)
 
         if (docStat && docStat.length > 0) {
           await studentUser
@@ -384,7 +396,7 @@ export default class UsersController {
             .update({
               status_id: statusResult.status_name,
               no_approve_reason:
-                reason && reason !== '' && statusResult.status_name === 'Not Approve'
+                reason && reason !== '' && statusResult.status_name === 'Disapproved'
                   ? reason
                   : null,
             })
@@ -438,7 +450,7 @@ export default class UsersController {
         .preload('student')
       const studentUser = studentUsers[0]
       // const studentUser = await Student.findOrFail(request.param('id'))
-      studentUser.student.company = firm
+      studentUser.student.firm = firm
       studentUser.student.tel = tel
       studentUser.student.department = department
       studentUser.student.position = position
@@ -478,54 +490,57 @@ export default class UsersController {
     }
   }
 
-  public async test({ response }: HttpContextContract) {
-    try {
-      await Document.create({
-        doc_name: 'test1',
-      })
-      await Status.create({
-        status_name: 'test2',
-      })
-      const student = await Student.find('65130000001')
-      console.log(student)
-      if (student) {
-        const result = student.related('document_status').create({
-          document_id: 'test1',
-          status_id: 'test2',
-        })
-        return response.status(200).json({ 1: result })
-      }
-      // const result = Document
-      // const document = await Document.find('test1')
-      // const status = await Status.find('test2')
+  // public async test({ response }: HttpContextContract) {
+  //   try {
+  //     await Document.create({
+  //       doc_name: 'test1',
+  //     })
+  //     await Status.create({
+  //       status_name: 'test2',
+  //     })
+  //     const student = await Student.find('65130000001')
+  //     console.log(student)
+  //     if (student) {
+  //       const result = student.related('document_status').create({
+  //         document_id: 'test1',
+  //         status_id: 'test2',
+  //       })
+  //       return response.status(200).json({ 1: result })
+  //     }
+  //     // const result = Document
+  //     // const document = await Document.find('test1')
+  //     // const status = await Status.find('test2')
 
-      // let result = []
-      // if (status && document) {
-      //   //   await document?.related('statuses').attach([status.status_name])
-      //   const result = await document.related('statuses').query().where('status_id', 'test2')
-      //   return response.status(200).json({ 1: result })
-      // }
+  //     // let result = []
+  //     // if (status && document) {
+  //     //   //   await document?.related('statuses').attach([status.status_name])
+  //     //   const result = await document.related('statuses').query().where('status_id', 'test2')
+  //     //   return response.status(200).json({ 1: result })
+  //     // }
 
-      // const result = await Document_Status.find('test2')
-      // const terst = await Document.query().where('doc_name', 'test2')
-      // terst.statuses()
+  //     // const result = await Document_Status.find('test2')
+  //     // const terst = await Document.query().where('doc_name', 'test2')
+  //     // terst.statuses()
 
-      // const { study, status } = request.only(['study', 'status'])
-      // console.log(status)
-      // console.log(study)
-      // const studentUser = await Student.findOrFail(request.param('id'))
-      // studentUser.status = 'เลือกแล้วครับ'
-      // studentUser.study = study
-      // const result = await studentUser.save()
-      // response.redirect('/student/' + result.student_id)
-    } catch (error) {
-      return response.status(400).json({ message: error.message })
-    }
-  }
+  //     // const { study, status } = request.only(['study', 'status'])
+  //     // console.log(status)
+  //     // console.log(study)
+  //     // const studentUser = await Student.findOrFail(request.param('id'))
+  //     // studentUser.status = 'เลือกแล้วครับ'
+  //     // studentUser.study = study
+  //     // const result = await studentUser.save()
+  //     // response.redirect('/student/' + result.student_id)
+  //   } catch (error) {
+  //     return response.status(400).json({ message: error.message })
+  //   }
+  // }
 
   public async gen() {
     try {
       await Document.createMany([
+        {
+          doc_name: 'Accepted by firm',
+        },
         {
           doc_name: 'TR-01',
         },
@@ -533,10 +548,73 @@ export default class UsersController {
           doc_name: 'TR-02',
         },
         {
-          doc_name: 'TR-03 and TR-05',
+          doc_name: 'TR-03 and TR-05 (1/6)',
         },
         {
-          doc_name: 'selectPlan',
+          doc_name: 'Informed supervision (1/6)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (2/6)',
+        },
+        {
+          doc_name: 'Informed supervision (2/6)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (3/6)',
+        },
+        {
+          doc_name: 'Informed supervision (3/6)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (4/6)',
+        },
+        {
+          doc_name: 'Informed supervision (4/6)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (5/6)',
+        },
+        {
+          doc_name: 'Informed supervision (5/6)',
+        },
+        {
+          doc_name: 'Sent Presentation',
+        },
+        {
+          doc_name: 'Presentation',
+        },
+        {
+          doc_name: 'TR-03 and TR-06 (6/6)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (1/4)',
+        },
+        {
+          doc_name: 'Informed supervision (1/4)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (2/4)',
+        },
+        {
+          doc_name: 'Informed supervision (2/4)',
+        },
+        {
+          doc_name: 'TR-03 and TR-05 (3/4)',
+        },
+        {
+          doc_name: 'Informed supervision (3/4)',
+        },
+        {
+          doc_name: 'TR-03 and TR-06 (4/4)',
+        },
+        {
+          doc_name: 'Informed supervision',
+        },
+        {
+          doc_name: 'Informed presentation day',
+        },
+        {
+          doc_name: 'TR-03 and TR-08',
         },
       ])
       await Status.createMany([
@@ -544,16 +622,10 @@ export default class UsersController {
           status_name: 'Pending',
         },
         {
-          status_name: 'Not Approve',
+          status_name: 'Disapproved',
         },
         {
-          status_name: 'Approve',
-        },
-        {
-          status_name: 'not select plan yet',
-        },
-        {
-          status_name: 'selected plan',
+          status_name: 'Approved',
         },
       ])
       // next()
