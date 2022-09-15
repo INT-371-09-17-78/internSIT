@@ -17,12 +17,6 @@
             <div class="space-y-4">
                 <input type="text" name="username" placeholder="Username" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
                 <input type="password" name="password" placeholder="Password" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
-                <select name="role" class="select select-xs w-full lg:select-md rounded-xl select-bordered h-9 lg:h-14 px-4 {{selectError}} {{borderWidth}} lg:text-base">
-                    <option disabled selected>Please choose your role</option>
-                    @each(role in roles)
-                    <option value={{ role.toLowerCase() }}>{{ role }}</option>
-                    @end
-                </select>
             </div>
             @if(flashMessages.get('error', ''))
             <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
@@ -36,5 +30,6 @@
                 type: 'submit',
                 classProps: 'btn-primary btn-block text-base btn-xs h-9 lg:text-xl lg:h-14',
             })
+            <p class="text-center mt-5">No have account? <a href="" class="link link-primary">Register now</a></p>
         </form>
 </div>
