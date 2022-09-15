@@ -6,6 +6,7 @@ import File from 'App/Models/File'
 import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
 import Document from 'App/Models/Document'
+import moment from 'moment-timezone'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
@@ -23,7 +24,7 @@ export default class FilesController {
       size: '2mb',
       // extnames: ['jpg', 'png', 'gif'],
     })
-    const newItems = files.filter((b) => !allImages.some((a) => Number(a) === Number(b.file_id)))
+    const newItems = files.filter((b) => !allImages.some((a) => String(a) === String(b.file_id)))
     if (newItems && newItems.length > 0) {
       for (let newItem of newItems) {
         await File.query() // 👈now have access to all query builder methods
@@ -174,9 +175,14 @@ export default class FilesController {
         if (post) {
           file.user_id = post.user_id
         }
+        // file.updated_at = moment(file.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A')
       }
-
-      return view.render('file', { files })
+      const filesJSON = files.map((result) => result.serialize())
+      const filesDateTime = filesJSON.map((result) => ({
+        ...result,
+        updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
+      }))
+      return view.render('file', { files: filesDateTime })
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }

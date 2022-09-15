@@ -8,6 +8,7 @@ import Document_Status from 'App/Models/DocumentStatus'
 // import Adviser from 'App/Models/Adviser'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
+import moment from 'moment-timezone'
 
 interface LdapOptions {
   url: string
@@ -140,7 +141,7 @@ export default class UsersController {
           studentUser[i].serialize()
           studentUser[i].student.plan
             ? (studentUser[i]['lastestStatus'] = 'Accepted by firm')
-            : (studentUser[i]['lastestStatus'] = 'not assign plan yet')
+            : (studentUser[i]['lastestStatus'] = `Haven't chosen a plan yet.`)
         }
         // console.log(documentStatus)
 
@@ -311,20 +312,22 @@ export default class UsersController {
 
       for (let i = 0; i < steps.length; i++) {
         for (let j = 0; j < documentStatuses.length; j++) {
-          steps[i]['createAt'] = documentStatuses[j].created_at.toString()
+          steps[i]['createAt'] = moment(documentStatuses[j].created_at.toString())
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
           if (documentStatuses[j].no_approve_reason) {
             steps[i]['reason'] = documentStatuses[j].no_approve_reason
               ? documentStatuses[j].no_approve_reason
               : ''
           }
           if (
-            steps[i].name === documentStatuses[j].document_id ||
-            (i === 0 && studentUser.student.plan)
+            steps[i].name === documentStatuses[j].document_id
+            // || (i === 0 && studentUser.student.plan)
           ) {
             steps[i]['result'] = true
-            if (i > 0) {
-              steps[i]['status'] = documentStatuses[j].status_id
-            }
+            // if (i > 0) {
+            steps[i]['status'] = documentStatuses[j].status_id
+            // }
 
             break
           } else {
@@ -332,17 +335,23 @@ export default class UsersController {
           }
         }
       }
+
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
-      if (index > 0) {
+      console.log(index)
+      if (index >= 0) {
+        if (steps[index].status === 'Approved') {
+          console.log('asdasd')
+        }
         steps[index].status === 'Approved'
           ? ((nextStep = steps[index + 1]), (currentSteps = steps[index]))
           : ((nextStep = steps[index]), (currentSteps = nextStep))
       } else {
-        nextStep = steps[1]
+        nextStep = steps[0]
         currentSteps = steps[0]
         currentSteps.status = ''
       }
       console.log(currentSteps)
+      console.log(nextStep)
 
       return view.render('student', {
         studentUser,
@@ -371,45 +380,43 @@ export default class UsersController {
         await Document_Status.query().where('student_id', studentUser.student_id).delete()
         await File.query().where('user_id', studentUser.student_id).delete()
       }
-      if (status && doc) {
-        statusResult = await Status.findOrFail(status)
-        docResult = await Document.findOrFail(doc)
+      // if (status && doc) {
+      statusResult = await Status.findOrFail(status || 'Pending')
+      docResult = await Document.findOrFail(doc || 'Accepted by firm')
 
-        const docStat = await Document_Status.query()
+      const docStat = await Document_Status.query()
+        .where('student_id', studentUser.student_id)
+        .andWhere('document_id', docResult.doc_name)
+        .orderBy('updated_at', 'desc')
+      // await studentUser.related('document_status').updateOrCreate(
+      //   { student_id: studentUser.student_id },
+      //   {
+      //     document_id: docResult.doc_name,
+      //     status_id: statusResult.status_name,
+      //   }
+      // )
+
+      if (docStat && docStat.length > 0) {
+        await studentUser
+          .related('document_status')
+          .query()
           .where('student_id', studentUser.student_id)
           .andWhere('document_id', docResult.doc_name)
-          .orderBy('updated_at', 'desc')
-        // await studentUser.related('document_status').updateOrCreate(
-        //   { student_id: studentUser.student_id },
-        //   {
-        //     document_id: docResult.doc_name,
-        //     status_id: statusResult.status_name,
-        //   }
-        // )
-
-        if (docStat && docStat.length > 0) {
-          await studentUser
-            .related('document_status')
-            .query()
-            .where('student_id', studentUser.student_id)
-            .andWhere('document_id', docResult.doc_name)
-            .update({
-              status_id: statusResult.status_name,
-              no_approve_reason:
-                reason && reason !== '' && statusResult.status_name === 'Disapproved'
-                  ? reason
-                  : null,
-            })
-        } else {
-          await studentUser.related('document_status').create({
-            student_id: studentUser.student_id,
-            document_id: docResult.doc_name,
+          .update({
             status_id: statusResult.status_name,
-            // no_approve_reason:
-            //   reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
+            no_approve_reason:
+              reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
           })
-        }
+      } else {
+        await studentUser.related('document_status').create({
+          student_id: studentUser.student_id,
+          document_id: docResult.doc_name,
+          status_id: statusResult.status_name,
+          // no_approve_reason:
+          //   reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
+        })
       }
+      // }
 
       response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
