@@ -44,7 +44,7 @@ View.global('checkStatus', (str: string) => {
 
 Route.get('/', async ({ view, auth, response }) => {
   const userCon = new UsersController()
-  userCon.gen()
+  await userCon.gen()
   if (auth.user) return response.redirect('/announcement')
   else {
     const roles = ['Student', 'Adviser', 'Staff']

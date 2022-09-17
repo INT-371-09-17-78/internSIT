@@ -29,54 +29,63 @@ export default class UsersController {
   //     email: 'nuchanart.boo',
   //   })
   // }
-  // public async show({ params }: HttpContextContract) {
-  //   return await User.find(params.id)
-  // }
-  public async verify({ auth, request, response, session }: HttpContextContract) {
+  public async register({ request, response, session }: HttpContextContract) {
     try {
-      const { username, password, isRemember, role } = request.all()
+      const { userId, email } = request.all()
 
-      if (!role) {
-        throw new Error('empty role')
-      }
-
-      let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
-      let ldRole: string = role === 'adviser' || role === 'staff' ? 'staff' : 'st'
       let user: any
       let student: any
+      user = await User.findBy('user_id', userId)
 
-      if (username === 'admin') {
-        await auth.attempt(username, password, rememberMe)
-        return response.redirect('/announcement')
-      } else {
-        const ldapUser: any = await this.authenticate(username, password, ldRole)
-        const fullname = ldapUser.cn.split(' ')
-        if (ldapUser) {
-          user = await User.findBy('user_id', username)
-          if (!user) {
-            user = new User()
-            user.user_id = ldapUser.uid
-            user.firstname = fullname[0]
-            user.lastname = fullname[1]
-            user.email = ldapUser.mail
-            user.password = password
-            user.role = role
-            await user.save()
-          }
+      if (!user) {
+        user = new User()
+        user.user_id = userId
+        user.email = email
+        await user.save()
+      }
 
-          await auth.use('web').login(user, rememberMe)
-          if (user && ldRole === 'st') {
-            student = await Student.findBy('student_id', ldapUser.uid)
-            if (!student) {
-              await user?.related('student').create({})
-            }
-          }
-
-          return response.redirect('/announcement')
+      if (user && user.role === 'student') {
+        student = await Student.findBy('student_id', userId)
+        if (!student) {
+          await user?.related('student').create({})
         }
       }
+      return response.redirect('/announcement')
     } catch (error) {
-      // console.log(error.message)
+      session.flash({
+        error: 'Invalid creditials',
+        type: 'negative',
+      })
+      return response.redirect('/')
+    }
+  }
+
+  public async verify({ auth, request, response, session }: HttpContextContract) {
+    try {
+      const { username, password, isRemember } = request.all()
+
+      let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
+      let user: any
+      user = await User.findBy('user_id', username)
+      if (!user) {
+        throw new Error('cannot find user')
+      }
+
+      let ldRole: string = user.role === 'adviser' || user.role === 'staff' ? 'staff' : 'st'
+
+      const ldapUser: any = await this.authenticate(username, password, ldRole)
+      const fullname = ldapUser.cn.split(' ')
+      if (user && ldapUser && (!user.firstname || !user.lastname || !user.mail || !user.password)) {
+        user.firstname = fullname[0]
+        user.lastname = fullname[1]
+        user.email = ldapUser.mail
+        user.password = password
+        await user.save()
+      }
+
+      await auth.attempt(username, password, rememberMe)
+      return response.redirect('/announcement')
+    } catch (error) {
       if (
         error.message === 'no password given' ||
         error.message === 'empty username' ||
@@ -497,144 +506,127 @@ export default class UsersController {
     }
   }
 
-  // public async test({ response }: HttpContextContract) {
-  //   try {
-  //     await Document.create({
-  //       doc_name: 'test1',
-  //     })
-  //     await Status.create({
-  //       status_name: 'test2',
-  //     })
-  //     const student = await Student.find('65130000001')
-  //     console.log(student)
-  //     if (student) {
-  //       const result = student.related('document_status').create({
-  //         document_id: 'test1',
-  //         status_id: 'test2',
-  //       })
-  //       return response.status(200).json({ 1: result })
-  //     }
-  //     // const result = Document
-  //     // const document = await Document.find('test1')
-  //     // const status = await Status.find('test2')
-
-  //     // let result = []
-  //     // if (status && document) {
-  //     //   //   await document?.related('statuses').attach([status.status_name])
-  //     //   const result = await document.related('statuses').query().where('status_id', 'test2')
-  //     //   return response.status(200).json({ 1: result })
-  //     // }
-
-  //     // const result = await Document_Status.find('test2')
-  //     // const terst = await Document.query().where('doc_name', 'test2')
-  //     // terst.statuses()
-
-  //     // const { study, status } = request.only(['study', 'status'])
-  //     // console.log(status)
-  //     // console.log(study)
-  //     // const studentUser = await Student.findOrFail(request.param('id'))
-  //     // studentUser.status = 'เลือกแล้วครับ'
-  //     // studentUser.study = study
-  //     // const result = await studentUser.save()
-  //     // response.redirect('/student/' + result.student_id)
-  //   } catch (error) {
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
-
   public async gen() {
     try {
-      await Document.createMany([
-        {
-          doc_name: 'Accepted by firm',
-        },
-        {
-          doc_name: 'TR-01',
-        },
-        {
-          doc_name: 'TR-02',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (1/6)',
-        },
-        {
-          doc_name: 'Informed supervision (1/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (2/6)',
-        },
-        {
-          doc_name: 'Informed supervision (2/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (3/6)',
-        },
-        {
-          doc_name: 'Informed supervision (3/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (4/6)',
-        },
-        {
-          doc_name: 'Informed supervision (4/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (5/6)',
-        },
-        {
-          doc_name: 'Informed supervision (5/6)',
-        },
-        {
-          doc_name: 'Sent Presentation',
-        },
-        {
-          doc_name: 'Presentation',
-        },
-        {
-          doc_name: 'TR-03 and TR-06 (6/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (1/4)',
-        },
-        {
-          doc_name: 'Informed supervision (1/4)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (2/4)',
-        },
-        {
-          doc_name: 'Informed supervision (2/4)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (3/4)',
-        },
-        {
-          doc_name: 'Informed supervision (3/4)',
-        },
-        {
-          doc_name: 'TR-03 and TR-06 (4/4)',
-        },
-        {
-          doc_name: 'Informed supervision',
-        },
-        {
-          doc_name: 'Informed presentation day',
-        },
-        {
-          doc_name: 'TR-03 and TR-08',
-        },
-      ])
-      await Status.createMany([
-        {
-          status_name: 'Pending',
-        },
-        {
-          status_name: 'Disapproved',
-        },
-        {
-          status_name: 'Approved',
-        },
-      ])
+      const docs = await Document.all()
+      if (docs && docs.length === 0) {
+        await Document.createMany([
+          {
+            doc_name: 'Accepted by firm',
+          },
+          {
+            doc_name: 'TR-01',
+          },
+          {
+            doc_name: 'TR-02',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (1/6)',
+          },
+          {
+            doc_name: 'Informed supervision (1/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (2/6)',
+          },
+          {
+            doc_name: 'Informed supervision (2/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (3/6)',
+          },
+          {
+            doc_name: 'Informed supervision (3/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (4/6)',
+          },
+          {
+            doc_name: 'Informed supervision (4/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (5/6)',
+          },
+          {
+            doc_name: 'Informed supervision (5/6)',
+          },
+          {
+            doc_name: 'Sent Presentation',
+          },
+          {
+            doc_name: 'Presentation',
+          },
+          {
+            doc_name: 'TR-03 and TR-06 (6/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (1/4)',
+          },
+          {
+            doc_name: 'Informed supervision (1/4)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (2/4)',
+          },
+          {
+            doc_name: 'Informed supervision (2/4)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (3/4)',
+          },
+          {
+            doc_name: 'Informed supervision (3/4)',
+          },
+          {
+            doc_name: 'TR-03 and TR-06 (4/4)',
+          },
+          {
+            doc_name: 'Informed supervision',
+          },
+          {
+            doc_name: 'Informed presentation day',
+          },
+          {
+            doc_name: 'TR-03 and TR-08',
+          },
+        ])
+      }
+      const statuses = await Status.all()
+      if (statuses && statuses.length === 0) {
+        await Status.createMany([
+          {
+            status_name: 'Pending',
+          },
+          {
+            status_name: 'Disapproved',
+          },
+          {
+            status_name: 'Approved',
+          },
+        ])
+      }
+      const users = await User.all()
+      if (users && users.length === 0) {
+        await User.createMany([
+          {
+            user_id: 'nuchanart.boo',
+            role: 'staff',
+          },
+          {
+            user_id: 'sirinthip.suk',
+            role: 'staff',
+          },
+          {
+            user_id: 'krant.bur',
+            role: 'adviser',
+          },
+          {
+            user_id: 'manee.mun',
+            role: 'adviser',
+          },
+        ])
+      }
+
       // next()
     } catch (error) {
       // console.log(error)
