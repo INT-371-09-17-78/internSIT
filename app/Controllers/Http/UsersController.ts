@@ -9,6 +9,7 @@ import Document_Status from 'App/Models/DocumentStatus'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
 import moment from 'moment-timezone'
+import Mail from '@ioc:Adonis/Addons/Mail'
 
 interface LdapOptions {
   url: string
@@ -50,8 +51,20 @@ export default class UsersController {
           await user?.related('student').create({})
         }
       }
+
+      await Mail.use('smtp').send((message) => {
+        message
+          .from('iunnuidev2@gmail.com')
+          .to('iunnuidev2@gmail.com')
+          .subject('test')
+          .htmlView('emails/welcome', {
+            user: { fullName: 'Some Name' },
+            url: 'https://your-app.com/verification-url',
+          })
+      })
       return response.redirect('/announcement')
     } catch (error) {
+      console.log(error)
       session.flash({
         error: 'Invalid creditials',
         type: 'negative',
