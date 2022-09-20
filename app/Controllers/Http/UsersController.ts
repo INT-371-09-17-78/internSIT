@@ -40,9 +40,13 @@ export default class UsersController {
       if (email.includes(uniEmailFormat)) {
         if (regxEmail.test(email)) {
         } else {
+          throw new Error('bad email format')
         }
       } else {
         email.concat(uniEmailFormat)
+      }
+      if (userId.length < 11) {
+        throw new Error('bad userId length')
       }
       let user: any
       let student: any
@@ -76,7 +80,7 @@ export default class UsersController {
     } catch (error) {
       console.log(error)
       session.flash({
-        error: 'Invalid creditials',
+        error: error.message,
         type: 'negative',
       })
       return response.redirect('/')
