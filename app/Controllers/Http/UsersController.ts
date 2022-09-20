@@ -32,7 +32,17 @@ export default class UsersController {
   public async register({ request, response, session }: HttpContextContract) {
     try {
       const { userId, email } = request.all()
-
+      const uniEmailFormat = '@mail.kmutt.ac.th'
+      const regxEmail =
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      console.log(regxEmail.test(email))
+      if (email.includes(uniEmailFormat)) {
+        if (regxEmail.test(email)) {
+        } else {
+        }
+      } else {
+        email.concat(uniEmailFormat)
+      }
       let user: any
       let student: any
       user = await User.findBy('user_id', userId)

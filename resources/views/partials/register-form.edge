@@ -14,7 +14,7 @@
                 <label class="label" for="user-id">
                     <span class="label-text font-bold text-sm lg:text-base">Student ID</span>
                 </label>
-                <input type="text" id="user-id" name="userId" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <input type="text" id="user-id" name="userId" maxlength="11" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
                 <label class="label" for="email">
                     <span class="label-text font-bold text-sm lg:text-base">Email</span>
                 </label>
@@ -28,6 +28,6 @@
                 type: 'submit',
                 classProps: 'btn-primary btn-block text-base btn-xs h-9 lg:text-base lg:h-14 mt-2 rounded-xl',
             })
-            <p class="text-center mt-6 text-sm lg:text-base font-medium">Already have an account <a href="" class="link link-primary">Login now</a></p>
+            <p class="text-center mt-6 text-sm lg:text-base font-medium">Already have an account <a href="{{ route('/') }}" class="link link-primary">Login now</a></p>
         </form>
 </div>

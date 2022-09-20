@@ -12,7 +12,10 @@
             <img src="{{ asset('assets/images/home.svg') }}" class="h-16 w-56 lg:h-28 lg:w-[414px]"/>  
         </div>
     </div>
-    @include('partials/login-form')
-    {{--  @include('partials/register-form')  --}}
+    @if(request.matchesRoute('/register'))
+      @include('partials/register-form')
+    @elseif(request.matchesRoute('/'))
+     @include('partials/login-form')
+    @end
   </section>
 @end

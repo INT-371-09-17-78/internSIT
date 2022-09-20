@@ -52,6 +52,10 @@ Route.get('/', async ({ view, auth, response }) => {
   }
 })
 
+Route.get('/register', async ({ view, auth, response }) => {
+  return view.render('home')
+})
+
 Route.get('/student/:id/information', async ({ view, request }) => {
   const studentUsers = await User.query()
     .where('role', 'student')
