@@ -32,18 +32,21 @@ export default class UsersController {
   // }
   public async register({ request, response, session }: HttpContextContract) {
     try {
-      const { userId, email } = request.all()
+      let { userId, email } = request.all()
       const uniEmailFormat = '@mail.kmutt.ac.th'
       const regxEmail =
         /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       console.log(regxEmail.test(email))
+      if (!email) throw new Error('empty email')
       if (email.includes(uniEmailFormat)) {
-        if (regxEmail.test(email)) {
-        } else {
+        if (!regxEmail.test(email)) {
           throw new Error('bad email format')
         }
       } else {
-        email.concat(uniEmailFormat)
+        email += uniEmailFormat
+      }
+      if (!userId) {
+        throw new Error('empty userId')
       }
       if (userId.length < 11) {
         throw new Error('bad userId length')
@@ -83,7 +86,7 @@ export default class UsersController {
         error: error.message,
         type: 'negative',
       })
-      return response.redirect('/')
+      return response.redirect('/register')
     }
   }
 
