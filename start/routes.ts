@@ -52,8 +52,12 @@ Route.get('/', async ({ view, auth, response }) => {
   }
 })
 
-Route.get('/register', async ({ view, auth, response }) => {
+Route.get('/register', async ({ view }) => {
   return view.render('home')
+})
+
+Route.get('/success-regis', async ({ view }) => {
+  return view.render('success-regis')
 })
 
 Route.get('/student/:id/information', async ({ view, request }) => {
@@ -158,28 +162,39 @@ Route.group(() => {
 // })
 
 // Route.resource('controller', 'UsersController').apiOnly()
+Route.group(() => {
+  Route.post('/login', 'UsersController.verify').as('auth.login')
+  Route.post('/register', 'UsersController.register').as('auth.register')
+  Route.get('/logout', 'UsersController.logout').as('auth.logout')
+  // Route.get('/user/:role', 'UsersController.getUserByRole')
+  Route.group(() => {
+    Route.patch('/student/:id', 'UsersController.updateStudentUserStatus')
+    Route.patch('/student/info/:id', 'UsersController.updateStudentUserInfo')
+  })
+    .middleware('login')
+    .prefix('/user')
 
-Route.post('/api/login', 'UsersController.verify').as('auth.login')
-Route.post('/api/register', 'UsersController.register').as('auth.register')
-Route.get('/api/logout', 'UsersController.logout').as('auth.logout')
-// Route.get('/api/user/:role', 'UsersController.getUserByRole')
-Route.patch('/api/user/student/:id', 'UsersController.updateStudentUserStatus').middleware('login')
-Route.patch('/api/user/student/info/:id', 'UsersController.updateStudentUserInfo').middleware(
-  'login'
-)
-// Route.get('/api/post', 'PostsController.show')
-// Route.get('/api/post/:post_id', 'PostsController.showById')
+  // Route.get('/post', 'PostsController.show')
+  // Route.get('/post/:post_id', 'PostsController.showById')
+  Route.group(() => {
+    Route.post('/', 'PostsController.store')
+    Route.patch('/:id', 'PostsController.update')
+    Route.delete('/:id', 'PostsController.remove')
+    Route.get('/:id', 'PostsController.getById')
+  })
+    .middleware('role')
+    .prefix('/post')
 
-Route.post('/api/post', 'PostsController.store').middleware('role')
-Route.patch('/api/post/:id', 'PostsController.update').middleware('role')
-Route.delete('/api/post/:id', 'PostsController.remove').middleware('role')
-Route.get('/api/post/:id', 'PostsController.getById').middleware('role')
-
-Route.post('/api/file', 'FilesController.store').middleware('login')
-Route.post('/api/file/steps', 'FilesController.storeDirect').middleware('login') //store file สำหรับ steps
-// Route.get('/api/file/user/:id', 'FilesController.showFilesByUserId')
-Route.get('/api/file/:fileId', 'FilesController.downloadFile').middleware('login') //downloadfile สำหรับ steps / อื่นๆ
-Route.delete('/api/file/:fileId', 'FilesController.deleteFileDirect').middleware('login')
+  Route.group(() => {
+    Route.post('/', 'FilesController.store')
+    Route.post('/steps', 'FilesController.storeDirect') //store file สำหรับ steps
+    // Route.get('/file/user/:id', 'FilesController.showFilesByUserId')
+    Route.get('/:fileId', 'FilesController.downloadFile') //downloadfile สำหรับ steps / อื่นๆ
+    Route.delete('/:fileId', 'FilesController.deleteFileDirect')
+  })
+    .middleware('login')
+    .prefix('/file')
+}).prefix('/api')
 
 // Route.get('/api/test', 'UsersController.test')
 // Route.get('/api/gen', 'UsersController.gen')

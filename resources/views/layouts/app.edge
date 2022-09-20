@@ -30,7 +30,7 @@
             </label>
         </div>
     <div class="flex w-full h-full justify-center">
-       @if(!request.matchesRoute(['/','/register']))
+       @if(!request.matchesRoute(['/','/register','/success-regis']))
        <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64 lg:overflow-visible">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>
         <div class="drawer-side">
@@ -104,6 +104,7 @@
         </div>
       </div>
       @end
+      @!section('success-regis')
       @!section('home')
       @!section('announcement')
       @!section('post')

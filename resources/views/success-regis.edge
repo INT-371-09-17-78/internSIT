@@ -1,0 +1,10 @@
+@layout('layouts/app')
+@set('title', 'success register page')
+@section('success-regis')
+  <section class="w-full h-full flex flex-col text-green-700 justify-center items-center font-semibold">
+    <img class="w-14 h-14 mb-5" src="{{ asset('assets/images/done-circle.svg') }}"/>
+    <p class="text-base">Your registration has been sent!</p>
+    <p class="text-sm">The results will send to your email.</p>
+    <a class="link link-primary mt-5" href="{{ route('/') }}">Back</a>
+  </section>
+@end

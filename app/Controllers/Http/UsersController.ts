@@ -79,7 +79,7 @@ export default class UsersController {
             url: 'https://your-app.com/verification-url',
           })
       })
-      return response.redirect('/announcement')
+      return response.redirect('/success-regis')
     } catch (error) {
       console.log(error)
       session.flash({
