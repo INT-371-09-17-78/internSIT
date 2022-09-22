@@ -20,7 +20,6 @@
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
 import UsersController from 'App/Controllers/Http/UsersController'
-import User from 'App/Models/User'
 // import Post from 'App/Models/Post'
 // import moment from 'moment'
 View.global('middleEllipsis', (str: string) => {
@@ -60,78 +59,9 @@ Route.get('/success-regis', async ({ view }) => {
   return view.render('success-regis')
 })
 
-Route.get('/student/:id/information', async ({ view, request }) => {
-  const studentUsers = await User.query()
-    .where('role', 'student')
-    .andWhere('user_id', request.param('id'))
-    .preload('student')
-  const studentUser = studentUsers[0]
-  if (studentUser.student.adviser_id) {
-    const adviser = await User.findOrFail(studentUser.student.adviser_id)
-    studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
-  }
-  const disabled = studentUser.student.plan === null ? '' : 'disabled'
-  const studentInfo = [
-    { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
-    { title: 'Email', value: studentUser.email, key: 'email' },
-    { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
-    { title: 'Department', value: studentUser.student.department, key: 'department' },
-    { title: 'Position', value: studentUser.student.position, key: 'position' },
-    { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
-    { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
-    {
-      title: 'Mentor’s Position',
-      value: studentUser.student.mentor_position,
-      key: 'mentorPosition',
-    },
-    { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
-    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
-    {
-      title: 'Advisor',
-      value: studentUser.student['adviserFullName'] ? studentUser.student['adviserFullName'] : '',
-      key: 'adviserFullName',
-    },
-  ]
-  return view.render('student-info', { studentUser, disabled, studentInfo })
-})
+Route.get('/student/:id/information', 'UsersController.showStudentInfo') //ยังไม่ได้กรุ๊ปปป
 
-Route.get('/student/:id/edit', async ({ view, request }) => {
-  const studentUsers = await User.query()
-    .where('role', 'student')
-    .andWhere('user_id', request.param('id'))
-    .preload('student')
-  const studentUser = studentUsers[0]
-  if (studentUser.student.adviser_id) {
-    const adviser = await User.findOrFail(studentUser.student.adviser_id)
-    studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
-  }
-  const disabled = studentUser.student.plan === null ? '' : 'disabled'
-  const studentInfo = [
-    { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
-    { title: 'Email', value: studentUser.email, key: 'email' },
-    { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
-    { title: 'Department', value: studentUser.student.department, key: 'department' },
-    { title: 'Position', value: studentUser.student.position, key: 'position' },
-    { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
-    { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
-    {
-      title: 'Mentor’s Position',
-      value: studentUser.student.mentor_position,
-      key: 'mentorPosition',
-    },
-    { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
-    { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
-    {
-      title: 'Advisor',
-      value: studentUser.student['adviserFullName'] ? studentUser.student['adviserFullName'] : '',
-      key: 'adviserFullName',
-    },
-  ]
-  // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
-  return view.render('edit-student', { studentUser, disabled, studentInfo })
-})
-
-Route.get('/file', 'FilesController.showAllFile')
+Route.get('/student/:id/edit', 'UsersController.showStudentInfoEdit')
 
 Route.get('/students', 'UsersController.showStudentUser')
 
@@ -163,7 +93,7 @@ Route.group(() => {
 
 // Route.resource('controller', 'UsersController').apiOnly()
 Route.group(() => {
-  Route.post('/login', 'UsersController.verify').as('auth.login')
+  Route.post('/login', 'UsersController.verify2').as('auth.login')
   Route.post('/register', 'UsersController.register').as('auth.register')
   Route.get('/logout', 'UsersController.logout').as('auth.logout')
   // Route.get('/user/:role', 'UsersController.getUserByRole')
@@ -186,6 +116,7 @@ Route.group(() => {
     .prefix('/post')
 
   Route.group(() => {
+    Route.get('/', 'FilesController.showAllFile')
     Route.post('/', 'FilesController.store')
     Route.post('/steps', 'FilesController.storeDirect') //store file สำหรับ steps
     // Route.get('/file/user/:id', 'FilesController.showFilesByUserId')

@@ -135,6 +135,64 @@ export default class UsersController {
     }
   }
 
+  public async verify2({ auth, request, response, session }: HttpContextContract) {
+    try {
+      const { username, password, isRemember } = request.all()
+
+      let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
+      let user: any
+      user = await User.findBy('user_id', username)
+      if (user && user.role === 'student') {
+        const st = await Student.findBy('student_id', user.user_id)
+        if (st) {
+          if (st.approved) {
+            await auth.attempt(username, password, rememberMe)
+            return response.redirect('/announcement') //student ที่ approved แล้ว
+          } else {
+            return response.redirect('/announcement') //student ที่ยังไม่ approved
+          }
+        }
+      } else if (user && user.role !== 'student') {
+        await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
+        return response.redirect('/announcement')
+      } else {
+        const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
+        const fullname = ldapUser.cn.split(' ')
+        if (ldapUser) {
+          user = new User()
+          user.user_id = username
+          user.firstname = fullname[0]
+          user.lastname = fullname[1]
+          user.email = ldapUser.mail
+          user.password = password
+          await user.save()
+          const st = await Student.findBy('student_id', user.user_id)
+          if (!st) {
+            await user?.related('student').create({})
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error)
+      if (
+        error.message === 'no password given' ||
+        error.message === 'empty username' ||
+        error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      } else {
+        session.flash({
+          error: 'Invalid creditials',
+          type: 'negative',
+        })
+      }
+      return response.redirect('/')
+    }
+  }
+
   public authenticate(username: string, password: string, role: string) {
     return new Promise((resolve, reject) => {
       const options: LdapOptions = {
@@ -531,6 +589,89 @@ export default class UsersController {
       await studentUser.save()
       await studentUser.student.save()
       response.redirect(`/student/${studentUser.user_id}/information`)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async showStudentInfo({ request, response, view }: HttpContextContract) {
+    try {
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      if (studentUser.student.adviser_id) {
+        const adviser = await User.findOrFail(studentUser.student.adviser_id)
+        studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+      }
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['adviserFullName']
+            ? studentUser.student['adviserFullName']
+            : '',
+          key: 'adviserFullName',
+        },
+      ]
+      return view.render('student-info', { studentUser, disabled, studentInfo })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async showStudentInfoEdit({ request, response, view }: HttpContextContract) {
+    try {
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      if (studentUser.student.adviser_id) {
+        const adviser = await User.findOrFail(studentUser.student.adviser_id)
+        studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+      }
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['adviserFullName']
+            ? studentUser.student['adviserFullName']
+            : '',
+          key: 'adviserFullName',
+        },
+      ]
+      // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
+      return view.render('edit-student', { studentUser, disabled, studentInfo })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

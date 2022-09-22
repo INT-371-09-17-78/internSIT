@@ -18,6 +18,7 @@ export default class Students extends BaseSchema {
       table.string('mentor_email', 80).nullable()
       table.string('mentor_position', 80).nullable()
       table.string('mentor_tel_no', 10).nullable()
+      table.boolean('approved').defaultTo(false).notNullable()
       // table.string('status', 30).notNullable().defaultTo('ยังไม่ได้เลือก')
       // table.string('study', 10).nullable()
       // table.string('reasons', 500).nullable()
