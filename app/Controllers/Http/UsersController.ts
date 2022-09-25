@@ -154,7 +154,7 @@ export default class UsersController {
             await auth.attempt(username, password, rememberMe)
             return response.redirect('/announcement') //student ที่ approved แล้ว
           } else {
-            return response.redirect('/announcement') //student ที่ยังไม่ approved
+            return response.redirect('/success-regis') //student ที่ยังไม่ approved
           }
         }
       } else if (user && user.role !== 'student') {
@@ -186,6 +186,7 @@ export default class UsersController {
               })
           })
         }
+        return response.redirect('/success-regis')
       }
     } catch (error) {
       console.log(error)
