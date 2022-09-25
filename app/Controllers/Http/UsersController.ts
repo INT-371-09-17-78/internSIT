@@ -138,7 +138,12 @@ export default class UsersController {
   public async verify2({ auth, request, response, session }: HttpContextContract) {
     try {
       const { username, password, isRemember } = request.all()
-
+      if (!username) {
+        throw new Error('empty username')
+      }
+      if (username.length < 11) {
+        throw new Error('bad userName length')
+      }
       let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
       let user: any
       user = await User.findBy('user_id', username)
@@ -170,17 +175,32 @@ export default class UsersController {
           if (!st) {
             await user?.related('student').create({})
           }
+          await Mail.use('smtp').send((message) => {
+            message
+              .from('iunnuidev2@gmail.com')
+              .to('iunnuidev2@gmail.com')
+              .subject('test')
+              .htmlView('emails/welcome', {
+                user: { fullName: 'Some Name' },
+                url: 'https://your-app.com/verification-url',
+              })
+          })
         }
       }
     } catch (error) {
       console.log(error)
       if (
         error.message === 'no password given' ||
-        error.message === 'empty username' ||
-        error.message === 'empty role'
+        error.message === 'empty username'
+        // error.message === 'empty role'
       ) {
         session.flash({
           error: 'All fields are required',
+          type: 'negative',
+        })
+      } else if (error.message === 'bad userName length') {
+        session.flash({
+          error: 'Bad Username length',
           type: 'negative',
         })
       } else {
