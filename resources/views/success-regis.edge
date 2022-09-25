@@ -3,8 +3,12 @@
 @section('success-regis')
   <section class="w-full h-full flex flex-col text-green-700 justify-center items-center font-semibold">
     <img class="w-14 h-14 mb-5" src="{{ asset('assets/images/done-circle.svg') }}"/>
-    <p class="text-base">Your registration has been sent!</p>
-    <p class="text-sm">The results will send to your email.</p>
+    <p class="text-base">You just sent a request!</p>
+    <p class="text-sm">Login authorization will be sent to your email.</p>
+    <div class="border-[#A8B0B8] border w-96 text-center p-3 rounded-lg text-black mt-12">
+      <p>สำหรับนักศึกษา</p>
+      <p class="font-normal">ในการเข้าใช้งานระบบครั้งแรก นักศึกษาต้องรอการอนุมัติจาก เจ้าหน้าที่ผ่านทาง KMUTT email ของนักศึกษา หลังจากนั้นจึงสามารถเข้าใช้งานระบบภายหลังได้</p>
+    </div>
     <a class="link link-primary mt-5" href="{{ route('/') }}">Back</a>
   </section>
 @end
