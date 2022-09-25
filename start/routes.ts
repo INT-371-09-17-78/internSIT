@@ -77,6 +77,7 @@ Route.group(() => {
   Route.get('/:id', 'PostsController.showById')
 }).prefix('/announcement')
 
+Route.get('/file', 'FilesController.showAllFile')
 // Route.get('/err', async ({ view, auth, response }) => {
 //     return view.render('errors/unauthorized')
 // })
@@ -116,7 +117,6 @@ Route.group(() => {
     .prefix('/post')
 
   Route.group(() => {
-    Route.get('/', 'FilesController.showAllFile')
     Route.post('/', 'FilesController.store')
     Route.post('/steps', 'FilesController.storeDirect') //store file สำหรับ steps
     // Route.get('/file/user/:id', 'FilesController.showFilesByUserId')

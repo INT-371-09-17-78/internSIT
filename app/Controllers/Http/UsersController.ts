@@ -158,6 +158,9 @@ export default class UsersController {
           }
         }
       } else if (user && user.role !== 'student') {
+        console.log('เข้า')
+        console.log(username, password)
+
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
         return response.redirect('/announcement')
       } else {
@@ -803,18 +806,22 @@ export default class UsersController {
           {
             user_id: 'nuchanart.boo',
             role: 'staff',
+            password: 'Fxig08',
           },
           {
             user_id: 'sirinthip.suk',
             role: 'staff',
+            password: 'Fxig08',
           },
           {
             user_id: 'krant.bur',
             role: 'adviser',
+            password: 'Fxig08',
           },
           {
             user_id: 'manee.mun',
             role: 'adviser',
+            password: 'Fxig08',
           },
         ])
       }
