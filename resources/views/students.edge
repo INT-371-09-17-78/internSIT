@@ -95,6 +95,8 @@
       document.getElementById('checkAllBox').checked = true
     }
   } 
+  const formElem = document.getElementById('formElem')
+  if(formElem)
   formElem.onsubmit = async (event) => {
     event.preventDefault()
     console.log('============================')
