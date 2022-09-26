@@ -2,26 +2,106 @@
 @set('title', 'students page')
 @section('students')
   <section class="h-full w-full z-[5]">
-    <p class="text-base lg:text-3xl text-base-content font-bold pl-11 pt-9">Student Information</p>
-    <div class="overflow-x-auto px-11 mt-5">
-        <table class="table w-full border-red-500">
-          <thead>
-            <tr>
-              <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
-              <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-              <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @each((student,index) in studentUser)
-              <tr class="cursor-pointer font-bold" onclick="window.location='/student/{{student.user_id }}';">
-                <td>{{student.user_id}}</td>
-                <td>{{student.firstname + " " + student.lastname}}</td>
-                <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
-              </tr>
-            @end
-          </tbody>
-        </table>
+    @if(!request.matchesRoute('/students/request'))
+      <div class="flex pl-11 pt-9">
+        <p class="text-base lg:text-3xl text-base-content font-bold">Student Information</p>
+        <a href="{{ route('/students/request') }}">
+          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize ml-8">Register request</button>
+        </a>
       </div>
+      <div class="overflow-x-auto px-11 mt-5">
+          <table class="table w-full border-red-500">
+            <thead>
+              <tr>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @each((student,index) in studentUser)
+                @if(student.approved)
+                  <tr class="cursor-pointer font-bold" onclick="window.location='/student/{{student.user_id }}';">
+                    <td>{{student.user_id}}</td>
+                    <td>{{student.firstname + " " + student.lastname}}</td>
+                    <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+                  </tr>
+                @end
+              @end
+            </tbody>
+          </table>
+        </div>
+      @else
+      <div class="px-11 pt-9">
+        <p class="text-base lg:text-3xl text-base-content font-bold">Register request</p>
+        <a href="{{ route('/students') }}">
+          <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer py-2">
+            <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
+            <p class="font-semibold">Back</p>
+          </div>
+        </a>
+        <form id="formElem" name="formElem">
+          <table class="table w-full border-red-500">
+            <thead>
+              <tr>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox" onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>ID</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                <th class="bg-[#F6F7F9]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @each((student,index) in studentUser)
+                  <tr class="font-bold">
+                    <td><input type="checkbox" name="checkStudent" id="{{student.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>{{student.user_id}}</td>
+                    <td>{{student.firstname + " " + student.lastname}}</td>
+                    <td class="text-right">
+                      @if(student.approved)
+                        {{student.approved}}
+                      @else
+                      <div class="flex justify-end">
+                        <img class="w-5 h-5 cursor-pointer" src="{{ asset('assets/images/close.svg') }}"/>
+                      </div>
+                      @end
+                    </td>
+                  </tr>
+              @end
+            </tbody>
+          </table>
+          <div class="flex justify-end px-5">
+            <button id="submitButton" class="btn btn-sm btn-primary rounded-xl text-white capitalize mt-5">confirm</button>
+          </div>
+        </form>
+      </div>
+      @end
   </section>
+  <script>
+  const checkAll = (source) => {
+    checkboxes = document.getElementsByName('checkStudent')
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = source.checked
+    });
+  }
+  const updateCheckAll = () =>{
+    let checkedCount = 0;
+    checkboxes = document.getElementsByName('checkStudent')
+    checkboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+      checkedCount++;
+      }
+    });
+    if (checkedCount === 0) {
+      document.getElementById('checkAllBox').checked = false
+    } else if (checkedCount === checkboxes.length) {
+      document.getElementById('checkAllBox').checked = true
+    }
+  } 
+  formElem.onsubmit = async (event) => {
+    event.preventDefault()
+    console.log('============================')
+    document.getElementsByName('checkStudent').forEach(checkbox => {
+      console.log("ID: "+checkbox.id,"| Approved: "+ checkbox.checked)
+    });
+    console.log('============================')
+  };
+  </script>
 @end

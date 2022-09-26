@@ -162,7 +162,7 @@ export default class UsersController {
         console.log(username, password)
 
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
-        return response.redirect('/announcement')
+        return response.redirect('/students')
       } else {
         const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
         const fullname = ldapUser.cn.split(' ')

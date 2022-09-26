@@ -65,6 +65,8 @@ Route.get('/student/:id/edit', 'UsersController.showStudentInfoEdit')
 
 Route.get('/students', 'UsersController.showStudentUser')
 
+Route.get('/students/request', 'UsersController.showStudentUser')
+
 Route.get('/student/:id', 'UsersController.showStudentUserById')
 
 Route.group(() => {
