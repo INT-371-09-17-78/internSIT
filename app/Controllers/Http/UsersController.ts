@@ -245,24 +245,24 @@ export default class UsersController {
     try {
       // const role = request.param('role')
       // const studentUser = await Student.query().preload('document_status')
-      const studentUser = await User.query()
+      const studentUsers = await User.query()
         .where('role', 'student')
         // .andWhere('user_id', request.param('id'))
         .preload('student')
-      for (let i = 0; i < studentUser.length; i++) {
+      for (let i = 0; i < studentUsers.length; i++) {
         const documentStatus = await Document_Status.query()
-          .where('student_id', studentUser[i].user_id)
+          .where('student_id', studentUsers[i].user_id)
           .orderBy('updated_at', 'desc')
         if (documentStatus && documentStatus.length > 0) {
           console.log('เข้า')
-          studentUser[i].serialize()
-          studentUser[i]['lastestStatus'] =
+          studentUsers[i].serialize()
+          studentUsers[i]['lastestStatus'] =
             documentStatus[0].document_id + ' ' + documentStatus[0].status_id
         } else {
-          studentUser[i].serialize()
-          studentUser[i].student.plan
-            ? (studentUser[i]['lastestStatus'] = 'Accepted by firm')
-            : (studentUser[i]['lastestStatus'] = `Haven't chosen a plan yet.`)
+          studentUsers[i].serialize()
+          studentUsers[i].student.plan
+            ? (studentUsers[i]['lastestStatus'] = 'Accepted by firm')
+            : (studentUsers[i]['lastestStatus'] = `Haven't chosen a plan yet.`)
         }
         // console.log(documentStatus)
 
@@ -275,7 +275,7 @@ export default class UsersController {
       // console.log(studentUser)
       // const result = await document.related('statuses').query().where('status_id', 'test2')
       // return response.send(studentUser)
-      return view.render('students', { studentUser })
+      return view.render('students', { studentUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -546,6 +546,26 @@ export default class UsersController {
     }
   }
 
+  public async updateStudentUserApprove({ request, response }: HttpContextContract) {
+    try {
+      const { users } = request.only(['users'])
+      users.forEach(async (user) => {
+        const studentUsers = await User.query().where('user_id', user.id).preload('student')
+        const studentUser = studentUsers[0]
+        studentUser.student.approved = user.approve
+        await studentUser.student.save()
+      })
+      // if (approve) {
+      //   response.redirect(`/students/request`)
+      // } else {
+      //   response.redirect(`/student/${studentUser.user_id}/information`)
+      // }
+      // response.redirect(`/student/${studentUser.user_id}/information`)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
   public async updateStudentUserInfo({ request, response }: HttpContextContract) {
     try {
       const {
@@ -560,6 +580,7 @@ export default class UsersController {
         mentorEmail,
         mentorTel,
         adviserFullName,
+        approve,
       } = request.only([
         'firm',
         'email',
@@ -572,6 +593,7 @@ export default class UsersController {
         'mentorEmail',
         'mentorTel',
         'adviserFullName',
+        'approve',
       ])
       const studentUsers = await User.query()
         .where('user_id', request.param('id'))
@@ -588,6 +610,7 @@ export default class UsersController {
       studentUser.student.mentor_email = mentorEmail
       studentUser.student.mentor_tel_no = mentorTel
       studentUser.email = email
+      studentUser.student.approved = approve
       // if (email) {
       //   const studentUser = await User.query()
       //     .where('user_id', request.param('id'))
@@ -595,7 +618,6 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
-      console.log(adviserFullName)
       if (adviserFullName) {
         const adviserFullNameSplit = adviserFullName.split(' ')
         if (adviserFullNameSplit && adviserFullNameSplit.length > 1) {
@@ -612,7 +634,12 @@ export default class UsersController {
 
       await studentUser.save()
       await studentUser.student.save()
-      response.redirect(`/student/${studentUser.user_id}/information`)
+      if (approve) {
+        response.redirect(`/students/request`)
+      } else {
+        response.redirect(`/student/${studentUser.user_id}/information`)
+      }
+      // response.redirect(`/student/${studentUser.user_id}/information`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -653,6 +680,7 @@ export default class UsersController {
           key: 'adviserFullName',
         },
       ]
+      // console.log(studentUser)
       return view.render('student-info', { studentUser, disabled, studentInfo })
     } catch (error) {
       return response.status(400).json({ message: error.message })

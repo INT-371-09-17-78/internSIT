@@ -50,13 +50,13 @@
               </tr>
             </thead>
             <tbody>
-              @each((student,index) in studentUser)
+              @each((studentUser,index) in studentUsers)
                   <tr class="font-bold">
-                    <td><input type="checkbox" name="checkStudent" id="{{student.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>{{student.user_id}}</td>
-                    <td>{{student.firstname + " " + student.lastname}}</td>
+                    <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>{{studentUser.user_id}}</td>
+                    <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>
                     <td class="text-right">
-                      @if(student.approved)
-                        {{student.approved}}
+                      @if(studentUser.student.approved)
+                        {{studentUser.student.approved}}
                       @else
                       <div class="flex justify-end">
                         <img class="w-5 h-5 cursor-pointer" src="{{ asset('assets/images/close.svg') }}"/>
@@ -100,10 +100,22 @@
   formElem.onsubmit = async (event) => {
     event.preventDefault()
     console.log('============================')
-    document.getElementsByName('checkStudent').forEach(checkbox => {
+    const checkboxs = []
+    document.getElementsByName('checkStudent').forEach(async (checkbox) => {
       console.log("ID: "+checkbox.id,"| Approved: "+ checkbox.checked)
+      if(checkbox.checked){
+      checkboxs.push({id : checkbox.id , approve : checkbox.checked})
+       }
     });
-    console.log('============================')
+    const body = {users : checkboxs}
+        await fetch('/api/user/student/regis/approve?_method=PATCH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    })
   };
   </script>
 @end
