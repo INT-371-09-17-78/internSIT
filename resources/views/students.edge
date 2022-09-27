@@ -89,10 +89,10 @@
       checkedCount++;
       }
     });
-    if (checkedCount === 0) {
-      document.getElementById('checkAllBox').checked = false
-    } else if (checkedCount === checkboxes.length) {
+    if (checkedCount === checkboxes.length) {
       document.getElementById('checkAllBox').checked = true
+    }else{
+      document.getElementById('checkAllBox').checked = false
     }
   } 
   const formElem = document.getElementById('formElem')
