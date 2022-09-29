@@ -7,16 +7,16 @@
     <p class="text-base">{{studentUser.user_id}}</p>
     <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
   </div>
-  @if(auth.user.role === "student" && !studentUser.student.plan)
+  {{--  @if(auth.user.role === "student" && !studentUser.student.plan)
     <div class="w-full h-full absolute top-0 flex justify-center items-center">
       <img src="{{ asset('assets/images/waiting.gif') }}" class="w-24 h-24"/>  
       <p class="text-3xl text-gray-400">Wait for staff assign your plan</p>
       <img src="{{ asset('assets/images/waiting.gif') }}" class="w-24 h-24"/>  
     </div>
-  @end
+  @end  --}}
 
   <div class="flex mt-5 px-11">
-    @if(auth.user.role === "student")
+    @if(auth.user.role !== "student")
       <p class="font-bold whitespace-nowrap">{{studentUser.student.plan ? studentUser.student.plan + " month" : "" }}</p>
     @else
     <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2 z-10">
@@ -37,11 +37,15 @@
     @end
     @if(studentUser.student.plan)
     <div class="w-full flex justify-center">
-      <ul class="steps w-full max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl">
+      <a href="javascript:prevPage()" id="btn_prev">Prev</a>
+      <ul class="steps">
         @each((step,index) in steps)
-            <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
+          @if(index <= 3)
+              <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
+          @end
         @end
-    </ul>
+      </ul>
+      <a href="javascript:nextPage()" id="btn_next">Next</a>
     </div>
     @end
   </div>
@@ -67,12 +71,13 @@
     
     <div class="flex flex-col pt-5">
       <form id="formElem">
-        <div class="flex space-x-2">
+        
+        {{--  <div class="flex space-x-2">
           <p class="font-bold">{{nextStep.name}}</p>
-          @if(currentSteps.name != "Accepted by firm" && currentSteps.status != "Approved")
+          @if(currentSteps.status != "Approved")
           <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
           @end
-        </div> 
+        </div>   --}}
         <p>{{currentSteps.status ==="Pending" || currentSteps.status === "Not approve" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
         @if(currentSteps.status ==="Not Approve")
         <div class="flex flex-col mt-5">
@@ -113,7 +118,7 @@
   @if(nextStep.name === 'Accepted by firm')
   @if(auth.user.role !== "student")
   <p class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">Waiting for student to confirm</p>
-  @else
+  {{--  @else
   <form id="formElem3" class="flex justify-center items-center w-full h-full flex-col">
     <div class="w-fit space-y-2">
       <p>Have you been accepted by firm?</p>
@@ -121,7 +126,7 @@
     </div>
     
   </form>
-  
+    --}}
   @end
   @end
 </section>
@@ -236,6 +241,7 @@ var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.n
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';  
+if(canvas)
 var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
@@ -297,6 +303,7 @@ function queueRenderPage(num) {
   pageNum--;
   queueRenderPage(pageNum);
 }
+if(document.getElementById('prev'))
 document.getElementById('prev').addEventListener('click', onPrevPage);
 
 /**
@@ -309,6 +316,7 @@ function onNextPage() {
   pageNum++;
   queueRenderPage(pageNum);
 }
+if(document.getElementById('next'))
 document.getElementById('next').addEventListener('click', onNextPage);
 // The workerSrc property shall be specified.
 if({{currentSteps.name != "Accepted by firm" && currentSteps.status != "Approved"}}){

@@ -1,14 +1,20 @@
 @layout('layouts/app')
 @set('title', 'students page')
 @section('students')
-  <section class="h-full w-full z-[5]">
+  <section class="flex flex-col h-full w-full z-[5]">
     @if(!request.matchesRoute('/students/request'))
       <div class="flex pl-11 pt-9">
         <p class="text-base lg:text-3xl text-base-content font-bold">Student Information</p>
         <a href="{{ route('/students/request') }}">
-          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize ml-8">{{noApprove}}Register request</button>
+          <div class="indicator">
+            @if(noApprove)
+            <span class="indicator-item badge bg-red-500 border-red-500">{{noApprove}}</span> 
+            @end
+            <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize ml-8">Register request</button>
+          </div>
         </a>
       </div>
+      @if(noApprove > 0)
       <div class="overflow-x-auto px-11 mt-5">
           <table class="table w-full border-red-500">
             <thead>
@@ -19,20 +25,27 @@
               </tr>
             </thead>
             <tbody>
-              @each((student,index) in studentUser)
-                @if(student.approved)
+              @each((student,index) in studentUsers)
+              @if(student.student.approved)
                   <tr class="cursor-pointer font-bold" onclick="window.location='/student/{{student.user_id }}';">
                     <td>{{student.user_id}}</td>
                     <td>{{student.firstname + " " + student.lastname}}</td>
                     <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
                   </tr>
-                @end
+              @end
               @end
             </tbody>
           </table>
         </div>
+        @else
+        <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
+          <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
+          <p>No students in the system</p>
+          <p class="text-base">Please add students into the system first.</p>
+        </div>
+        @end
       @else
-      <div class="px-11 pt-9">
+      <div class="px-11 pt-9 flex flex-col">
         <p class="text-base lg:text-3xl text-base-content font-bold">Register request</p>
         <a href="{{ route('/students') }}">
           <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer py-2">
@@ -40,41 +53,78 @@
             <p class="font-semibold">Back</p>
           </div>
         </a>
-        <form id="formElem" name="formElem">
-          <table class="table w-full border-red-500">
-            <thead>
-              <tr>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox" onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>ID</th>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                <th class="bg-[#F6F7F9]"></th>
-              </tr>
-            </thead>
-            <tbody>
-              @each((studentUser,index) in studentUsers)
+      </div>
+      @if(noApprove)
+      <form id="formElem" name="formElem" class="px-11">
+        <table class="table w-full border-red-500">
+          <thead>
+            <tr>
+              <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox" onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>ID</th>
+              <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+              <th class="bg-[#F6F7F9]"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @each((studentUser,index) in studentUsers)
+              @if(!studentUser.student.approved)
                   <tr class="font-bold">
                     <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm" {{studentUser.student.approved === 1 && ('checked' + ' ' + 'disabled')}}/>{{studentUser.user_id}}</td>
                     <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>
                     <td class="text-right">
-                      @if(studentUser.student.approved)
-                        <p class="text-green-700">Approved</p>
-                      @else
-                      <div class="flex justify-end">
-                        <img onclick="deleteSt({{studentUser.user_id}})" class="w-5 h-5 cursor-pointer" src="{{ asset('assets/images/close.svg') }}"/>
+                      <div class="flex justify-end"> 
+                        <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="openAlertDeleteRequest({{studentUser.user_id}})">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                          </svg>
+                        </button>
                       </div>
-                      @end
                     </td>
                   </tr>
               @end
-            </tbody>
-          </table>
-          <div class="flex justify-end px-5">
-            <button id="submitButton" class="btn btn-sm btn-primary rounded-xl text-white capitalize mt-5">confirm</button>
-          </div>
-        </form>
+            @end
+          </tbody>
+        </table>
+        <div class="flex justify-end px-5">
+          <button type="submit" id="submitButton" class="btn btn-sm btn-primary rounded-xl text-white capitalize mt-5">confirm</button>
+        </div>
+      </form>
+      @else
+      <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
+        <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
+        <p>No Request</p>
+        <p class="text-base">Please waiting for request</p>
       </div>
+      @end
       @end
   </section>
   <script>
+   const openAlertDeleteRequest = (id) => {
+    console.log(id)
+    const alertDeleteRequest = 
+    `<div id="modal-confirm-delete-request" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+      <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
+        <div class="alert bg-base-100 shadow-lg font-bold">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-error flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Are you sure delete this post ?</span>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertDeleteRequest()">no</button>
+            <form id="formElem">
+            <button class="btn btn-sm btn-error rounded-3xl text-white" onclick="deleteRequest(${id})">yes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertDeleteRequest
+  }
+
+  const closeAlertDeleteRequest = () => {
+    const element = document.getElementById('modal-confirm-delete-request');
+    element.remove();
+  }
+
   let checkedCount = 0;
   checkboxes = document.getElementsByName('checkStudent')
   checkboxes.forEach(checkbox => {
@@ -82,9 +132,10 @@
       checkedCount++;
       }
   });
-  if(checkedCount === checkboxes.length){
-    document.getElementById('checkAllBox').checked = true
-    document.getElementById('checkAllBox').disabled = true
+  const checkAllBox = document.getElementById('checkAllBox')
+  if(checkedCount === checkboxes.length && checkAllBox){
+    checkAllBox.checked = true
+    checkAllBox.disabled = true
   }
 
   const checkAll = (source) => {
@@ -109,7 +160,7 @@
     }
   } 
   
-  const deleteSt = async (id) => {
+  const deleteRequest = async (id) => {
         await fetch(`/api/user/student/${id}?_method=DELETE`, {
         method: 'POST',
         }).then(() => {

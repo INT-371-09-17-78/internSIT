@@ -254,7 +254,7 @@ export default class UsersController {
           .where('student_id', studentUsers[i].user_id)
           .orderBy('updated_at', 'desc')
         if (documentStatus && documentStatus.length > 0) {
-          console.log('เข้า')
+          // console.log('เข้า')
           studentUsers[i].serialize()
           studentUsers[i]['lastestStatus'] =
             documentStatus[0].document_id + ' ' + documentStatus[0].status_id
@@ -309,9 +309,6 @@ export default class UsersController {
         studentUser.student.plan === 6
           ? [
               {
-                name: 'Accepted by firm',
-              },
-              {
                 name: 'TR-01',
               },
               {
@@ -360,9 +357,6 @@ export default class UsersController {
           : studentUser.student.plan === 4
           ? [
               {
-                name: 'Accepted by firm',
-              },
-              {
                 name: 'TR-01',
               },
               {
@@ -397,9 +391,6 @@ export default class UsersController {
               },
             ]
           : [
-              {
-                name: 'Accepted by firm',
-              },
               {
                 name: 'TR-01',
               },
