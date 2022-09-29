@@ -6,7 +6,7 @@
       <div class="flex pl-11 pt-9">
         <p class="text-base lg:text-3xl text-base-content font-bold">Student Information</p>
         <a href="{{ route('/students/request') }}">
-          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize ml-8">Register request</button>
+          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize ml-8">{{noApprove}}Register request</button>
         </a>
       </div>
       <div class="overflow-x-auto px-11 mt-5">
@@ -59,7 +59,7 @@
                         <p class="text-green-700">Approved</p>
                       @else
                       <div class="flex justify-end">
-                        <img class="w-5 h-5 cursor-pointer" src="{{ asset('assets/images/close.svg') }}"/>
+                        <img onclick="deleteSt({{studentUser.user_id}})" class="w-5 h-5 cursor-pointer" src="{{ asset('assets/images/close.svg') }}"/>
                       </div>
                       @end
                     </td>
@@ -108,6 +108,15 @@
       document.getElementById('checkAllBox').checked = false
     }
   } 
+  
+  const deleteSt = async (id) => {
+        await fetch(`/api/user/student/${id}?_method=DELETE`, {
+        method: 'POST',
+        }).then(() => {
+            window.location.reload();
+        })
+  }
+
   const formElem = document.getElementById('formElem')
   if(formElem)
   formElem.onsubmit = async (event) => {

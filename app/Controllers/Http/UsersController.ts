@@ -275,7 +275,8 @@ export default class UsersController {
       // console.log(studentUser)
       // const result = await document.related('statuses').query().where('status_id', 'test2')
       // return response.send(studentUser)
-      return view.render('students', { studentUsers })
+      const noApprove = studentUsers.filter((st) => !st.student.approved)
+      return view.render('students', { studentUsers, noApprove: noApprove.length })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -567,6 +568,21 @@ export default class UsersController {
     }
   }
 
+  public async deleteStudentUser({ request, response }: HttpContextContract) {
+    try {
+      // const { user } = request.only(['user'])
+      const user = await User.find(request.param('id'))
+      if (user) {
+        user.delete()
+      } else {
+        throw Error('cannot find user')
+      }
+      response.status(200).send('success')
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
   public async updateStudentUserInfo({ request, response }: HttpContextContract) {
     try {
       const {
@@ -682,7 +698,11 @@ export default class UsersController {
         },
       ]
       // console.log(studentUser)
-      return view.render('student-info', { studentUser, disabled, studentInfo })
+      return view.render('student-info', {
+        studentUser,
+        disabled,
+        studentInfo,
+      })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

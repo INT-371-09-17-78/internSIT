@@ -104,6 +104,7 @@ Route.group(() => {
     Route.patch('/student/:id', 'UsersController.updateStudentUserStatus')
     Route.patch('/student/info/:id', 'UsersController.updateStudentUserInfo')
     Route.patch('/student/regis/approve', 'UsersController.updateStudentUserApprove')
+    Route.delete('/student/:id', 'UsersController.deleteStudentUser')
   })
     .middleware('login')
     .prefix('/user')
