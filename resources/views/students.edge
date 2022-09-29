@@ -171,6 +171,7 @@
   const formElem = document.getElementById('formElem')
   if(formElem)
   formElem.onsubmit = async (event) => {
+    event.preventDefault()
     const checkboxs = []
     document.getElementsByName('checkStudent').forEach(async (checkbox) => {
       console.log("ID: "+checkbox.id,"| Approved: "+ checkbox.checked)
@@ -187,7 +188,7 @@
         },
         body: JSON.stringify(body),
         }).then(() => {
-            window.location.reload();
+          window.location.href = `/students`
         })
   }
   </script>

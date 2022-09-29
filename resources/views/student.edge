@@ -319,7 +319,7 @@ function onNextPage() {
 if(document.getElementById('next'))
 document.getElementById('next').addEventListener('click', onNextPage);
 // The workerSrc property shall be specified.
-if({{currentSteps.name != "Accepted by firm" && currentSteps.status != "Approved"}}){
+if({{currentSteps.status != "Approved"}}){
   pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
     pdfDoc = pdfDoc_;
     document.getElementById('page_count').textContent = pdfDoc.numPages;
