@@ -1,6 +1,6 @@
 @layout('layouts/app')
 @set('title', 'students page')
-@set('lastStep', '')
+@set('firstStep', '')
 @section('students')
 <section class="h-full w-full z-[5] relative flex flex-col pt-5">
   <div class="flex flex-col z-10 px-11">
@@ -40,14 +40,14 @@
     <div class="w-full flex justify-center">
       <ul class="steps">
         @each((step,index) in stepPaged)
-          @if(index === stepPaged.length-1)
-            @set('lastStep', step)
+          @if(index === 0)
+            @set('firstStep', step)
           @end
           <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
         @end
       </ul>
-      <button class="order-first" id="btn_prev" onclick="changeSteps('{{lastStep.name}}',false)">Prev</button>
-      <button class="order-last" id="btn_next" onclick="changeSteps('{{lastStep.name}}',true)">Next</button>
+      <button class="order-first" id="btn_prev" onclick="changeSteps('{{firstStep.name}}',false)">Prev</button>
+      <button class="order-last" id="btn_next" onclick="changeSteps('{{firstStep.name}}',true)">Next</button>
     </div>
     @end
   </div>
@@ -153,14 +153,15 @@
   }
   }
 
-  const changeSteps = async (lastStepPaging, gnext) => {
-    console.log(lastStepPaging)
+  const changeSteps = async (firstStepPaging, gnext) => {
+    console.log(firstStepPaging)
     console.log(gnext)
     const urlParams = new URLSearchParams({
-      lastStepPaging: lastStepPaging,
+      firstStepPaging: firstStepPaging,
       gnext: gnext
     })
-    await fetch('/student/{{studentUser.user_id}}?' + urlParams)
+    // await fetch('/student/{{studentUser.user_id}}?' + urlParams)
+    window.location.href = '/student/{{studentUser.user_id}}?' + urlParams
   }
 
   const formElem2 = document.getElementById('formElem2')

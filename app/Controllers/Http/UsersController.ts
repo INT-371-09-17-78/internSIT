@@ -468,18 +468,28 @@ export default class UsersController {
       // console.log(currentSteps)
       // console.log(nextStep)
       let stepPaged = []
-      if (qs.lastStepPaging) {
-        const lastStepPagingIndex = steps.findIndex((step) => step.name === qs.lastStepPaging)
+      if (qs.firstStepPaging) {
+        const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
+        // console.log(lastStepPagingIndex)
+        // console.log(qs.lastStepPaging)
+        // if (lastStepPagingIndex === 0 && qs.gnext !== 'true') {
+        //   stepPaged = steps.slice(0, 4)
+        // } else if (lastStepPagingIndex === steps.length - 1 && qs.gnext === 'true') {
+        //   stepPaged = steps.slice(0, 4)
+        // }
         stepPaged =
           qs.gnext === 'true'
-            ? steps.slice(lastStepPagingIndex + 1, lastStepPagingIndex + 5)
-            : steps.slice(lastStepPagingIndex - 4, lastStepPagingIndex + 5)
+            ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
+            : steps.slice(firstStepPagingIndex - 4, firstStepPagingIndex)
       } else {
         stepPaged = steps.slice(0, 4)
       }
+      // const lastStepPaged = stepPaged[stepPaged.length - 1]
       // console.log(request.qs().test)
-      console.log(qs)
-      console.log(stepPaged)
+
+      // console.log(qs)
+      // console.log(stepPaged)
+      // console.log(lastStepPaged)
       return view.render('student', {
         studentUser,
         plans,
@@ -488,8 +498,10 @@ export default class UsersController {
         nextStep,
         currentSteps,
         stepPaged,
+        // lastStepPaged,
         studentInfo,
       })
+      // return response.redirect('/announcement')
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
