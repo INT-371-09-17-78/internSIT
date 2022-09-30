@@ -477,8 +477,8 @@ export default class UsersController {
       } else {
         stepPaged = steps.slice(0, 4)
       }
-      const lastestStep = steps[steps.length - 1]
-      const firstStep = steps[0]
+      // const lastestStep = steps[steps.length - 1]
+      const firstOfAllStep = steps[0]
       // console.log(qs)
       // console.log(stepPaged)
       // console.log(lastStepPaged)
@@ -490,8 +490,8 @@ export default class UsersController {
         nextStep,
         currentSteps,
         stepPaged,
-        firstStep,
-        lastestStep,
+        firstOfAllStep,
+        // lastestStep,
         // lastStepPaged,
         studentInfo,
       })
