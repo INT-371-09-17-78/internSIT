@@ -291,6 +291,7 @@ export default class UsersController {
         .preload('student')
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
+      const { lastStepPaging, gnext } = request.only(['lastStepPaging', 'gnext'])
       const plans = [2, 4, 6]
       const studentInfo = [
         'Firm',
@@ -450,7 +451,7 @@ export default class UsersController {
       }
 
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
-      console.log(index)
+      // console.log(index)
       if (index >= 0) {
         if (steps[index].status === 'Approved') {
           console.log('asdasd')
@@ -463,9 +464,18 @@ export default class UsersController {
         currentSteps = steps[0]
         currentSteps.status = ''
       }
-      console.log(currentSteps)
-      console.log(nextStep)
-
+      // console.log(currentSteps)
+      // console.log(nextStep)
+      let stepPaged = []
+      if (lastStepPaging) {
+        const lastStepPagingIndex = steps.findIndex((step) => step.name === lastStepPaging)
+        stepPaged = gnext
+          ? steps.slice(lastStepPagingIndex + 1, lastStepPagingIndex + 5)
+          : steps.slice(lastStepPagingIndex - 4, lastStepPagingIndex + 5)
+      } else {
+        stepPaged = steps.slice(0, 4)
+      }
+      console.log(stepPaged)
       return view.render('student', {
         studentUser,
         plans,
