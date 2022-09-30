@@ -291,7 +291,8 @@ export default class UsersController {
         .preload('student')
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
-      const { lastStepPaging, gnext } = request.only(['lastStepPaging', 'gnext'])
+      // const { lastStepPaging, gnext } = request.only(['lastStepPaging', 'gnext'])
+      const qs = request.qs()
       const plans = [2, 4, 6]
       const studentInfo = [
         'Firm',
@@ -467,14 +468,17 @@ export default class UsersController {
       // console.log(currentSteps)
       // console.log(nextStep)
       let stepPaged = []
-      if (lastStepPaging) {
-        const lastStepPagingIndex = steps.findIndex((step) => step.name === lastStepPaging)
-        stepPaged = gnext
-          ? steps.slice(lastStepPagingIndex + 1, lastStepPagingIndex + 5)
-          : steps.slice(lastStepPagingIndex - 4, lastStepPagingIndex + 5)
+      if (qs.lastStepPaging) {
+        const lastStepPagingIndex = steps.findIndex((step) => step.name === qs.lastStepPaging)
+        stepPaged =
+          qs.gnext === 'true'
+            ? steps.slice(lastStepPagingIndex + 1, lastStepPagingIndex + 5)
+            : steps.slice(lastStepPagingIndex - 4, lastStepPagingIndex + 5)
       } else {
         stepPaged = steps.slice(0, 4)
       }
+      // console.log(request.qs().test)
+      console.log(qs)
       console.log(stepPaged)
       return view.render('student', {
         studentUser,
