@@ -59,15 +59,19 @@ Route.get('/success-regis', async ({ view }) => {
   return view.render('success-regis')
 })
 
-Route.get('/student/:id/information', 'UsersController.showStudentInfo') //ยังไม่ได้กรุ๊ปปป
+Route.group(() => {
+  Route.get('/:id/information', 'UsersController.showStudentInfo')
 
-Route.get('/student/:id/edit', 'UsersController.showStudentInfoEdit')
+  Route.get('/:id/edit', 'UsersController.showStudentInfoEdit')
 
-Route.get('/students', 'UsersController.showStudentUser')
+  Route.get('/:id', 'UsersController.showStudentUserById')
+}).prefix('/student')
 
-Route.get('/students/request', 'UsersController.showStudentUser')
+Route.group(() => {
+  Route.get('/', 'UsersController.showStudentUser')
 
-Route.get('/student/:id', 'UsersController.showStudentUserById')
+  Route.get('/request', 'UsersController.showStudentUser')
+}).prefix('/students')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')
@@ -80,26 +84,11 @@ Route.group(() => {
 }).prefix('/announcement')
 
 Route.get('/file', 'FilesController.showAllFile')
-// Route.get('/err', async ({ view, auth, response }) => {
-//     return view.render('errors/unauthorized')
-// })
-//backend
-// import Database from '@ioc:Adonis/Lucid/Database'
 
-// import UsersController from 'App/Controllers/Http/UsersController'
-
-// Route.get('/test', async () => {
-//   Database.from('city').select('*')
-//   // .where('id', params.id)
-//   // .first()
-// })
-
-// Route.resource('controller', 'UsersController').apiOnly()
 Route.group(() => {
   Route.post('/login', 'UsersController.verify2').as('auth.login')
   Route.post('/register', 'UsersController.register').as('auth.register')
   Route.get('/logout', 'UsersController.logout').as('auth.logout')
-  // Route.get('/user/:role', 'UsersController.getUserByRole')
   Route.group(() => {
     Route.patch('/student/:id', 'UsersController.updateStudentUserStatus')
     Route.patch('/student/info/:id', 'UsersController.updateStudentUserInfo')
@@ -109,8 +98,6 @@ Route.group(() => {
     .middleware('login')
     .prefix('/user')
 
-  // Route.get('/post', 'PostsController.show')
-  // Route.get('/post/:post_id', 'PostsController.showById')
   Route.group(() => {
     Route.post('/', 'PostsController.store')
     Route.patch('/:id', 'PostsController.update')
@@ -123,13 +110,9 @@ Route.group(() => {
   Route.group(() => {
     Route.post('/', 'FilesController.store')
     Route.post('/steps', 'FilesController.storeDirect') //store file สำหรับ steps
-    // Route.get('/file/user/:id', 'FilesController.showFilesByUserId')
     Route.get('/:fileId', 'FilesController.downloadFile') //downloadfile สำหรับ steps / อื่นๆ
     Route.delete('/:fileId', 'FilesController.deleteFileDirect')
   })
     .middleware('login')
     .prefix('/file')
 }).prefix('/api')
-
-// Route.get('/api/test', 'UsersController.test')
-// Route.get('/api/gen', 'UsersController.gen')

@@ -483,6 +483,7 @@ export default class UsersController {
         steps,
         nextStep,
         currentSteps,
+        stepPaged,
         studentInfo,
       })
     } catch (error) {

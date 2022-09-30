@@ -1,5 +1,6 @@
 @layout('layouts/app')
 @set('title', 'students page')
+@set('lastStep', '')
 @section('students')
 <section class="h-full w-full z-[5] relative flex flex-col pt-5">
   <div class="flex flex-col z-10 px-11">
@@ -37,19 +38,20 @@
     @end
     @if(studentUser.student.plan)
     <div class="w-full flex justify-center">
-      <a href="javascript:prevPage()" id="btn_prev">Prev</a>
+      <button id="btn_prev" onclick="changeSteps('{{lastStep.name}}',false)">Prev</button>
       <ul class="steps">
-        @each((step,index) in steps)
-          @if(index <= 3)
-              <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
+        @each((step,index) in stepPaged)
+          @if(index === stepPaged.length-1)
+            @set('lastStep', step)
           @end
+          <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
         @end
       </ul>
-      <a href="javascript:nextPage()" id="btn_next">Next</a>
+      <button id="btn_next" onclick="changeSteps('{{lastStep.name}}',true)">Next</button>
     </div>
     @end
   </div>
-  @if(nextStep.name !== 'Accepted by firm')
+  @if(studentUser.student.plan)
   <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
     {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
@@ -63,8 +65,8 @@
     <div>
       <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96 w-72"></canvas>
       <div class="mt-2">
-        <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white">Previous</button>
-        <button id="next" class="btn btn-sm btn-primary rounded-3xl text-white">Next</button>
+        <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white" onclick="onPrevPage()">Previous</button>
+        <button id="next" class="btn btn-sm btn-primary rounded-3xl text-white" onclick="onNextPage()">Next</button>
         <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
       </div>
     </div>
@@ -115,20 +117,6 @@
     </div>
   </div>
   @end
-  @if(nextStep.name === 'Accepted by firm')
-  @if(auth.user.role !== "student")
-  <p class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">Waiting for student to confirm</p>
-  {{--  @else
-  <form id="formElem3" class="flex justify-center items-center w-full h-full flex-col">
-    <div class="w-fit space-y-2">
-      <p>Have you been accepted by firm?</p>
-      <button class="btn btn-sm btn-primary rounded-3xl text-white self-start">confirm</button>
-    </div>
-    
-  </form>
-    --}}
-  @end
-  @end
 </section>
 <script>
   const showTextArea = () => {
@@ -164,6 +152,17 @@
     pdfFile = file
   }
   }
+
+  const changeSteps = async (lastStepPaging, gnext) => {
+    console.log(lastStepPaging)
+    console.log(gnext)
+    const urlParams = new URLSearchParams({
+      lastStepPaging: lastStepPaging,
+      gnext: gnext
+    })
+    await fetch('/student/{{studentUser.user_id}}?' + urlParams)
+  }
+
   const formElem2 = document.getElementById('formElem2')
   if(formElem2)
   formElem2.onsubmit = async (event) => {
@@ -241,7 +240,6 @@ var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.n
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';  
-if(canvas)
 var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
@@ -303,8 +301,6 @@ function queueRenderPage(num) {
   pageNum--;
   queueRenderPage(pageNum);
 }
-if(document.getElementById('prev'))
-document.getElementById('prev').addEventListener('click', onPrevPage);
 
 /**
  * Displays next page.
@@ -316,8 +312,6 @@ function onNextPage() {
   pageNum++;
   queueRenderPage(pageNum);
 }
-if(document.getElementById('next'))
-document.getElementById('next').addEventListener('click', onNextPage);
 // The workerSrc property shall be specified.
 if({{currentSteps.status != "Approved"}}){
   pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
