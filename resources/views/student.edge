@@ -46,6 +46,8 @@
           <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
         @end
       </ul>
+      {{firstStep.name}}
+      {{lastestStep.name}}
       <button class="order-first" id="btn_prev" onclick="changeSteps('{{firstStep.name}}',false)">Prev</button>
       <button class="order-last" id="btn_next" onclick="changeSteps('{{firstStep.name}}',true)">Next</button>
     </div>

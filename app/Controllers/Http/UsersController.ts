@@ -470,13 +470,6 @@ export default class UsersController {
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
-        // console.log(lastStepPagingIndex)
-        // console.log(qs.lastStepPaging)
-        // if (lastStepPagingIndex === 0 && qs.gnext !== 'true') {
-        //   stepPaged = steps.slice(0, 4)
-        // } else if (lastStepPagingIndex === steps.length - 1 && qs.gnext === 'true') {
-        //   stepPaged = steps.slice(0, 4)
-        // }
         stepPaged =
           qs.gnext === 'true'
             ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
@@ -484,9 +477,8 @@ export default class UsersController {
       } else {
         stepPaged = steps.slice(0, 4)
       }
-      // const lastStepPaged = stepPaged[stepPaged.length - 1]
-      // console.log(request.qs().test)
-
+      const lastestStep = steps[steps.length - 1]
+      const firstStep = steps[0]
       // console.log(qs)
       // console.log(stepPaged)
       // console.log(lastStepPaged)
@@ -498,6 +490,8 @@ export default class UsersController {
         nextStep,
         currentSteps,
         stepPaged,
+        firstStep,
+        lastestStep,
         // lastStepPaged,
         studentInfo,
       })
