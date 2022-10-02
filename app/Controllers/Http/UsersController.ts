@@ -158,9 +158,6 @@ export default class UsersController {
           }
         }
       } else if (user && user.role !== 'student') {
-        console.log('เข้า')
-        console.log(username, password)
-
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
         return response.redirect('/students')
       } else {
@@ -256,13 +253,18 @@ export default class UsersController {
         if (documentStatus && documentStatus.length > 0) {
           // console.log('เข้า')
           studentUsers[i].serialize()
-          studentUsers[i]['lastestStatus'] =
-            documentStatus[0].document_id + ' ' + documentStatus[0].status_id
+          if (documentStatus[0].status_id === 'Waiting') {
+            studentUsers[i]['lastestStatus'] =
+              documentStatus[0].status_id + ' for ' + documentStatus[0].document_id
+          } else {
+            studentUsers[i]['lastestStatus'] =
+              documentStatus[0].document_id + ' ' + documentStatus[0].status_id
+          }
         } else {
           studentUsers[i].serialize()
-          studentUsers[i].student.plan
-            ? (studentUsers[i]['lastestStatus'] = 'Accepted by firm')
-            : (studentUsers[i]['lastestStatus'] = `Haven't chosen a plan yet.`)
+          if (!studentUsers[i].student.plan) {
+            studentUsers[i]['lastestStatus'] = `Haven't chosen a plan yet.`
+          }
         }
         // console.log(documentStatus)
 
@@ -275,6 +277,7 @@ export default class UsersController {
       // console.log(studentUser)
       // const result = await document.related('statuses').query().where('status_id', 'test2')
       // return response.send(studentUser)
+
       const noApprove = studentUsers.filter((st) => !st.student.approved)
       return view.render('students', { studentUsers, noApprove: noApprove.length })
     } catch (error) {
@@ -454,9 +457,9 @@ export default class UsersController {
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
       // console.log(index)
       if (index >= 0) {
-        if (steps[index].status === 'Approved') {
-          console.log('asdasd')
-        }
+        // if (steps[index].status === 'Approved') {
+        //   console.log('asdasd')
+        // }
         steps[index].status === 'Approved'
           ? ((nextStep = steps[index + 1]), (currentSteps = steps[index]))
           : ((nextStep = steps[index]), (currentSteps = nextStep))
@@ -482,11 +485,13 @@ export default class UsersController {
       // console.log(qs)
       // console.log(stepPaged)
       // console.log(lastStepPaged)
+      // console.log(currentSteps)
+      // console.log(steps)
       return view.render('student', {
         studentUser,
         plans,
         disabled,
-        steps,
+        // steps,
         nextStep,
         currentSteps,
         stepPaged,
@@ -504,7 +509,6 @@ export default class UsersController {
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
       const { study, status, doc, reason } = request.only(['study', 'status', 'doc', 'reason'])
-      console.log(doc)
       const studentUser = await Student.findOrFail(request.param('id'))
       let statusResult: Status
       let docResult: Document
@@ -515,8 +519,8 @@ export default class UsersController {
         await File.query().where('user_id', studentUser.student_id).delete()
       }
       // if (status && doc) {
-      statusResult = await Status.findOrFail(status || 'Pending')
-      docResult = await Document.findOrFail(doc || 'Accepted by firm')
+      statusResult = await Status.findOrFail(status || 'Waiting')
+      docResult = await Document.findOrFail(doc || 'TR-01')
 
       const docStat = await Document_Status.query()
         .where('student_id', studentUser.student_id)
@@ -767,9 +771,9 @@ export default class UsersController {
       const docs = await Document.all()
       if (docs && docs.length === 0) {
         await Document.createMany([
-          {
-            doc_name: 'Accepted by firm',
-          },
+          // {
+          //   doc_name: 'Resume, portfolio',
+          // },
           {
             doc_name: 'TR-01',
           },
@@ -858,6 +862,9 @@ export default class UsersController {
           },
           {
             status_name: 'Approved',
+          },
+          {
+            status_name: 'Waiting',
           },
         ])
       }
