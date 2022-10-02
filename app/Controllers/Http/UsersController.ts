@@ -238,7 +238,7 @@ export default class UsersController {
     return response.redirect('/')
   }
 
-  public async showStudentUser({ response, view }: HttpContextContract) {
+  public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
       // const studentUser = await Student.query().preload('document_status')
@@ -247,9 +247,19 @@ export default class UsersController {
         // .andWhere('user_id', request.param('id'))
         .preload('student')
       for (let i = 0; i < studentUsers.length; i++) {
-        const documentStatus = await Document_Status.query()
+        let documentStatus: any
+        // if (request.qs().status) {
+        //   console.log("เข้า");
+
+        //   documentStatus = await Document_Status.query()
+        //     .where('student_id', studentUsers[i].user_id)
+        //     .andWhere('status_id', request.qs().status)
+        //     .orderBy('updated_at', 'desc')
+        // } else {
+        documentStatus = await Document_Status.query()
           .where('student_id', studentUsers[i].user_id)
           .orderBy('updated_at', 'desc')
+        // }
         if (documentStatus && documentStatus.length > 0) {
           // console.log('เข้า')
           studentUsers[i].serialize()
@@ -277,9 +287,19 @@ export default class UsersController {
       // console.log(studentUser)
       // const result = await document.related('statuses').query().where('status_id', 'test2')
       // return response.send(studentUser)
+      let result: any
+      if (request.qs().status) {
+        result = studentUsers.filter((word) => word['lastestStatus'].includes(request.qs().status))
+      }
+
+      // console.log(studentUsers)
+      console.log(result)
 
       const noApprove = studentUsers.filter((st) => !st.student.approved)
-      return view.render('student-information', { studentUsers, noApprove: noApprove.length })
+      return view.render('student-information', {
+        studentUsers: request.qs().status ? result : studentUsers,
+        noApprove: noApprove.length,
+      })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
