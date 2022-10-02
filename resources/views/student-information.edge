@@ -1,22 +1,51 @@
 @layout('layouts/app')
-@set('title', 'students page')
-@section('students')
+@set('title', 'student-information page')
+@set('activeInfoTab', '')
+@set('activeCourseTab', '')
+@set('activeRequestTab', '')
+@section('student-information')
+  @if(request.matchesRoute('/register-request'))
+  @set('activeRequestTab', 'bg-white')
+  @elseif(request.matchesRoute('/course-management'))
+  @set('activeCourseTab', 'bg-white')
+  @else
+  @set('activeInfoTab', 'bg-white')
+  @end
   <section class="flex flex-col h-full w-full z-[5]">
-    @if(!request.matchesRoute('/students/request'))
-      <div class="flex pl-11 pt-9">
-        <p class="text-base lg:text-3xl text-base-content font-bold">Student Information</p>
-        <a href="{{ route('/students/request') }}">
+      <div class="flex pl-8 pt-9">
+        <p class="text-base lg:text-3xl text-base-content font-bold capitalize">{{auth.user.user_id}} | {{auth.user.role}}</p>
+        {{--  <a href="{{ route('/register-request') }}">
           <div class="indicator">
             @if(noApprove)
             <span class="indicator-item badge bg-red-500 border-red-500">{{noApprove}}</span> 
             @end
             <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize ml-8">Register request</button>
           </div>
-        </a>
+        </a>  --}}
       </div>
-      @if(studentUsers.length !== noApprove)
-      <div class="overflow-x-auto px-11 mt-5">
-          <table class="table w-full border-red-500">
+      {{--  @if(studentUsers.length !== noApprove)  --}}
+      <div class="tabs bg-[#DDE2E5] mt-5 tab-lg">
+        <a href="{{ route('/student-information')}}" class="tab text-[#495057] font-medium h-full {{activeInfoTab}}">Student information</a> 
+        <a href="{{ route('/register-request')}}" class="indicator tab text-[#495057] font-medium border-x-2 border-[#CED3D6] h-full {{activeRequestTab}}">
+          Register request
+          @if(noApprove)
+          <span class="indicator-item badge bg-[#F61819] border-[#F61819]">{{noApprove}}</span> 
+          @end
+        </a> 
+        <a class="tab text-[#495057] font-medium h-full {{activeCourseTab}}">Course management</a>
+      </div>
+        {{--  @else  --}}
+        {{--  <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
+          <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
+          <p>No students in the system</p>
+          <p class="text-base">Please add students into the system first.</p>
+        </div>  --}}
+        {{--  @end  --}}
+      @if(request.matchesRoute('/student-information'))
+        @if(studentUsers.length !== noApprove)
+        <div class="overflow-x-auto px-40 mt-10">
+          <p class="text-base lg:text-3xl text-base-content font-semibold">Student information</p>
+          <table class="table w-full border-red-500 mt-5">
             <thead>
               <tr>
                 <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
@@ -39,24 +68,16 @@
         </div>
         @else
         <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
-          <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
-          <p>No students in the system</p>
-          <p class="text-base">Please add students into the system first.</p>
+            <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
+            <p>No students in the system</p>
+            <p class="text-base">Please add students into the system first.</p>
         </div>
         @end
-      @else
-      <div class="px-11 pt-9 flex flex-col">
-        <p class="text-base lg:text-3xl text-base-content font-bold">Register request</p>
-        <a href="{{ route('/students') }}">
-          <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer py-2">
-            <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
-            <p class="font-semibold">Back</p>
-          </div>
-        </a>
-      </div>
+      @elseif(request.matchesRoute('/register-request'))
       @if(noApprove)
-      <form id="formElem" name="formElem" class="px-11">
-        <table class="table w-full border-red-500">
+      <form id="formElem" name="formElem" class="px-40 mt-10">
+        <p class="text-base lg:text-3xl text-base-content font-semibold">Register request</p>
+        <table class="table w-full border-red-500 mt-5">
           <thead>
             <tr>
               <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox" onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>ID</th>
@@ -89,12 +110,14 @@
         </div>
       </form>
       @else
-      <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
+      <div class="flex flex-col w-full m-auto justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
         <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
         <p>No Request</p>
         <p class="text-base">Please waiting for request</p>
       </div>
       @end
+      @else
+
       @end
   </section>
   <script>
@@ -188,7 +211,7 @@
         },
         body: JSON.stringify(body),
         }).then(() => {
-          window.location.href = `/students`
+          window.location.href = `/student-information`
         })
   }
   </script>

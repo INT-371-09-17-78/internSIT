@@ -162,7 +162,7 @@ export default class UsersController {
         console.log(username, password)
 
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
-        return response.redirect('/students')
+        return response.redirect('/student-information')
       } else {
         const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
         const fullname = ldapUser.cn.split(' ')
@@ -276,7 +276,7 @@ export default class UsersController {
       // const result = await document.related('statuses').query().where('status_id', 'test2')
       // return response.send(studentUser)
       const noApprove = studentUsers.filter((st) => !st.student.approved)
-      return view.render('students', { studentUsers, noApprove: noApprove.length })
+      return view.render('student-information', { studentUsers, noApprove: noApprove.length })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -574,7 +574,7 @@ export default class UsersController {
       //   response.redirect(`/student/${studentUser.user_id}/information`)
       // }
       // response.status(200).send('success')
-      response.redirect(`/students`)
+      response.redirect(`/student-informationstudents`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -664,7 +664,7 @@ export default class UsersController {
       await studentUser.save()
       await studentUser.student.save()
       if (approve) {
-        response.redirect(`/students/request`)
+        response.redirect(`/register-request`)
       } else {
         response.redirect(`/student/${studentUser.user_id}/information`)
       }
