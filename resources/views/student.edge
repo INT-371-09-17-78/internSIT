@@ -162,14 +162,10 @@
   }
 
   const changeSteps = async (firstStepPaging, gnext) => {
-    // console.log({{firstStep.name}})
-    console.log(firstStepPaging)
-    console.log(gnext)
     const urlParams = new URLSearchParams({
       firstStepPaging: firstStepPaging,
       gnext: gnext
     })
-    // await fetch('/student/{{studentUser.user_id}}?' + urlParams)
     window.location.href = '/student/{{studentUser.user_id}}?' + urlParams
   }
 
