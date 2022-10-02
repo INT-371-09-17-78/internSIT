@@ -67,11 +67,9 @@ Route.group(() => {
   Route.get('/:id', 'UsersController.showStudentUserById')
 }).prefix('/student')
 
-Route.group(() => {
-  Route.get('/', 'UsersController.showStudentUser')
+Route.get('/student-information', 'UsersController.showStudentUser')
 
-  Route.get('/request', 'UsersController.showStudentUser')
-}).prefix('/students')
+Route.get('/register-request', 'UsersController.showStudentUser')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')

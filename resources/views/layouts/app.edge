@@ -31,7 +31,7 @@
         </div>
     <div class="flex w-full h-full justify-center">
        @if(!request.matchesRoute(['/','/register','/success-regis']))
-       <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-64 lg:overflow-visible">
+       <div id="sidebar" class="drawer drawer-mobile absolute lg:relative lg:flex w-full lg:w-auto lg:overflow-visible">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>
         <div class="drawer-side">
           <label for="my-drawer-2" class="drawer-overlay z-10"></label> 
@@ -67,17 +67,20 @@
                   </a>
               </li>
               <li>
-                <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route(auth.user.role!=="student" ? '/students' : '/student/:id', { id: auth.user.user_id }) }}">
-                  <img src="{{ asset('assets/images/student-info.svg') }}" class="fill-base-content w-5 h-5"/>  
-                  <p class="capitalize">student information</p> 
-                </a>
-            </li>
-              <li>
                   <a class="p-2 text-xs active:bg-base-300 active:text-base-content">
                     <svg class="fill-base-content w-5 h-5" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z"/></svg>
                     <p class="capitalize">dashboard</p> 
                   </a>
               </li>
+              <li>
+                <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ route(auth.user.role!=="student" ? '/student-information' : '/student/:id', { id: auth.user.user_id }) }}">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.19197 6.83267C8.07876 6.83267 9.6083 5.30312 9.6083 3.41633C9.6083 1.52955 8.07876 0 6.19197 0C4.30518 0 2.77563 1.52955 2.77563 3.41633C2.77563 5.30312 4.30518 6.83267 6.19197 6.83267Z" fill="#495057"/>
+                    <path d="M6.19211 6.80859C2.7723 6.80859 0 9.58089 0 13.0007H12.3842C12.3842 9.58089 9.61192 6.80859 6.19211 6.80859Z" fill="#495057"/>
+                  </svg>                    
+                  <p class="capitalize">{{auth.user.role}}</p> 
+                </a>
+               </li>
             </div>
               <div class="flex items-center mt-auto">
                 <div class="avatar">
@@ -110,7 +113,7 @@
       @!section('post')
       @!section('add-edit-post')
       @!section('file')
-      @!section('students')
+      @!section('student-information')
       @!section('student-info')
       @!section('edit-student')
     </div>
