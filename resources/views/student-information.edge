@@ -47,12 +47,12 @@
             <p class="text-base lg:text-3xl text-base-content font-semibold">Student information</p>
             <select class="select select-sm bg-[#F6F7F9] max-w-xs focus:outline-none ml-auto" onchange="filterStatus()" id="filterStatus">
       
-              <option class="font-semibold text-gray-600" value="All status">All status</option>
+              <option class="font-semibold text-gray-700" value="All status">All status</option>
             {{--  @each(plan in plans)  --}}
-              <option class="text-blue-600 font-semibold" value="Waiting">Waiting for TR1</option>
-              <option class="text-yellow-600 font-semibold" value="Pending">Pending</option>
-              <option class="text-green-600 font-semibold" value="Approved">Approved</option>
-              <option class="text-red-600 font-semibold" value="Not approved">Not approved</option>
+              <option class="text-blue-700 font-semibold" value="Waiting">Waiting for TR1</option>
+              <option class="text-yellow-700 font-semibold" value="Pending">Pending</option>
+              <option class="text-green-700 font-semibold" value="Approved">Approved</option>
+              <option class="text-red-700 font-semibold" value="Not approved">Not approved</option>
             {{--  @end  --}}
             </select>
           </div>
@@ -133,11 +133,29 @@
       @end
   </section>
   <script>
+  let checkStatus = (str) => {
+    if(!str) return
+    if (str.includes('Approved')) {
+    return 'text-green-700'
+    } else if (str.includes('Pending')) {
+      return 'text-yellow-700'
+    } else if (str.includes('Not approved')) {
+      return 'text-red-700'
+    } else if (str.includes('Waiting')) {
+      return 'text-blue-700'
+    } else {
+      return ''
+    }
+  }
   const params = new Proxy(new URLSearchParams(window.location.search), {
   get: (searchParams, prop) => searchParams.get(prop),
   })
   const filterStatusEle = document.getElementById('filterStatus')
-  if(filterStatusEle) filterStatusEle.value = params.status || 'All status'
+  if(filterStatusEle) {
+    filterStatusEle.value = params.status || 'All status'
+    if(checkStatus(params.status))
+    filterStatusEle.classList.add(checkStatus(params.status))
+  }
    const openAlertDeleteRequest = (id) => {
     const alertDeleteRequest = 
     `<div id="modal-confirm-delete-request" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">

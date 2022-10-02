@@ -31,10 +31,12 @@ View.global('middleEllipsis', (str: string) => {
 View.global('checkStatus', (str: string) => {
   if (str.includes('Approved')) {
     return 'text-green-700'
-  } else if (str.includes('Pending') || str.includes('Waiting')) {
+  } else if (str.includes('Pending')) {
     return 'text-yellow-700'
   } else if (str.includes('Disapproved')) {
     return 'text-red-700'
+  } else if (str.includes('Waiting')) {
+    return 'text-blue-700'
   } else {
     return ''
   }

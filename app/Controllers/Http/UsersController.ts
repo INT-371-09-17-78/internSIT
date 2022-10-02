@@ -150,7 +150,7 @@ export default class UsersController {
         if (st) {
           if (st.approved) {
             await auth.attempt(username, password, rememberMe)
-            return response.redirect('/announcement') //student ที่ approved แล้ว
+            return response.redirect(`/student/${user.user_id}`) //student ที่ approved แล้ว
           } else {
             return response.redirect('/success-regis') //student ที่ยังไม่ approved
           }

@@ -21,6 +21,7 @@
     @if(auth.user.role !== "student")
       <p class="font-bold whitespace-nowrap">{{studentUser.student.plan ? studentUser.student.plan + " month" : "" }}</p>
     @else
+    @if(nextStep.name === "TR-01")
     <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2 z-10">
       <select {{disabled}} id="study" name="study"
       class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
@@ -37,6 +38,7 @@
       @end
     </form>
     @end
+    @end
     @if(studentUser.student.plan)
     <div class="w-full flex justify-center">
       <ul class="steps">
@@ -46,29 +48,29 @@
           @elseif(index === stepPaged.length - 1)
             @set('lastStep', step.name)
           @end
-          <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Pending" || step.status === "Waiting" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
+          <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Waiting" ? "text-blue-700" : step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}">{{step.name}} {{step.status ? step.status : ""}}</li>
         @end
       </ul>
       @if(firstStep !== firstOfAllStep)
-      <button class="order-first" id="btn_prev" onclick="changeSteps('{{firstStep}}',false)">Prev</button>
+      <button class="order-first pr-10" id="btn_prev" onclick="changeSteps('{{firstStep}}',false)">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 1.416L8.49618 -4.76837e-07L-3.53161e-07 8L8.49618 16L10 14.584L3.00765 8L10 1.416Z" fill="#495057"/>
+        </svg>
+      </button>
       @end
       @if(lastStep !== lastOfAllStep)
-      <button class="order-last" id="btn_next" onclick="changeSteps('{{firstStep}}',true)">Next</button>
+      <button class="order-last pl-10" id="btn_next" onclick="changeSteps('{{firstStep}}',true)">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 14.584L1.50382 16L10 8L1.50382 0L0 1.416L6.99235 8L0 14.584Z" fill="#495057"/>
+        </svg>
+      </button>
       @end
     </div>
     @end
   </div>
-  @if(studentUser.student.plan && auth.user.role === "student" || currentSteps.name + currentSteps.status != "TR-01Waiting" && currentSteps.status != '')
+
+  
   <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
-    {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
-      @each(info in studentInfo)
-      <p class="font-bold">{{info}}</p>
-      <p class="break-words">-</p>
-      @end
-      @if(auth.user.role === "staff")
-      <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="underline">Edit student info</a>
-      @end
-    </div>  --}}
     <div>
       <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96 w-72"></canvas>
       <div class="mt-2" id="control-page">
@@ -80,15 +82,17 @@
     
     <div class="flex flex-col pt-5">
       <form id="formElem">
-        
-        {{--  <div class="flex space-x-2">
+        <div class="flex space-x-2">
           <p class="font-bold">{{nextStep.name}}</p>
+          @if(currentSteps.status === "Disapproved")
+          <p class="font-bold">(Waiting for resubmit)</p>
+          @end
           @if(currentSteps.status != "Approved")
           <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
           @end
-        </div>   --}}
-        <p>{{currentSteps.status ==="Pending" || currentSteps.status === "Not approve" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
-        @if(currentSteps.status ==="Not Approve")
+        </div> 
+        <p>{{currentSteps.status ==="Pending" || currentSteps.status === "Disapproved" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
+        @if(currentSteps.status ==="Disapproved")
         <div class="flex flex-col mt-5">
           <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
           <p>{{currentSteps.reason}}</p>
@@ -100,7 +104,7 @@
         @end
       </form>
       <form id="formElem2">
-        @if(auth.user.role != "student" && currentSteps.status != "Approved" && currentSteps.name != "TR-01" && currentSteps.status != "Waiting")
+        @if(auth.user.role != "student" && currentSteps.status === "Pending")
         <div class="flex mt-5" id="radio-group">
           <div class="form-control w-fit">
             <label class="label cursor-pointer space-x-2">
@@ -123,7 +127,6 @@
     </form>
     </div>
   </div>
-  @end
 </section>
 <script>
   window.history.replaceState({}, '', '/student/{{studentUser.user_id}}')
@@ -241,11 +244,11 @@
     
     window.location.reload()
   }
-
 var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}' 
 var pdfjsLib = window['pdfjs-dist/build/pdf']
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js'  
+if(document.getElementById('pdfViewer'))
 var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
@@ -304,6 +307,7 @@ function onNextPage() {
 }
 
 if({{currentSteps.status != "Approved"}}){
+  if(document.getElementById('control-page'))
   document.getElementById('control-page').classList.add("hidden")
   pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
     pdfDoc = pdfDoc_
