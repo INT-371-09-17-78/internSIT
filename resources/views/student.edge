@@ -58,7 +58,7 @@
     </div>
     @end
   </div>
-  @if(studentUser.student.plan)
+  @if(studentUser.student.plan && auth.user.role === "student" || currentSteps.name + currentSteps.status != "TR-01Waiting" && currentSteps.status != '')
   <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
     {{--  <div class="grid grid-cols-2 gap-y-3 gap-x-2 h-fit">
       @each(info in studentInfo)
@@ -100,7 +100,7 @@
         @end
       </form>
       <form id="formElem2">
-        @if(auth.user.role != "student" && currentSteps.status != "Approved" && currentSteps.name != "Accepted by firm")
+        @if(auth.user.role != "student" && currentSteps.status != "Approved" && currentSteps.name != "TR-01" && currentSteps.status != "Waiting")
         <div class="flex mt-5" id="radio-group">
           <div class="form-control w-fit">
             <label class="label cursor-pointer space-x-2">

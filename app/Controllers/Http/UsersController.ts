@@ -272,9 +272,9 @@ export default class UsersController {
           }
         } else {
           studentUsers[i].serialize()
-          if (!studentUsers[i].student.plan) {
-            studentUsers[i]['lastestStatus'] = `Haven't chosen a plan yet.`
-          }
+          // if (!studentUsers[i].student.plan) {
+          studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
+          // }
         }
         // console.log(documentStatus)
 
