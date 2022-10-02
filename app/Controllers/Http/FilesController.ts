@@ -140,32 +140,6 @@ export default class FilesController {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
   }
-  // // public async showFilesByPostId({ view, auth, request, response }: HttpContextContract) {
-  // //   try {
-  // //     const posts = await Post.query().whereHas('files', (query) => {
-  // //       query.where('post_id', 9)
-  // //     })
-  // //     console.log(posts)
-  // //   } catch (error) {
-  // //     return response.status(400).send({ message: error.message })
-  // //   }
-  // // }
-
-  // public async showFilesByUserId({ view, auth, request, response }: HttpContextContract) {
-  //   try {
-  //     // const file = await Post.query().whereHas('files', (query) => {
-  //     //   query.where('post_id', 9)
-  //     // })
-  //     // console.log(request)
-  //     // const { userId } = request.param('id')
-  //     // console.log(userId)
-  //     const files = await File.query().where('user_id', request.param('id'))
-  //     return response.status(200).json(files)
-  //     // console.log(files)
-  //   } catch (error) {
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
 
   public async showAllFile({ view, response }: HttpContextContract) {
     try {
@@ -203,12 +177,10 @@ export default class FilesController {
       } else {
         file = await File.find(request.param('fileId'))
       }
-      // console.log(file);
 
       let filePath = ''
       if (file) {
         filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
-        console.log(filePath)
 
         response.attachment(filePath, file.file_name, preview, undefined, (error) => {
           if (error.code === 'ENOENT') {
@@ -217,8 +189,6 @@ export default class FilesController {
 
           return ['Cannot download file', 400]
         })
-        // const contents = fs.readFileSync(filePath, { encoding: 'base64' }).toString()
-        // response.status(200).json({ message: 'data:application/pdf;base64,' + contents })
       } else {
         return response.status(404).send({ message: 'cannot find file' })
       }

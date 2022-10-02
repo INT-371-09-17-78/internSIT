@@ -36,7 +36,6 @@ export default class UsersController {
       const uniEmailFormat = '@mail.kmutt.ac.th'
       const regxEmail =
         /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      console.log(regxEmail.test(email))
       if (!email) throw new Error('empty email')
       if (email.includes(uniEmailFormat)) {
         if (!regxEmail.test(email)) {
@@ -81,7 +80,6 @@ export default class UsersController {
       })
       return response.redirect('/success-regis')
     } catch (error) {
-      console.log(error)
       session.flash({
         error: error.message,
         type: 'negative',
@@ -189,7 +187,6 @@ export default class UsersController {
         return response.redirect('/success-regis')
       }
     } catch (error) {
-      console.log(error)
       if (
         error.message === 'no password given' ||
         error.message === 'empty username'
@@ -240,28 +237,14 @@ export default class UsersController {
 
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
-      // const role = request.param('role')
-      // const studentUser = await Student.query().preload('document_status')
-      const studentUsers = await User.query()
-        .where('role', 'student')
-        // .andWhere('user_id', request.param('id'))
-        .preload('student')
+      const studentUsers = await User.query().where('role', 'student').preload('student')
       for (let i = 0; i < studentUsers.length; i++) {
         let documentStatus: any
-        // if (request.qs().status) {
-        //   console.log("เข้า");
 
-        //   documentStatus = await Document_Status.query()
-        //     .where('student_id', studentUsers[i].user_id)
-        //     .andWhere('status_id', request.qs().status)
-        //     .orderBy('updated_at', 'desc')
-        // } else {
         documentStatus = await Document_Status.query()
           .where('student_id', studentUsers[i].user_id)
           .orderBy('updated_at', 'desc')
-        // }
         if (documentStatus && documentStatus.length > 0) {
-          // console.log('เข้า')
           studentUsers[i].serialize()
           if (documentStatus[0].status_id === 'Waiting') {
             studentUsers[i]['lastestStatus'] =
@@ -276,24 +259,12 @@ export default class UsersController {
             studentUsers[i]['lastestStatus'] = `Haven't chosen a plan yet.`
           }
         }
-        // console.log(documentStatus)
-
-        // studentUser[i].toJSON()
-        // studentUser[i]['lastestStatus'] = documentStatus[0].document_id
       }
 
-      // const document_status = await Document_Status.query().where('student_id')
-      // return response.status(200).json(result)
-      // console.log(studentUser)
-      // const result = await document.related('statuses').query().where('status_id', 'test2')
-      // return response.send(studentUser)
       let result: any
       if (request.qs().status) {
         result = studentUsers.filter((word) => word['lastestStatus'].includes(request.qs().status))
       }
-
-      // console.log(studentUsers)
-      console.log(result)
 
       const noApprove = studentUsers.filter((st) => !st.student.approved)
       return view.render('student-information', {
@@ -475,11 +446,7 @@ export default class UsersController {
       }
 
       const index = steps.map((ele) => ele.result).lastIndexOf(true)
-      // console.log(index)
       if (index >= 0) {
-        // if (steps[index].status === 'Approved') {
-        //   console.log('asdasd')
-        // }
         steps[index].status === 'Approved'
           ? ((nextStep = steps[index + 1]), (currentSteps = steps[index]))
           : ((nextStep = steps[index]), (currentSteps = nextStep))
@@ -488,8 +455,7 @@ export default class UsersController {
         currentSteps = steps[0]
         currentSteps.status = ''
       }
-      // console.log(currentSteps)
-      // console.log(nextStep)
+
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
@@ -502,22 +468,15 @@ export default class UsersController {
       }
       const lastOfAllStep = steps[steps.length - 1].name
       const firstOfAllStep = steps[0].name
-      // console.log(qs)
-      // console.log(stepPaged)
-      // console.log(lastStepPaged)
-      // console.log(currentSteps)
-      // console.log(steps)
       return view.render('student', {
         studentUser,
         plans,
         disabled,
-        // steps,
         nextStep,
         currentSteps,
         stepPaged,
         firstOfAllStep,
         lastOfAllStep,
-        // lastStepPaged,
         studentInfo,
       })
       // return response.redirect('/announcement')
@@ -733,7 +692,6 @@ export default class UsersController {
           key: 'adviserFullName',
         },
       ]
-      // console.log(studentUser)
       return view.render('student-info', {
         studentUser,
         disabled,
@@ -913,11 +871,6 @@ export default class UsersController {
           },
         ])
       }
-
-      // next()
-    } catch (error) {
-      // console.log(error)
-      // return response.status(400).json({ message: error.message })
-    }
+    } catch (error) {}
   }
 }

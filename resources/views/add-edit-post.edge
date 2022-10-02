@@ -67,7 +67,7 @@
       if(document.getElementById('topic').value && document.getElementById('content').value)
       document.getElementById('sendButton').disabled = false
   }
- const isEmpty = str => !str.trim().length;
+ const isEmpty = str => !str.trim().length
  const validateInput = () => {
     if(!isEmpty(document.getElementById('topic').value) && !isEmpty((document.getElementById('content').value))) {
       document.getElementById('sendButton').disabled = false
@@ -77,15 +77,13 @@
   }
   const middleEllipsis = (str) => {
     if (str.length > 35) {
-      return str.substring(0, 20) + '...' + str.substring(str.length - 10);
+      return str.substring(0, 20) + '...' + str.substring(str.length - 10)
     }
-    return str;
+    return str
   }
 
   const deleteFile = (index, fileId) => {
-    // console.log(typeof fileId);
     showFiles = showFiles.filter(newFile => newFile.file_id !== fileId)
-    // showFiles.splice(index, 1)
     document.getElementById(index).remove()
     input.value = ""
   }
@@ -103,9 +101,9 @@
 
   function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
+        return v.toString(16)
+    })
   }
   
   getFiles()
@@ -129,7 +127,7 @@
         if(!file.file_id){ file.file_id = uuidv4()}
         showFiles.push(file)
       }
-      console.log(showFiles)
+
       showFiles.forEach((file, index) => {
         const warpper = document.createElement('p')
         warpper.classList = "badge badge-secondary mr-2 p-3"
@@ -142,26 +140,10 @@
           showFiles.splice(index, 1)
           document.getElementById(index).remove()
           input.value = ""
-        };
-      });
+        }
+      })
     }
   }
-  // const toastify = () => {
-  //   const toast = document.createElement('div')
-  //   toast.innerHTML = 
-  //   `<div class="toast toast-center absolute bottom-5 left-5 z-10">
-  //       <div class="alert alert-success bg-[#EAF7D5] text-[#219653] rounded-lg">
-  //         <div>
-  //           <img src="{{ asset('assets/images/success.svg') }}"/>  
-  //           <span>Create post success</span>
-  //         </div>
-  //       </div>
-  //    </div>`
-  //   document.body.appendChild(toast)
-  //   setTimeout((()=>{
-  //     toast.innerHTML = ""
-  //   }), 3000);
-  // }
 
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
@@ -179,6 +161,6 @@
     
     const data = await response.json()
     window.location.href = `/announcement/${data.post_id}`
-  };
+  }
 </script>
 @end

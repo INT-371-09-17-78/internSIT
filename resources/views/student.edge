@@ -29,7 +29,7 @@
       @each(plan in plans)
         <option value={{ plan }}>{{ plan + " month" }}</option>
       @end
-      </select>
+    </select>
       @if(disabled)
         <button id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="editPlan(event)">edit</button>
       @else
@@ -126,7 +126,7 @@
   @end
 </section>
 <script>
-  window.history.replaceState({}, '', '/student/{{studentUser.user_id}}');
+  window.history.replaceState({}, '', '/student/{{studentUser.user_id}}')
   const showTextArea = () => {
     const c = document.getElementById("reason")
     if(c) return
@@ -136,7 +136,7 @@
     ele.name = "reason"
     ele.className = "p-3 w-full h-28 text-xs rounded-lg"
     ele.placeholder = "Write your reasons why not approve..."
-    referenceNode.parentNode.insertBefore(ele, referenceNode.nextSibling);
+    referenceNode.parentNode.insertBefore(ele, referenceNode.nextSibling)
   }
   const removeTextArea = () => {
     const c = document.getElementById("reason")
@@ -144,7 +144,7 @@
   }
   const editPlan = (event) => {
     event.preventDefault()
-    document.getElementById("study").disabled = false;
+    document.getElementById("study").disabled = false
     document.getElementById("editButton").remove()
     const ele = document.createElement("button")
     ele.id = "submitButton"
@@ -162,6 +162,8 @@
   }
 
   const changeSteps = async (firstStepPaging, gnext) => {
+    console.log(firstStepPaging)
+    console.log(gnext)
     const urlParams = new URLSearchParams({
       firstStepPaging: firstStepPaging,
       gnext: gnext
@@ -190,12 +192,11 @@
     })
     
     window.location.reload()
-  };
+  }
   const formElem = document.getElementById('formElem')
   if(formElem)
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
-    // if(!pdfFile) return
     const body = {
       status : 'Pending',
       doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
@@ -218,7 +219,7 @@
     })
     
     window.location.reload()
-  };
+  }
 
   const formElem3 = document.getElementById('formElem3')
   if(formElem3)
@@ -239,182 +240,97 @@
     })
     
     window.location.reload()
-  };
+  }
 
 var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}' 
-    // Loaded via <script> tag, create shortcut to access PDF.js exports.
-var pdfjsLib = window['pdfjs-dist/build/pdf'];
+var pdfjsLib = window['pdfjs-dist/build/pdf']
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';  
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js'  
 var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
     pageNumPending = null,
     scale = 0.8,
     canvas = document.getElementById('pdfViewer'),
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext('2d')
 
 function renderPage(num) {
-  pageRendering = true;
-  // Using promise to fetch the page
+  pageRendering = true
   pdfDoc.getPage(num).then(function(page) {
-    var viewport = page.getViewport({scale: scale});
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+    var viewport = page.getViewport({scale: scale})
+    canvas.height = viewport.height
+    canvas.width = viewport.width
 
-    // Render PDF page into canvas context
     var renderContext = {
       canvasContext: ctx,
       viewport: viewport
-    };
-    var renderTask = page.render(renderContext);
+    }
+    var renderTask = page.render(renderContext)
 
-    // Wait for rendering to finish
     renderTask.promise.then(function() {
-      pageRendering = false;
+      pageRendering = false
       if (pageNumPending !== null) {
-        // New page rendering is pending
-        renderPage(pageNumPending);
-        pageNumPending = null;
+        renderPage(pageNumPending)
+        pageNumPending = null
       }
-    });
-  });
+    })
+  })
 
-  // Update page counters
-  document.getElementById('page_num').textContent = num;
+  document.getElementById('page_num').textContent = num
 }
 
-/**
- * If another page rendering in progress, waits until the rendering is
- * finised. Otherwise, executes rendering immediately.
- */
 function queueRenderPage(num) {
   if (pageRendering) {
-    pageNumPending = num;
+    pageNumPending = num
   } else {
-    renderPage(num);
+    renderPage(num)
   }
 }
 
-
-/**
- * Displays previous page.
- */
  function onPrevPage() {
   if (pageNum <= 1) {
-    return;
+    return
   }
-  pageNum--;
-  queueRenderPage(pageNum);
+  pageNum--
+  queueRenderPage(pageNum)
 }
 
-/**
- * Displays next page.
- */
 function onNextPage() {
   if (pageNum >= pdfDoc.numPages) {
-    return;
+    return
   }
-  pageNum++;
-  queueRenderPage(pageNum);
+  pageNum++
+  queueRenderPage(pageNum)
 }
-// The workerSrc property shall be specified.
-if({{currentSteps.status != "Approved"}}){
-  document.getElementById('control-page').classList.add("hidden");
-  pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
-    pdfDoc = pdfDoc_;
-    document.getElementById('page_count').textContent = pdfDoc.numPages;
 
-    // Initial/first page rendering
-    renderPage(pageNum);
+if({{currentSteps.status != "Approved"}}){
+  document.getElementById('control-page').classList.add("hidden")
+  pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
+    pdfDoc = pdfDoc_
+    document.getElementById('page_count').textContent = pdfDoc.numPages
+
+    renderPage(pageNum)
   })
 }
-// if({{currentSteps.steps != "Accepted by firm" && currentSteps.status != "Approve"}}){
-// var loadingTask = pdfjsLib.getDocument(url);
-// loadingTask.promise.then(function(pdf) {
-//   console.log('PDF loaded');
-  
-//   // Fetch the first page
-//   var pageNumber = 1;
-//   pdf.getPage(pageNumber).then(function(page) {
-//     console.log('Page loaded');
-    
-//     var scale = 1.5;
-//     var viewport = page.getViewport({scale: scale});
-
-//     // Prepare canvas using PDF page dimensions
-//     var canvas = document.getElementById('pdfViewer');
-//     var context = canvas.getContext('2d');
-//     canvas.height = viewport.height;
-//     canvas.width = viewport.width;
-
-//     // Render PDF page into canvas context
-//     var renderContext = {
-//       canvasContext: context,
-//       viewport: viewport
-//     };
-//     var renderTask = page.render(renderContext);
-//     renderTask.promise.then(function () {
-//       console.log('Page rendered');
-//     });
-//   });
-// }, function (reason) {
-//   // PDF loading error
-//   console.error(reason);
-// });
-// }
-
 
 $("#myPdf").on("change", async function(e){
-  document.getElementById('control-page').classList.remove("hidden");
+  document.getElementById('control-page').classList.remove("hidden")
 	var file = e.target.files[0]
 	if(file.type == "application/pdf"){
-		var fileReader = new FileReader();  
+		var fileReader = new FileReader()  
 		fileReader.onload = function() {
-			var pdfData = new Uint8Array(this.result);
-			// Using DocumentInitParameters object to load binary data.
-			// var loadingTask = pdfjsLib.getDocument({data: pdfData});
+			var pdfData = new Uint8Array(this.result)
+
       pdfjsLib.getDocument({data: pdfData}).promise.then(function(pdfDoc_) {
-        pdfDoc = pdfDoc_;
-        document.getElementById('page_count').textContent = pdfDoc.numPages;
+        pdfDoc = pdfDoc_
+        document.getElementById('page_count').textContent = pdfDoc.numPages
 
-        // Initial/first page rendering
-        renderPage(pageNum);
+        renderPage(pageNum)
       })
-			// loadingTask.promise.then(function(pdf) {
-			//   console.log('PDF loaded');
-			  
-			//   // Fetch the first page
-			//   var pageNumber = 1;
-			//   pdf.getPage(pageNumber).then(function(page) {
-			// 	console.log('Page loaded');
-				
-			// 	var scale = 1.5;
-			// 	var viewport = page.getViewport({scale: scale});
 
-			// 	// Prepare canvas using PDF page dimensions
-			// 	var canvas = document.getElementById('pdfViewer');
-			// 	var context = canvas.getContext('2d');
-			// 	canvas.height = viewport.height;
-			// 	canvas.width = viewport.width;
-
-			// 	// Render PDF page into canvas context
-			// 	var renderContext = {
-			// 	  canvasContext: context,
-			// 	  viewport: viewport
-			// 	};
-			// 	var renderTask = page.render(renderContext);
-			// 	renderTask.promise.then(function () {
-			// 	  console.log('Page rendered');
-			// 	});
-			//   });
-			// }, function (reason) {
-			//   // PDF loading error
-			//   console.error(reason);
-			// });
-		};
-		fileReader.readAsArrayBuffer(file);
+		}
+		fileReader.readAsArrayBuffer(file)
 	}
-});
+})
 </script>
 @end

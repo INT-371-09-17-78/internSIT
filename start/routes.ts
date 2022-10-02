@@ -20,8 +20,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
 import UsersController from 'App/Controllers/Http/UsersController'
-// import Post from 'App/Models/Post'
-// import moment from 'moment'
+
 View.global('middleEllipsis', (str: string) => {
   if (str.length > 30) {
     return str.substring(0, 20) + '...' + str.substring(str.length - 10)
@@ -107,8 +106,8 @@ Route.group(() => {
 
   Route.group(() => {
     Route.post('/', 'FilesController.store')
-    Route.post('/steps', 'FilesController.storeDirect') //store file สำหรับ steps
-    Route.get('/:fileId', 'FilesController.downloadFile') //downloadfile สำหรับ steps / อื่นๆ
+    Route.post('/steps', 'FilesController.storeDirect')
+    Route.get('/:fileId', 'FilesController.downloadFile')
     Route.delete('/:fileId', 'FilesController.deleteFileDirect')
   })
     .middleware('login')

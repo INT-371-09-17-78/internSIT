@@ -47,7 +47,7 @@
             <p class="text-base lg:text-3xl text-base-content font-semibold">Student information</p>
             <select class="select select-sm bg-[#F6F7F9] max-w-xs focus:outline-none ml-auto" onchange="filterStatus()" id="filterStatus">
       
-              <option class="font-semibold text-gray-600">All status</option>
+              <option class="font-semibold text-gray-600" value="All status">All status</option>
             {{--  @each(plan in plans)  --}}
               <option class="text-blue-600 font-semibold" value="Waiting">Waiting for TR1</option>
               <option class="text-yellow-600 font-semibold" value="Pending">Pending</option>
@@ -68,7 +68,7 @@
             <tbody>
               @each((student,index) in studentUsers)
               @if(student.student.approved)
-                  <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}';">
+                  <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
                     <td>{{student.user_id}}</td>
                     <td>{{student.firstname + " " + student.lastname}}</td>
                     <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
@@ -82,7 +82,7 @@
         <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
             <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
             <p>No students in the system</p>
-            <p class="text-base">Please add students into the system first.</p>
+            <p class="text-base">Please add students into the system first or Check your filters.</p>
         </div>
         @end
       @elseif(request.matchesRoute('/register-request'))
@@ -133,8 +133,12 @@
       @end
   </section>
   <script>
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+  })
+  const filterStatusEle = document.getElementById('filterStatus')
+  if(filterStatusEle) filterStatusEle.value = params.status || 'All status'
    const openAlertDeleteRequest = (id) => {
-    console.log(id)
     const alertDeleteRequest = 
     `<div id="modal-confirm-delete-request" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
       <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
@@ -156,17 +160,17 @@
   }
 
   const closeAlertDeleteRequest = () => {
-    const element = document.getElementById('modal-confirm-delete-request');
-    element.remove();
+    const element = document.getElementById('modal-confirm-delete-request')
+    element.remove()
   }
 
-  let checkedCount = 0;
+  let checkedCount = 0
   checkboxes = document.getElementsByName('checkStudent')
   checkboxes.forEach(checkbox => {
       if (checkbox.checked) {
-      checkedCount++;
+      checkedCount++
       }
-  });
+  })
   const checkAllBox = document.getElementById('checkAllBox')
   if(checkedCount === checkboxes.length && checkAllBox){
     checkAllBox.checked = true
@@ -178,27 +182,24 @@
     checkboxes.forEach(checkbox => {
       if(checkbox.disabled) return
       checkbox.checked = source.checked
-    });
+    })
   }
 
   const filterStatus = () =>{
     let selectdStatus = document.getElementById("filterStatus").value
-    if(selectdStatus === 'All status'){
-      selectdStatus = ''
-    }
     const urlParams = new URLSearchParams({
       status: selectdStatus,
     })
-    window.history.pushState({},null, '/student-information?' + urlParams);
+    window.location.href = selectdStatus === 'All status' ? '/student-information' : `/student-information?${urlParams}`
   }
   const updateCheckAll = () =>{
-    let checkedCount = 0;
+    let checkedCount = 0
     checkboxes = document.getElementsByName('checkStudent')
     checkboxes.forEach(checkbox => {
       if (checkbox.checked) {
-      checkedCount++;
+      checkedCount++
       }
-    });
+    })
     if (checkedCount === checkboxes.length) {
       document.getElementById('checkAllBox').checked = true
     }else{
@@ -210,7 +211,7 @@
         await fetch(`/api/user/student/${id}?_method=DELETE`, {
         method: 'POST',
         }).then(() => {
-            window.location.reload();
+            window.location.reload()
         })
   }
 
@@ -220,11 +221,10 @@
     event.preventDefault()
     const checkboxs = []
     document.getElementsByName('checkStudent').forEach(async (checkbox) => {
-      console.log("ID: "+checkbox.id,"| Approved: "+ checkbox.checked)
       if(checkbox.checked){
       checkboxs.push({id : checkbox.id , approve : checkbox.checked})
        }
-    });
+    })
     const body = {users : checkboxs}
         await fetch('/api/user/student/regis/approve?_method=PATCH', {
         method: 'POST',
