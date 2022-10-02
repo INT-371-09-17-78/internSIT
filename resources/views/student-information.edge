@@ -26,7 +26,7 @@
       {{--  @if(studentUsers.length !== noApprove)  --}}
       <div class="tabs bg-[#DDE2E5] mt-5 tab-lg">
         <a href="{{ route('/student-information')}}" class="tab text-[#495057] font-medium h-full {{activeInfoTab}}">Student information</a> 
-        <a href="{{ route('/register-request')}}" class="indicator tab text-[#495057] font-medium border-x-2 border-[#CED3D6] h-full {{activeRequestTab}}">
+        <a href="{{ route('/register-request')}}" class="indicator tab text-[#495057] font-medium h-full {{activeRequestTab}}">
           Register request
           @if(noApprove)
           <span class="indicator-item badge bg-[#F61819] border-[#F61819]">{{noApprove}}</span> 
@@ -43,11 +43,24 @@
         {{--  @end  --}}
       @if(request.matchesRoute('/student-information'))
         @if(studentUsers.length !== noApprove)
-        <div class="overflow-x-auto px-40 mt-10">
-          <p class="text-base lg:text-3xl text-base-content font-semibold">Student information</p>
-          <table class="table w-full border-red-500 mt-5">
+        <div class="px-40 pt-10 h-full bg-white">
+          <div class="flex">
+            <p class="text-base lg:text-3xl text-base-content font-semibold">Student information</p>
+            <select {{disabled}} id="study" name="study"
+            class="select select-sm bg-[#F6F7F9] max-w-xs focus:outline-none ml-auto">
+      
+              <option class="font-semibold text-gray-600" selected>All status</option>
+            {{--  @each(plan in plans)  --}}
+              <option class="text-blue-600 font-semibold" value="Waiting">Waiting for TR1</option>
+              <option class="text-yellow-600 font-semibold" value="Pending">Pending</option>
+              <option class="text-green-600 font-semibold" value="Approved">Approved</option>
+              <option class="text-red-600 font-semibold" value="Not approved">Not approved</option>
+            {{--  @end  --}}
+            </select>
+          </div>
+          <table class="table w-full mt-5">
             <thead>
-              <tr>
+              <tr class="border-2 border-[#F6F7F9]">
                 <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
                 <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
                 <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
@@ -56,7 +69,7 @@
             <tbody>
               @each((student,index) in studentUsers)
               @if(student.student.approved)
-                  <tr class="cursor-pointer font-bold" onclick="window.location='/student/{{student.user_id }}';">
+                  <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}';">
                     <td>{{student.user_id}}</td>
                     <td>{{student.firstname + " " + student.lastname}}</td>
                     <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
@@ -67,8 +80,8 @@
           </table>
         </div>
         @else
-        <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
-            <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
+        <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 bg-white text-black/50">
+            <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
             <p>No students in the system</p>
             <p class="text-base">Please add students into the system first.</p>
         </div>
@@ -110,8 +123,8 @@
         </div>
       </form>
       @else
-      <div class="flex flex-col w-full m-auto justify-center items-center text-3xl font-semibold opacity-50 space-y-5">
-        <img class="w-20 h-20" src="{{ asset('assets/images/empty.png') }}" />
+      <div class="bg-white h-full flex flex-col w-full m-auto justify-center items-center text-3xl font-semibold space-y-5 text-black/50">
+        <img class="w-20 h-20 opacity-50" src="{{ asset('assets/images/empty.png') }}" />
         <p>No Request</p>
         <p class="text-base">Please waiting for request</p>
       </div>
