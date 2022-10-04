@@ -237,38 +237,75 @@ export default class UsersController {
 
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
-      const studentUsers = await User.query().where('role', 'student').preload('student')
-      for (let i = 0; i < studentUsers.length; i++) {
-        let documentStatus: any
+      let studentUsers: any = []
+      let AllStudentUsers: any = []
+      let result: any = []
+      AllStudentUsers = await User.query().where('role', 'student').preload('student')
+      if (request.qs().month) {
+        const studentUsersPre = await User.query().where('role', 'student').preload('student')
+        studentUsers = studentUsersPre.filter(
+          (userPre) => userPre.student.plan === parseInt(request.qs().month)
+        )
+      } else {
+        studentUsers = await User.query().where('role', 'student').preload('student')
+      }
 
-        documentStatus = await Document_Status.query()
-          .where('student_id', studentUsers[i].user_id)
-          .orderBy('updated_at', 'desc')
-        if (documentStatus && documentStatus.length > 0) {
-          studentUsers[i].serialize()
-          if (documentStatus[0].status_id === 'Waiting') {
-            studentUsers[i]['lastestStatus'] =
-              documentStatus[0].status_id + ' for ' + documentStatus[0].document_id
-          } else {
-            studentUsers[i]['lastestStatus'] =
-              documentStatus[0].document_id + ' ' + documentStatus[0].status_id
-          }
-        } else {
-          studentUsers[i].serialize()
-          // if (!studentUsers[i].student.plan) {
-          studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
+      if (studentUsers && studentUsers.length > 0) {
+        for (let i = 0; i < studentUsers.length; i++) {
+          // let documentStatus: any = []
+          const documentStatus = await Document_Status.query()
+            .where('student_id', studentUsers[i].user_id)
+            .orderBy('updated_at', 'desc')
+          // if (documentStatusPre) {
+          //   documentStatus = request.qs().step
+          //     ? documentStatusPre.filter((doc) => doc.document_id === request.qs().step)
+          //     : documentStatusPre
           // }
+          if (documentStatus && documentStatus.length > 0) {
+            studentUsers[i].serialize()
+            if (documentStatus[0].status_id === 'Waiting') {
+              studentUsers[i]['lastestStatus'] =
+                documentStatus[0].status_id + ' for ' + documentStatus[0].document_id
+            } else {
+              studentUsers[i]['lastestStatus'] =
+                documentStatus[0].document_id + ' ' + documentStatus[0].status_id
+            }
+          } else {
+            studentUsers[i].serialize()
+            // if (!studentUsers[i].student.plan) {
+            studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
+            // }
+          }
         }
-      }
 
-      let result: any
-      if (request.qs().status) {
-        result = studentUsers.filter((word) => word['lastestStatus'].includes(request.qs().status))
-      }
+        if (request.qs().status && request.qs().step) {
+          const resultPre = studentUsers.filter((word) =>
+            word['lastestStatus'].toUpperCase().includes(request.qs().status.toUpperCase())
+          )
+          result = resultPre.filter((word) =>
+            word['lastestStatus'].toUpperCase().includes(request.qs().step.toUpperCase())
+          )
+        } else if (request.qs().status) {
+          result = studentUsers.filter((word) =>
+            word['lastestStatus'].toUpperCase().includes(request.qs().status.toUpperCase())
+          )
+        } else if (request.qs().step) {
+          result = studentUsers.filter((word) =>
+            word['lastestStatus'].toUpperCase().includes(request.qs().step.toUpperCase())
+          )
+        }
 
-      const noApprove = studentUsers.filter((st) => !st.student.approved)
+        // if (request.qs().step) {
+        //   result = studentUsers.filter((word) => word['lastestStatus'].includes(request.qs().step))
+        // }
+      }
+      // console.log(studentUsers)
+      const noApprove = AllStudentUsers.filter((st) => !st.student.approved)
       return view.render('student-information', {
-        studentUsers: request.qs().status ? result : studentUsers,
+        studentUsers:
+          (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
+            ? result
+            : studentUsers,
         noApprove: noApprove.length,
       })
     } catch (error) {
