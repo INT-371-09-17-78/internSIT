@@ -238,16 +238,16 @@ export default class UsersController {
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
       let studentUsers: any = []
-      let AllStudentUsers: any = []
+      // let AllStudentUsers: any = []
       let result: any = []
-      AllStudentUsers = await User.query().where('role', 'student').preload('student')
+      // AllStudentUsers = await User.query().where('role', 'student').preload('student')
+      studentUsers = await User.query().where('role', 'student').preload('student')
+      const noApprove = studentUsers.filter((st) => !st.student.approved)
       if (request.qs().month) {
         const studentUsersPre = await User.query().where('role', 'student').preload('student')
         studentUsers = studentUsersPre.filter(
           (userPre) => userPre.student.plan === parseInt(request.qs().month)
         )
-      } else {
-        studentUsers = await User.query().where('role', 'student').preload('student')
       }
 
       if (studentUsers && studentUsers.length > 0) {
@@ -300,7 +300,6 @@ export default class UsersController {
         // }
       }
       // console.log(studentUsers)
-      const noApprove = AllStudentUsers.filter((st) => !st.student.approved)
       return view.render('student-information', {
         studentUsers:
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
