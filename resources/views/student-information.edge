@@ -3,6 +3,9 @@
 @set('activeInfoTab', '')
 @set('activeCourseTab', '')
 @set('activeRequestTab', '')
+@set('activeTwoMonth', '')
+@set('activeFourMonth', '')
+@set('activeSixMonth', '')
 @section('student-information')
   @if(request.matchesRoute('/register-request'))
   @set('activeRequestTab', 'bg-white')
@@ -10,6 +13,14 @@
   @set('activeCourseTab', 'bg-white')
   @else
   @set('activeInfoTab', 'bg-white')
+  @end
+
+  @if(request.qs().month == 2)
+   @set('activeTwoMonth', 'bg-[#484F56]/10')
+  @elseif(request.qs().month == 4)
+   @set('activeFourMonth', 'bg-[#484F56]/10')
+  @elseif(request.qs().month == 6)
+    @set('activeSixMonth', 'bg-[#484F56]/10')
   @end
   <section class="flex flex-col h-full w-full z-[5] bg-white">
       <div class="flex pl-8 pt-9">
@@ -25,7 +36,7 @@
       </div>
       {{--  @if(studentUsers.length !== noApprove)  --}}
       <div class="tabs bg-[#DDE2E5] mt-5 tab-lg">
-        <a href="{{ route('/student-information')}}" class="tab text-[#495057] font-medium h-full {{activeInfoTab}}">Student information</a> 
+        <a href="{{ route('/student-information', {qs: {month: 2}})}}" class="tab text-[#495057] font-medium h-full {{activeInfoTab}}">Student information</a> 
         <a href="{{ route('/register-request')}}" class="indicator tab text-[#495057] font-medium h-full {{activeRequestTab}}">
           Register request
           @if(noApprove)
@@ -42,49 +53,85 @@
         </div>  --}}
         {{--  @end  --}}
       @if(request.matchesRoute('/student-information'))
-        <div class="px-40 pt-10 bg-white flex flex-col h-full">
-          <div class="flex">
-            <p class="text-base lg:text-3xl text-base-content font-semibold">Student information</p>
-            <select class="select select-sm bg-[#F6F7F9] max-w-xs focus:outline-none ml-auto" onchange="filterStatus()" id="filterStatus">
-      
-              <option class="font-semibold text-gray-700" value="All status">All status</option>
-            {{--  @each(plan in plans)  --}}
-              <option class="text-blue-700 font-semibold" value="Waiting">Waiting for TR1</option>
-              <option class="text-yellow-700 font-semibold" value="Pending">Pending</option>
-              <option class="text-green-700 font-semibold" value="Approved">Approved</option>
-              <option class="text-red-700 font-semibold" value="Not approved">Not approved</option>
-            {{--  @end  --}}
-            </select>
-          </div>
-          @if(studentUsers.length !== noApprove)
-          <table class="table w-full mt-5">
-            <thead>
-              <tr class="border-2 border-[#F6F7F9]">
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
-              </tr>
-            </thead>
-            <tbody>
-              @each((student,index) in studentUsers)
-              @if(student.student.approved)
-                  <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
-                    <td>{{student.user_id}}</td>
-                    <td>{{student.firstname + " " + student.lastname}}</td>
-                    <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+      <div class="pr-20 flex items-end">
+        <p class="text-base px-2 mt-5 lg:text-3xl text-base-content font-semibold">Student information</p>
+        <div class="dropdown ml-auto">
+          <label tabindex="0" class="select select-sm">Filter by</label>
+          <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box mt-2 space-y-2">
+            <p>Steps</p>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>TR-01</p>
+            </div>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>TR-02</p>
+            </div>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>TR-03</p>
+            </div>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>TR-04</p>
+            </div>
+            <p>Status</p>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>Pending</p>
+            </div>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>Waiting for TR1</p>
+            </div>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>Approved</p>
+            </div>
+            <div class="flex flex-row space-x-2">
+              <input type="checkbox" name="selectStatus" class="checkbox">
+              <p>Not approved</p>
+            </div>
+          </ul>
+        </div>
+      </div>
+          <div class="flex space-x-5 h-full">
+            <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+              <li class="{{activeTwoMonth}}"><a href="{{ route('/student-information', {qs: {month: 2}})}}">INT340 (2 months)</a></li>
+              <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {qs: {month: 4}})}}">INT350 (4 months)</a></li>
+              <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {qs: {month: 6}})}}">INT370 (6 months)</a></li>
+            </ul>
+            @if(studentUsers.length !== noApprove)
+            <div class="flex-1 pr-20">
+              <table class="table w-full mt-5">
+                <thead>
+                  <tr class="border-2 border-[#F6F7F9]">
+                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
+                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
                   </tr>
-              @end
-              @end
-            </tbody>
-          </table>
-        </div>
-        @else
-        <div class="w-full h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
-            <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
-            <p>No students in the system</p>
-            <p class="text-base">Please add students into the system first or Check your filters.</p>
-        </div>
-        @end
+                </thead>
+                <tbody>
+                  @each((student,index) in studentUsers)
+                  @if(student.student.approved)
+                      <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
+                        <td>{{student.user_id}}</td>
+                        <td>{{student.firstname + " " + student.lastname}}</td>
+                        <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+                      </tr>
+                  @end
+                  @end
+                </tbody>
+              </table>
+            </div>
+            @else
+            <div class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+                <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
+                <p>No students in the system</p>
+                <p class="text-base">Please add students into the system first or Check your filters.</p>
+            </div>
+            @end
+          </div>
       @elseif(request.matchesRoute('/register-request'))
       @if(noApprove)
       <form id="formElem" name="formElem" class="px-40 mt-10">
