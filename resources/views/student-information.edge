@@ -36,7 +36,7 @@
       </div>
       {{--  @if(studentUsers.length !== noApprove)  --}}
       <div class="tabs bg-[#DDE2E5] mt-5 tab-lg">
-        <a href="{{ route('/student-information', {qs: {month: 2}})}}" class="tab text-[#495057] font-medium h-full {{activeInfoTab}}">Student information</a> 
+        <a href="{{ route('/student-information', {} , {qs: {month: 2}})}}" class="tab text-[#495057] font-medium h-full {{activeInfoTab}}">Student information</a> 
         <a href="{{ route('/register-request')}}" class="indicator tab text-[#495057] font-medium h-full {{activeRequestTab}}">
           Register request
           @if(noApprove)
@@ -56,40 +56,40 @@
       <div class="pr-20 flex items-end">
         <p class="text-base px-2 mt-5 lg:text-3xl text-base-content font-semibold">Student information</p>
         <div class="dropdown ml-auto">
-          <label tabindex="0" class="select select-sm">Filter by</label>
+          <label tabindex="0" class="select select-sm" id="selectInput">Filter by</label>
           <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box mt-2 space-y-2">
             <p>Steps</p>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-01">
               <p>TR-01</p>
             </div>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-02">
               <p>TR-02</p>
             </div>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-03">
               <p>TR-03</p>
             </div>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-04">
               <p>TR-04</p>
             </div>
             <p>Status</p>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Pending">
               <p>Pending</p>
             </div>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Waiting for TR1">
               <p>Waiting for TR1</p>
             </div>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Approved">
               <p>Approved</p>
             </div>
             <div class="flex flex-row space-x-2">
-              <input type="checkbox" name="selectStatus" class="checkbox">
+              <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Not approved">
               <p>Not approved</p>
             </div>
           </ul>
@@ -97,9 +97,9 @@
       </div>
           <div class="flex space-x-5 h-full">
             <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
-              <li class="{{activeTwoMonth}}"><a href="{{ route('/student-information', {qs: {month: 2}})}}">INT340 (2 months)</a></li>
-              <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {qs: {month: 4}})}}">INT350 (4 months)</a></li>
-              <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {qs: {month: 6}})}}">INT370 (6 months)</a></li>
+              <li class="{{activeTwoMonth}}"><a href="{{ route('/student-information', {} ,{qs: {month: 2}})}}">INT340 (2 months)</a></li>
+              <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 4}})}}">INT350 (4 months)</a></li>
+              <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 6}})}}">INT370 (6 months)</a></li>
             </ul>
             @if(studentUsers.length !== noApprove)
             <div class="flex-1 pr-20">
@@ -180,6 +180,46 @@
       @end
   </section>
   <script>
+  const params = new URLSearchParams(window.location.search);
+  document.querySelectorAll('input[name=selectStep]').forEach((checkbox)=>{
+    params.getAll('step').forEach((step)=>{
+      if(step === checkbox.value) {
+        checkbox.checked = true
+      }
+    })
+  })
+
+  document.querySelectorAll('input[name=selectStatus]').forEach((checkbox)=>{
+    params.getAll('status').forEach((status)=>{
+      if(status === checkbox.value) {
+        checkbox.checked = true
+      }
+    })
+  })
+
+  if(document.querySelectorAll('input[name=selectStep]:checked').length > 0 || document.querySelectorAll('input[name=selectStatus]:checked').length > 0){
+    document.getElementById('selectInput').focus()
+  }
+  // .forEach((box)=>{
+
+  //     params.getAll('step').forEach((step)=>{
+  //     console.log(step)
+  //   console.log(box.value)
+  //   })
+  // })
+  const filterStudents = () =>{
+    const urlParams = new URLSearchParams()
+    document.querySelectorAll('input[name=selectStep]:checked').forEach((box)=>{
+      urlParams.append('step', box.value)
+    })
+    document.querySelectorAll('input[name=selectStatus]:checked').forEach((box)=>{
+      urlParams.append('status', box.value)
+    })
+
+    // console.log(urlParams.toString())
+    window.location.href = `/student-information?${urlParams}`
+  }
+
   let checkStatus = (str) => {
     if(!str) return
     if (str.includes('Approved')) {
@@ -193,15 +233,6 @@
     } else {
       return ''
     }
-  }
-  const params = new Proxy(new URLSearchParams(window.location.search), {
-  get: (searchParams, prop) => searchParams.get(prop),
-  })
-  const filterStatusEle = document.getElementById('filterStatus')
-  if(filterStatusEle) {
-    filterStatusEle.value = params.status || 'All status'
-    if(checkStatus(params.status))
-    filterStatusEle.classList.add(checkStatus(params.status))
   }
    const openAlertDeleteRequest = (id) => {
     const alertDeleteRequest = 
@@ -250,13 +281,6 @@
     })
   }
 
-  const filterStatus = () =>{
-    let selectdStatus = document.getElementById("filterStatus").value
-    const urlParams = new URLSearchParams({
-      status: selectdStatus,
-    })
-    window.location.href = selectdStatus === 'All status' ? '/student-information' : `/student-information?${urlParams}`
-  }
   const updateCheckAll = () =>{
     let checkedCount = 0
     checkboxes = document.getElementsByName('checkStudent')
