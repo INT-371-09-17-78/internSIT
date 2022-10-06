@@ -18,7 +18,7 @@
         @end
       </div>  
     </div>
-    <div class="card-group flex flex-col space-y-5 mt-2 px-5">
+    <div class="card-group flex flex-col space-y-5 mt-2 px-40">
       <div class="card card-side overflow-visible mb-5 w-full h-fit card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-xl p-2 space-x-2">
         <div class="avatar">
           <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
@@ -30,7 +30,9 @@
           <p class="leading-5">{{post.content}}</p>
           <div id="selectedFile" class="flex flex-wrap gap-y-2">
               @each(file in post.files)
-                <p id="fileName" class="badge badge-secondary mr-2 p-3">{{middleEllipsis(file.file_name)}}</p>
+              <a href="{{ route('/api/file/:fileId', { fileId: file.file_id }) }}">
+                <p id="fileName" class="badge badge-secondary mr-2 p-3 cursor-pointer">{{middleEllipsis(file.file_name)}}</p>
+              </a>
               @end
           </div>
         </div>
@@ -72,6 +74,7 @@
     </div> `
     document.body.innerHTML += alertDeletePost
   }
+  
   const closeAlertDeletePost = () => {
     const element = document.getElementById('modal-confirm')
     element.remove()
