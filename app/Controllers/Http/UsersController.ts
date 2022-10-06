@@ -279,25 +279,15 @@ export default class UsersController {
         }
 
         if (request.qs().status && request.qs().step) {
-          const resultPre = studentUsers.filter((word) =>
-            word['lastestStatus'].toUpperCase().includes(request.qs().status.toUpperCase())
-          )
-          result = resultPre.filter((word) =>
-            word['lastestStatus'].toUpperCase().includes(request.qs().step.toUpperCase())
-          )
+          const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
+          result = this.queryStringFilter(resultPre, request.qs().status)
         } else if (request.qs().status) {
-          result = studentUsers.filter((word) =>
-            word['lastestStatus'].toUpperCase().includes(request.qs().status.toUpperCase())
-          )
+          result = this.queryStringFilter(studentUsers, request.qs().status)
         } else if (request.qs().step) {
-          result = studentUsers.filter((word) =>
-            word['lastestStatus'].toUpperCase().includes(request.qs().step.toUpperCase())
-          )
+          result = this.queryStringFilter(studentUsers, request.qs().step)
         }
 
-        // if (request.qs().step) {
-        //   result = studentUsers.filter((word) => word['lastestStatus'].includes(request.qs().step))
-        // }
+        console.log(result)
       }
       // console.log(studentUsers)
       return view.render('student-information', {
@@ -310,6 +300,25 @@ export default class UsersController {
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
+  }
+
+  private queryStringFilter(arr, queryString) {
+    const result = arr.filter((word) => {
+      if (Array.isArray(queryString)) {
+        for (const qs of queryString) {
+          if (word['lastestStatus'].toUpperCase().includes(qs.toUpperCase())) {
+            return true
+          }
+        }
+        return false
+      } else {
+        if (word['lastestStatus'].toUpperCase().includes(queryString.toUpperCase())) {
+          return true
+        }
+        return false
+      }
+    })
+    return result
   }
 
   public async showStudentUserById({ request, response, view }: HttpContextContract) {
