@@ -208,15 +208,15 @@
   //   })
   // })
   const filterStudents = () =>{
+    const params = new URLSearchParams(window.location.search)
     const urlParams = new URLSearchParams()
+    urlParams.append('month', params.getAll('month'))
     document.querySelectorAll('input[name=selectStep]:checked').forEach((box)=>{
-      urlParams.append('step', box.value)
+        urlParams.append('step', box.value)
     })
     document.querySelectorAll('input[name=selectStatus]:checked').forEach((box)=>{
       urlParams.append('status', box.value)
     })
-
-    // console.log(urlParams.toString())
     window.location.href = `/student-information?${urlParams}`
   }
 
