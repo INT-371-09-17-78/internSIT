@@ -280,7 +280,7 @@ export default class UsersController {
 
         if (request.qs().status && request.qs().step) {
           const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
-          result = this.queryStringFilter(resultPre, request.qs().status)
+          result = this.queryStringFilter(resultPre, request.qs().step)
         } else if (request.qs().status) {
           result = this.queryStringFilter(studentUsers, request.qs().status)
         } else if (request.qs().step) {
