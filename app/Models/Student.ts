@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon'
-import { column, BaseModel, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  column,
+  BaseModel,
+  belongsTo,
+  BelongsTo,
+  manyToMany,
+  ManyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
 import Document_Status from 'App/Models/DocumentStatus'
 
@@ -55,8 +62,19 @@ export default class Student extends BaseModel {
   // @column()
   // public reasons: string
 
-  @hasMany(() => Document_Status, { foreignKey: 'student_id' })
-  public document_status: HasMany<typeof Document_Status>
+  @manyToMany(() => Document_Status, {
+    localKey: 'student_id',
+    pivotForeignKey: 'student_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'doc_stat_id',
+    pivotTable: 'students_documents_statuses',
+    pivotColumns: ['no_approve_reason'],
+    pivotTimestamps: true,
+  })
+  public documentsStatuses: ManyToMany<typeof Document_Status>
+
+  // @hasMany(() => Document_Status, { foreignKey: 'student_id' })
+  // public document_status: HasMany<typeof Document_Status>
 
   // @column()
   // public rememberMeToken?: string

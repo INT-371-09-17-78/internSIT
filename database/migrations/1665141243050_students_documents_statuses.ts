@@ -1,17 +1,21 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class DocumentsStatuses extends BaseSchema {
-  protected tableName = 'documents_statuses'
+  protected tableName = 'students_documents_statuses'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       //   table.primary(['student_id', 'document_id'])
       //   table.string('student_id', 80).references('students.student_id').onDelete('CASCADE')
-      table.string('document_id').references('documents.doc_name').onDelete('CASCADE')
-      table.string('status_id').references('statuses.status_name').onDelete('CASCADE')
-      table.unique(['document_id', 'status_id'])
-      //   table.string('no_approve_reason', 500).nullable()
+      table
+        .integer('doc_stat_id')
+        .unsigned()
+        .references('documents_statuses.id')
+        .onDelete('CASCADE')
+      table.string('student_id', 80).references('students.student_id').onDelete('CASCADE')
+      table.string('no_approve_reason', 500).nullable()
+      // table.unique(['student_id', 'doc_stat_id'])
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
