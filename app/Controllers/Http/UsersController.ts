@@ -161,7 +161,7 @@ export default class UsersController {
         }
       } else if (user && user.role !== 'student') {
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
-        return response.redirect('/student-information')
+        return response.redirect().withQs({ month: 2 }).toPath('/student-information')
       } else {
         const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
         const fullname = ldapUser.cn.split(' ')
