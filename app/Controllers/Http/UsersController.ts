@@ -247,6 +247,7 @@ export default class UsersController {
       let result: any = []
       // AllStudentUsers = await User.query().where('role', 'student').preload('student')
       studentUsers = await User.query().where('role', 'student').preload('student')
+      const allAmoutSt = studentUsers.length
       const noApprove = studentUsers.filter((st) => !st.student.approved)
       if (request.qs().month) {
         const studentUsersPre = await User.query().where('role', 'student').preload('student')
@@ -301,6 +302,7 @@ export default class UsersController {
             ? result
             : studentUsers,
         noApprove: noApprove.length,
+        allAmoutSt: allAmoutSt,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })

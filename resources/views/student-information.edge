@@ -133,7 +133,7 @@
               <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 4}})}}">INT350 (4 months)</a></li>
               <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 6}})}}">INT370 (6 months)</a></li>
             </ul>
-            @if(studentUsers.length !== noApprove)
+            @if(allAmoutSt !== noApprove)
             <div class="flex-1 pr-20">
               <table class="table w-full mt-5">
                 <thead>
