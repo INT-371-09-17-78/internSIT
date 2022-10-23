@@ -221,8 +221,8 @@
             <p>-</p>
           </div>
           <div class="flex flex-1 justify-center items-end">
-            <a href="{{ route('/course-info/edit')}}">
-            <button id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">edit</button>
+            <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">
+              edit
             </a>
           </div>
           @else
@@ -305,8 +305,8 @@
             </table>
           </div>             
           <div class="flex flex-1 justify-end items-end space-x-2">
-            <a href="{{ route('/course-info')}}">
-              <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">cancel</button>
+            <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+              cancel
             </a>
             <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">save change</button>
           </div>
@@ -373,7 +373,11 @@
     document.getElementById('adivisor_list').innerHTML = ''
     document.getElementById('addAdviser').disabled = false
   }
-  if(!document.getElementById('advisor').value)document.getElementById('addAdviser').disabled = true
+  if(document.getElementById('advisor')){
+    if(!document.getElementById('advisor').value){  
+      document.getElementById('addAdviser').disabled = true
+    } 
+  }
   const addAdivisor = () => {
 
     temp.push(document.getElementById('advisor').value)
