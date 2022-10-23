@@ -248,11 +248,13 @@ export default class UsersController {
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
       let studentUsers: any = []
-      let stafftUsers: any = []
-      let adviserUsers: any = []
+      // let stafftUsers: any = []
+      // let adviserUsers: any = []
 
-      stafftUsers = await User.query().where('role', 'staff')
-      adviserUsers = await User.query().where('role', 'adviser')
+      // stafftUsers = await User.query().where('role', 'staff')
+      // adviserUsers = await User.query().where('role', 'adviser')
+      // const adviserUsersJSON = adviserUsers.map((post) => post.serialize())
+      // console.log(adviserUsersJSON)
       const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
 
       let result: any = []
@@ -302,8 +304,8 @@ export default class UsersController {
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
             ? result
             : studentUsers,
-        adviserUsers: adviserUsers,
-        stafftUsers: stafftUsers,
+        // adviserUsers: adviserUsers,
+        // stafftUsers: stafftUsers,
         noApprove: noApprove.length,
         allAmoutSt: allAmoutSt,
         AcademicYearConfig: AcademicYearCf[0],
@@ -362,14 +364,19 @@ export default class UsersController {
   //   }
   // }
 
-  public async showStaffAdviserUser({ request, response, view }: HttpContextContract) {
+  public async showAdviserUser({ response }: HttpContextContract) {
     try {
-      const staffUsers = await User.query().where('role', 'adviser')
-      console.log(staffUsers)
+      const adviserUsers = await User.query().where('role', 'adviser')
+      return response.status(200).json({ adviserUsers: adviserUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
-      // return view.render('student-information', {
-      //   studentUsers,
-      // })
+  public async showStaffUser({ response }: HttpContextContract) {
+    try {
+      const staffUsers = await User.query().where('role', 'staff')
+      return response.status(200).json({ staffUsers: staffUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

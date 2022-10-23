@@ -98,6 +98,8 @@ Route.group(() => {
     Route.patch('/student/regis/approve', 'UsersController.updateStudentUserApprove')
     Route.delete('/student/:id', 'UsersController.deleteStudentUser')
     Route.patch('/courseInfo', 'UsersController.updateCourseInformation')
+    Route.get('/adviserUser', 'UsersController.showAdviserUser')
+    Route.get('/staffUserr', 'UsersController.showStaffUser')
   })
     // .middleware('login')
     .prefix('/user')
