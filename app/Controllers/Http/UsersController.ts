@@ -11,6 +11,7 @@ import AcademicYearConfig from 'App/Models/AcademicYearConfig'
 import LdapAuth from 'ldapauth-fork'
 import moment from 'moment-timezone'
 import Mail from '@ioc:Adonis/Addons/Mail'
+import { DateTime } from 'luxon'
 
 interface LdapOptions {
   url: string
@@ -55,10 +56,20 @@ export default class UsersController {
       let student: any
       user = await User.findBy('user_id', userId)
 
+      const year = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+
+      // if (!user) {
+      //   year[0].related('users').create({
+      //     user_id: userId,
+      //     email: email,
+      //   })
+      // }
+
       if (!user) {
         user = new User()
         user.user_id = userId
         user.email = email
+        user.academic_year = year[0]
         await user.save()
       }
 
@@ -171,14 +182,25 @@ export default class UsersController {
         const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
         const fullname = ldapUser.cn.split(' ')
         if (ldapUser) {
-          user = new User()
-          user.user_id = username
-          user.firstname = fullname[0]
-          user.lastname = fullname[1]
-          user.email = ldapUser.mail
-          user.password = password
-          await user.save()
-          const st = await Student.findBy('student_id', user.user_id)
+          const year = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+          //   .preload('users')
+          // console.log(year[0].users)
+
+          await year[0].related('users').create({
+            user_id: username,
+            firstname: fullname[0],
+            lastname: fullname[1],
+            email: ldapUser.mail,
+            password: password,
+          })
+          // user = new User()
+          // user.user_id = username
+          // user.firstname = fullname[0]
+          // user.lastname = fullname[1]
+          // user.email = ldapUser.mail
+          // user.password = password
+          // await user.save()
+          const st = await Student.findBy('student_id', username)
           if (!st) {
             await user?.related('student').create({})
           }
@@ -317,26 +339,32 @@ export default class UsersController {
 
   public async updateCourseInformation({ request, response }: HttpContextContract) {
     try {
-      // const { users } = request.only(['users'])
-      // users.forEach(async (user) => {
-      //   const studentUsers = await User.query().where('user_id', user.id).preload('student')
-      //   const studentUser = studentUsers[0]
-      //   studentUser.approved = user.approve
-      //   await studentUser.save()
-      // })
       const { AcademicYear } = request.only(['AcademicYear'])
-      // const AcademicYearCf = await AcademicYearConfig.all()
-      // if (AcademicYearCf && AcademicYearCf.length > 0) {
-      console.log('เข้า')
-      //   console.log(AcademicYearCf)
-
-      //   AcademicYearCf[0].acedemic_year = AcademicYear
-      //   await AcademicYearCf[0].save()
+      const AcademicYearCfResult = await AcademicYearConfig.query()
+        .where('academic_year', AcademicYear)
+        .orderBy('updated_at', 'desc')
+      // if (AcademicYearCfResult && AcademicYearCfResult.length > 0) {
+      //   AcademicYearCfResult[0].academic_year = AcademicYear
+      //   AcademicYearCfResult[0].save()
       // } else {
-      const AcademicYearCf = new AcademicYearConfig()
-      AcademicYearCf.acedemic_year = AcademicYear
-      AcademicYearCf.save()
+      //   const AcademicYearCf = new AcademicYearConfig()
+      //   AcademicYearCf.academic_year = AcademicYear
+      //   AcademicYearCf.save()
       // }
+      if (!AcademicYearCfResult || AcademicYearCfResult.length === 0) {
+        const AcademicYearCf = new AcademicYearConfig()
+        AcademicYearCf.academic_year = AcademicYear
+        AcademicYearCf.save()
+      } else {
+        AcademicYearCfResult[0].updatedAt = DateTime.now()
+        AcademicYearCfResult[0].save()
+      }
+      // else {
+      //   const AcademicYearCf = new AcademicYearConfig()
+      //   AcademicYearCf.academic_year = AcademicYear
+      //   AcademicYearCf.save()
+      // }
+      // const result = await AcademicYearConfig.all()
       response.redirect(`/course-management`)
     } catch (error) {
       return response.status(400).json({ message: error.message })

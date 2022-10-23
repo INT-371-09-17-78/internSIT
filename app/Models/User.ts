@@ -8,10 +8,13 @@ import {
   HasMany,
   hasOne,
   HasOne,
+  belongsTo,
+  BelongsTo,
 } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 import Student from 'App/Models/Student'
 import File from 'App/Models/File'
+import AcademicYearConfig from 'App/Models/AcademicYearConfig'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -35,11 +38,17 @@ export default class User extends BaseModel {
   @column()
   public approved: boolean
 
+  @hasMany(() => Post)
+  public posts: HasMany<typeof Post>
+
+  @column()
+  public conf_id: number
+
+  @belongsTo(() => AcademicYearConfig)
+  public academicYearConfig: BelongsTo<typeof AcademicYearConfig>
+
   @column()
   public rememberMeToken?: string
-
-  @hasMany(() => Post, { foreignKey: 'user_id' })
-  public posts: HasMany<typeof Post>
 
   @hasMany(() => File, { foreignKey: 'file_id' })
   public files: HasMany<typeof File>

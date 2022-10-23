@@ -5,7 +5,9 @@ export default class AcademicYearConfigs extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.integer('acedemic_year')
+      table.increments('conf_id')
+      table.integer('academic_year').nullable()
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
