@@ -146,7 +146,7 @@
                 </thead>
                 <tbody>
                   @each((student,index) in studentUsers)
-                  @if(student.approved)
+                  @if(student.student.approved)
                       <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
                         <td>{{student.user_id}}</td>
                         <td>{{student.firstname + " " + student.lastname}}</td>
@@ -227,7 +227,7 @@
           </div>
           @else
           <div class="flex font-medium items-center space-x-2 mt-2">
-            <a href="{{ route('/course-info')}}">
+            <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
             <p>Course information</p>
             </a>
             <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
@@ -236,25 +236,29 @@
           <div class="grid grid-cols-5 font-medium gap-y-5 pt-5">
             <p>Academic year</p>
             <div class="col-span-4">
-              <input type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" />
-              <button class="btn btn-primary capitalize btn-sm">add</button>
+              <input type="text" maxlength="4" id="inputYear" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" />
             </div>
             <p>Advisor</p>
-            <div class="flex flex-row col-span-4 space-x-2">
+            <div class="flex flex-row col-span-4 space-x-2" id="course_adviser">
               <p>Add an new advisor</p>
-              <input id="advisor" type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" onkeyup="search()"/>
-              <button class="btn btn-primary capitalize btn-sm" onclick="addString()">add</button>
+              <div class="flex flex-col">
+                <input id="advisor" type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" onkeyup="search()"/>
+                <div class="dropdown dropdown-open max-w-xs" id="adivisor_list">
+                </div>
+              </div>
+              <button id="addAdviser" class="btn btn-primary capitalize btn-sm" onclick="addAdivisor()">add</button>
             </div>
             <p></p>
             <table class="table w-full col-span-4">
               <thead>
                 <tr>
                   <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                  <th class="bg-[#F6F7F9]"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="advisor-table-row">
                 @each((studentUser,index) in studentUsers)
-                      <tr class="font-bold" id="advisor-table-row">
+                      <tr class="font-bold">
                         {{--  <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>  --}}
                         {{--  <td class="text-right">
                           <div class="flex justify-end"> 
@@ -301,10 +305,17 @@
             </table>
           </div>
           @end
+          <div class="flex flex-1 justify-end items-end space-x-2">
+            <a href="{{ route('/course-info')}}">
+              <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">cancel</button>
+            </a>
+            <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">save change</button>
+          </div>
         </div>
       @end
   </section>
   <script>
+  document.getElementById('inputYear').placeholder = new Date().getFullYear()
   const params = new URLSearchParams(window.location.search);
   document.querySelectorAll('input[name=selectStep]').forEach((checkbox)=>{
     params.getAll('step').forEach((step)=>{
@@ -321,18 +332,70 @@
       }
     })
   })
-
-  const search = () => {
-    // if(document.getElementById('advisor').value.length > 0){
-      console.log('{{adviserUsers}}')
-    // }
+  let temp = []
+  const search = async () => {
+    const response =  await fetch(`/api/user/adviserUser`)
+    const { adviserUsers } = await response.json()
+    // console.log(adviserUsers)
+    const searchValue = document.getElementById('advisor').value
+    if(searchValue) document.getElementById('adivisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    let countNotFound = 0
+    adviserUsers.forEach(advisor => {
+      if(searchValue === advisor.user_id){
+        document.getElementById('addAdviser').disabled = false
+      }
+      if(advisor.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
+        if(temp.length > 0){
+          temp.forEach(t =>{
+            if(t !== advisor.user_id){
+              document.getElementById('ul').innerHTML += `<li onclick="deleteAdivisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
+            }else{
+              countNotFound++
+            }
+          })
+        }else{
+          document.getElementById('ul').innerHTML += `<li onclick="deleteAdivisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
+        }
+      }else{
+        countNotFound++
+      }
+    })
+    if(countNotFound === adviserUsers.length){
+      document.getElementById('addAdviser').disabled = true
+      document.getElementById('adivisor_list').innerHTML = ''
+    }
   }
 
-  const addString = () => {
+  const deleteAdivisorList = (id) =>{
+    document.getElementById('advisor').value = id
+    document.getElementById('adivisor_list').innerHTML = ''
+    document.getElementById('addAdviser').disabled = false
+  }
+
+  const addAdivisor = () => {
     console.log(document.getElementById('advisor').value)
-    document.getElementById('advisor-table-row').innerHTML += `<p>${document.getElementById('advisor').value}<p>`
+
+    temp.push(document.getElementById('advisor').value)
+    document.getElementById('advisor-table-row').innerHTML += `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteAdviser('${document.getElementById('advisor').value}')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td></tr>`
+    temp.forEach(t=>{
+      if(t===document.getElementById('advisor').value){
+        document.getElementById('addAdviser').disabled = true
+      }
+    })
+    document.getElementById('adivisor_list').innerHTML = ''
   }
 
+  const deleteAdviser = (id) => {
+    document.getElementById(id).remove()
+    temp = temp.filter(e => e !== id)
+  }
   if(document.querySelectorAll('input[name=selectStep]:checked').length > 0 || document.querySelectorAll('input[name=selectStatus]:checked').length > 0){
     document.getElementById('selectInput').focus()
   }
