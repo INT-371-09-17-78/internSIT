@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
 import Document from 'App/Models/Document'
 import moment from 'moment-timezone'
+import AcademicYearConfig from 'App/Models/AcademicYearConfig'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
@@ -143,9 +144,14 @@ export default class FilesController {
 
   public async showAllFile({ view, response }: HttpContextContract) {
     try {
+      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
       const files = await File.query().whereNull('doc_id')
       for (const file of files) {
-        const post = await Post.find(file.post_id)
+        // const post = await Post.find(file.post_id)
+        const postArr = await Post.query()
+          .where('post_id', file.post_id)
+          .andWhere('conf_id', AcademicYearCf[0].conf_id)
+        const post = postArr[0]
         if (post) {
           file.user_id = post.user_id
         }

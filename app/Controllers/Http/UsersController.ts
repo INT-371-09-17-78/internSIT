@@ -69,7 +69,7 @@ export default class UsersController {
         user = new User()
         user.user_id = userId
         user.email = email
-        user.academic_year = year[0]
+        user.conf_id = year[0]
         await user.save()
       }
 
@@ -161,10 +161,12 @@ export default class UsersController {
       let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
       let user: any
       user = await User.findBy('user_id', username)
-      const year = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      const years = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
       if (user && user.role === 'student') {
-        // const st = await Student.findBy('student_id', user.user_id)
-        // if (st) {
+        const st = await Student.findBy('student_id', user.user_id)
+        if (!st) {
+          await user?.related('student').create({})
+        }
         if (user.approved) {
           await auth.attempt(username, password, rememberMe)
           return response.redirect(`/student/${user.user_id}`) //student ที่ approved แล้ว
@@ -174,7 +176,7 @@ export default class UsersController {
         // }
       } else if (user && user.role !== 'student') {
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
-        if (year) {
+        if (years && years.length > 0) {
           return response.redirect().withQs({ month: 2 }).toPath('/student-information')
         }
         return response.redirect('/course-info/edit')
@@ -200,8 +202,11 @@ export default class UsersController {
           // user.email = ldapUser.mail
           // user.password = password
           // await user.save()
+          const user = await User.find(username)
+          console.log(user?.firstname)
+
           const st = await Student.findBy('student_id', username)
-          if (!st) {
+          if (!st && user) {
             await user?.related('student').create({})
           }
           await Mail.use('smtp').send((message) => {
@@ -269,27 +274,49 @@ export default class UsersController {
 
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
+      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
       let studentUsers: any = []
-      // let stafftUsers: any = []
-      // let adviserUsers: any = []
+      let year: any
+
+      if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
+        console.log('asdasd')
+
+        return view.render('errors/not-found')
+      }
+
+      if (request.qs().year) {
+        const result = await AcademicYearConfig.findBy('academic_year', request.qs().year)
+        year = result?.conf_id
+      }
 
       // stafftUsers = await User.query().where('role', 'staff')
       // adviserUsers = await User.query().where('role', 'adviser')
       // const adviserUsersJSON = adviserUsers.map((post) => post.serialize())
       // console.log(adviserUsersJSON)
-      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
 
       let result: any = []
-      studentUsers = await User.query().where('role', 'student').preload('student')
-      const allAmoutSt = studentUsers.length
-      const noApprove = studentUsers.filter((st) => !st.approved)
-      if (request.qs().month) {
-        const studentUsersPre = await User.query().where('role', 'student').preload('student')
-        studentUsers = studentUsersPre.filter(
-          (userPre) => userPre.student.plan === parseInt(request.qs().month)
-        )
+      let allAmoutSt: any
+      let noApprove: any
+      if (AcademicYearCf && AcademicYearCf.length > 0) {
+        studentUsers = await User.query()
+          .where('role', 'student')
+          .andWhere('conf_id', year || AcademicYearCf[0].conf_id)
+          .preload('student')
+        allAmoutSt = studentUsers.length
+        noApprove = studentUsers.filter((st) => !st.approved)
+        if (request.qs().month) {
+          const studentUsersPre = await User.query()
+            .where('role', 'student')
+            .andWhere('conf_id', year || AcademicYearCf[0].conf_id)
+            .preload('student')
+          studentUsers = studentUsersPre.filter(
+            (userPre) => userPre.student.plan === parseInt(request.qs().month)
+          )
+        }
+      } else {
+        studentUsers = []
       }
-
+      // console.log(studentUsers.length)
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
           const documentStatuses = await studentUsers[i].student
@@ -328,7 +355,7 @@ export default class UsersController {
             : studentUsers,
         // adviserUsers: adviserUsers,
         // stafftUsers: stafftUsers,
-        noApprove: noApprove.length,
+        noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         AcademicYearConfig: AcademicYearCf[0],
       })
@@ -365,7 +392,7 @@ export default class UsersController {
       //   AcademicYearCf.save()
       // }
       // const result = await AcademicYearConfig.all()
-      response.redirect(`/course-management`)
+      response.redirect(`/course-info`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -394,7 +421,10 @@ export default class UsersController {
 
   public async showAdviserUser({ response }: HttpContextContract) {
     try {
-      const adviserUsers = await User.query().where('role', 'adviser')
+      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      const adviserUsers = await User.query()
+        .where('role', 'adviser')
+        .andWhere('conf_id', AcademicYearCf[0].conf_id)
       return response.status(200).json({ adviserUsers: adviserUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -403,7 +433,10 @@ export default class UsersController {
 
   public async showStaffUser({ response }: HttpContextContract) {
     try {
-      const staffUsers = await User.query().where('role', 'staff')
+      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      const staffUsers = await User.query()
+        .where('role', 'staff')
+        .andWhere('conf_id', AcademicYearCf[0].conf_id)
       return response.status(200).json({ staffUsers: staffUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -1119,6 +1152,8 @@ export default class UsersController {
           }
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

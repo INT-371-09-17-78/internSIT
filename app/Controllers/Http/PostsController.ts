@@ -3,6 +3,7 @@ import Post from 'App/Models/Post'
 import User from 'App/Models/User'
 import FilesController from './FilesController'
 import moment from 'moment-timezone'
+import AcademicYearConfig from 'App/Models/AcademicYearConfig'
 
 export default class PostsController {
   //   public async index() {
@@ -131,9 +132,12 @@ export default class PostsController {
 
   public async show({ view, auth, response }: HttpContextContract) {
     try {
-      if (!auth.user) return response.redirect('/')
-      else {
+      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      if (!auth.user) {
+        return response.redirect('/')
+      } else {
         const results = await Post.query()
+          .where('conf_id', AcademicYearCf[0].conf_id)
           .orderBy('updated_at', 'desc')
           .preload('files')
           .withCount('files')
