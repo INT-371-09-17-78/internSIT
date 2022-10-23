@@ -343,6 +343,8 @@
     adviserUsers.forEach(advisor => {
       if(searchValue === advisor.user_id){
         document.getElementById('addAdviser').disabled = false
+      }else{
+        document.getElementById('addAdviser').disabled = true
       }
       if(advisor.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
         if(temp.length > 0){
