@@ -214,7 +214,7 @@
           @if(!request.matchesRoute('/course-info/edit'))
           <div class="grid grid-cols-2 pr-96">
             <p>Academic year</p>
-            <p>-</p>
+            <p>{{AcademicYearConfig.academic_year   || '-'}}</p>
             <p>Advisor</p>
             <p>-</p>
             <p>Staff</p>
@@ -379,6 +379,7 @@
     } 
   }
   const addAdivisor = () => {
+    
     if(!document.getElementById('advisor').value) {
       document.getElementById('addAdviser').disabled = true
       return
@@ -388,9 +389,9 @@
     temp.forEach(t=>{
       if(t===document.getElementById('advisor').value){
         document.getElementById('addAdviser').disabled = true
-        return
       }
     })
+    
     document.getElementById('advisor-table-row').innerHTML += `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
                             <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteAdviser('${document.getElementById('advisor').value}')">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -400,6 +401,7 @@
                           </div>
                         </td></tr>`
     document.getElementById('adivisor_list').innerHTML = ''
+   
   }
 
   const deleteAdviser = (id) => {

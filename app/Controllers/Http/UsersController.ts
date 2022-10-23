@@ -366,9 +366,9 @@ export default class UsersController {
 
   public async updateCourseInformation({ request, response }: HttpContextContract) {
     try {
-      const { AcademicYear } = request.only(['AcademicYear'])
+      const { year } = request.all()
       const AcademicYearCfResult = await AcademicYearConfig.query()
-        .where('academic_year', AcademicYear)
+        .where('academic_year', year)
         .orderBy('updated_at', 'desc')
       // if (AcademicYearCfResult && AcademicYearCfResult.length > 0) {
       //   AcademicYearCfResult[0].academic_year = AcademicYear
@@ -380,7 +380,7 @@ export default class UsersController {
       // }
       if (!AcademicYearCfResult || AcademicYearCfResult.length === 0) {
         const AcademicYearCf = new AcademicYearConfig()
-        AcademicYearCf.academic_year = AcademicYear
+        AcademicYearCf.academic_year = year
         AcademicYearCf.save()
       } else {
         AcademicYearCfResult[0].updatedAt = DateTime.now()
@@ -423,15 +423,19 @@ export default class UsersController {
     try {
       let adviserUsers: any
       const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      console.log(AcademicYearCf[0].conf_id)
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         adviserUsers = await User.query()
           .where('role', 'adviser')
           .andWhere('conf_id', AcademicYearCf[0].conf_id)
+        if (!adviserUsers || adviserUsers.length <= 0) {
+          adviserUsers = await User.query().where('role', 'adviser')
+        }
       } else {
         adviserUsers = await User.query().where('role', 'adviser')
         // .andWhere('conf_id', AcademicYearCf[0].conf_id)
       }
-
+      console.log(adviserUsers)
       return response.status(200).json({ adviserUsers: adviserUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -446,6 +450,9 @@ export default class UsersController {
         staffUsers = await User.query()
           .where('role', 'staff')
           .andWhere('conf_id', AcademicYearCf[0].conf_id)
+        if (!staffUsers || staffUsers.length <= 0) {
+          staffUsers = await User.query().where('role', 'staff')
+        }
       } else {
         staffUsers = await User.query().where('role', 'staff')
         // .andWhere('conf_id', AcademicYearCf[0].conf_id)
