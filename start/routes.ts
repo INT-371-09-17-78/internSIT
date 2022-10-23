@@ -72,7 +72,9 @@ Route.get('/student-information', 'UsersController.showStudentUser')
 
 Route.get('/register-request', 'UsersController.showStudentUser')
 
-Route.get('/course-management', 'UsersController.showStudentUser')
+Route.get('/course-info', 'UsersController.showStudentUser')
+
+Route.get('/course-info/edit', 'UsersController.showStudentUser')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')

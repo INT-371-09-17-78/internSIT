@@ -9,10 +9,10 @@
 @section('student-information')
   @if(request.matchesRoute('/register-request'))
   @set('activeRequestTab', 'bg-white')
-  @elseif(request.matchesRoute('/course-management'))
-  @set('activeCourseTab', 'bg-white')
-  @else
+  @elseif(request.matchesRoute('/student-information'))
   @set('activeInfoTab', 'bg-white')
+  @else
+  @set('activeCourseTab', 'bg-white')
   @end
 
   @if(request.qs().month == 2)
@@ -72,7 +72,8 @@
               </svg>
             </label>
             <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-md w-32 ml-36">
-              <li><a href="{{ route('/course-management')}}">Course Info</a></li>
+              <li><a class="py-1" href="{{ route('/course-info')}}">Course Info</a></li>
+              <li><a class="py-1" href="">Steps</a></li>
             </ul>
           </div>
         </div>
@@ -165,50 +166,142 @@
             @end
           </div>
       @elseif(request.matchesRoute('/register-request'))
-      @if(noApprove)
-      <form id="formElem" name="formElem" class="px-40 mt-10">
-        <p class="text-base lg:text-3xl text-base-content font-semibold">Register request</p>
-        <table class="table w-full border-red-500 mt-5">
-          <thead>
-            <tr>
-              <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox" onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>ID</th>
-              <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-              <th class="bg-[#F6F7F9]"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @each((studentUser,index) in studentUsers)
-              @if(!studentUser.student.approved)
-                  <tr class="font-bold">
-                    <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm" {{studentUser.student.approved === 1 && ('checked' + ' ' + 'disabled')}}/>{{studentUser.user_id}}</td>
-                    <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>
-                    <td class="text-right">
-                      <div class="flex justify-end"> 
-                        <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="openAlertDeleteRequest({{studentUser.user_id}})">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+        @if(noApprove)
+        <form id="formElem" name="formElem" class="px-40 mt-10">
+          <p class="text-base lg:text-3xl text-base-content font-semibold">Register request</p>
+          <table class="table w-full mt-5">
+            <thead>
+              <tr>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox" onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm"/>ID</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                <th class="bg-[#F6F7F9]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @each((studentUser,index) in studentUsers)
+                @if(!studentUser.student.approved)
+                    <tr class="font-bold">
+                      <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm" {{studentUser.student.approved === 1 && ('checked' + ' ' + 'disabled')}}/>{{studentUser.user_id}}</td>
+                      <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>
+                      <td class="text-right">
+                        <div class="flex justify-end"> 
+                          <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="openAlertDeleteRequest({{studentUser.user_id}})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                @end
               @end
-            @end
-          </tbody>
-        </table>
-        <div class="flex justify-end px-5">
-          <button type="submit" id="submitButton" class="btn btn-sm btn-primary rounded-xl text-white capitalize mt-5">confirm</button>
+            </tbody>
+          </table>
+          <div class="flex justify-end px-5">
+            <button type="submit" id="submitButton" class="btn btn-sm btn-primary rounded-xl text-white capitalize mt-5">confirm</button>
+          </div>
+        </form>
+        @else
+        <div class="bg-white h-full flex flex-col w-full m-auto justify-center items-center text-3xl font-semibold space-y-5 text-black/50">
+          <img class="w-20 h-20 opacity-50" src="{{ asset('assets/images/empty.png') }}" />
+          <p>No Request</p>
+          <p class="text-base">Please waiting for request</p>
         </div>
-      </form>
+        @end
       @else
-      <div class="bg-white h-full flex flex-col w-full m-auto justify-center items-center text-3xl font-semibold space-y-5 text-black/50">
-        <img class="w-20 h-20 opacity-50" src="{{ asset('assets/images/empty.png') }}" />
-        <p>No Request</p>
-        <p class="text-base">Please waiting for request</p>
-      </div>
-      @end
-      @else
-      <p class="text-base px-2 mt-5 lg:text-3xl text-base-content font-semibold">Course information</p>
+        <div class="px-10 pt-5 h-full flex flex-col overflow-auto">
+          <p class="text-base lg:text-3xl text-base-content font-semibold">Course information</p>
+          @if(!request.matchesRoute('/course-info/edit'))
+          <div class="grid grid-cols-2 pr-96">
+            <p>Academic year</p>
+            <p>-</p>
+            <p>Advisor</p>
+            <p>-</p>
+            <p>Staff</p>
+            <p>-</p>
+          </div>
+          <div class="flex flex-1 justify-center items-end">
+            <a href="{{ route('/course-info/edit')}}">
+            <button id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">edit</button>
+            </a>
+          </div>
+          @else
+          <div class="flex font-medium items-center space-x-2 mt-2">
+            <a href="{{ route('/course-info')}}">
+            <p>Course information</p>
+            </a>
+            <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
+            <p>Edit</p>
+          </div>
+          <div class="grid grid-cols-5 font-medium gap-y-5 pt-5">
+            <p>Academic year</p>
+            <div class="col-span-4">
+              <input type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" />
+              <button class="btn btn-primary capitalize btn-sm">add</button>
+            </div>
+            <p>Advisor</p>
+            <div class="flex flex-row col-span-4 space-x-2">
+              <p>Add an new advisor</p>
+              <input id="advisor" type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" onkeyup="search()"/>
+              <button class="btn btn-primary capitalize btn-sm" onclick="addString()">add</button>
+            </div>
+            <p></p>
+            <table class="table w-full col-span-4">
+              <thead>
+                <tr>
+                  <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                @each((studentUser,index) in studentUsers)
+                      <tr class="font-bold" id="advisor-table-row">
+                        {{--  <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>  --}}
+                        {{--  <td class="text-right">
+                          <div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="openAlertDeleteRequest({{studentUser.user_id}})">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>  --}}
+                      </tr>
+                @end
+              </tbody>
+            </table>
+            <p>Staff</p>
+            <div class="flex flex-row col-span-4 space-x-2">
+              <p>Add an new staff</p>
+              <input type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" />
+              <button class="btn btn-primary capitalize btn-sm">add</button>
+            </div>
+            <p></p>
+            <table class="table w-full col-span-4">
+              <thead>
+                <tr>
+                  <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                @each((studentUser,index) in studentUsers)
+                      <tr class="font-bold">
+                        <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>
+                        <td class="text-right">
+                          <div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="openAlertDeleteRequest({{studentUser.user_id}})">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                @end
+              </tbody>
+            </table>
+          </div>
+          @end
+        </div>
       @end
   </section>
   <script>
@@ -229,16 +322,21 @@
     })
   })
 
+  const search = () => {
+    // if(document.getElementById('advisor').value.length > 0){
+      console.log('{{adviserUsers}}')
+    // }
+  }
+
+  const addString = () => {
+    console.log(document.getElementById('advisor').value)
+    document.getElementById('advisor-table-row').innerHTML += `<p>${document.getElementById('advisor').value}<p>`
+  }
+
   if(document.querySelectorAll('input[name=selectStep]:checked').length > 0 || document.querySelectorAll('input[name=selectStatus]:checked').length > 0){
     document.getElementById('selectInput').focus()
   }
-  // .forEach((box)=>{
 
-  //     params.getAll('step').forEach((step)=>{
-  //     console.log(step)
-  //   console.log(box.value)
-  //   })
-  // })
   const filterStudents = () =>{
     const params = new URLSearchParams(window.location.search)
     const urlParams = new URLSearchParams()

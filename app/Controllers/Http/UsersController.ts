@@ -150,6 +150,7 @@ export default class UsersController {
       let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
       let user: any
       user = await User.findBy('user_id', username)
+      const year = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
       if (user && user.role === 'student') {
         // const st = await Student.findBy('student_id', user.user_id)
         // if (st) {
@@ -162,7 +163,10 @@ export default class UsersController {
         // }
       } else if (user && user.role !== 'student') {
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
-        return response.redirect().withQs({ month: 2 }).toPath('/student-information')
+        if (year) {
+          return response.redirect().withQs({ month: 2 }).toPath('/student-information')
+        }
+        return response.redirect('/course-info/edit')
       } else {
         const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
         const fullname = ldapUser.cn.split(' ')
