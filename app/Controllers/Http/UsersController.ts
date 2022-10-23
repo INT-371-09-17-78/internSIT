@@ -421,10 +421,17 @@ export default class UsersController {
 
   public async showAdviserUser({ response }: HttpContextContract) {
     try {
+      let adviserUsers: any
       const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
-      const adviserUsers = await User.query()
-        .where('role', 'adviser')
-        .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      if (AcademicYearCf && AcademicYearCf.length > 0) {
+        adviserUsers = await User.query()
+          .where('role', 'adviser')
+          .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      } else {
+        adviserUsers = await User.query().where('role', 'adviser')
+        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      }
+
       return response.status(200).json({ adviserUsers: adviserUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -433,10 +440,17 @@ export default class UsersController {
 
   public async showStaffUser({ response }: HttpContextContract) {
     try {
+      let staffUsers: any
       const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
-      const staffUsers = await User.query()
-        .where('role', 'staff')
-        .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      if (AcademicYearCf && AcademicYearCf.length > 0) {
+        staffUsers = await User.query()
+          .where('role', 'staff')
+          .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      } else {
+        staffUsers = await User.query().where('role', 'staff')
+        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      }
+
       return response.status(200).json({ staffUsers: staffUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
