@@ -315,7 +315,7 @@
       @end
   </section>
   <script>
-  document.getElementById('inputYear').placeholder = new Date().getFullYear()
+  if(document.getElementById('inputYear')) document.getElementById('inputYear').placeholder = new Date().getFullYear()
   const params = new URLSearchParams(window.location.search);
   document.querySelectorAll('input[name=selectStep]').forEach((checkbox)=>{
     params.getAll('step').forEach((step)=>{
