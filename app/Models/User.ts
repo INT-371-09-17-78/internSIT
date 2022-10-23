@@ -33,6 +33,9 @@ export default class User extends BaseModel {
   public role: string
 
   @column()
+  public approved: boolean
+
+  @column()
   public rememberMeToken?: string
 
   @hasMany(() => Post, { foreignKey: 'user_id' })

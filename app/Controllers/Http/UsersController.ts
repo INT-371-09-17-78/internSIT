@@ -5,6 +5,7 @@ import Status from 'App/Models/Status'
 import File from 'App/Models/File'
 import Document from 'App/Models/Document'
 import Document_Status from 'App/Models/DocumentStatus'
+import AcademicYearConfig from 'App/Models/AcademicYearConfig'
 // import Adviser from 'App/Models/Adviser'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
@@ -150,15 +151,15 @@ export default class UsersController {
       let user: any
       user = await User.findBy('user_id', username)
       if (user && user.role === 'student') {
-        const st = await Student.findBy('student_id', user.user_id)
-        if (st) {
-          if (st.approved) {
-            await auth.attempt(username, password, rememberMe)
-            return response.redirect(`/student/${user.user_id}`) //student ที่ approved แล้ว
-          } else {
-            return response.redirect('/success-regis') //student ที่ยังไม่ approved
-          }
+        // const st = await Student.findBy('student_id', user.user_id)
+        // if (st) {
+        if (user.approved) {
+          await auth.attempt(username, password, rememberMe)
+          return response.redirect(`/student/${user.user_id}`) //student ที่ approved แล้ว
+        } else {
+          return response.redirect('/success-regis') //student ที่ยังไม่ approved
         }
+        // }
       } else if (user && user.role !== 'student') {
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
         return response.redirect().withQs({ month: 2 }).toPath('/student-information')
@@ -243,12 +244,17 @@ export default class UsersController {
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
       let studentUsers: any = []
-      // let AllStudentUsers: any = []
+      let stafftUsers: any = []
+      let adviserUsers: any = []
+
+      stafftUsers = await User.query().where('role', 'staff')
+      adviserUsers = await User.query().where('role', 'adviser')
+      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+
       let result: any = []
-      // AllStudentUsers = await User.query().where('role', 'student').preload('student')
       studentUsers = await User.query().where('role', 'student').preload('student')
       const allAmoutSt = studentUsers.length
-      const noApprove = studentUsers.filter((st) => !st.student.approved)
+      const noApprove = studentUsers.filter((st) => !st.approved)
       if (request.qs().month) {
         const studentUsersPre = await User.query().where('role', 'student').preload('student')
         studentUsers = studentUsersPre.filter(
@@ -258,18 +264,10 @@ export default class UsersController {
 
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
-          // let documentStatus: any = []
-          // const documentStatus = await Document_Status.query()
-          //   .where('student_id', studentUsers[i].user_id)
-          //   .orderBy('updated_at', 'desc')
-          // console.log(documentStatus)
           const documentStatuses = await studentUsers[i].student
             .related('documentsStatuses')
             .query()
             .orderBy('pivot_updated_at', 'desc')
-          // .wherePivot('student_id', '65130000001')
-          // .where('student_id', request.param('id'))
-          console.log(documentStatuses[0])
           if (documentStatuses && documentStatuses.length > 0) {
             studentUsers[i].serialize()
             if (documentStatuses[0].status_id === 'Waiting') {
@@ -294,16 +292,80 @@ export default class UsersController {
           result = this.queryStringFilter(studentUsers, request.qs().step)
         }
       }
-      // await studentUsers[0].student.related('documentsStatuses').attach([2])
-      // console.log(studentUsers)
+
       return view.render('student-information', {
         studentUsers:
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
             ? result
             : studentUsers,
+        adviserUsers: adviserUsers,
+        stafftUsers: stafftUsers,
         noApprove: noApprove.length,
         allAmoutSt: allAmoutSt,
+        AcademicYearConfig: AcademicYearCf[0],
       })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async updateCourseInformation({ request, response }: HttpContextContract) {
+    try {
+      // const { users } = request.only(['users'])
+      // users.forEach(async (user) => {
+      //   const studentUsers = await User.query().where('user_id', user.id).preload('student')
+      //   const studentUser = studentUsers[0]
+      //   studentUser.approved = user.approve
+      //   await studentUser.save()
+      // })
+      const { AcademicYear } = request.only(['AcademicYear'])
+      // const AcademicYearCf = await AcademicYearConfig.all()
+      // if (AcademicYearCf && AcademicYearCf.length > 0) {
+      console.log('เข้า')
+      //   console.log(AcademicYearCf)
+
+      //   AcademicYearCf[0].acedemic_year = AcademicYear
+      //   await AcademicYearCf[0].save()
+      // } else {
+      const AcademicYearCf = new AcademicYearConfig()
+      AcademicYearCf.acedemic_year = AcademicYear
+      AcademicYearCf.save()
+      // }
+      response.redirect(`/course-management`)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  // public async updateUserApproveInCourse({ request, response }: HttpContextContract) {
+  //   try {
+  //     const { users } = request.only(['users'])
+  //     users.forEach(async (user) => {
+  //       const studentUsers = await User.query().where('user_id', user.id).preload('student')
+  //       const studentUser = studentUsers[0]
+  //       studentUser.approved = user.approve
+  //       await studentUser.save()
+  //     })
+  //     // if (approve) {
+  //     //   response.redirect(`/students/request`)
+  //     // } else {
+  //     //   response.redirect(`/student/${studentUser.user_id}/information`)
+  //     // }
+  //     // response.status(200).send('success')
+  //     response.redirect(`/course-management`)
+  //   } catch (error) {
+  //     return response.status(400).json({ message: error.message })
+  //   }
+  // }
+
+  public async showStaffAdviserUser({ request, response, view }: HttpContextContract) {
+    try {
+      const staffUsers = await User.query().where('role', 'adviser')
+      console.log(staffUsers)
+
+      // return view.render('student-information', {
+      //   studentUsers,
+      // })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -656,7 +718,7 @@ export default class UsersController {
       // }
       // }
 
-      // response.redirect('/student/' + studentUser.student_id)
+      response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -669,8 +731,8 @@ export default class UsersController {
       users.forEach(async (user) => {
         const studentUsers = await User.query().where('user_id', user.id).preload('student')
         const studentUser = studentUsers[0]
-        studentUser.student.approved = user.approve
-        await studentUser.student.save()
+        studentUser.approved = user.approve
+        await studentUser.save()
       })
       // if (approve) {
       //   response.redirect(`/students/request`)
@@ -743,7 +805,7 @@ export default class UsersController {
       studentUser.student.mentor_email = mentorEmail
       studentUser.student.mentor_tel_no = mentorTel
       studentUser.email = email
-      studentUser.student.approved = approve
+      studentUser.approved = approve
       // if (email) {
       //   const studentUser = await User.query()
       //     .where('user_id', request.param('id'))
@@ -976,21 +1038,25 @@ export default class UsersController {
             user_id: 'nuchanart.boo',
             role: 'staff',
             password: 'Fxig08',
+            approved: true,
           },
           {
             user_id: 'sirinthip.suk',
             role: 'staff',
             password: 'Fxig08',
+            approved: true,
           },
           {
             user_id: 'krant.bur',
             role: 'adviser',
             password: 'Fxig08',
+            approved: true,
           },
           {
             user_id: 'manee.mun',
             role: 'adviser',
             password: 'Fxig08',
+            approved: true,
           },
         ])
       }

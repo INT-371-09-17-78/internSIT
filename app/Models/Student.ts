@@ -29,9 +29,6 @@ export default class Student extends BaseModel {
   @column()
   public tel: string
 
-  @column()
-  public approved: boolean
-
   // @column()
   // public email: string
 
