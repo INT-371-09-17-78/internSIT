@@ -110,7 +110,7 @@ Route.group(() => {
     Route.delete('/:id', 'PostsController.remove')
     Route.get('/:id', 'PostsController.getById')
   })
-    .middleware('role')
+    // .middleware('role')
     .prefix('/post')
 
   Route.group(() => {

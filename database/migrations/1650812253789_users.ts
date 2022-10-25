@@ -13,11 +13,11 @@ export default class UsersSchema extends BaseSchema {
       table.string('password', 500).nullable()
       table.string('remember_me_token').nullable()
       table.boolean('approved').defaultTo(false).notNullable()
-      table
-        .integer('conf_id')
-        .unsigned()
-        .references('academic_year_configs.conf_id')
-        .onDelete('CASCADE')
+      // table
+      //   .integer('conf_id')
+      //   .unsigned()
+      //   .references('academic_year_configs.conf_id')
+      //   .onDelete('CASCADE')
       // table.integer('academic_year').nullable()
       // table.string('adviser_id').references('users.user_id').onDelete('CASCADE')
       /**

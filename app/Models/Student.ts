@@ -59,16 +59,16 @@ export default class Student extends BaseModel {
   // @column()
   // public reasons: string
 
-  @manyToMany(() => Document_Status, {
-    localKey: 'student_id',
-    pivotForeignKey: 'student_id',
-    relatedKey: 'id',
-    pivotRelatedForeignKey: 'doc_stat_id',
-    pivotTable: 'students_documents_statuses',
-    pivotColumns: ['no_approve_reason'],
-    pivotTimestamps: true,
-  })
-  public documentsStatuses: ManyToMany<typeof Document_Status>
+  // @manyToMany(() => Document_Status, {
+  //   localKey: 'student_id',
+  //   pivotForeignKey: 'student_id',
+  //   relatedKey: 'id',
+  //   pivotRelatedForeignKey: 'doc_stat_id',
+  //   pivotTable: 'students_documents_statuses',
+  //   pivotColumns: ['no_approve_reason'],
+  //   pivotTimestamps: true,
+  // })
+  // public documentsStatuses: ManyToMany<typeof Document_Status>
 
   // @hasMany(() => Document_Status, { foreignKey: 'student_id' })
   // public document_status: HasMany<typeof Document_Status>
@@ -81,8 +81,8 @@ export default class Student extends BaseModel {
   // @column()
   // public user_id: string
 
-  @column()
-  public adviser_id: string
+  // @column()
+  // public adviser_id: string
   // @hasMany(() => Post, { foreignKey: 'student_id' })
   // public posts: HasMany<typeof Post>
 

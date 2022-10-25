@@ -5,7 +5,7 @@ import Status from 'App/Models/Status'
 import File from 'App/Models/File'
 import Document from 'App/Models/Document'
 import Document_Status from 'App/Models/DocumentStatus'
-import AcademicYearConfig from 'App/Models/AcademicYearConfig'
+import AcademicYear from 'App/Models/AcademicYear'
 // import Adviser from 'App/Models/Adviser'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
@@ -161,7 +161,7 @@ export default class UsersController {
       let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
       let user: any
       user = await User.findBy('user_id', username)
-      const years = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       if (user && user.role === 'student') {
         const st = await Student.findBy('student_id', user.user_id)
         if (!st) {
@@ -184,7 +184,7 @@ export default class UsersController {
         const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
         const fullname = ldapUser.cn.split(' ')
         if (ldapUser) {
-          const year = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+          const year = await AcademicYear.query().orderBy('updated_at', 'desc')
           //   .preload('users')
           // console.log(year[0].users)
 
@@ -367,14 +367,14 @@ export default class UsersController {
   public async updateCourseInformation({ request, response }: HttpContextContract) {
     try {
       const { year, users } = request.all()
-      const AcademicYearCfResult = await AcademicYearConfig.query()
+      const AcademicYearCfResult = await AcademicYear.query()
         .where('academic_year', year)
         .orderBy('updated_at', 'desc')
 
       let usersArr: any = []
       let AcademicYearCf: any
       if (!AcademicYearCfResult || AcademicYearCfResult.length === 0) {
-        AcademicYearCf = new AcademicYearConfig()
+        AcademicYearCf = new AcademicYear()
         AcademicYearCf.academic_year = year
         await AcademicYearCf.save()
       } else {
@@ -382,19 +382,19 @@ export default class UsersController {
         await AcademicYearCfResult[0].save()
       }
 
-      if (users && users.length > 0) {
-        for (let i = 0; i < users.length; i++) {
-          const user = await User.find(users[i].user_id)
-          if (user) {
-            user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
-            usersArr.push(user)
-          }
-        }
+      // if (users && users.length > 0) {
+      //   for (let i = 0; i < users.length; i++) {
+      //     const user = await User.find(users[i].user_id)
+      //     if (user) {
+      //       user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
+      //       usersArr.push(user)
+      //     }
+      //   }
 
-        AcademicYearCf
-          ? await AcademicYearCf.related('users').saveMany(usersArr)
-          : await AcademicYearCfResult[0].related('users').saveMany(usersArr)
-      }
+      //   AcademicYearCf
+      //     ? await AcademicYearCf.related('users').saveMany(usersArr)
+      //     : await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+      // }
 
       response.redirect(`/course-info`)
     } catch (error) {
@@ -1130,7 +1130,7 @@ export default class UsersController {
       }
       const users = await User.all()
       if (users && users.length === 0) {
-        await User.createMany([
+        const arr = [
           {
             user_id: 'nuchanart.boo',
             role: 'staff',
@@ -1155,7 +1155,13 @@ export default class UsersController {
             password: 'Fxig08',
             approved: true,
           },
-        ])
+        ]
+        const usersArr = await User.createMany(arr)
+        usersArr.forEach(async (user) =>
+          user.role === 'staff'
+            ? await user.related('staff').create({})
+            : await user.related('adviser').create({})
+        )
       }
       const docsStatuses = await Document_Status.all()
       if (

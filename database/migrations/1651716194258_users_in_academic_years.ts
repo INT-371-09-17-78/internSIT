@@ -1,13 +1,17 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class AcademicYearConfigs extends BaseSchema {
-  protected tableName = 'academic_year_configs'
+export default class UsersInAcademicYears extends BaseSchema {
+  protected tableName = 'users_in_academic_years'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('conf_id')
-      table.integer('academic_year').nullable()
-
+      table.increments('id').primary()
+      table
+        .integer('academic_year')
+        // .unsigned()
+        .references('academic_years.academic_year')
+        .onDelete('CASCADE')
+      table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

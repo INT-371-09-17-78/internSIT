@@ -1,7 +1,7 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class DocumentsStatuses extends BaseSchema {
-  protected tableName = 'students_documents_statuses'
+export default class UserHasDocs extends BaseSchema {
+  protected tableName = 'users_has_docs'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -13,7 +13,11 @@ export default class DocumentsStatuses extends BaseSchema {
         .unsigned()
         .references('documents_statuses.id')
         .onDelete('CASCADE')
-      table.string('student_id', 80).references('students.student_id').onDelete('CASCADE')
+      table
+        .integer('user_in_academic_year_id')
+        .unsigned()
+        .references('users_in_academic_years.id')
+        .onDelete('CASCADE')
       table.string('no_approve_reason', 500).nullable()
       // table.unique(['student_id', 'doc_stat_id'])
       /**
