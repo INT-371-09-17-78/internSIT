@@ -366,32 +366,36 @@ export default class UsersController {
 
   public async updateCourseInformation({ request, response }: HttpContextContract) {
     try {
-      const { year } = request.all()
+      const { year, users } = request.all()
       const AcademicYearCfResult = await AcademicYearConfig.query()
         .where('academic_year', year)
         .orderBy('updated_at', 'desc')
-      // if (AcademicYearCfResult && AcademicYearCfResult.length > 0) {
-      //   AcademicYearCfResult[0].academic_year = AcademicYear
-      //   AcademicYearCfResult[0].save()
-      // } else {
-      //   const AcademicYearCf = new AcademicYearConfig()
-      //   AcademicYearCf.academic_year = AcademicYear
-      //   AcademicYearCf.save()
-      // }
+
+      let usersArr: any = []
+      let AcademicYearCf: any
       if (!AcademicYearCfResult || AcademicYearCfResult.length === 0) {
-        const AcademicYearCf = new AcademicYearConfig()
+        AcademicYearCf = new AcademicYearConfig()
         AcademicYearCf.academic_year = year
-        AcademicYearCf.save()
+        await AcademicYearCf.save()
       } else {
         AcademicYearCfResult[0].updatedAt = DateTime.now()
-        AcademicYearCfResult[0].save()
+        await AcademicYearCfResult[0].save()
       }
-      // else {
-      //   const AcademicYearCf = new AcademicYearConfig()
-      //   AcademicYearCf.academic_year = AcademicYear
-      //   AcademicYearCf.save()
-      // }
-      // const result = await AcademicYearConfig.all()
+
+      if (users && users.length > 0) {
+        for (let i = 0; i < users.length; i++) {
+          const user = await User.find(users[i].user_id)
+          if (user) {
+            user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
+            usersArr.push(user)
+          }
+        }
+
+        AcademicYearCf
+          ? await AcademicYearCf.related('users').saveMany(usersArr)
+          : await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+      }
+
       response.redirect(`/course-info`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
