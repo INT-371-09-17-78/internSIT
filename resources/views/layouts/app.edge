@@ -2,15 +2,18 @@
 @set('activeAnnouncement', '')
 @set('background', 'block')
 @set('hideMenu', '')
-@if(request.matchesRoute(['/announcement/create','/']))
-  @set('hideSearch', 'hidden')
-@elseif(request.matchesRoute(['/announcement/create','/announcement/edit/:id']))
+@set('activeRole','')
+
+@if(request.matchesRoute(['/announcement/create','/announcement/edit/:id']))
   @set('activeAnnouncement', 'btn-active bg-base-300')
+@elseif(request.matchesRoute(['/student-information','/course-info','/course-info/edit','/register-request']))
+  @set('activeRole', 'btn-active bg-base-300')  
 @end
 @if(request.matchesRoute('/'))
   @set('background', 'hidden')
   @set('hideMenu', 'hidden')
 @end
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -34,7 +37,7 @@
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle"/>
         <div class="drawer-side">
           <label for="my-drawer-2" class="drawer-overlay z-10"></label> 
-          <ul class="menu p-4 w-2/3 lg:w-full bg-base-100 text-base-content">
+          <ul class="menu p-4 w-2/3 lg:w-full bg-base-100 text-base-content" style="box-shadow: 0 2px 20px rgb(0 0 0 / 0.1)">
             <label id="close-btn" for="my-modal-3" class="lg:hidden absolute right-2 top-2" onclick="closeDrawer()">
               <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 2"><g data-name="close"><rect width="24" height="24" transform="rotate(180 12 12)" opacity="0"/><path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/></g></g></svg>
             </label>
@@ -72,7 +75,7 @@
                   </a>
               </li>
               <li>
-                <a class="p-2 text-xs active:bg-base-300 active:text-base-content" href="{{ auth.user.role === "student" ? route('/student/:id', { id: auth.user.user_id }) : route('/student-information', {} , {qs: {month: 2}})}}">
+                <a class="p-2 text-xs active:bg-base-300 active:text-base-content {{activeRole}}" href="{{ auth.user.role === "student" ? route('/student/:id', { id: auth.user.user_id }) : route('/student-information')}}">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.19197 6.83267C8.07876 6.83267 9.6083 5.30312 9.6083 3.41633C9.6083 1.52955 8.07876 0 6.19197 0C4.30518 0 2.77563 1.52955 2.77563 3.41633C2.77563 5.30312 4.30518 6.83267 6.19197 6.83267Z" fill="#495057"/>
                     <path d="M6.19211 6.80859C2.7723 6.80859 0 9.58089 0 13.0007H12.3842C12.3842 9.58089 9.61192 6.80859 6.19211 6.80859Z" fill="#495057"/>

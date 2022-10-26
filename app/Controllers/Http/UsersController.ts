@@ -284,9 +284,11 @@ export default class UsersController {
       let studentUsers: any = []
       let year: any
 
-      if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
-        return view.render('errors/not-found')
-      }
+      // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
+      //   console.log('asdasd')
+
+      //   return view.render('errors/not-found')
+      // }
 
       if (request.qs().year) {
         const result = await AcademicYear.findBy('academic_year', request.qs().year)
