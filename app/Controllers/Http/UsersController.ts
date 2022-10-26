@@ -416,7 +416,7 @@ export default class UsersController {
         // stafftUsers: stafftUsers,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
-        AcademicYearConfig: AcademicYearCf[0],
+        AcademicYearConfig: AcademicYearCf,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
