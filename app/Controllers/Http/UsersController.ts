@@ -274,7 +274,7 @@ export default class UsersController {
 
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
-      const AcademicYearCf = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUsers: any = []
       let year: any
 
@@ -285,8 +285,8 @@ export default class UsersController {
       }
 
       if (request.qs().year) {
-        const result = await AcademicYearConfig.findBy('academic_year', request.qs().year)
-        year = result?.conf_id
+        const result = await AcademicYear.findBy('academic_year', request.qs().year)
+        year = result?.academic_year
       }
 
       // stafftUsers = await User.query().where('role', 'staff')
