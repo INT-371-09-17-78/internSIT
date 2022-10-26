@@ -181,7 +181,7 @@ export default class UsersController {
       } else if (user && user.role !== 'student' && checkExist && checkExist.length > 0) {
         await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
         if (years && years.length > 0) {
-          return response.redirect().withQs({ month: 2 }).toPath('/student-information')
+          return response.redirect('/student-information')
         }
         return response.redirect('/course-info/edit')
       } else {
@@ -416,7 +416,7 @@ export default class UsersController {
         // stafftUsers: stafftUsers,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
-        AcademicYearConfig: AcademicYearCf,
+        academicYears: AcademicYearCf,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -454,8 +454,7 @@ export default class UsersController {
           ? await AcademicYearCf.related('users').saveMany(usersArr)
           : await AcademicYearCfResult[0].related('users').saveMany(usersArr)
       }
-
-      response.redirect(`/course-info`)
+      response.cookie('year', year)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

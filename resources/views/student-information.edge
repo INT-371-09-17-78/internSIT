@@ -43,9 +43,34 @@
         @include('partials/register-request')
       @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') )
         @include('partials/course-info')
+      @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit'))
+        @include('partials/steps')
       @end
   </section>
+
   <script>
+
+  const setCookie = (name,value,days) => {
+      var expires = "";
+      if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days*24*60*60*1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+  }
+
+  const setYearCookie = (y) =>{
+    let urlParams = new URLSearchParams()
+    urlParams.append('month', 2)
+    if(!document.cookie.split('year=')[1]){
+      setCookie('year', y, 7)
+      urlParams.append('year', y)
+    }else{
+      urlParams.append('year', document.cookie.split('year=')[1].split(';')[0])
+    }
+    window.location.href = `/student-information?${urlParams}`
+  }
   const closeAlertAddAcademicYear =()=>{
     document.getElementById("modal-add-academic-year").remove()
   }
@@ -53,28 +78,47 @@
     document.getElementById('container-add-year').classList.remove('hidden')
     document.getElementById('container-add-year').classList.add('flex')
   }
-
+  let acdemicYear
   const showAlertAddAcademicYear = () =>{
+    if(!document.getElementById('acdemic_year').value) return
+    acdemicYear = document.getElementById('acdemic_year').value
     const alertAddAcademicYear = 
     `<div id="modal-add-academic-year" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10 flex justify-center items-center">
       <div class="max-w-sm">
         <div class="alert bg-base-100 shadow-lg flex flex-col">
-            <svg class="w-12 h-12" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-16 h-16" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15.4352 5.79177L2.73015 27.0018C2.46821 27.4554 2.3296 27.9697 2.32814 28.4936C2.32667 29.0174 2.46239 29.5325 2.72179 29.9876C2.9812 30.4427 3.35524 30.8219 3.80671 31.0875C4.25819 31.3532 4.77135 31.496 5.29515 31.5018H30.7052C31.229 31.496 31.7421 31.3532 32.1936 31.0875C32.6451 30.8219 33.0191 30.4427 33.2785 29.9876C33.5379 29.5325 33.6736 29.0174 33.6722 28.4936C33.6707 27.9697 33.5321 27.4554 33.2702 27.0018L20.5652 5.79177C20.2977 5.35093 19.9212 4.98645 19.4719 4.7335C19.0227 4.48054 18.5158 4.34766 18.0002 4.34766C17.4845 4.34766 16.9776 4.48054 16.5284 4.7335C16.0791 4.98645 15.7026 5.35093 15.4352 5.79177V5.79177Z" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18 13.5V19.5" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18 24V24.75" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+            <p class="font-bold">Your input </p>
+            <p class="text-red-500 font-bold border-2 border-red-500 px-5 py-2 rounded-md">${acdemicYear}</p>
             <span class="block text-center">Please make sure of new acacemic year. After <span class="font-medium">'confirm'</span>, you can’t edit. If you would like to edit please contact admin.</span>
             <div class="self-end">
               <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertAddAcademicYear()">cancel</button>
-              <form id="">
-              <button class="btn btn-sm btn-info rounded-3xl" onclick="">confirm</button>
-              </form>
+              <button type="submit" class="btn btn-sm btn-info rounded-3xl" onclick="addYear()">confirm</button>
             </div>
         </div>
       </div>
     </div> `
     document.body.innerHTML += alertAddAcademicYear
+    document.getElementById('acdemic_year').value = acdemicYear
+  }
+  const addYear =  async () => { 
+    const year = {year: acdemicYear}
+    await fetch('/api/user/courseInfo?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(year),
+    }).then(() => {
+        const urlParams = new URLSearchParams()
+        urlParams.append('month', 2)
+        urlParams.append('year', acdemicYear)
+        window.location.href = `/student-information?${urlParams}`
+    })
   }
   if(document.getElementById('inputYear')) document.getElementById('inputYear').placeholder = new Date().getFullYear()
   const params = new URLSearchParams(window.location.search);
@@ -99,7 +143,7 @@
     const { adviserUsers } = await response.json()
     // console.log(adviserUsers)
     const searchValue = document.getElementById('advisor').value
-    if(searchValue) document.getElementById('adivisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    if(searchValue && adviserUsers) document.getElementById('adivisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
     let countNotFound = 0
     adviserUsers.forEach(advisor => {
       if(searchValue === advisor.user_id){
@@ -291,20 +335,6 @@
         }).then(() => {
           window.location.href = `/student-information`
         })
-  }
-  const courseForm = document.getElementById('course_form')
-  if(courseForm)
-  courseForm.onsubmit = async (event) => {
-    event.preventDefault() 
-    const courseInfo = {
-      year: document.getElementById('inputYear').value
-    }
-    if(courseInfo.year)
-    await fetch('/api/user/courseInfo?_method=PATCH', {
-        method: 'PATCH',
-        body: courseInfo,
-    })
-  
   }
   </script>
 @end

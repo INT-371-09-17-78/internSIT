@@ -1,5 +1,5 @@
 <div class="tabs bg-[#DDE2E5] tab-lg max-h-9">
-    <a href="{{ route('/student-information', {} , {qs: {month: 2}})}}" class="tab font-medium h-full {{activeInfoTab}} space-x-2">
+    <a href="{{ route('/student-information', {} , {qs: {month: 2 ,year: request.cookie('year') || request.cookiesList().year}})}}" class="tab font-medium h-full {{activeInfoTab}} space-x-2">
         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_1725_1045)">
             <path d="M7 0C3.12728 0 0 3.13688 0 7C0 10.8676 3.13304 14 7 14C10.8843 14 14 10.8527 14 7C14 3.1278 10.8608 0 7 0ZM10.6022 11.1228C9.6044 11.9972 8.339 12.4749 7 12.4749C5.66125 12.4749 4.39606 11.9974 3.39834 11.1233C3.26337 11.0051 3.20237 10.8234 3.23836 10.6476C3.58302 8.96409 4.65535 7.63638 6.02034 7.19954C5.30804 6.77789 4.81917 5.91163 4.81917 4.91068C4.81917 3.49567 5.79557 2.34858 7 2.34858C8.20443 2.34858 9.18083 3.49567 9.18083 4.91068C9.18083 5.91148 8.69211 6.77762 7.98003 7.19932C9.34499 7.63607 10.4173 8.96375 10.7621 10.6471C10.7981 10.8226 10.737 11.0047 10.6022 11.1228Z"/>
@@ -36,7 +36,7 @@
             </label>
             <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-md w-32 ml-36 text-[#495057]">
                 <li><a class="py-1" href="{{ route('/course-info')}}">Course Info</a></li>
-                <li><a class="py-1" href="">Steps</a></li>
+                <li><a class="py-1" href="{{ route('/steps')}}">Steps</a></li>
               </ul>
         </div>
     </div>

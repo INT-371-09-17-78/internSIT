@@ -1,0 +1,122 @@
+<div class="p-8">
+    <div class="pr-20 flex items-end">
+        <p class="text-base px-2 lg:text-3xl text-base-content font-semibold">Steps</p>
+        {{--  @component('components/common/button',{
+            text: 'Create new step',
+            type: 'text',
+            classProps: 'bg-white rounded-3xl text-base-content gap-2 btn-sm text-base lg:text-lg h-10 lg:px-4 lg:h-12 w-fit ml-auto border-0 hover:bg-secondary hover:text-white group',
+          })
+          <svg class="fill-[#A8B0B8] group-hover:fill-white w-7 h-7 lg:w-8 lg:h-8" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        @end  --}}
+      </div>
+      <div class="flex space-x-5 h-full">
+            <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+              <li class="{{activeTwoMonth}}"><a href="{{ route('/student-information', {} ,{qs: {month: 2}})}}">INT340 (2 months)</a></li>
+              <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 4}})}}">INT350 (4 months)</a></li>
+              <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 6}})}}">INT370 (6 months)</a></li>
+            </ul>
+        @if(request.matchesRoute('/steps'))
+            @if(allAmoutSt !== noApprove)
+            <div class="flex-1 pr-20">
+              <table class="table w-full mt-5">
+                <thead>
+                  <tr class="border-2 border-[#F6F7F9]">
+                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
+                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @each((student,index) in studentUsers)
+                  @if(student.student.approved)
+                      <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
+                        <td>{{student.user_id}}</td>
+                        <td>{{student.firstname + " " + student.lastname}}</td>
+                        <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+                      </tr>
+                  @end
+                  @end
+                </tbody>
+              </table>
+            </div>
+            @else
+            <div class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+                <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
+                <p>No students in the system</p>
+                <p class="text-base">Please add students into the system first or Check your filters.</p>
+            </div>
+            @end
+            @else     
+            <div class="flex flex-col">
+                <div class="flex font-medium items-center space-x-2 mt-2 h-fit">
+                    <a href="{{ route('/steps')}}" class="hover:text-blue-800">
+                    <p>Steps</p>
+                    </a>
+                    <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
+                    <p>Create new step</p>
+                  </div>
+                  <div class="flex justify-center items-center h-fit">
+                      <p>Name</p>
+                      <input type="text" placeholder="Type here" class="input input-sm w-full max-w-xs" />
+                  </div>
+                  <div class="bg-[#F4F4F4] p-5 rounded-md">
+                    <p class="font-medium">Files for students to download and submission</p>
+                    <div class="form-control">
+                        <form id="step-files">
+                            {{--  <div class="input-group" >  --}}
+                                <label for="test" class="btn btn-primary">Choose File</label>
+                                <input type="file" id="test" name="images" class="hidden">
+                                {{--  <input type="text" class="input input-bordered" />
+                                <span class="btn btn-primary">Add</span>  --}}
+                            {{--  </div>  --}}
+                        </form>
+                    </div>
+                  </div>
+            </div> 
+            <div class="flex justify-end items-end space-x-2">
+                <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+                  cancel
+                </a>
+                <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">save change</button>
+              </div>
+            @end
+      </div>
+</div>
+<script>
+    const stepFileForm = document.getElementById("step-files")
+    const stepFile = document.getElementById("test")
+    let files = []
+    stepFile.onchange = (e) =>{
+        const [file] = e.target.files
+        files.push(file)
+        const p = document.createElement('p')
+        const div = document.createElement('div')
+        div.innerHTML += `<p class="w-full">${files.length}. ${file.name}</p>
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                            </svg>
+                            </button>`
+        div.classList.add('flex')
+        div.classList.add('space-y-2')
+        stepFileForm.appendChild(div)
+        stepFile.value = ""
+    }
+    // stepFileForm.onsubmit = async (event) => {
+    // event.preventDefault() 
+    // const formData = new FormData(formElem)
+    // showFiles.forEach((file) => {
+    //   if(file.file_id) formData.append('oldImages', file.file_id)
+    //   if(file instanceof File){
+    //     formData.append('images', file, file.name)
+    //   }
+    // })
+    // const response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
+    //     method: 'POST',
+    //     body: formData,
+    // })
+    
+    // const data = await response.json()
+    // window.location.href = `/announcement/${data.post_id}`
+    // }
+</script>

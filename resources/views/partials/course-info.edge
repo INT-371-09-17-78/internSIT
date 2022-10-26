@@ -1,19 +1,61 @@
 <form id="course_form" class="px-10 pt-5 h-full flex flex-col overflow-auto">
         <p class="text-base lg:text-3xl text-base-content font-semibold">Course information</p>
         @if(!request.matchesRoute('/course-info/edit'))
-        <div class="grid grid-cols-2 pr-96">
+        <div class="grid grid-cols-5">
           <p>Academic year</p>
           <p>-</p>
+          <p class="col-span-2"></p>
+          <a class="underline ml-auto link" href="{{ route('/student-information')}}">See all academic year</a>
           <p>Advisor</p>
-          <p>-</p>
+          <div class="flex flex-col border-2 rounded-md col-span-4">
+            <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <div class="collapse-title text-xl font-medium">
+                1. Atchara  Tran-u-raikul
+              </div>
+              <div class="collapse-content"> 
+                <p>Supervised students</p>
+                <div class="pl-10">
+                  <p>1. Jirawath   Ananteeratat</p>
+                  <p>2. Kampol   Thaipricha</p>
+                </div>
+              </div>
+            </div>
+            <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <div class="collapse-title text-xl font-medium">
+                2. Jiw Ananarewrwe
+              </div>
+              <div class="collapse-content"> 
+                <p>Supervised students</p>
+              </div>
+            </div>
+          </div>
           <p>Staff</p>
-          <p>-</p>
+          <div class="flex flex-col border-2 rounded-md col-span-4">
+            <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <div class="collapse-title text-xl font-medium">
+                1. Atchara  Tran-u-raikul
+              </div>
+              <div class="collapse-content"> 
+                <p>Supervised students</p>
+                <div class="pl-10">
+                  <p>1. Jirawath   Ananteeratat</p>
+                  <p>2. Kampol   Thaipricha</p>
+                </div>
+              </div>
+            </div>
+            <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <div class="collapse-title text-xl font-medium">
+                2. Jiw Ananarewrwe
+              </div>
+              <div class="collapse-content"> 
+                <p>Supervised students</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-1 justify-center items-end">
-          <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">
+        <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize w-fit ml-auto">
             edit
-          </a>
-        </div>
+        </a>
         @else
         <div class="flex font-medium items-center space-x-2 mt-2">
           <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
@@ -82,7 +124,7 @@
             </tbody>
           </table>
         </div>             
-        <div class="flex flex-1 justify-end items-end space-x-2">
+        <div class="flex justify-end items-end space-x-2">
           <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
             cancel
           </a>

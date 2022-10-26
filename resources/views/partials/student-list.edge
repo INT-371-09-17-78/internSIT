@@ -43,9 +43,11 @@
   </div>
   <div class="flex space-x-5 h-full">
         <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
-          <li class="{{activeTwoMonth}}"><a href="{{ route('/student-information', {} ,{qs: {month: 2}})}}">INT340 (2 months)</a></li>
-          <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 4}})}}">INT350 (4 months)</a></li>
-          <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 6}})}}">INT370 (6 months)</a></li>
+          <li class="{{activeTwoMonth}}">
+            <a href="{{ request.cookie('year') || request.cookiesList().year ? route('/student-information', {} , {qs: {month: 2,year: request.cookie('year') || request.cookiesList().year}}) : route('/student-information') }}">INT340 (2 months)</a>
+          </li>
+          <li class="{{activeFourMonth}}"><a href="{{ request.cookie('year') || request.cookiesList().year ? route('/student-information', {} , {qs: {month: 4,year: request.cookie('year') || request.cookiesList().year}}) : route('/student-information') }}">INT350 (4 months)</a></li>
+          <li class="{{activeSixMonth}}"><a href="{{ request.cookie('year') || request.cookiesList().year ? route('/student-information', {} , {qs: {month: 6,year: request.cookie('year') || request.cookiesList().year}}) : route('/student-information') }}">INT370 (6 months)</a></li>
         </ul>
         @if(allAmoutSt !== noApprove)
         <div class="flex-1 pr-20">
