@@ -26,7 +26,7 @@
           </div>
         </div>
         <div class="space-y-2 text-xs">
-          <p class="font-semibold">{{post.user_id}}</p>
+          <p class="font-semibold">{{post.usersInAcademicYear.user_id}}</p>
           <p class="leading-5">{{post.content}}</p>
           <div id="selectedFile" class="flex flex-wrap gap-y-2">
               @each(file in post.files)
@@ -37,7 +37,7 @@
           </div>
         </div>
         <p class="text-xs absolute left-40 ml-7">{{post.updated_at}}</p>
-              @if(auth.user.user_id === post.user_id)
+              @if(auth.user.user_id === post.usersInAcademicYear.user_id)
               <div class="dropdown dropdown-end absolute right-2" style="margin-left: auto">
                 <label tabindex="0">
                   <div class="w-5 h-5 cursor-pointer">
