@@ -1,6 +1,6 @@
-import { column, BaseModel, manyToMany, ManyToMany, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Status from 'App/Models/Status'
-import File from 'App/Models/File'
+// import File from 'App/Models/File'
 
 export default class Document extends BaseModel {
   @column({ isPrimary: true })
@@ -17,6 +17,6 @@ export default class Document extends BaseModel {
   })
   public statuses: ManyToMany<typeof Status>
 
-  @hasMany(() => File, { foreignKey: 'file_id' })
-  public files: HasMany<typeof File>
+  // @hasMany(() => File, { foreignKey: 'file_id' })
+  // public files: HasMany<typeof File>
 }

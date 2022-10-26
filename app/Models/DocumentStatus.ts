@@ -1,5 +1,5 @@
 import { column, BaseModel, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
-import Student from 'App/Models/Student'
+// import Student from 'App/Models/Student'
 import { DateTime } from 'luxon'
 import UsersInAcademicYear from 'App/Models/UsersInAcademicYear'
 // import File from 'App/Models/File'

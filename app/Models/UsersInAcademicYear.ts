@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany, HasMany, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 import DocumentStatus from 'App/Models/DocumentStatus'
-import File from 'App/Models/File'
+// import File from 'App/Models/File'
 
 export default class UsersInAcademicYear extends BaseModel {
   public static table = 'users_in_academic_years'

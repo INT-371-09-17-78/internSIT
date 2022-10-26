@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
-import User from 'App/Models/User'
-import Document from 'App/Models/Document'
+// import User from 'App/Models/User'
+// import Document from 'App/Models/Document'
 import UserHasDoc from 'App/Models/UserHasDoc'
 
 export default class File extends BaseModel {
@@ -21,7 +21,7 @@ export default class File extends BaseModel {
   // @column()
   // public user_id: string
 
-  @column()
+  @column({ columnName: 'post_id' })
   public post_id: number
 
   @column()
