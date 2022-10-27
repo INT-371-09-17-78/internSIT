@@ -330,7 +330,8 @@ export default class UsersController {
         }
         // console.log(test);
       }
-      const ad = await Advisor.query()
+      // const ad = await Advisor.query()
+      const ad = await User.query().where('role', 'advisor')
       let adSe: any = []
       for (let i = 0; i < ad.length; i++) {
         const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].advisor_id)
