@@ -918,7 +918,7 @@ export default class UsersController {
       //   response.redirect(`/student/${studentUser.user_id}/information`)
       // }
       // response.status(200).send('success')
-      response.redirect(`/student-informationstudents`)
+      response.redirect(`/student-information`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

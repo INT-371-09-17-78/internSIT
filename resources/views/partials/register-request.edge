@@ -13,7 +13,7 @@
               @each((studentUser,index) in studentUsers)
                 @if(!studentUser.approved)
                     <tr class="font-bold">
-                      <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm" {{studentUser.student.approved === 1 && ('checked' + ' ' + 'disabled')}}/>{{studentUser.user_id}}</td>
+                      <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()" class="checkbox border-2 mr-5 checkbox-sm rounded-sm" {{studentUser.approved === 1 && ('checked' + ' ' + 'disabled')}}/>{{studentUser.user_id}}</td>
                       <td>{{studentUser.firstname + " " + studentUser.lastname}}</td>
                       <td class="text-right">
                         <div class="flex justify-end"> 
