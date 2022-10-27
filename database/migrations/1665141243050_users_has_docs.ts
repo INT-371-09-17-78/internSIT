@@ -19,6 +19,7 @@ export default class UserHasDocs extends BaseSchema {
         .references('users_in_academic_years.id')
         .onDelete('CASCADE')
       table.string('no_approve_reason', 500).nullable()
+      table.unique(['doc_stat_id', 'user_in_academic_year_id'])
       // table.unique(['student_id', 'doc_stat_id'])
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

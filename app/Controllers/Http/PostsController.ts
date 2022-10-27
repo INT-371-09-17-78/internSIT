@@ -151,14 +151,20 @@ export default class PostsController {
       if (!auth.user || auth.user.role === 'student') response.redirect('/')
       else {
         let canEdit: any
-        const AcademicYearCf = await AcademicYear.query().where(
-          'academic_year',
-          request.cookie('year')
-        )
+        let AcademicYearCf: any
+        // const AcademicYearCf = await AcademicYear.query().where(
+        //   'academic_year',
+        //   request.cookie('year')
+        // )
+        if (auth.user?.role === 'student') {
+          AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        } else {
+          AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        }
         const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
         AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
-          ? (canEdit = true)
-          : (canEdit = false)
+          ? (canEdit = false)
+          : (canEdit = true)
         const result = await Post.query().where('post_id', request.param('id')).preload('files')
         //   .preload('usersInAcademicYear')
         //  console.log(result)
@@ -184,14 +190,22 @@ export default class PostsController {
     try {
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       let canEdit: any
-      const AcademicYearCf = await AcademicYear.query().where(
-        'academic_year',
-        request.cookie('year')
-      )
+      let AcademicYearCf: any
+      // const AcademicYearCf = await AcademicYear.query().where(
+      //   'academic_year',
+      //   request.cookie('year')
+      // )
+      if (auth.user?.role === 'student') {
+        AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      } else {
+        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      }
+      // console.log(AcademicYearCf[0].academic_year)
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // console.log(AcademicYearAll[0].academic_year)
       AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
-        ? (canEdit = true)
-        : (canEdit = false)
+        ? (canEdit = false)
+        : (canEdit = true)
       if (!auth.user) {
         return response.redirect('/')
       } else {
@@ -205,11 +219,12 @@ export default class PostsController {
         const resultJSON = resultsJSONpre.filter(
           (result) => result.usersInAcademicYear.academic_year === AcademicYearCf[0].academic_year
         )
-        console.log(resultJSON)
+        // console.log(resultJSON)
         const posts = resultJSON.map((result) => ({
           ...result,
           updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
         }))
+        // console.log(canEdit)
         return view.render('announcement', { posts, canEdit })
       }
     } catch (error) {
@@ -267,8 +282,8 @@ export default class PostsController {
         )
         const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
         AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
-          ? (canEdit = true)
-          : (canEdit = false)
+          ? (canEdit = false)
+          : (canEdit = true)
         if (!result) {
           return response
             .status(404)

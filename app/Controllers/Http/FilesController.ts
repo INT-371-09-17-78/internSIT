@@ -183,14 +183,20 @@ export default class FilesController {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
   }
 
-  public async showAllFile({ view, request, response }: HttpContextContract) {
+  public async showAllFile({ auth, view, request, response }: HttpContextContract) {
     try {
       let canEdit: any
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const AcademicYearCf = await AcademicYear.query().where(
-        'academic_year',
-        request.cookie('year')
-      )
+      let AcademicYearCf: any
+      // const AcademicYearCf = await AcademicYear.query().where(
+      //   'academic_year',
+      //   request.cookie('year')
+      // )
+      if (auth.user?.role === 'student') {
+        AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      } else {
+        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      }
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
         ? (canEdit = true)
@@ -248,7 +254,7 @@ export default class FilesController {
         //   file = result[0]
         //   path = 'steps/'
         // }
-        console.log(statId)
+        // console.log(statId)
         const user = await User.findOrFail(userId)
         // const doc = await Document.find(docId)
         // doc?.related('')

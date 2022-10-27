@@ -39,8 +39,8 @@ export default class User extends BaseModel {
   @column()
   public role: string
 
-  @column()
-  public approved: boolean
+  // @column()
+  // public approved: boolean
 
   // @hasMany(() => Post, { foreignKey: 'user_id' })
   // public posts: HasMany<typeof Post>

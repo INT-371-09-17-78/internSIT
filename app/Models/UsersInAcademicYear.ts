@@ -18,6 +18,9 @@ export default class UsersInAcademicYear extends BaseModel {
   @hasMany(() => Post, { foreignKey: 'id' })
   public posts: HasMany<typeof Post>
 
+  @column()
+  public approved: boolean
+
   // @hasMany(() => File, { foreignKey: 'id' })
   // public files: HasMany<typeof File>
 

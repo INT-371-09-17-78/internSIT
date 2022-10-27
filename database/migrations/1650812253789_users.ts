@@ -12,7 +12,7 @@ export default class UsersSchema extends BaseSchema {
       table.string('role', 80).notNullable().defaultTo('student')
       table.string('password', 500).nullable()
       table.string('remember_me_token').nullable()
-      table.boolean('approved').defaultTo(false).notNullable()
+      // table.boolean('approved').defaultTo(false).notNullable()
       // table
       //   .integer('conf_id')
       //   .unsigned()
