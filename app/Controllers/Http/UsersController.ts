@@ -15,7 +15,6 @@ import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 import LdapAuth from 'ldapauth-fork'
 import moment from 'moment-timezone'
 import Mail from '@ioc:Adonis/Addons/Mail'
-import { DateTime } from 'luxon'
 
 interface LdapOptions {
   url: string
@@ -418,13 +417,14 @@ export default class UsersController {
         }
       }
       response.cookie('year', year)
+      console.log(advisorUsersResult)
       return view.render('student-information', {
         studentUsers:
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
             ? result
             : studentUsers,
         advisorUsers: advisorUsersResult,
-        stafftUsers: staffUsersResult,
+        staffUsers: staffUsersResult,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
@@ -926,7 +926,7 @@ export default class UsersController {
       //   response.redirect(`/student/${studentUser.user_id}/information`)
       // }
       // response.status(200).send('success')
-      response.redirect(`/student-information`)
+      response.redirect(`/student-informationstudents`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
