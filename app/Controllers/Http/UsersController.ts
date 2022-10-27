@@ -166,7 +166,11 @@ export default class UsersController {
       let user: any
       user = await User.findBy('user_id', username)
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const checkExist = await years[0].related('users').query()
+      const checkExist = await UsersInAcademicYearModel.query()
+        .where('academic_year', years[0].academic_year)
+        .andWhere('user_id', username)
+      // const checkExist = await years[0].related('users').query()
+      // console.log(checkExist)
       if (user && user.role === 'student' && checkExist && checkExist.length > 0) {
         const st = await Student.findBy('student_id', user.user_id)
         if (!st) {
@@ -356,7 +360,7 @@ export default class UsersController {
       } else {
         studentUsers = []
       }
-      console.log(advisorUsersResult)
+      // console.log(advisorUsersResult)
       // console.log(studentUsers.length)
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
@@ -419,8 +423,8 @@ export default class UsersController {
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
             ? result
             : studentUsers,
-        // advisorUsers: advisorUsers,
-        // stafftUsers: stafftUsers,
+        advisorUsers: advisorUsersResult,
+        stafftUsers: staffUsersResult,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
@@ -555,15 +559,19 @@ export default class UsersController {
     return result
   }
 
-  public async showStudentUserById({ request, response, view }: HttpContextContract) {
+  public async showStudentUserById({ auth, request, response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       // const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const AcademicYearCf = await AcademicYear.query().where(
-        'academic_year',
-        request.cookie('year')
-      )
+      console.log(auth.user)
+      let AcademicYearCf: any
+      if (auth.user?.role === 'student') {
+        AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      } else {
+        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      }
+
       const studentUsers = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
