@@ -43,6 +43,9 @@
   </div>
   <div class="flex space-x-5 h-full">
         <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+          <li class="{{activeAll}}">
+            <a href="{{ request.cookie('year') ? route('/student-information') : route('/academic-year') }}">All</a>
+          </li>
           <li class="{{activeTwoMonth}}">
             <a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 2}}) : route('/academic-year') }}">INT340 (2 months)</a>
           </li>

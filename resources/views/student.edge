@@ -6,7 +6,7 @@
 <section class="h-full w-full z-[5] relative flex flex-col pt-5">
   <div class="flex flex-col z-10 px-11">
     @if(auth.user.role !== "student")
-    <a href="{{ route('/student-information', { qs: { month: 2 }}) }}">
+    <a href="{{ route('/student-information', {}, { qs: { month: 2 }}) }}">
       <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
         <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
         <p class="font-semibold">Back</p>
@@ -93,13 +93,10 @@
       <form id="formElem">
         <div class="flex flex-col space-y-2">
           <p class="font-medium text-lg">{{nextStep.name}}</p>
-          @if(currentSteps.status === "Disapproved")
-          <p class="font-bold">(Waiting for resubmit)</p>
-          @end
           @if(auth.user.role === "student")
-          <button class="btn btn-primary btn-sm h-10 w-fit">Download plain document</button>
+          <button type="button" class="btn btn-primary btn-sm h-10 w-fit">Download plain document</button>
           @end
-          <div class="bg-[#F4F4F4] w-fit h-fit rounded-md p-5">
+          <div class="bg-[#F4F4F4] w-[26rem] h-fit rounded-md p-5">
             <div class="border-b-2 border-[#A8B0B8] pb-5 space-y-2">
               <p class="font-medium">Submission</p>
               @if(currentSteps.status ==="Pending" || currentSteps.status === "Disapproved")
@@ -118,6 +115,7 @@
                   <span>Submit</span>
                 </label>
               </div>  --}}
+              @if(auth.user.role == 'student')
               <div class="form-control">
                 <label class="input-group input-group-sm">
                   <label for="myPdf" class="flex-shrink-0 btn btn-outline btn-sm border-[#A8B0B8]">Choose file</label>
@@ -126,10 +124,11 @@
                   <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                 </label>
               </div>
+              @end
             </div>
             <div class="pt-5">
               <p class="font-medium">Approval</p>
-              <div>
+              <div class="flex flex-col space-y-2">
                 @if(auth.user.role != "student" )
                   @if(currentSteps.status === "Pending")
                   <div class="flex" id="radio-group">
@@ -146,16 +145,41 @@
                       </label>
                     </div>  
                   </div>
+                  <button class="btn btn-sm btn-primary rounded-md text-white capitalize">confirm</button>
+                  @elseif(currentSteps.status === "Disapproved")
+                  <p class="text-[#858D95] mt-2">Please waiting for re-submitted</p>
+                  <div class="flex" id="radio-group">
+                    <div class="form-control w-fit">
+                      <label class="label cursor-pointer space-x-2">
+                        <input type="radio" id="approved" name="radio" value="Approved" class="radio checked:bg-blue-500 disabled:bg-gray-600" disabled onclick="removeTextArea()"/>
+                        <span class="label-text font-bold">Approved</span> 
+                      </label>
+                    </div>   
+                    <div class="form-control w-fit">
+                      <label class="label cursor-pointer space-x-2">
+                        <input type="radio" id="disapproved" name="radio" value="Disapproved" class="radio checked:bg-blue-500 disabled:checked:bg-black" checked disabled onclick="showTextArea()"/>
+                        <span class="label-text font-bold text-red-500">Disapproved</span> 
+                      </label>
+                    </div>  
+                  </div>
+                  <div class="flex space-x-2">
+                    <p class="text-[#858D95]">Reason:</p>
+                    <p>{{currentSteps.reason}}</p>
+                  </div>
+                  <button class="btn btn-sm btn-primary rounded-md text-white capitalize" disabled>confirm</button>
                   @else
                   <p class="text-[#858D95]">Please waiting for submitted</p>
                   @end
                 {{--  <textarea id="content" name="content" class="p-3 w-full h-28 text-xs rounded-lg" placeholder="Write your content..."></textarea>  --}}
-                <button class="btn btn-sm btn-primary rounded-md text-white">confirm</button>
                 @else
                   @if(currentSteps.status ==="Disapproved")
-                  <div class="flex flex-col mt-5">
-                    <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
-                    <p>{{currentSteps.reason}}</p>
+                  <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
+                  <div class="flex flex-col">
+                    <p class="text-[#858D95]">Please fix the document and re-submit</p>
+                    <div class="flex space-x-2">
+                      <p class="text-[#858D95]">Reason:</p>
+                      <p>{{currentSteps.reason}}</p>
+                    </div>
                   </div> 
                   @else
                   <p class="text-[#858D95]">Not approved</p>
@@ -280,11 +304,20 @@
   if(formElem)
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
-    const status = document.querySelector('input[name="radio"]:checked').value
+    let status = ''
+    let reason = ''
+    if(!document.querySelector('input[name="radio"]:checked')){
+      status = 'Pending'
+    }else{
+      status = document.querySelector('input[name="radio"]:checked').value
+    }
+    if(document.getElementById('reason')){
+      reason = document.getElementById('reason').value
+    }
     const body = {
-      status : 'Pending',
+      status : status,
       doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-      reason : status === "Approved" ? "" : document.getElementById('reason').value
+      reason : reason
     }
     const formData = new FormData(formElem)
     formData.append('files', pdfFile)
@@ -292,18 +325,19 @@
     formData.append('statId', 'Pending')
     formData.append('studentId', {{studentUser.user_id}})
     
-    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
-        method: 'PATCH',
-        headers: {
+    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+      method: 'PATCH',
+      headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body),
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
     })
     await fetch('/api/file/steps?_method=POST', {
         method: 'POST',
         body: formData,
     })
+    window.location.reload()
   }
 
   const formElem3 = document.getElementById('formElem3')

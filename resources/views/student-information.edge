@@ -6,6 +6,8 @@
 @set('activeTwoMonth', '')
 @set('activeFourMonth', '')
 @set('activeSixMonth', '')
+@set('activeAll', '')
+
 @section('student-information')
 @if(request.matchesRoute('/register-request'))
 @set('activeRequestTab', 'bg-white text-primary fill-primary')
@@ -21,6 +23,8 @@
    @set('activeFourMonth', 'bg-[#484F56]/10')
   @elseif(request.qs().month == 6)
     @set('activeSixMonth', 'bg-[#484F56]/10')
+  @else
+    @set('activeAll', 'bg-[#484F56]/10')
   @end
   <section class="flex flex-col h-full w-full z-[5] bg-white">
       <div class="flex px-8 bg-[#F0F3F4] w-full py-6">
@@ -47,7 +51,7 @@
         @include('partials/student-list')
       @elseif(request.matchesRoute('/register-request'))
         @include('partials/register-request')
-      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') )
+      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/edit/supervised-student'))
         @include('partials/course-info')
       @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit'))
         @include('partials/steps')
@@ -192,6 +196,41 @@
     }
   }
 
+  const searchStudent = async () => {
+    const response =  await fetch(`/api/user/studentCYear`)
+    const { studentUsers } = await response.json()
+    const searchValue = document.getElementById('student').value
+    if(searchValue && studentUsers.length > 0) document.getElementById('student_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    let countNotFound = 0
+    studentUsers.forEach(student => {
+      console.log(student)
+      if(searchValue === student.user_id){
+        document.getElementById('add-student-button').disabled = false
+      }else{
+        document.getElementById('add-student-button').disabled = true
+      }
+      if(student.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
+        if(student.length > 0){
+          student.forEach(t =>{
+            if(t !== student.user_id){
+              document.getElementById('ul').innerHTML += `<li onclick="deleteStudentList('${student.user_id}')"><a>${student.user_id}</a></li>`
+            }else{
+              countNotFound++
+            }
+          })
+        }else{
+          document.getElementById('ul').innerHTML += `<li onclick="deleteStudentList('${student.user_id}')"><a>${student.user_id}</a></li>`
+        }
+      }else{
+        countNotFound++
+      }
+    })
+    if(countNotFound === studentUsers.length){
+      document.getElementById('add-student-button').disabled = true
+      document.getElementById('student_list').innerHTML = ''
+    }
+  }
+
   const searchStaff = async () => {
     const response =  await fetch(`/api/user/staffUser`)
     const { staffUsers } = await response.json()
@@ -231,9 +270,8 @@
       users:{
         advisors: advisorTemp,
         staffs: staffTemp
-    
+      }
     }
-  }
     await fetch('/api/user/courseInfoUs?_method=PATCH', {
         method: "PATCH",
         headers: {
@@ -246,6 +284,37 @@
     })
   }
 
+  const updateSettings2 =  async () => { 
+    const params = new URLSearchParams(window.location.search);
+    console.log(params.getAll('advisor')[0])
+    const users = {
+      students: studentTemp,
+      advisor:{
+        advisor_id: params.getAll('advisor')[0]
+      }
+    }
+    console.log(users)
+
+    await fetch('/api/user/advisor/st?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(users),
+    }).then(() => {
+        window.location.href = `/course-info`
+    })
+  }
+  const deleteStudentList = (id) =>{
+    document.getElementById('student').value = id
+    document.getElementById('student_list').innerHTML = ''
+    document.getElementById('add-student-button').disabled = false
+  }
+  if(document.getElementById('student') || document.getElementById('student')){
+    if(!document.getElementById('student').value) document.getElementById('add-student-button').disabled = true
+    if(!document.getElementById('student').value) document.getElementById('add-student-button').disabled = true
+  }
   const deleteAdvisorList = (id) =>{
     document.getElementById('advisor').value = id
     document.getElementById('advisor_list').innerHTML = ''
@@ -260,7 +329,32 @@
     document.getElementById('staff_list').innerHTML = ''
     document.getElementById('add-staff-button').disabled = false
   }
-  
+  let studentTemp = []
+  const addStudent = () => {
+    
+    if(!document.getElementById('student').value) {
+      document.getElementById('add-student-button').disabled = true
+      return
+    }
+    
+    studentTemp.push(document.getElementById('student').value)
+    studentTemp.forEach(t=>{
+      if(t===document.getElementById('student').value){
+        document.getElementById('add-student-button').disabled = true
+      }
+    })
+    
+    document.getElementById('student-table-row').innerHTML += `<tr id="${document.getElementById('student').value}"><td>${document.getElementById('student').value}</td> <td class="text-right"><div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStudent('${document.getElementById('student').value}')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td></tr>`
+    document.getElementById('student_list').innerHTML = ''
+    document.getElementById('student').value = ''
+  }
   const addAdvisor = () => {
     
     if(!document.getElementById('advisor').value) {
@@ -318,24 +412,29 @@
     advisorTemp = advisorTemp.filter(e => e !== id)
   }
 
-  const deleteAdvisor = async (id) => {
-    await fetch(`/api/user/courseInfo/edit/${id}?_method=DELETE`, {
+  const deleteLocalStudent = (id) => {
+    document.getElementById(id).remove()
+    studentTemp = studentTemp.filter(e => e !== id)
+  }
+
+  const deleteStudent = async (id) => {
+    await fetch(`/api/user/delUserAdv/${id}?_method=DELETE`, {
         method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+
+  const deleteAdvisor = async (id) => {
+    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
+        method: 'DELETE',
     }).then(() => {
         window.location.reload()
     })
   }
   const deleteStaff = async (id) => {
-    await fetch(`/api/user/courseInfo/edit/${id}?_method=DELETE`, {
+    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
         method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
     }).then(() => {
         window.location.reload()
     })
