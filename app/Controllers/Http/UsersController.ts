@@ -407,7 +407,7 @@ export default class UsersController {
           result = this.queryStringFilter(studentUsers, request.qs().step)
         }
       }
-      response.cookie('year', request.qs().year)
+      response.cookie('year', year)
       return view.render('student-information', {
         studentUsers:
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
@@ -418,7 +418,6 @@ export default class UsersController {
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearCf,
-        year: request.qs().year,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })

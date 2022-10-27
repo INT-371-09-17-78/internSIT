@@ -23,7 +23,7 @@
             </div>   
         @end  
         @each(year in academicYears)
-        <a href="{{ route('/student-information', {} ,{qs: {month: 2, year: year.academic_year}}) }}">
+        <a href="{{ route('/student-information', {} ,{qs: {month: 2, year: year.academic_year}}) }}" onclick="updateYear({{year.academic_year}})">
           <div class="bg-[#F0F3F4] w-72 h-40 rounded-md flex justify-center items-center cursor-pointer">
             <p class="font-bold text-xl">{{year.academic_year}}</p>            
           </div>
