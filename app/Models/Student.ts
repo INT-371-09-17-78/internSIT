@@ -51,8 +51,8 @@ export default class Student extends BaseModel {
   @column()
   public mentor_position: string
 
-  @column()
-  public advisor_id: string
+  // @column()
+  // public advisor_id: string
 
   // @column()
   // public study: string
@@ -83,8 +83,8 @@ export default class Student extends BaseModel {
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
 
-  @belongsTo(() => Advisor)
-  public advisor: BelongsTo<typeof Advisor>
+  // @belongsTo(() => Advisor)
+  // public advisor: BelongsTo<typeof Advisor>
   // @column()
   // public user_id: string
 

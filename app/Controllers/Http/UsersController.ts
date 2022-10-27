@@ -307,6 +307,7 @@ export default class UsersController {
       // let year: any
       let allAmoutSt: any
       let noApprove: any
+      let advisorById: any
 
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
@@ -314,10 +315,9 @@ export default class UsersController {
       //   return view.render('errors/not-found')
       // }
 
-      // if (request.qs().year) {
-      //   const result = await AcademicYear.findBy('academic_year', request.qs().year)
-      //   year = result?.academic_year
-      // }
+      if (request.qs().advisor) {
+        advisorById = await Advisor.find(request.qs().advisor)
+      }
 
       // stafftUsers = await User.query().where('role', 'staff')
       // advisorUsers = await User.query().where('role', 'advisor')
@@ -443,6 +443,7 @@ export default class UsersController {
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
+        advisorById: advisorById,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -504,26 +505,27 @@ export default class UsersController {
     }
   }
 
-  // public async updateUserApproveInCourse({ request, response }: HttpContextContract) {
-  //   try {
-  //     const { users } = request.only(['users'])
-  //     users.forEach(async (user) => {
-  //       const studentUsers = await User.query().where('user_id', user.id).preload('student')
-  //       const studentUser = studentUsers[0]
-  //       studentUser.approved = user.approve
-  //       await studentUser.save()
-  //     })
-  //     // if (approve) {
-  //     //   response.redirect(`/students/request`)
-  //     // } else {
-  //     //   response.redirect(`/student/${studentUser.user_id}/information`)
-  //     // }
-  //     // response.status(200).send('success')
-  //     response.redirect(`/course-management`)
-  //   } catch (error) {
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
+  public async updateAdvisorHasStudent({ request, response }: HttpContextContract) {
+    try {
+      const { students, advisor } = request.all()
+      let AcademicYearCfResult: any
+      AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const advisorResult = await Advisor.query().where('advisor_id', advisor.advisor_id)
+      if (students && students.length > 0) {
+        for (let i = 0; i < students.length; i++) {
+          const usi = await UsersInAcademicYearModel.query()
+            .where('user_id', students[i].student_id)
+            .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
+          usi[0].advisor_id = advisorResult[0].advisor_id
+          await usi[0].save()
+        }
+
+        // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+      }
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
   public async showAdvisorUser({ response }: HttpContextContract) {
     try {
@@ -568,7 +570,7 @@ export default class UsersController {
     }
   }
 
-  public async showStaffUserCuurentYear({ response }: HttpContextContract) {
+  public async getStaffUserCuurentYear({ response }: HttpContextContract) {
     try {
       let staffUsers: any = []
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -589,7 +591,7 @@ export default class UsersController {
     }
   }
 
-  public async showAdvisorUserCuurentYear({ response }: HttpContextContract) {
+  public async getAdvisorUserCuurentYear({ response }: HttpContextContract) {
     try {
       let advisorUsers: any = []
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -605,6 +607,50 @@ export default class UsersController {
       // await UsersInAcademicYearModel.query().where()
 
       return response.status(200).json({ advisorUsers: advisorUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async getStudentUserCuurentYear({ response }: HttpContextContract) {
+    try {
+      let studentUsers: any = []
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const users = await User.query().where('role', 'stqudent')
+      for (let i = 0; i < users.length; i++) {
+        const result = await UsersInAcademicYearModel.query()
+          .where('user_id', users[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        if (result && result.length > 0) {
+          studentUsers.push(result[0])
+        }
+      }
+      // await UsersInAcademicYearModel.query().where()
+
+      return response.status(200).json({ studentUsers: studentUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async getStudentUserByAdvisor({ request, response }: HttpContextContract) {
+    try {
+      const { advisor } = request.all()
+      let studentUsers: any = []
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const users = await User.query().where('role', 'stqudent')
+      for (let i = 0; i < users.length; i++) {
+        const result = await UsersInAcademicYearModel.query()
+          .where('user_id', users[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('advisor_id', advisor)
+        if (result && result.length > 0) {
+          studentUsers.push(result[0])
+        }
+      }
+      // await UsersInAcademicYearModel.query().where()
+
+      return response.status(200).json({ studentUsers: studentUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -1076,27 +1122,27 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
-      if (advisorFullName) {
-        const advisorFullNameSplit = advisorFullName.split(' ')
-        if (advisorFullNameSplit && advisorFullNameSplit.length > 1) {
-          const roleAdvisorUser = await User.query()
-            .where('firstName', advisorFullNameSplit[0])
-            .andWhere('lastName', advisorFullNameSplit[1])
-            .andWhere('role', 'advisor')
-          if (roleAdvisorUser && roleAdvisorUser.length > 0) {
-            const advisorUsers = await Advisor.query().where(
-              'advisor_id',
-              roleAdvisorUser[0].user_id
-            )
-            studentUser.student.advisor_id = advisorUsers[0].advisor_id
-            // advisorUsers[0].related('students').updateOrCreate({
+      // if (advisorFullName) {
+      //   const advisorFullNameSplit = advisorFullName.split(' ')
+      //   if (advisorFullNameSplit && advisorFullNameSplit.length > 1) {
+      //     const roleAdvisorUser = await User.query()
+      //       .where('firstName', advisorFullNameSplit[0])
+      //       .andWhere('lastName', advisorFullNameSplit[1])
+      //       .andWhere('role', 'advisor')
+      //     if (roleAdvisorUser && roleAdvisorUser.length > 0) {
+      //       const advisorUsers = await Advisor.query().where(
+      //         'advisor_id',
+      //         roleAdvisorUser[0].user_id
+      //       )
+      //       studentUser.student.advisor_id = advisorUsers[0].advisor_id
+      //       // advisorUsers[0].related('students').updateOrCreate({
 
-            // })
-            // studentUser.student.advisor_id = advisorUser[0].user_id
-            // advisorUser[0].related('student')
-          }
-        }
-      }
+      //       // })
+      //       // studentUser.student.advisor_id = advisorUser[0].user_id
+      //       // advisorUser[0].related('student')
+      //     }
+      //   }
+      // }
 
       await studentUser.save()
       await studentUser.student.save()
@@ -1118,10 +1164,10 @@ export default class UsersController {
         .andWhere('user_id', request.param('id'))
         .preload('student')
       const studentUser = studentUsers[0]
-      if (studentUser.student.advisor_id) {
-        const advisor = await User.findOrFail(studentUser.student.advisor_id)
-        studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
-      }
+      // if (studentUser.student.advisor_id) {
+      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
+      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
+      // }
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
@@ -1163,10 +1209,10 @@ export default class UsersController {
         .andWhere('user_id', request.param('id'))
         .preload('student')
       const studentUser = studentUsers[0]
-      if (studentUser.student.advisor_id) {
-        const advisor = await User.findOrFail(studentUser.student.advisor_id)
-        studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
-      }
+      // if (studentUser.student.advisor_id) {
+      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
+      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
+      // }
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },

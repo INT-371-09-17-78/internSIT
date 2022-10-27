@@ -1,8 +1,18 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasMany, HasMany, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  column,
+  hasMany,
+  HasMany,
+  manyToMany,
+  ManyToMany,
+  belongsTo,
+  BelongsTo,
+} from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 import DocumentStatus from 'App/Models/DocumentStatus'
 // import File from 'App/Models/File'
+import Advisor from 'App/Models/Advisor'
 
 export default class UsersInAcademicYear extends BaseModel {
   public static table = 'users_in_academic_years'
@@ -34,6 +44,12 @@ export default class UsersInAcademicYear extends BaseModel {
   })
   //   public skills: ManyToMany<typeof Skill>
   public documentStatus: ManyToMany<typeof DocumentStatus>
+
+  @column()
+  public advisor_id: string
+
+  @belongsTo(() => Advisor)
+  public advisor: BelongsTo<typeof Advisor>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

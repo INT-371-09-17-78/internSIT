@@ -14,6 +14,7 @@ export default class UsersInAcademicYears extends BaseSchema {
       table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       table.boolean('approved').defaultTo(false).notNullable()
       table.unique(['academic_year', 'user_id'])
+      table.string('advisor_id').references('advisors.advisor_id').onDelete('CASCADE')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

@@ -108,6 +108,7 @@ Route.group(() => {
     Route.delete('/student/:id', 'UsersController.deleteStudentUser')
     Route.patch('/courseInfo', 'UsersController.updateCourseInformation')
     Route.patch('/courseInfoUs', 'UsersController.updateUsersCourseInformation')
+    Route.patch('/advisor/st', 'UsersController.updateAdvisorHasStudent')
     Route.get('/advisorUser', 'UsersController.showAdvisorUser')
     Route.get('/staffUser', 'UsersController.showStaffUser')
   })
