@@ -710,6 +710,7 @@ export default class UsersController {
       await newTmp.save()
       return response.status(200).json('success')
     } catch (error) {
+      console.log(error)
       return response.status(400).json({ message: error.message })
     }
   }
@@ -1000,6 +1001,8 @@ export default class UsersController {
 
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
+      console.log('dsadasa')
+
       const { study, status, doc, reason } = request.only(['study', 'status', 'doc', 'reason'])
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const studentUser = await Student.findOrFail(request.param('id'))
@@ -1093,6 +1096,7 @@ export default class UsersController {
       response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
     } catch (error) {
+      console.log(error)
       return response.status(400).json({ message: error.message })
     }
   }
