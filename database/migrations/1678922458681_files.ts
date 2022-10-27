@@ -17,6 +17,7 @@ export default class Files extends BaseSchema {
         .references('users_has_docs.id')
         .onDelete('CASCADE')
         .nullable()
+      table.string('doc_name').references('documents.doc_name').onDelete('CASCADE').nullable()
       // table.string('user_id').references('users.user_id').onDelete('CASCADE').nullable()
       // table.unique(['user_id', 'doc_id'])
       /**

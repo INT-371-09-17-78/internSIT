@@ -526,7 +526,7 @@ export default class UsersController {
       if (students && students.length > 0) {
         for (let i = 0; i < students.length; i++) {
           const usi = await UsersInAcademicYearModel.query()
-            .where('user_id', students[i].student_id)
+            .where('user_id', students[i])
             .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
           usi[0].advisor_id = advisorResult[0].advisor_id
           await usi[0].save()
@@ -891,14 +891,20 @@ export default class UsersController {
         }
       }
 
+      let stepFile: any
       let userHasDoc
-      if (userHasDocResult[0])
+      if (userHasDocResult[0]) {
         userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+        // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
+        const file = await File.query().where('doc_name', userHasDoc[0].document_id)
+        stepFile = file[0].file_id
+      }
       // console.log(submission)
       // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+        currentSteps['file'] = stepFile
         currentSteps['name'] = documentStatusesJsonCurrent.document_id
         currentSteps['status'] = documentStatusesJsonCurrent.status_id
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
@@ -940,9 +946,9 @@ export default class UsersController {
         nextStep = steps[0]
         // nextStep['status'] = 'Waiting'
       }
-      // console.log(steps)
-      // console.log(currentSteps)
-      // console.log(nextStep)
+      console.log(steps)
+      console.log(currentSteps)
+      console.log(nextStep)
 
       let stepPaged = []
       if (qs.firstStepPaging) {
@@ -1496,6 +1502,17 @@ export default class UsersController {
           }
         }
       }
+
+      const files = await File.all()
+      if (files && files.length === 0) {
+        await File.create({
+          file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
+          file_name: 'TR-01TEST',
+          file_size: '200.06 KB',
+          doc_name: 'TR-01',
+        })
+      }
+
       return year
     } catch (error) {
       console.log(error)

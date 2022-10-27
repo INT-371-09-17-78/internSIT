@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 // import User from 'App/Models/User'
-// import Document from 'App/Models/Document'
+import Document from 'App/Models/Document'
 import UserHasDoc from 'App/Models/UserHasDoc'
 
 export default class File extends BaseModel {
@@ -15,8 +15,11 @@ export default class File extends BaseModel {
   @column()
   public file_size: string
 
-  // @column()
-  // public doc_id: string
+  @column()
+  public doc_name: string
+
+  @belongsTo(() => Document)
+  public document: BelongsTo<typeof Document>
 
   // @column()
   // public user_id: string
