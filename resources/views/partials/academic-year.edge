@@ -4,7 +4,7 @@
   class="select select-sm rounded-xl select-bordered h-9 lg:text-base w-64 max-w-xs"
   onchange="selectCurrentYear()">
 
-  <option selected> select current acdemic year</option>
+  <option selected> {{academicYears[0].academic_year || 'select current acdemic year' }}</option>
   @each(year in academicYears)
     <option value="{{year.academic_year}}">{{year.academic_year}}</option>
   @end
