@@ -316,7 +316,7 @@ export default class UsersController {
       // }
 
       if (request.qs().advisor) {
-        advisorById = await User.find(request.qs().advisor)
+        advisorById = await Advisor.find(request.qs().advisor)
         // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         const users = await User.query().where('role', 'student')
         for (let i = 0; i < users.length; i++) {
