@@ -5,8 +5,21 @@
 @section('student-information')
 <section class="h-full w-full z-[5] relative flex flex-col pt-5">
   <div class="flex flex-col z-10 px-11">
+    @if(auth.user.role !== "student")
+    <a href="{{ route('/student-information', { qs: { month: 2 }}) }}">
+      <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
+        <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
+        <p class="font-semibold">Back</p>
+      </div>
+    </a>
+    @end
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
-    <p class="text-base">{{studentUser.user_id}}</p>
+    <div class="flex space-x-2">
+      <p>{{studentUser.user_id}}</p>
+      <p>|</p>
+      <p>{{studentUser.student.plan ? studentUser.student.plan + " month" : "" }}</p>
+    </div>
+
     <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
   </div>
   {{--  @if(auth.user.role === "student" && !studentUser.student.plan)
@@ -18,26 +31,22 @@
   @end  --}}
 
   <div class="flex mt-5 px-11">
-    @if(auth.user.role !== "student")
-      <p class="font-bold whitespace-nowrap">{{studentUser.student.plan ? studentUser.student.plan + " month" : "" }}</p>
-    @else
-    @if(nextStep.name === "TR-01")
+    @if(nextStep.name === "TR-01" && auth.user.role === "student" && !studentUser.student.plan)
     <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2 z-10">
       <select {{disabled}} id="study" name="study"
       class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
 
-      <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Choose plan"}}</option>
+      <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please assigns your plan"}}</option>
       @each(plan in plans)
-        <option value={{ plan }}>{{ plan + " month" }}</option>
+        <option value={{ plan }}>({{ plan + " month" }})</option>
       @end
       </select>
       @if(disabled)
         <button id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="editPlan(event)">edit</button>
       @else
-        <button id="submitButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">submit</button>
+        <button id="submitButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">confirm</button>
       @end
     </form>
-    @end
     @end
     @if(studentUser.student.plan)
     <div class="w-full flex justify-center">
@@ -69,7 +78,7 @@
     @end
   </div>
 
-  
+  @if(studentUser.student.plan)
   <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
     <div>
       <canvas id="pdfViewer" class="bg-[#DDE2E5] h-96 w-72"></canvas>
@@ -82,17 +91,86 @@
     
     <div class="flex flex-col pt-5">
       <form id="formElem">
-        <div class="flex space-x-2">
-          <p class="font-bold">{{nextStep.name}}</p>
+        <div class="flex flex-col space-y-2">
+          <p class="font-medium text-lg">{{nextStep.name}}</p>
           @if(currentSteps.status === "Disapproved")
           <p class="font-bold">(Waiting for resubmit)</p>
           @end
-          @if(currentSteps.status != "Approved")
-          <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
+          @if(auth.user.role === "student")
+          <button class="btn btn-primary btn-sm h-10 w-fit">Download plain document</button>
           @end
+          <div class="bg-[#F4F4F4] w-fit h-fit rounded-md p-5">
+            <div class="border-b-2 border-[#A8B0B8] pb-5 space-y-2">
+              <p class="font-medium">Submission</p>
+              @if(currentSteps.status ==="Pending" || currentSteps.status === "Disapproved")
+              <div class="text-[#858D95] flex flex-col">
+                <p>Submitted:</p>
+                <p>{{currentSteps.createAt}}</p>
+              </div>
+              @else
+              <p class="text-[#858D95]">Not Submitted</p>
+              @end
+              {{--  <div class="form-control">
+                <label class="input-group input-group-sm">
+                  <span>Choose file</span>
+                  <input type="file" id="myPdf" class="input input-primary hidden" />
+                  <input type="text" class="input border-none disabled:bg-white disabled:text-black disabled:cursor-default input-sm" disabled />
+                  <span>Submit</span>
+                </label>
+              </div>  --}}
+              <div class="form-control">
+                <label class="input-group input-group-sm">
+                  <label for="myPdf" class="flex-shrink-0 btn btn-outline btn-sm border-[#A8B0B8]">Choose file</label>
+                  <input type="file" id="myPdf" class="input input-primary hidden" />
+                  <input type="text" id="showInput" class="input input-bordered border-[#A8B0B8] disabled:bg-white disabled:text-black disabled:cursor-default input-sm" disabled />
+                  <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                </label>
+              </div>
+            </div>
+            <div class="pt-5">
+              <p class="font-medium">Approval</p>
+              <div>
+                @if(auth.user.role != "student" )
+                  @if(currentSteps.status === "Pending")
+                  <div class="flex" id="radio-group">
+                    <div class="form-control w-fit">
+                      <label class="label cursor-pointer space-x-2">
+                        <input type="radio" id="approved" name="radio" value="Approved" class="radio checked:bg-blue-500" checked onclick="removeTextArea()"/>
+                        <span class="label-text font-bold">Approved</span> 
+                      </label>
+                    </div>   
+                    <div class="form-control w-fit">
+                      <label class="label cursor-pointer space-x-2">
+                        <input type="radio" id="disapproved" name="radio" value="Disapproved" class="radio checked:bg-blue-500" onclick="showTextArea()"/>
+                        <span class="label-text font-bold text-red-500">Disapproved</span> 
+                      </label>
+                    </div>  
+                  </div>
+                  @else
+                  <p class="text-[#858D95]">Please waiting for submitted</p>
+                  @end
+                {{--  <textarea id="content" name="content" class="p-3 w-full h-28 text-xs rounded-lg" placeholder="Write your content..."></textarea>  --}}
+                <button class="btn btn-sm btn-primary rounded-md text-white">confirm</button>
+                @else
+                  @if(currentSteps.status ==="Disapproved")
+                  <div class="flex flex-col mt-5">
+                    <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
+                    <p>{{currentSteps.reason}}</p>
+                  </div> 
+                  @else
+                  <p class="text-[#858D95]">Not approved</p>
+                  @end
+                @end
+                  {{--  <button class="btn btn-sm btn-primary rounded-3xl text-white">not approve</button>
+                  <textarea onkeyup="validateInput()" id="no_approve_reason" name="no_approve_reason" class="p-3 w-full h-28 text-xs rounded-lg border-2 border-red-500 placeholder="Write your content...">{{post ? post.content : ''}}</textarea>  --}}
+            </div>
+            </div>
+          </div>
+          {{--  @if(currentSteps.status != "Approved")
+          <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
+          @end  --}}
         </div> 
-        <p>{{currentSteps.status ==="Pending" || currentSteps.status === "Disapproved" ? "Submitted: " + currentSteps.createAt : "Not Submitted"}}</p>
-        @if(currentSteps.status ==="Disapproved")
+        {{--  @if(currentSteps.status ==="Disapproved")
         <div class="flex flex-col mt-5">
           <p class="font-bold text-red-500">{{nextStep.name}} disapprove</p>
           <p>{{currentSteps.reason}}</p>
@@ -101,34 +179,27 @@
         @if(auth.user.role === "student")
           <input type="file" id="myPdf" class="mt-5" /><br>
           <button class="btn btn-sm btn-primary rounded-3xl text-white mt-2">submit</button>
-        @end
+        @end  --}}
       </form>
-      <form id="formElem2">
-        @if(auth.user.role != "student" && currentSteps.status === "Pending")
-        <div class="flex mt-5" id="radio-group">
-          <div class="form-control w-fit">
-            <label class="label cursor-pointer space-x-2">
-              <input type="radio" id="approved" name="radio" value="Approved" class="radio checked:bg-blue-500" checked onclick="removeTextArea()"/>
-              <span class="label-text font-bold">Approved</span> 
-            </label>
-          </div>   
-          <div class="form-control w-fit">
-            <label class="label cursor-pointer space-x-2">
-              <input type="radio" id="disapproved" name="radio" value="Disapproved" class="radio checked:bg-blue-500" onclick="showTextArea()"/>
-              <span class="label-text font-bold text-red-500">Disapproved</span> 
-            </label>
-          </div>  
-        </div>
-        {{--  <textarea id="content" name="content" class="p-3 w-full h-28 text-xs rounded-lg" placeholder="Write your content..."></textarea>  --}}
-        <button class="btn btn-sm btn-primary rounded-3xl text-white">confirm</button>
-        @end
-          {{--  <button class="btn btn-sm btn-primary rounded-3xl text-white">not approve</button>
-          <textarea onkeyup="validateInput()" id="no_approve_reason" name="no_approve_reason" class="p-3 w-full h-28 text-xs rounded-lg border-2 border-red-500 placeholder="Write your content...">{{post ? post.content : ''}}</textarea>  --}}
-    </form>
     </div>
   </div>
+  @else
+  @if(auth.user.role === 'student')
+  <div class="absolute left-80 top-16">
+    <svg width="103" height="25" viewBox="0 0 103 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10.1783 11.7942C41.1941 -3.08664 71.6458 -3.60876 103 8.66143C100.744 11.4026 98.827 10.3584 97.3608 9.83624C86.0823 6.31181 74.4655 5.92018 62.9614 5.39805C46.382 4.61487 30.7052 9.05306 15.3662 16.2324C14.6895 16.4935 14.1254 17.0156 12.7719 18.0599C20.5541 19.8873 28.3367 16.7545 35.1037 20.4095C34.9906 20.9316 34.9906 21.5843 34.878 22.1064C29.8027 22.498 24.6148 22.8896 19.539 23.4118C14.4637 23.9339 9.50157 24.5866 4.42628 24.9782C0.704399 25.2392 -0.874757 23.1507 0.478653 19.2347C2.17042 14.1439 4.53888 9.44462 6.6816 4.61487C6.90735 4.09274 7.2457 3.44005 7.69666 3.17899C8.93746 2.65687 10.1783 2.5263 11.5317 2.13468C11.7569 3.44006 12.321 4.87593 12.2084 6.05074C11.9826 7.61712 11.1933 8.92249 10.1783 11.7942Z" fill="#4263EB"/>
+    </svg>
+    <p class="text-primary font-medium pl-20">Click here to add new academic year</p>
+  </div>   
+  @else
+  <div class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+    <p>Please wait for student assigns a plan.</p>
+  </div>  
+  @end
+  @end
 </section>
-<script>
+<script>  
+
   window.history.replaceState({}, '', '/student/{{studentUser.user_id}}')
   const showTextArea = () => {
     const c = document.getElementById("reason")
@@ -155,12 +226,20 @@
     ele.innerHTML = "submit"
     document.getElementById("planForm").appendChild(ele)
   }
+
+  const middleEllipsis = (str) => {
+    if (str.length > 35) {
+      return str.substring(0, 10) + '...' + str.substring(str.length - 10)
+    }
+    return str
+    }
   let pdfFile
   const input = document.getElementById("myPdf")
   if(input){  
     input.onchange = (e) => {
     const [file] = e.target.files
     pdfFile = file
+    document.getElementById('showInput').value = middleEllipsis(file.name)
   }
   }
 
@@ -174,35 +253,38 @@
     window.location.href = '/student/{{studentUser.user_id}}?' + urlParams
   }
 
-  const formElem2 = document.getElementById('formElem2')
-  if(formElem2)
-  formElem2.onsubmit = async (event) => {
-    event.preventDefault() 
-    const status = document.querySelector('input[name="radio"]:checked').value
-    const body = {
-      status : status,
-      doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-      reason : status === "Approved" ? "" : document.getElementById('reason').value
-    }
+  // const formElem2 = document.getElementById('formElem2')
+  // if(formElem2)
+  // formElem2.onsubmit = async (event) => {
+  //   event.preventDefault() 
+  //   console.log('dsadsas')
+  //   const status = document.querySelector('input[name="radio"]:checked').value
+  //   const body = {
+  //     status : status,
+  //     doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
+  //     reason : status === "Approved" ? "" : document.getElementById('reason').value
+  //   }
 
-    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body),
-    })
+  //   await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(body),
+  //   })
     
-    window.location.reload()
-  }
+  //   window.location.reload()
+  // }
   const formElem = document.getElementById('formElem')
   if(formElem)
   formElem.onsubmit = async (event) => {
     event.preventDefault() 
+    const status = document.querySelector('input[name="radio"]:checked').value
     const body = {
       status : 'Pending',
       doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
+      reason : status === "Approved" ? "" : document.getElementById('reason').value
     }
     const formData = new FormData(formElem)
     formData.append('files', pdfFile)
@@ -211,7 +293,7 @@
     formData.append('studentId', {{studentUser.user_id}})
     
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -222,7 +304,6 @@
         method: 'POST',
         body: formData,
     })
-    window.location.reload()
   }
 
   const formElem3 = document.getElementById('formElem3')
