@@ -113,6 +113,7 @@ Route.group(() => {
     Route.get('/staffUser', 'UsersController.showStaffUser')
     Route.get('/staffCYear', 'UsersController.getStaffUserCuurentYear')
     Route.get('/advisorCYear', 'UsersController.getAdvisorUserCuurentYear')
+    Route.get('/studentByAdv', 'UsersController.getStudentUserByAdvisor')
   })
     // .middleware('login')
     .prefix('/user')
