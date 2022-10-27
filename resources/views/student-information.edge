@@ -122,6 +122,7 @@
         window.location.href = `/student-information?${urlParams}`
     })
   }
+  
 
   // const selectCurrentYear = async () =>{
   //   const year = {year: document.getElementById('academic-years').value, isCurrent: true}
@@ -154,81 +155,171 @@
       }
     })
   })
-  let temp = []
-  const search = async () => {
-    const response =  await fetch(`/api/user/adviserUser`)
-    const { adviserUsers } = await response.json()
-    // console.log(adviserUsers)
+
+
+  let advisorTemp = []
+  const searchAdvisor = async () => {
+    const response =  await fetch(`/api/user/advisorUser`)
+
+    const { advisorUsers } = await response.json()
     const searchValue = document.getElementById('advisor').value
-    if(searchValue && adviserUsers) document.getElementById('adivisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    if(searchValue && advisorUsers.length > 0) document.getElementById('advisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
     let countNotFound = 0
-    adviserUsers.forEach(advisor => {
+    advisorUsers.forEach(advisor => {
       if(searchValue === advisor.user_id){
-        document.getElementById('addAdviser').disabled = false
+        document.getElementById('add-advisor-button').disabled = false
       }else{
-        document.getElementById('addAdviser').disabled = true
+        document.getElementById('add-advisor-button').disabled = true
       }
       if(advisor.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
-        if(temp.length > 0){
-          temp.forEach(t =>{
+        if(advisorTemp.length > 0){
+          advisorTemp.forEach(t =>{
             if(t !== advisor.user_id){
-              document.getElementById('ul').innerHTML += `<li onclick="deleteAdivisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
+              document.getElementById('ul').innerHTML += `<li onclick="deleteAdvisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
             }else{
               countNotFound++
             }
           })
         }else{
-          document.getElementById('ul').innerHTML += `<li onclick="deleteAdivisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
+          document.getElementById('ul').innerHTML += `<li onclick="deleteAdvisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
         }
       }else{
         countNotFound++
       }
     })
-    if(countNotFound === adviserUsers.length){
-      document.getElementById('addAdviser').disabled = true
-      document.getElementById('adivisor_list').innerHTML = ''
+    if(countNotFound === advisorUsers.length){
+      document.getElementById('add-advisor-button').disabled = true
+      document.getElementById('advisor_list').innerHTML = ''
     }
   }
 
-  const deleteAdivisorList = (id) =>{
+  const searchStaff = async () => {
+    const response =  await fetch(`/api/user/staffUser`)
+    const { staffUsers } = await response.json()
+    const searchValue = document.getElementById('staff').value
+    if(searchValue && staffUsers.length > 0) document.getElementById('staff_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="staff-ul"></ul>'
+    let countNotFound = 0
+    staffUsers.forEach(staff => {
+      if(searchValue === staff.user_id){
+        document.getElementById('add-staff-button').disabled = false
+      }else{
+        document.getElementById('add-staff-button').disabled = true
+      }
+      if(staff.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
+        if(staffTemp.length > 0){
+          staffTemp.forEach(t =>{
+            if(t !== staff.user_id){
+              document.getElementById('staff-ul').innerHTML += `<li onclick="deleteStaffList('${staff.user_id}')"><a>${staff.user_id}</a></li>`
+            }else{
+              countNotFound++
+            }
+          })
+        }else{
+          document.getElementById('staff-ul').innerHTML += `<li onclick="deleteStaffList('${staff.user_id}')"><a>${staff.user_id}</a></li>`
+        }
+      }else{
+        countNotFound++
+      }
+    })
+    if(countNotFound === staffUsers.length){
+      document.getElementById('add-staff-button').disabled = true
+      document.getElementById('staff_list').innerHTML = ''
+    }
+  }
+
+  const updateSettings =  async () => { 
+    const users = {
+      users: {
+        {advisors: advisorTemp},
+        {staffs: staffTemp}
+      }
+    }
+    await fetch('/api/user/courseInfo?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(users),
+    }).then(() => {
+        window.location.href = `/course-info`
+    })
+  }
+
+  const deleteAdvisorList = (id) =>{
     document.getElementById('advisor').value = id
-    document.getElementById('adivisor_list').innerHTML = ''
-    document.getElementById('addAdviser').disabled = false
+    document.getElementById('advisor_list').innerHTML = ''
+    document.getElementById('add-advisor-button').disabled = false
   }
-  if(document.getElementById('advisor')){
-    if(!document.getElementById('advisor').value){  
-      document.getElementById('addAdviser').disabled = true
-    } 
+  if(document.getElementById('advisor') || document.getElementById('staff')){
+    if(!document.getElementById('advisor').value) document.getElementById('add-advisor-button').disabled = true
+    if(!document.getElementById('staff').value) document.getElementById('add-staff-button').disabled = true
   }
-  const addAdivisor = () => {
+  const deleteStaffList = (id) =>{
+    document.getElementById('staff').value = id
+    document.getElementById('staff_list').innerHTML = ''
+    document.getElementById('add-staff-button').disabled = false
+  }
+  
+  const addAdvisor = () => {
     
     if(!document.getElementById('advisor').value) {
-      document.getElementById('addAdviser').disabled = true
+      document.getElementById('add-advisor-button').disabled = true
       return
     }
     
-    temp.push(document.getElementById('advisor').value)
-    temp.forEach(t=>{
+    advisorTemp.push(document.getElementById('advisor').value)
+    advisorTemp.forEach(t=>{
       if(t===document.getElementById('advisor').value){
-        document.getElementById('addAdviser').disabled = true
+        document.getElementById('add-advisor-button').disabled = true
       }
     })
     
     document.getElementById('advisor-table-row').innerHTML += `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
-                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteAdviser('${document.getElementById('advisor').value}')">
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteAdvisor('${document.getElementById('advisor').value}')">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
                               </svg>
                             </button>
                           </div>
                         </td></tr>`
-    document.getElementById('adivisor_list').innerHTML = ''
+    document.getElementById('advisor_list').innerHTML = ''
+    document.getElementById('advisor').value = ''
+  }
+  let staffTemp =[]
+  const addStaff = () => {
+    if(!document.getElementById('staff').value) {
+      document.getElementById('add-staff-button').disabled = true
+      return
+    }
+    
+    staffTemp.push(document.getElementById('staff').value)
+    staffTemp.forEach(t=>{
+      if(t===document.getElementById('staff').value){
+        document.getElementById('add-staff-button').disabled = true
+      }
+    })
+    
+    document.getElementById('staff-table-row').innerHTML += `<tr id="${document.getElementById('staff').value}"><td>${document.getElementById('staff').value}</td> <td class="text-right"><div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteStaff('${document.getElementById('staff').value}')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td></tr>`
+    document.getElementById('staff_list').innerHTML = ''
+    document.getElementById('staff').value = ''
    
   }
 
-  const deleteAdviser = (id) => {
+  const deleteAdvisor = (id) => {
     document.getElementById(id).remove()
-    temp = temp.filter(e => e !== id)
+    advisorTemp = advisorTemp.filter(e => e !== id)
+  }
+  const deleteStaff = (id) => {
+    document.getElementById(id).remove()
+    staffTemp = staffTemp.filter(e => e !== id)
   }
   if(document.querySelectorAll('input[name=selectStep]:checked').length > 0 || document.querySelectorAll('input[name=selectStatus]:checked').length > 0){
     document.getElementById('selectInput').focus()

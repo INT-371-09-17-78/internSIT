@@ -19,7 +19,7 @@ export default class UsersSchema extends BaseSchema {
       //   .references('academic_year_configs.conf_id')
       //   .onDelete('CASCADE')
       // table.integer('academic_year').nullable()
-      // table.string('adviser_id').references('users.user_id').onDelete('CASCADE')
+      // table.string('advisor_id').references('users.user_id').onDelete('CASCADE')
       /**
        * Uses timestampz for PostgreSQL and DATETIME2 for MSSQL
        */

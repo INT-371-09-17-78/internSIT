@@ -4,13 +4,13 @@ import Student from 'App/Models/Student'
 import Status from 'App/Models/Status'
 import File from 'App/Models/File'
 import Document from 'App/Models/Document'
-import Adviser from 'App/Models/Adviser'
+import Advisor from 'App/Models/Advisor'
 import Document_Status from 'App/Models/DocumentStatus'
 import AcademicYear from 'App/Models/AcademicYear'
 import UserHasDoc from 'App/Models/UserHasDoc'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 // import UserHasDoc from 'App/Models/UserHasDoc'
-// import Adviser from 'App/Models/Adviser'
+// import Advisor from 'App/Models/Advisor'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
 import moment from 'moment-timezone'
@@ -116,7 +116,7 @@ export default class UsersController {
         throw new Error('cannot find user')
       }
 
-      let ldRole: string = user.role === 'adviser' || user.role === 'staff' ? 'staff' : 'st'
+      let ldRole: string = user.role === 'advisor' || user.role === 'staff' ? 'staff' : 'st'
 
       const ldapUser: any = await this.authenticate(username, password, ldRole)
       const fullname = ldapUser.cn.split(' ')
@@ -289,7 +289,7 @@ export default class UsersController {
       )
       let studentUsers: any = []
       let result: any = []
-      let adviserUsersResult: any = []
+      let advisorUsersResult: any = []
       let staffUsersResult: any = []
       let year: any
       let allAmoutSt: any
@@ -307,10 +307,9 @@ export default class UsersController {
       }
 
       // stafftUsers = await User.query().where('role', 'staff')
-      // adviserUsers = await User.query().where('role', 'adviser')
-      // const adviserUsersJSON = adviserUsers.map((post) => post.serialize())
-      // console.log(adviserUsersJSON)
-
+      // advisorUsers = await User.query().where('role', 'advisor')
+      // const advisorUsersJSON = advisorUsers.map((post) => post.serialize())
+      // console.log(advisorUsersJSON)
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         const UsersInAcademicYear = await AcademicYearCf[0]
           .related('users')
@@ -336,14 +335,14 @@ export default class UsersController {
           )
         }
 
-        const adviserUsers = await User.query().where('role', 'adviser')
+        const advisorUsers = await User.query().where('role', 'advisor')
         const staffUsers = await User.query().where('role', 'staff')
-        for (let i = 0; i < adviserUsers.length; i++) {
+        for (let i = 0; i < advisorUsers.length; i++) {
           const check = await UsersInAcademicYearModel.query()
-            .where('user_id', adviserUsers[i].user_id)
+            .where('user_id', advisorUsers[i].user_id)
             .andWhere('academic_year', AcademicYearAll[0].academic_year)
           if (check && check.length > 0) {
-            adviserUsersResult.push(check[0])
+            advisorUsersResult.push(check[0])
           }
         }
         for (let i = 0; i < staffUsers.length; i++) {
@@ -357,7 +356,7 @@ export default class UsersController {
       } else {
         studentUsers = []
       }
-      console.log(adviserUsersResult)
+      console.log(advisorUsersResult)
       // console.log(studentUsers.length)
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
@@ -420,8 +419,8 @@ export default class UsersController {
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
             ? result
             : studentUsers,
-        adviserUsers: adviserUsersResult,
-        stafftUsers: staffUsersResult,
+        // advisorUsers: advisorUsers,
+        // stafftUsers: stafftUsers,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
@@ -494,23 +493,23 @@ export default class UsersController {
   //   }
   // }
 
-  public async showAdviserUser({ response }: HttpContextContract) {
+  public async showAdvisorUser({ response }: HttpContextContract) {
     try {
-      let adviserUsers: any
+      let advisorUsers: any
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       // console.log(AcademicYearCf[0].conf_id)
       if (AcademicYearCf && AcademicYearCf.length > 0) {
-        adviserUsers = await User.query().where('role', 'adviser')
+        advisorUsers = await User.query().where('role', 'advisor')
         // .andWhere('conf_id', AcademicYearCf[0].conf_id)
-        if (!adviserUsers || adviserUsers.length <= 0) {
-          adviserUsers = await User.query().where('role', 'adviser')
+        if (!advisorUsers || advisorUsers.length <= 0) {
+          advisorUsers = await User.query().where('role', 'advisor')
         }
       } else {
-        adviserUsers = await User.query().where('role', 'adviser')
+        advisorUsers = await User.query().where('role', 'advisor')
         // .andWhere('conf_id', AcademicYearCf[0].conf_id)
       }
-      console.log(adviserUsers)
-      return response.status(200).json({ adviserUsers: adviserUsers })
+      console.log(advisorUsers)
+      return response.status(200).json({ advisorUsers: advisorUsers })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -953,7 +952,7 @@ export default class UsersController {
         mentorPosition,
         mentorEmail,
         mentorTel,
-        adviserFullName,
+        advisorFullName,
         approve,
       } = request.only([
         'firm',
@@ -966,7 +965,7 @@ export default class UsersController {
         'mentorPosition',
         'mentorEmail',
         'mentorTel',
-        'adviserFullName',
+        'advisorFullName',
         'approve',
       ])
       const studentUsers = await User.query()
@@ -992,24 +991,24 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
-      if (adviserFullName) {
-        const adviserFullNameSplit = adviserFullName.split(' ')
-        if (adviserFullNameSplit && adviserFullNameSplit.length > 1) {
-          const roleAdviserUser = await User.query()
-            .where('firstName', adviserFullNameSplit[0])
-            .andWhere('lastName', adviserFullNameSplit[1])
-            .andWhere('role', 'adviser')
-          if (roleAdviserUser && roleAdviserUser.length > 0) {
-            const adviserUsers = await Adviser.query().where(
-              'adviser_id',
-              roleAdviserUser[0].user_id
+      if (advisorFullName) {
+        const advisorFullNameSplit = advisorFullName.split(' ')
+        if (advisorFullNameSplit && advisorFullNameSplit.length > 1) {
+          const roleAdvisorUser = await User.query()
+            .where('firstName', advisorFullNameSplit[0])
+            .andWhere('lastName', advisorFullNameSplit[1])
+            .andWhere('role', 'advisor')
+          if (roleAdvisorUser && roleAdvisorUser.length > 0) {
+            const advisorUsers = await Advisor.query().where(
+              'advisor_id',
+              roleAdvisorUser[0].user_id
             )
-            studentUser.student.adviser_id = adviserUsers[0].adviser_id
-            // adviserUsers[0].related('students').updateOrCreate({
+            studentUser.student.advisor_id = advisorUsers[0].advisor_id
+            // advisorUsers[0].related('students').updateOrCreate({
 
             // })
-            // studentUser.student.adviser_id = adviserUser[0].user_id
-            // adviserUser[0].related('student')
+            // studentUser.student.advisor_id = advisorUser[0].user_id
+            // advisorUser[0].related('student')
           }
         }
       }
@@ -1034,9 +1033,9 @@ export default class UsersController {
         .andWhere('user_id', request.param('id'))
         .preload('student')
       const studentUser = studentUsers[0]
-      if (studentUser.student.adviser_id) {
-        const adviser = await User.findOrFail(studentUser.student.adviser_id)
-        studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+      if (studentUser.student.advisor_id) {
+        const advisor = await User.findOrFail(studentUser.student.advisor_id)
+        studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
       }
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       const studentInfo = [
@@ -1056,10 +1055,10 @@ export default class UsersController {
         { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
         {
           title: 'Advisor',
-          value: studentUser.student['adviserFullName']
-            ? studentUser.student['adviserFullName']
+          value: studentUser.student['advisorFullName']
+            ? studentUser.student['advisorFullName']
             : '',
-          key: 'adviserFullName',
+          key: 'advisorFullName',
         },
       ]
       return view.render('student-info', {
@@ -1079,9 +1078,9 @@ export default class UsersController {
         .andWhere('user_id', request.param('id'))
         .preload('student')
       const studentUser = studentUsers[0]
-      if (studentUser.student.adviser_id) {
-        const adviser = await User.findOrFail(studentUser.student.adviser_id)
-        studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+      if (studentUser.student.advisor_id) {
+        const advisor = await User.findOrFail(studentUser.student.advisor_id)
+        studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
       }
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       const studentInfo = [
@@ -1101,10 +1100,10 @@ export default class UsersController {
         { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
         {
           title: 'Advisor',
-          value: studentUser.student['adviserFullName']
-            ? studentUser.student['adviserFullName']
+          value: studentUser.student['advisorFullName']
+            ? studentUser.student['advisorFullName']
             : '',
-          key: 'adviserFullName',
+          key: 'advisorFullName',
         },
       ]
       // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
@@ -1266,7 +1265,7 @@ export default class UsersController {
             user_id: 'krant.bur',
             firstname: 'Kantsak',
             lastname: 'Sivaraksa',
-            role: 'adviser',
+            role: 'advisor',
             password: 'Fxig08',
             approved: true,
           },
@@ -1274,7 +1273,7 @@ export default class UsersController {
             user_id: 'manee.mun',
             firstname: 'Karn',
             lastname: 'Dahkling',
-            role: 'adviser',
+            role: 'advisor',
             password: 'Fxig08',
             approved: true,
           },
@@ -1284,7 +1283,7 @@ export default class UsersController {
           user.role === 'staff'
             ? (await user.related('staff').create({}),
               await year.related('users').attach([user.user_id]))
-            : (await user.related('adviser').create({}),
+            : (await user.related('advisor').create({}),
               await year.related('users').attach([user.user_id]))
         )
       }

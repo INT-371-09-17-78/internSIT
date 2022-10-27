@@ -129,7 +129,7 @@ export default class FilesController {
               // userIdCache = result[0].user_id
               this.deleteFile(result, 'steps/')
             }
-            // if (user.role === 'staff' || user.role === 'adviser') {
+            // if (user.role === 'staff' || user.role === 'advisor') {
             //   await File.create({
             //     file_id: newFileName + '.' + file.extname,
             //     file_name: file.clientName,

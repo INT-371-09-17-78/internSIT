@@ -7,7 +7,7 @@
 
 import user from 'app/Models/User'
 // import student from 'app/Models/Student'
-// import adviser from 'app/Models/Adviser'
+// import advisor from 'app/Models/Advisor'
 // import staff from 'app/Models/Staff'
 
 declare module '@ioc:Adonis/Addons/Auth' {
@@ -44,9 +44,9 @@ declare module '@ioc:Adonis/Addons/Auth' {
     //   implementation: LucidProviderContract<typeof student>
     //   config: LucidProviderConfig<typeof student>
     // }
-    // adviser: {
-    //   implementation: LucidProviderContract<typeof adviser>
-    //   config: LucidProviderConfig<typeof adviser>
+    // advisor: {
+    //   implementation: LucidProviderContract<typeof advisor>
+    //   config: LucidProviderConfig<typeof advisor>
     // }
     // staff: {
     //   implementation: LucidProviderContract<typeof staff>
@@ -87,9 +87,9 @@ declare module '@ioc:Adonis/Addons/Auth' {
     //   implementation: SessionGuardContract<'student', 'authStudent'>
     //   config: SessionGuardConfig<'student'>
     // }
-    // authAdviser: {
-    //   implementation: SessionGuardContract<'adviser', 'authAdviser'>
-    //   config: SessionGuardConfig<'adviser'>
+    // authAdvisor: {
+    //   implementation: SessionGuardContract<'advisor', 'authAdvisor'>
+    //   config: SessionGuardConfig<'advisor'>
     // }
     // authStaff: {
     //   implementation: SessionGuardContract<'staff', 'authStaff'>

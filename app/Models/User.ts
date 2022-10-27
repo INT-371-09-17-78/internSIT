@@ -17,7 +17,7 @@ import Post from 'App/Models/Post'
 import Student from 'App/Models/Student'
 import File from 'App/Models/File'
 import AcademicYear from 'App/Models/AcademicYear'
-import Adviser from 'App/Models/Adviser'
+import Advisor from 'App/Models/Advisor'
 import Staff from 'App/Models/Staff'
 
 export default class User extends BaseModel {
@@ -60,8 +60,8 @@ export default class User extends BaseModel {
   @hasOne(() => Student, { foreignKey: 'student_id' })
   public student: HasOne<typeof Student>
 
-  @hasOne(() => Adviser, { foreignKey: 'adviser_id' })
-  public adviser: HasOne<typeof Adviser>
+  @hasOne(() => Advisor, { foreignKey: 'advisor_id' })
+  public advisor: HasOne<typeof Advisor>
 
   @hasOne(() => Staff, { foreignKey: 'staff_id' })
   public staff: HasOne<typeof Staff>
@@ -77,11 +77,11 @@ export default class User extends BaseModel {
   //   public skills: ManyToMany<typeof Skill>
   public academicYear: ManyToMany<typeof AcademicYear>
 
-  // @hasOne(() => Student, { foreignKey: 'adviser_id' })
-  // public student_adviser: HasOne<typeof Student>
+  // @hasOne(() => Student, { foreignKey: 'advisor_id' })
+  // public student_advisor: HasOne<typeof Student>
 
-  // @hasMany(() => Student, { foreignKey: 'adviser_id' })
-  // public student_adviser: HasMany<typeof Student>
+  // @hasMany(() => Student, { foreignKey: 'advisor_id' })
+  // public student_advisor: HasMany<typeof Student>
 
   @column.dateTime({ autoCreate: true })
   public created_at: DateTime

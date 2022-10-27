@@ -50,7 +50,7 @@ Route.get('/', async ({ view, auth, response }) => {
   }
   if (auth.user) return response.redirect('/announcement')
   else {
-    const roles = ['Student', 'Adviser', 'Staff']
+    const roles = ['Student', 'Advisor', 'Staff']
     return view.render('home', { roles })
   }
 })
@@ -107,7 +107,7 @@ Route.group(() => {
     Route.patch('/student/regis/approve', 'UsersController.updateStudentUserApprove')
     Route.delete('/student/:id', 'UsersController.deleteStudentUser')
     Route.patch('/courseInfo', 'UsersController.updateCourseInformation')
-    Route.get('/adviserUser', 'UsersController.showAdviserUser')
+    Route.get('/advisorUser', 'UsersController.showAdvisorUser')
     Route.get('/staffUser', 'UsersController.showStaffUser')
   })
     // .middleware('login')

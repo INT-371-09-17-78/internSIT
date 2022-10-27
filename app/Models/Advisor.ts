@@ -3,12 +3,12 @@ import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:
 import User from 'App/Models/User'
 import Student from 'App/Models/Student'
 
-export default class Adviser extends BaseModel {
+export default class Advisor extends BaseModel {
   // @column({ isPrimary: true })
   // public id: number
 
   @column({ isPrimary: true })
-  public adviser_id: string
+  public advisor_id: string
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
