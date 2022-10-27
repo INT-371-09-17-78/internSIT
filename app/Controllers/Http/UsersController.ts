@@ -350,7 +350,7 @@ export default class UsersController {
           studentUsers = studentUsers.filter(
             (userPre) => userPre.student.plan === parseInt(request.qs().month)
           )
-          console.log(studentUsers)
+          // console.log(studentUsers)
           // studentUsers = studentUsers.map((st) => st.serialize())
         }
 
@@ -476,7 +476,7 @@ export default class UsersController {
   public async updateUsersCourseInformation({ request, response }: HttpContextContract) {
     try {
       const { users } = request.all()
-      console.log(users)
+      // console.log(users)
       let AcademicYearCfResult: any
       // let usersArr: any = []
       AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -839,16 +839,21 @@ export default class UsersController {
         .andWhere('academic_year', AcademicYearCf[0].academic_year)
       const userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        // .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('updated_at', 'desc')
-      // const userHasDoc = await usersInAcademicYear[0]
-      //   .related('documentStatus')
-      //   .query()
-      //   .where('id', UserHasDocResult[0].doc_stat_id)
+
+      let submission: any = []
+      for (let i = 0; i < userHasDocResult.length; i++) {
+        const docWStat = await Document_Status.query().where('id', userHasDocResult[i].doc_stat_id)
+
+        if (docWStat[0].status_id === 'Pending') {
+          submission.push(docWStat[0])
+        }
+      }
 
       let userHasDoc
       if (userHasDocResult[0])
         userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+      // console.log(submission)
       // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
       if (userHasDoc && userHasDoc.length > 0) {
@@ -894,9 +899,9 @@ export default class UsersController {
         nextStep = steps[0]
         // nextStep['status'] = 'Waiting'
       }
-      console.log(steps)
-      console.log(currentSteps)
-      console.log(nextStep)
+      // console.log(steps)
+      // console.log(currentSteps)
+      // console.log(nextStep)
 
       let stepPaged = []
       if (qs.firstStepPaging) {
@@ -920,6 +925,7 @@ export default class UsersController {
         firstOfAllStep,
         lastOfAllStep,
         studentInfo,
+        submission: submission,
         // userHasDoc: userHasDoc[0].id,
       })
       // return response.redirect('/announcement')
