@@ -334,7 +334,7 @@ export default class UsersController {
       const ad = await User.query().where('role', 'advisor')
       let adSe: any = []
       for (let i = 0; i < ad.length; i++) {
-        const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].advisor_id)
+        const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].user_id)
         const tmp = ad[i].serialize()
         tmp['st'] = result.map((re) => re.serialize())
         adSe.push(tmp)
@@ -905,7 +905,11 @@ export default class UsersController {
         const docWStat = await Document_Status.query().where('id', userHasDocResult[i].doc_stat_id)
 
         if (docWStat[0].status_id === 'Pending') {
-          submission.push(docWStat[0])
+          const docWStatSe = docWStat[0].serialize()
+          docWStatSe.created_at = moment(docWStatSe.created_at.toString())
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
+          submission.push(docWStatSe)
         }
       }
 
