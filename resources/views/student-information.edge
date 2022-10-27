@@ -33,7 +33,7 @@
         {{auth.user.user_id}} | {{auth.user.role}}
         </p>
         <div class="ml-auto flex flex-col items-end space-y-2">
-          <p class="font-medium">Academic year: {{year}}</p>
+          <p class="font-medium">Academic year: {{request.cookie('year')}}</p>
           <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
         </div>
         @end
