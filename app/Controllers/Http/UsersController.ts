@@ -907,7 +907,7 @@ export default class UsersController {
 
         if (docWStat[0].status_id === 'Pending') {
           const docWStatSe = docWStat[0].serialize()
-          docWStatSe.created_at = moment(docWStatSe.created_at.toString())
+          docWStatSe.created_at = moment(userHasDocResult[i].createdAt.toString())
             .tz('Asia/Bangkok')
             .format('MMMM D, YYYY h:mm A')
           submission.push(docWStatSe)
