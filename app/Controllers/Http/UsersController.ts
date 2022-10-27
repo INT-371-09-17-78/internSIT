@@ -670,7 +670,8 @@ export default class UsersController {
 
   public async delUsersInAcademicYear({ request, response }: HttpContextContract) {
     try {
-      const { userId } = request.all()
+      // const { userId } = request.all()
+      const userId = request.param('id')
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const delUser = await UsersInAcademicYearModel.query()
         .where('academic_year', AcademicYearCf[0].academic_year)
@@ -684,7 +685,8 @@ export default class UsersController {
 
   public async delUsersFromAdvisor({ request, response }: HttpContextContract) {
     try {
-      const { userId } = request.all()
+      // const { userId } = request.all()
+      const userId = request.param('id')
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const delUser = await UsersInAcademicYearModel.query()
         .where('academic_year', AcademicYearCf[0].academic_year)
