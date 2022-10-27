@@ -96,13 +96,15 @@
           @if(auth.user.role === "student")
           <button type="button" class="btn btn-primary btn-sm h-10 w-fit">Download plain document</button>
           @end
-          <div class="bg-[#F4F4F4] w-[26rem] h-fit rounded-md p-5">
+          <div class="bg-[#F4F4F4] w-[26rem] rounded-md p-5">
             <div class="border-b-2 border-[#A8B0B8] pb-5 space-y-2">
               <p class="font-medium">Submission</p>
               @if(currentSteps.status ==="Pending" || currentSteps.status === "Disapproved")
-              <div class="text-[#858D95] flex flex-col">
+              <div class="text-[#858D95] flex flex-col h-24 overflow-auto">
                 <p>Submitted:</p>
-                <p>{{currentSteps.createAt}}</p>
+                @each((submit,index) in submission)
+                <p>{{index+1}}. {{submit.created_at}}</p>
+                @end
               </div>
               @else
               <p class="text-[#858D95]">Not Submitted</p>
