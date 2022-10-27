@@ -2,13 +2,14 @@
         <p class="text-base lg:text-3xl text-base-content font-semibold">Course information</p>
         @if(!request.matchesRoute('/course-info/edit'))
         <div class="grid grid-cols-5">
-          <p>Academic year</p>
+          {{--  <p>Academic year</p>
           <p>-</p>
           <p class="col-span-2"></p>
-          <a class="underline ml-auto link" href="{{ route('/student-information')}}">See all academic year</a>
+          <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>  --}}
           <p>Advisor</p>
           <div class="flex flex-col border-2 rounded-md col-span-4">
             <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <input type="checkbox" class="peer" /> 
               <div class="collapse-title text-xl font-medium">
                 1. Atchara  Tran-u-raikul
               </div>
@@ -21,6 +22,7 @@
               </div>
             </div>
             <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <input type="checkbox" class="peer" /> 
               <div class="collapse-title text-xl font-medium">
                 2. Jiw Ananarewrwe
               </div>
@@ -32,6 +34,7 @@
           <p>Staff</p>
           <div class="flex flex-col border-2 rounded-md col-span-4">
             <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <input type="checkbox" class="peer" /> 
               <div class="collapse-title text-xl font-medium">
                 1. Atchara  Tran-u-raikul
               </div>
@@ -44,6 +47,7 @@
               </div>
             </div>
             <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <input type="checkbox" class="peer"/> 
               <div class="collapse-title text-xl font-medium">
                 2. Jiw Ananarewrwe
               </div>

@@ -70,6 +70,8 @@ Route.group(() => {
 
 Route.get('/student-information', 'UsersController.showStudentUser')
 
+Route.get('/academic-year', 'UsersController.showStudentUser')
+
 Route.get('/register-request', 'UsersController.showStudentUser')
 
 Route.get('/course-info', 'UsersController.showStudentUser')

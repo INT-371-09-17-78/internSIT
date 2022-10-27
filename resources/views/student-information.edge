@@ -23,21 +23,27 @@
     @set('activeSixMonth', 'bg-[#484F56]/10')
   @end
   <section class="flex flex-col h-full w-full z-[5] bg-white">
-      <div class="flex pl-8 bg-[#F0F3F4] w-full py-6">
+      <div class="flex px-8 bg-[#F0F3F4] w-full py-6">
+        @if(request.matchesRoute('/academic-year'))
         <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
-          @if(request.matchesRoute('/student-information') && Object.keys(request.qs()).length === 0)
           Academic year
-          @else
-          {{auth.user.user_id}} | {{auth.user.role}}
-          @end
         </p>
+        @else
+        <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
+        {{auth.user.user_id}} | {{auth.user.role}}
+        </p>
+        <div class="ml-auto flex flex-col items-end space-y-2">
+          <p class="font-medium">Academic year: {{year}}</p>
+          <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
+        </div>
+        @end
       </div>
-      @if(request.matchesRoute('/student-information') && Object.keys(request.qs()).length === 0)
+      @if(request.matchesRoute('/academic-year'))
         @include('partials/academic-year')
       @else
         @include('partials/info-tab')
       @end
-      @if(request.matchesRoute('/student-information') && Object.keys(request.qs()).length > 0)
+      @if(request.matchesRoute('/student-information'))
         @include('partials/student-list')
       @elseif(request.matchesRoute('/register-request'))
         @include('partials/register-request')
@@ -50,27 +56,28 @@
 
   <script>
 
-  const setCookie = (name,value,days) => {
-      var expires = "";
-      if (days) {
-          var date = new Date();
-          date.setTime(date.getTime() + (days*24*60*60*1000));
-          expires = "; expires=" + date.toUTCString();
-      }
-      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-  }
+  // const setCookie = (name,value,days) => {
+  //     var expires = "";
+  //     if (days) {
+  //         var date = new Date();
+  //         date.setTime(date.getTime() + (days*24*60*60*1000));
+  //         expires = "; expires=" + date.toUTCString();
+  //     }
+  //     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+  // }
 
-  const setYearCookie = (y) =>{
-    let urlParams = new URLSearchParams()
-    urlParams.append('month', 2)
-    if(!document.cookie.split('year=')[1]){
-      setCookie('year', y, 7)
-      urlParams.append('year', y)
-    }else{
-      urlParams.append('year', document.cookie.split('year=')[1].split(';')[0])
-    }
-    window.location.href = `/student-information?${urlParams}`
-  }
+  // const setYearCookie = (y) =>{
+  //   console.log(y)
+  //   let urlParams = new URLSearchParams()
+  //   setCookie('year', y, 7)
+  //   urlParams.append('month', 2)
+  //   if(!document.cookie.split('year=')[1]){
+  //     urlParams.append('year', y)
+  //   }else{
+  //     urlParams.append('year', document.cookie.split('year=')[1].split(';')[0])
+  //   }
+  //   window.location.href = `/student-information?${urlParams}`
+  // }
   const closeAlertAddAcademicYear =()=>{
     document.getElementById("modal-add-academic-year").remove()
   }
@@ -333,7 +340,7 @@
         },
         body: JSON.stringify(body),
         }).then(() => {
-          window.location.href = `/student-information`
+          window.location.href = `/academic-year`
         })
   }
   </script>

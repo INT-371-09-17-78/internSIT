@@ -407,6 +407,7 @@ export default class UsersController {
           result = this.queryStringFilter(studentUsers, request.qs().step)
         }
       }
+      response.cookie('year', request.qs().year)
       return view.render('student-information', {
         studentUsers:
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
@@ -417,6 +418,7 @@ export default class UsersController {
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearCf,
+        year: request.qs().year,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -704,7 +706,10 @@ export default class UsersController {
       //   .related('documentStatus')
       //   .query()
       //   .where('id', UserHasDocResult[0].doc_stat_id)
-      const userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+
+      let userHasDoc
+      if (userHasDocResult[0])
+        userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
       console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
       if (userHasDoc && userHasDoc.length > 0) {

@@ -10,44 +10,15 @@
         @end  --}}
       </div>
       <div class="flex space-x-5 h-full">
-            <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
-              <li class="{{activeTwoMonth}}"><a href="{{ route('/student-information', {} ,{qs: {month: 2}})}}">INT340 (2 months)</a></li>
-              <li class="{{activeFourMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 4}})}}">INT350 (4 months)</a></li>
-              <li class="{{activeSixMonth}}"><a href="{{ route('/student-information', {} , {qs: {month: 6}})}}">INT370 (6 months)</a></li>
-            </ul>
-        @if(request.matchesRoute('/steps'))
-            @if(allAmoutSt !== noApprove)
-            <div class="flex-1 pr-20">
-              <table class="table w-full mt-5">
-                <thead>
-                  <tr class="border-2 border-[#F6F7F9]">
-                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
-                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                    <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @each((student,index) in studentUsers)
-                  @if(student.student.approved)
-                      <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
-                        <td>{{student.user_id}}</td>
-                        <td>{{student.firstname + " " + student.lastname}}</td>
-                        <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
-                      </tr>
-                  @end
-                  @end
-                </tbody>
-              </table>
-            </div>
-            @else
-            <div class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
-                <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
-                <p>No students in the system</p>
-                <p class="text-base">Please add students into the system first or Check your filters.</p>
-            </div>
-            @end
-            @else     
-            <div class="flex flex-col">
+        <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+          <li class="{{activeTwoMonth}}">
+            <a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 2,year: request.cookie('year') }}) : route('/academic-year') }}">INT340 (2 months)</a>
+          </li>
+          <li class="{{activeFourMonth}}"><a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 4,year: request.cookie('year') }}) : route('/academic-year') }}">INT350 (4 months)</a></li>
+          <li class="{{activeSixMonth}}"><a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 6,year: request.cookie('year') }}) : route('/academic-year') }}">INT370 (6 months)</a></li>
+        </ul>
+
+            <div class="flex flex-col flex-wrap">
                 <div class="flex font-medium items-center space-x-2 mt-2 h-fit">
                     <a href="{{ route('/steps')}}" class="hover:text-blue-800">
                     <p>Steps</p>
@@ -55,16 +26,16 @@
                     <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
                     <p>Create new step</p>
                   </div>
-                  <div class="flex justify-center items-center h-fit">
+                  <div class="flex items-center h-fit">
                       <p>Name</p>
-                      <input type="text" placeholder="Type here" class="input input-sm w-full max-w-xs" />
+                      <input type="text" placeholder="Type here" class="input input-sm w-full" />
                   </div>
-                  <div class="bg-[#F4F4F4] p-5 rounded-md">
+                  <div class="bg-[#F4F4F4] p-5 rounded-md w-[30rem]">
                     <p class="font-medium">Files for students to download and submission</p>
-                    <div class="form-control">
+                    <div class="form-control mt-2 flex">
                         <form id="step-files">
                             {{--  <div class="input-group" >  --}}
-                                <label for="test" class="btn btn-primary">Choose File</label>
+                                <label for="test" class="btn btn-primary btn-block">Choose File</label>
                                 <input type="file" id="test" name="images" class="hidden">
                                 {{--  <input type="text" class="input input-bordered" />
                                 <span class="btn btn-primary">Add</span>  --}}
@@ -79,10 +50,16 @@
                 </a>
                 <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">save change</button>
               </div>
-            @end
       </div>
 </div>
 <script>
+    const middleEllipsis = (str) => {
+    if (str.length > 35) {
+      return str.substring(0, 20) + '...' + str.substring(str.length - 10)
+    }
+    return str
+    }
+
     const stepFileForm = document.getElementById("step-files")
     const stepFile = document.getElementById("test")
     let files = []
@@ -91,32 +68,15 @@
         files.push(file)
         const p = document.createElement('p')
         const div = document.createElement('div')
-        div.innerHTML += `<p class="w-full">${files.length}. ${file.name}</p>
+        div.innerHTML +=   `<p class="w-full mr-2">${files.length}. ${middleEllipsis(file.name)}</p>
                             <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                               <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
                             </svg>
                             </button>`
         div.classList.add('flex')
-        div.classList.add('space-y-2')
+        div.classList.add('mt-5')
         stepFileForm.appendChild(div)
         stepFile.value = ""
     }
-    // stepFileForm.onsubmit = async (event) => {
-    // event.preventDefault() 
-    // const formData = new FormData(formElem)
-    // showFiles.forEach((file) => {
-    //   if(file.file_id) formData.append('oldImages', file.file_id)
-    //   if(file instanceof File){
-    //     formData.append('images', file, file.name)
-    //   }
-    // })
-    // const response = await fetch('/api/post/{{post ? post.post_id : ''}}{{method}}', {
-    //     method: 'POST',
-    //     body: formData,
-    // })
-    
-    // const data = await response.json()
-    // window.location.href = `/announcement/${data.post_id}`
-    // }
 </script>
