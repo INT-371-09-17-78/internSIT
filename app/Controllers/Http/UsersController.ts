@@ -331,12 +331,12 @@ export default class UsersController {
         // console.log(test);
       }
       const ad = await Advisor.query()
-      let adSe: any
+      let adSe: any = []
       for (let i = 0; i < ad.length; i++) {
         const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].advisor_id)
-        adSe = ad[i].serialize()
-        adSe['st'] = result.map((re) => re.serialize())
-        console.log(adSe)
+        const tmp = ad[i].serialize()
+        tmp['st'] = result.map((re) => re.serialize())
+        adSe.push(tmp)
       }
       // stafftUsers = await User.query().where('role', 'staff')
       // advisorUsers = await User.query().where('role', 'advisor')
