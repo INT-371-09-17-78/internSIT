@@ -1,4 +1,16 @@
-<div class="flex">
+<div class="flex items-centera ml-auto">
+  <p class="my-auto">current year:</p>
+  <select id="academic-years" name="academic-years"
+  class="select select-sm rounded-xl select-bordered h-9 lg:text-base w-64 max-w-xs"
+  onchange="selectCurrentYear()">
+
+  <option selected> select current acdemic year</option>
+  @each(year in academicYears)
+    <option value="{{year.academic_year}}">{{year.academic_year}}</option>
+  @end
+  </select>
+</div>
+ <div class="flex">
     <div class="grid grid-cols-4 gap-5 w-full pt-10 px-10 min-w-0 place-items-center">
         <div class="flex flex-col items-center">
               <div class="bg-[#F0F3F4] w-72 h-40 rounded-md flex justify-center items-center cursor-pointer" onclick="showAddAcademicYear()">

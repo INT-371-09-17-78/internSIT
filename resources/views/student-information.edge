@@ -32,8 +32,7 @@
         <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
         {{auth.user.user_id}} | {{auth.user.role}}
         </p>
-        <div class="ml-auto flex flex-col items-end space-y-2">
-          <p class="font-medium">Academic year: {{request.cookie('year')}}</p>
+        <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
           <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
         </div>
         @end
@@ -56,28 +55,8 @@
 
   <script>
 
-  // const setCookie = (name,value,days) => {
-  //     var expires = "";
-  //     if (days) {
-  //         var date = new Date();
-  //         date.setTime(date.getTime() + (days*24*60*60*1000));
-  //         expires = "; expires=" + date.toUTCString();
-  //     }
-  //     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-  // }
+  const year = document.getElementById("acdemic-years")
 
-  // const setYearCookie = (y) =>{
-  //   console.log(y)
-  //   let urlParams = new URLSearchParams()
-  //   setCookie('year', y, 7)
-  //   urlParams.append('month', 2)
-  //   if(!document.cookie.split('year=')[1]){
-  //     urlParams.append('year', y)
-  //   }else{
-  //     urlParams.append('year', document.cookie.split('year=')[1].split(';')[0])
-  //   }
-  //   window.location.href = `/student-information?${urlParams}`
-  // }
   const closeAlertAddAcademicYear =()=>{
     document.getElementById("modal-add-academic-year").remove()
   }
@@ -142,6 +121,19 @@
         window.location.href = `/student-information?${urlParams}`
     })
   }
+
+  const selectCurrentYear = async () =>{
+    const year = {year: document.getElementById('academic-years').value, isCurrent: true}
+    await fetch('/api/user/courseInfo?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(year),
+    })
+  }
+
   if(document.getElementById('inputYear')) document.getElementById('inputYear').placeholder = new Date().getFullYear()
   const params = new URLSearchParams(window.location.search);
   document.querySelectorAll('input[name=selectStep]').forEach((checkbox)=>{

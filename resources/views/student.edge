@@ -30,7 +30,7 @@
       @each(plan in plans)
         <option value={{ plan }}>{{ plan + " month" }}</option>
       @end
-    </select>
+      </select>
       @if(disabled)
         <button id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="editPlan(event)">edit</button>
       @else
