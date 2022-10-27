@@ -308,7 +308,7 @@ export default class UsersController {
       let allAmoutSt: any
       let noApprove: any
       let advisorById: any
-
+      let studentUsersByAd: any = []
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
 
@@ -317,6 +317,17 @@ export default class UsersController {
 
       if (request.qs().advisor) {
         advisorById = await Advisor.find(request.qs().advisor)
+        // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        const users = await User.query().where('role', 'student')
+        for (let i = 0; i < users.length; i++) {
+          const result = await UsersInAcademicYearModel.query()
+            .where('user_id', users[i].user_id)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            .andWhere('advisor_id', request.qs().advisor)
+          if (result && result.length > 0) {
+            studentUsersByAd.push(result[0])
+          }
+        }
       }
 
       // stafftUsers = await User.query().where('role', 'staff')
@@ -444,6 +455,7 @@ export default class UsersController {
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
         advisorById: advisorById,
+        studentUsersByAd: studentUsersByAd,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -530,18 +542,18 @@ export default class UsersController {
   public async showAdvisorUser({ response }: HttpContextContract) {
     try {
       let advisorUsers: any
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      // console.log(AcademicYearCf[0].conf_id)
-      if (AcademicYearCf && AcademicYearCf.length > 0) {
-        advisorUsers = await User.query().where('role', 'advisor')
-        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
-        if (!advisorUsers || advisorUsers.length <= 0) {
-          advisorUsers = await User.query().where('role', 'advisor')
-        }
-      } else {
-        advisorUsers = await User.query().where('role', 'advisor')
-        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
-      }
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // // console.log(AcademicYearCf[0].conf_id)
+      // if (AcademicYearCf && AcademicYearCf.length > 0) {
+      //   advisorUsers = await User.query().where('role', 'advisor')
+      //   // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      //   if (!advisorUsers || advisorUsers.length <= 0) {
+      //     advisorUsers = await User.query().where('role', 'advisor')
+      //   }
+      // } else {
+      advisorUsers = await User.query().where('role', 'advisor')
+      //   // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      // }
       // console.log(advisorUsers)
       return response.status(200).json({ advisorUsers: advisorUsers })
     } catch (error) {
@@ -552,17 +564,17 @@ export default class UsersController {
   public async showStaffUser({ response }: HttpContextContract) {
     try {
       let staffUsers: any
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      if (AcademicYearCf && AcademicYearCf.length > 0) {
-        staffUsers = await User.query().where('role', 'staff')
-        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
-        if (!staffUsers || staffUsers.length <= 0) {
-          staffUsers = await User.query().where('role', 'staff')
-        }
-      } else {
-        staffUsers = await User.query().where('role', 'staff')
-        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
-      }
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // if (AcademicYearCf && AcademicYearCf.length > 0) {
+      //   staffUsers = await User.query().where('role', 'staff')
+      //   // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      //   if (!staffUsers || staffUsers.length <= 0) {
+      //     staffUsers = await User.query().where('role', 'staff')
+      //   }
+      // } else {
+      staffUsers = await User.query().where('role', 'staff')
+      // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      // }
 
       return response.status(200).json({ staffUsers: staffUsers })
     } catch (error) {
