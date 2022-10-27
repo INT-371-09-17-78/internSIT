@@ -628,7 +628,7 @@ export default class UsersController {
     try {
       let studentUsers: any = []
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const users = await User.query().where('role', 'stqudent')
+      const users = await User.query().where('role', 'student')
       for (let i = 0; i < users.length; i++) {
         const result = await UsersInAcademicYearModel.query()
           .where('user_id', users[i].user_id)
@@ -650,7 +650,7 @@ export default class UsersController {
       const { advisor } = request.all()
       let studentUsers: any = []
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const users = await User.query().where('role', 'stqudent')
+      const users = await User.query().where('role', 'student')
       for (let i = 0; i < users.length; i++) {
         const result = await UsersInAcademicYearModel.query()
           .where('user_id', users[i].user_id)
@@ -663,6 +663,35 @@ export default class UsersController {
       // await UsersInAcademicYearModel.query().where()
 
       return response.status(200).json({ studentUsers: studentUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async delUsersInAcademicYear({ request, response }: HttpContextContract) {
+    try {
+      const { userId } = request.all()
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const delUser = await UsersInAcademicYearModel.query()
+        .where('academic_year', AcademicYearCf[0].academic_year)
+        .andWhere('user_id', userId)
+      await delUser[0].delete()
+      return response.status(200).json('success')
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async delUsersFromAdvisor({ request, response }: HttpContextContract) {
+    try {
+      const { userId } = request.all()
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const delUser = await UsersInAcademicYearModel.query()
+        .where('academic_year', AcademicYearCf[0].academic_year)
+        .andWhere('user_id', userId)
+      delUser[0].advisor_id = ''
+      await delUser[0].save()
+      return response.status(200).json('success')
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
