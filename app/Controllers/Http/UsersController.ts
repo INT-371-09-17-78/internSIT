@@ -900,14 +900,19 @@ export default class UsersController {
       const userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('updated_at', 'desc')
-
+      const userHasDocResultForTime = await UserHasDoc.query()
+        .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        .orderBy('updated_at', 'asc')
       let submission: any = []
-      for (let i = 0; i < userHasDocResult.length; i++) {
-        const docWStat = await Document_Status.query().where('id', userHasDocResult[i].doc_stat_id)
+      for (let i = 0; i < userHasDocResultForTime.length; i++) {
+        const docWStat = await Document_Status.query().where(
+          'id',
+          userHasDocResultForTime[i].doc_stat_id
+        )
 
         if (docWStat[0].status_id === 'Pending') {
           const docWStatSe = docWStat[0].serialize()
-          docWStatSe.created_at = moment(userHasDocResult[i].createdAt.toString())
+          docWStatSe.created_at = moment(userHasDocResultForTime[i].createdAt.toString())
             .tz('Asia/Bangkok')
             .format('MMMM D, YYYY h:mm A')
           submission.push(docWStatSe)
