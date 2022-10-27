@@ -183,9 +183,18 @@ export default class FilesController {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
   }
 
-  public async showAllFile({ view, response }: HttpContextContract) {
+  public async showAllFile({ view, request, response }: HttpContextContract) {
     try {
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      let canEdit: any
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const AcademicYearCf = await AcademicYear.query().where(
+        'academic_year',
+        request.cookie('year')
+      )
+      const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
+        ? (canEdit = true)
+        : (canEdit = false)
       const files = await File.query().whereNull('user_has_doc_id')
       let newFiles: any = []
       // console.log(testQuery)
@@ -221,7 +230,7 @@ export default class FilesController {
         ...result,
         updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
       }))
-      return view.render('file', { files: filesDateTime })
+      return view.render('file', { files: filesDateTime, canEdit })
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }
@@ -239,13 +248,13 @@ export default class FilesController {
         //   file = result[0]
         //   path = 'steps/'
         // }
-
+        console.log(statId)
         const user = await User.findOrFail(userId)
         // const doc = await Document.find(docId)
         // doc?.related('')
         const docStat = await DocumentStatus.query()
           .where('document_id', docId)
-          .andWhere('status_id', statId)
+          .andWhere('status_id', statId === 'Disapproved' ? 'Pending' : statId)
         // docStat[0].related('usersInAcademicYear').create({})
         const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         const usersInAcademicYear = await UsersInAcademicYearModel.query()

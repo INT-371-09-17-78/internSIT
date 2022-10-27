@@ -150,6 +150,15 @@ export default class PostsController {
     try {
       if (!auth.user || auth.user.role === 'student') response.redirect('/')
       else {
+        let canEdit: any
+        const AcademicYearCf = await AcademicYear.query().where(
+          'academic_year',
+          request.cookie('year')
+        )
+        const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+        AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
+          ? (canEdit = true)
+          : (canEdit = false)
         const result = await Post.query().where('post_id', request.param('id')).preload('files')
         //   .preload('usersInAcademicYear')
         //  console.log(result)
@@ -164,16 +173,25 @@ export default class PostsController {
           post['updated_at'] = moment(post.updated_at)
             .tz('Asia/Bangkok')
             .format('MMMM D, YYYY h:mm A')
-        return response.json({ post })
+        return response.json({ post, canEdit })
       }
     } catch (error) {
       return response.status(400).send({ message: error.message })
     }
   }
 
-  public async show({ view, auth, response }: HttpContextContract) {
+  public async show({ view, auth, request, response }: HttpContextContract) {
     try {
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      let canEdit: any
+      const AcademicYearCf = await AcademicYear.query().where(
+        'academic_year',
+        request.cookie('year')
+      )
+      const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
+        ? (canEdit = true)
+        : (canEdit = false)
       if (!auth.user) {
         return response.redirect('/')
       } else {
@@ -183,12 +201,16 @@ export default class PostsController {
           .preload('files')
           .withCount('files')
           .preload('usersInAcademicYear')
-        const resultsJSON = results.map((result) => result.serialize())
-        const posts = resultsJSON.map((result) => ({
+        const resultsJSONpre = results.map((result) => result.serialize())
+        const resultJSON = resultsJSONpre.filter(
+          (result) => result.usersInAcademicYear.academic_year === AcademicYearCf[0].academic_year
+        )
+        console.log(resultJSON)
+        const posts = resultJSON.map((result) => ({
           ...result,
           updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
         }))
-        return view.render('announcement', { posts })
+        return view.render('announcement', { posts, canEdit })
       }
     } catch (error) {
       return response.status(400).send({ message: error.message })
@@ -237,12 +259,22 @@ export default class PostsController {
         const post = result[0]?.serialize()
         post.updated_at = moment(post.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A')
         // console.log(post)
+
+        let canEdit: any
+        const AcademicYearCf = await AcademicYear.query().where(
+          'academic_year',
+          request.cookie('year')
+        )
+        const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+        AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
+          ? (canEdit = true)
+          : (canEdit = false)
         if (!result) {
           return response
             .status(404)
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
-        return view.render('post', { post })
+        return view.render('post', { post, canEdit })
       }
     } catch (error) {
       return response.status(400).send({ message: error.message })

@@ -280,9 +280,19 @@ export default class UsersController {
 
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // console.log(request.cookie('year'))
+      const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const AcademicYearCf = await AcademicYear.query().where(
+        'academic_year',
+        request.cookie('year')
+      )
       let studentUsers: any = []
+      let result: any = []
+      let adviserUsersResult: any = []
+      let staffUsersResult: any = []
       let year: any
+      let allAmoutSt: any
+      let noApprove: any
 
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
@@ -299,9 +309,7 @@ export default class UsersController {
       // adviserUsers = await User.query().where('role', 'adviser')
       // const adviserUsersJSON = adviserUsers.map((post) => post.serialize())
       // console.log(adviserUsersJSON)
-      let result: any = []
-      let allAmoutSt: any
-      let noApprove: any
+
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         const UsersInAcademicYear = await AcademicYearCf[0]
           .related('users')
@@ -326,31 +334,29 @@ export default class UsersController {
             (userPre) => userPre.student.plan === parseInt(request.qs().month)
           )
         }
-        // noApprove = studentUsers.filter((st) => !st.approved)
-        // if (request.qs().month) {
-        //   // const studentUsersPre = await User.query()
-        //   //   .where('role', 'student')
-        //   //   .andWhere('conf_id', year || AcademicYearCf[0].conf_id)
-        //   //   .preload('student')
 
-        //   studentUsers = studentUsers.filter(
-        //     (userPre) => userPre.student.plan === parseInt(request.qs().month)
-        //   )
-        //   console.log(studentUsers.length)
-        // }
-        // const DocumentStatus = await Document_Status.query()
-        // console.log(UsersInAcademicYear[0])
-        // const test = await UsersInAcademicYearModel
-        //   // .related('users')
-        //   .query()
-        // console.log(UsersInAcademicYear[0].$extras.id)
-        // await DocumentStatus[0].related('usersInAcademicYear').attach([test[0].id])
-        // console.log(await DocumentStatus[0].related('usersInAcademicYear').query())
-
-        // UsersInAcademicYear[0].related('')
+        const adviserUsers = await User.query().where('role', 'adviser')
+        const staffUsers = await User.query().where('role', 'staff')
+        for (let i = 0; i < adviserUsers.length; i++) {
+          const check = await UsersInAcademicYearModel.query()
+            .where('user_id', adviserUsers[i].user_id)
+            .andWhere('academic_year', AcademicYearAll[0].academic_year)
+          if (check && check.length > 0) {
+            adviserUsersResult.push(check[0])
+          }
+        }
+        for (let i = 0; i < staffUsers.length; i++) {
+          const check = await UsersInAcademicYearModel.query()
+            .where('user_id', staffUsers[i].user_id)
+            .andWhere('academic_year', AcademicYearAll[0].academic_year)
+          if (check && check.length > 0) {
+            staffUsersResult.push(check[0])
+          }
+        }
       } else {
         studentUsers = []
       }
+      console.log(adviserUsersResult)
       // console.log(studentUsers.length)
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
@@ -413,11 +419,11 @@ export default class UsersController {
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
             ? result
             : studentUsers,
-        // adviserUsers: adviserUsers,
-        // stafftUsers: stafftUsers,
+        adviserUsers: adviserUsersResult,
+        stafftUsers: staffUsersResult,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
-        academicYears: AcademicYearCf,
+        academicYears: AcademicYearAll,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -426,36 +432,41 @@ export default class UsersController {
 
   public async updateCourseInformation({ request, response }: HttpContextContract) {
     try {
-      const { year, users } = request.all()
-      const AcademicYearCfResult = await AcademicYear.query()
-        .where('academic_year', year)
-        .orderBy('updated_at', 'desc')
+      const { year, users, isCurrent } = request.all()
+      if (isCurrent) {
+        const AcademicYearCfResult = await AcademicYear.query()
+          .where('academic_year', year)
+          .orderBy('updated_at', 'desc')
 
-      let usersArr: any = []
-      let AcademicYearCf: any
-      if (!AcademicYearCfResult || AcademicYearCfResult.length === 0) {
-        AcademicYearCf = new AcademicYear()
-        AcademicYearCf.academic_year = year
-        await AcademicYearCf.save()
-      } else {
-        AcademicYearCfResult[0].updatedAt = DateTime.now()
-        await AcademicYearCfResult[0].save()
-      }
-
-      if (users && users.length > 0) {
-        for (let i = 0; i < users.length; i++) {
-          const user = await User.find(users[i].user_id)
-          if (user) {
-            // user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
-            usersArr.push(user)
-          }
+        let usersArr: any = []
+        let AcademicYearCf: any
+        if (!AcademicYearCfResult || AcademicYearCfResult.length === 0) {
+          AcademicYearCf = new AcademicYear()
+          AcademicYearCf.academic_year = year
+          await AcademicYearCf.save()
         }
+        // else {
+        //   AcademicYearCfResult[0].updatedAt = DateTime.now()
+        //   await AcademicYearCfResult[0].save()
+        // }
 
-        AcademicYearCf
-          ? await AcademicYearCf.related('users').saveMany(usersArr)
-          : await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+        if (users && users.length > 0) {
+          for (let i = 0; i < users.length; i++) {
+            const user = await User.find(users[i].user_id)
+            if (user) {
+              // user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
+              usersArr.push(user)
+            }
+          }
+
+          AcademicYearCf
+            ? await AcademicYearCf.related('users').saveMany(usersArr)
+            : await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+        }
       }
+      // else {
       response.cookie('year', year)
+      // }
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -547,7 +558,12 @@ export default class UsersController {
   public async showStudentUserById({ request, response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const AcademicYearCf = await AcademicYear.query().where(
+        'academic_year',
+        request.cookie('year')
+      )
       const studentUsers = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
@@ -709,7 +725,7 @@ export default class UsersController {
       let userHasDoc
       if (userHasDocResult[0])
         userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
-      console.log(userHasDocResult[0])
+      // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()

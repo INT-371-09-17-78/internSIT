@@ -92,13 +92,14 @@
   }
 
   const updateYear = async (y) =>{
+    const year = {year: y}
     await fetch('/api/user/courseInfo?_method=PATCH', {
         method: "PATCH",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(y),
+        body: JSON.stringify(year),
     }).then(() => {
         const urlParams = new URLSearchParams()
         urlParams.append('month', 2)
@@ -107,7 +108,7 @@
   }
 
   const addYear =  async () => { 
-    const year = {year: acdemicYear}
+    const year = {year: acdemicYear , isCurrent: true}
     await fetch('/api/user/courseInfo?_method=PATCH', {
         method: "PATCH",
         headers: {
@@ -122,19 +123,19 @@
     })
   }
 
-  const selectCurrentYear = async () =>{
-    const year = {year: document.getElementById('academic-years').value, isCurrent: true}
-    await fetch('/api/user/courseInfo?_method=PATCH', {
-        method: "PATCH",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(year),
-    }).then(() => {
-        window.location.reload()
-    })
-  }
+  // const selectCurrentYear = async () =>{
+  //   const year = {year: document.getElementById('academic-years').value, isCurrent: true}
+  //   await fetch('/api/user/courseInfo?_method=PATCH', {
+  //       method: "PATCH",
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(year),
+  //   }).then(() => {
+  //       window.location.reload()
+  //   })
+  // }
 
   if(document.getElementById('inputYear')) document.getElementById('inputYear').placeholder = new Date().getFullYear()
   const params = new URLSearchParams(window.location.search);
