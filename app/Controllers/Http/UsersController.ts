@@ -255,7 +255,7 @@ export default class UsersController {
         })
       } else if (error.message === 'no privacy in this academic_year') {
         session.flash({
-          error: 'No Privacy In This Academic Year',
+          error: 'No Permission In This Academic Year',
           type: 'negative',
         })
       } else {
@@ -318,18 +318,26 @@ export default class UsersController {
       if (request.qs().advisor) {
         advisorById = await Advisor.find(request.qs().advisor)
         // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-        const users = await User.query().where('role', 'student')
-        for (let i = 0; i < users.length; i++) {
-          const result = await UsersInAcademicYearModel.query()
-            .where('user_id', users[i].user_id)
-            .andWhere('academic_year', AcademicYearCf[0].academic_year)
-            .andWhere('advisor_id', request.qs().advisor)
-          if (result && result.length > 0) {
-            studentUsersByAd.push(result[0])
-          }
-        }
+        // const users = await User.query().where('role', 'student')
+        // for (let i = 0; i < users.length; i++) {
+        //   const result = await UsersInAcademicYearModel.query()
+        //     .where('user_id', users[i].user_id)
+        //     .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        //     .andWhere('advisor_id', request.qs().advisor)
+        //   if (result && result.length > 0) {
+        //     studentUsersByAd.push(result[0])
+        //   }
+        // }
+        // console.log(test);
       }
-
+      const ad = await Advisor.query()
+      let adSe: any
+      for (let i = 0; i < ad.length; i++) {
+        const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].advisor_id)
+        adSe = ad[i].serialize()
+        adSe['st'] = result.map((re) => re.serialize())
+        console.log(adSe)
+      }
       // stafftUsers = await User.query().where('role', 'staff')
       // advisorUsers = await User.query().where('role', 'advisor')
       // const advisorUsersJSON = advisorUsers.map((post) => post.serialize())
@@ -455,7 +463,7 @@ export default class UsersController {
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
         advisorById: advisorById,
-        studentUsersByAd: studentUsersByAd,
+        studentUsersByAd: adSe,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
@@ -520,6 +528,8 @@ export default class UsersController {
   public async updateAdvisorHasStudent({ request, response }: HttpContextContract) {
     try {
       const { students, advisor } = request.all()
+      console.log(students, advisor.advisor_id)
+
       let AcademicYearCfResult: any
       AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
       const advisorResult = await Advisor.query().where('advisor_id', advisor.advisor_id)
@@ -691,8 +701,12 @@ export default class UsersController {
       const delUser = await UsersInAcademicYearModel.query()
         .where('academic_year', AcademicYearCf[0].academic_year)
         .andWhere('user_id', userId)
-      delUser[0].advisor_id = ''
-      await delUser[0].save()
+      const newTmp = new UsersInAcademicYearModel()
+      newTmp.academic_year = delUser[0].academic_year
+      newTmp.user_id = delUser[0].user_id
+      newTmp.approved = delUser[0].approved
+      await delUser[0].delete()
+      await newTmp.save()
       return response.status(200).json('success')
     } catch (error) {
       return response.status(400).json({ message: error.message })

@@ -118,7 +118,7 @@ Route.group(() => {
     Route.delete('/delUserAc/:id', 'UsersController.delUsersInAcademicYear')
     Route.delete('/delUserAdv/:id', 'UsersController.delUsersFromAdvisor')
   })
-    .middleware('login')
+    // .middleware('login')
     .prefix('/user')
 
   Route.group(() => {
