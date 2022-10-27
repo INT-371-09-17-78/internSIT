@@ -308,7 +308,7 @@ export default class UsersController {
       let allAmoutSt: any
       let noApprove: any
       let advisorById: any
-      let studentUsersByAd: any = []
+      let studentUsersByAdOne: any = []
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
 
@@ -317,17 +317,17 @@ export default class UsersController {
 
       if (request.qs().advisor) {
         advisorById = await Advisor.find(request.qs().advisor)
-        // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-        // const users = await User.query().where('role', 'student')
-        // for (let i = 0; i < users.length; i++) {
-        //   const result = await UsersInAcademicYearModel.query()
-        //     .where('user_id', users[i].user_id)
-        //     .andWhere('academic_year', AcademicYearCf[0].academic_year)
-        //     .andWhere('advisor_id', request.qs().advisor)
-        //   if (result && result.length > 0) {
-        //     studentUsersByAd.push(result[0])
-        //   }
-        // }
+        const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        const users = await User.query().where('role', 'student')
+        for (let i = 0; i < users.length; i++) {
+          const result = await UsersInAcademicYearModel.query()
+            .where('user_id', users[i].user_id)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            .andWhere('advisor_id', request.qs().advisor)
+          if (result && result.length > 0) {
+            studentUsersByAdOne.push(result[0])
+          }
+        }
         // console.log(test);
       }
       const ad = await Advisor.query()
@@ -464,6 +464,7 @@ export default class UsersController {
         academicYears: AcademicYearAll,
         advisorById: advisorById,
         studentUsersByAd: adSe,
+        studentUsersByAdOne: studentUsersByAdOne,
       })
     } catch (error) {
       return response.status(400).json({ message: error.message })
