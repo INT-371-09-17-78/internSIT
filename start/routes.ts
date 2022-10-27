@@ -111,6 +111,8 @@ Route.group(() => {
     Route.patch('/advisor/st', 'UsersController.updateAdvisorHasStudent')
     Route.get('/advisorUser', 'UsersController.showAdvisorUser')
     Route.get('/staffUser', 'UsersController.showStaffUser')
+    Route.get('/staffCYear', 'UsersController.getStaffUserCuurentYear')
+    Route.get('/advisorCYear', 'UsersController.getAdvisorUserCuurentYear')
   })
     // .middleware('login')
     .prefix('/user')
