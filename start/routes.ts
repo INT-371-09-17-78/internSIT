@@ -44,7 +44,10 @@ View.global('checkStatus', (str: string) => {
 
 Route.get('/', async ({ view, auth, response }) => {
   const userCon = new UsersController()
-  await userCon.gen()
+  const year = await userCon.gen()
+  if (year) {
+    response.cookie('year', year.academic_year)
+  }
   if (auth.user) return response.redirect('/announcement')
   else {
     const roles = ['Student', 'Adviser', 'Staff']

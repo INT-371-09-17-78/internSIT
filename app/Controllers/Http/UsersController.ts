@@ -4,6 +4,7 @@ import Student from 'App/Models/Student'
 import Status from 'App/Models/Status'
 import File from 'App/Models/File'
 import Document from 'App/Models/Document'
+import Adviser from 'App/Models/Adviser'
 import Document_Status from 'App/Models/DocumentStatus'
 import AcademicYear from 'App/Models/AcademicYear'
 import UserHasDoc from 'App/Models/UserHasDoc'
@@ -994,14 +995,22 @@ export default class UsersController {
       if (adviserFullName) {
         const adviserFullNameSplit = adviserFullName.split(' ')
         if (adviserFullNameSplit && adviserFullNameSplit.length > 1) {
-          const adviserUser = await User.query()
+          const roleAdviserUser = await User.query()
             .where('firstName', adviserFullNameSplit[0])
             .andWhere('lastName', adviserFullNameSplit[1])
             .andWhere('role', 'adviser')
-          // if (adviserUser && adviserUser.length > 0) {
-          //   studentUser.student.adviser_id = adviserUser[0].user_id
-          //   // adviserUser[0].related('student')
-          // }
+          if (roleAdviserUser && roleAdviserUser.length > 0) {
+            const adviserUsers = await Adviser.query().where(
+              'adviser_id',
+              roleAdviserUser[0].user_id
+            )
+            studentUser.student.adviser_id = adviserUsers[0].adviser_id
+            // adviserUsers[0].related('students').updateOrCreate({
+
+            // })
+            // studentUser.student.adviser_id = adviserUser[0].user_id
+            // adviserUser[0].related('student')
+          }
         }
       }
 
@@ -1018,97 +1027,98 @@ export default class UsersController {
     }
   }
 
-  // public async showStudentInfo({ request, response, view }: HttpContextContract) {
-  //   try {
-  //     const studentUsers = await User.query()
-  //       .where('role', 'student')
-  //       .andWhere('user_id', request.param('id'))
-  //       .preload('student')
-  //     const studentUser = studentUsers[0]
-  //     if (studentUser.student.adviser_id) {
-  //       const adviser = await User.findOrFail(studentUser.student.adviser_id)
-  //       studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
-  //     }
-  //     const disabled = studentUser.student.plan === null ? '' : 'disabled'
-  //     const studentInfo = [
-  //       { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
-  //       { title: 'Email', value: studentUser.email, key: 'email' },
-  //       { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
-  //       { title: 'Department', value: studentUser.student.department, key: 'department' },
-  //       { title: 'Position', value: studentUser.student.position, key: 'position' },
-  //       { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
-  //       { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
-  //       {
-  //         title: 'Mentor’s Position',
-  //         value: studentUser.student.mentor_position,
-  //         key: 'mentorPosition',
-  //       },
-  //       { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
-  //       { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
-  //       {
-  //         title: 'Advisor',
-  //         value: studentUser.student['adviserFullName']
-  //           ? studentUser.student['adviserFullName']
-  //           : '',
-  //         key: 'adviserFullName',
-  //       },
-  //     ]
-  //     return view.render('student-info', {
-  //       studentUser,
-  //       disabled,
-  //       studentInfo,
-  //     })
-  //   } catch (error) {
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
+  public async showStudentInfo({ request, response, view }: HttpContextContract) {
+    try {
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      if (studentUser.student.adviser_id) {
+        const adviser = await User.findOrFail(studentUser.student.adviser_id)
+        studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+      }
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['adviserFullName']
+            ? studentUser.student['adviserFullName']
+            : '',
+          key: 'adviserFullName',
+        },
+      ]
+      return view.render('student-info', {
+        studentUser,
+        disabled,
+        studentInfo,
+      })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
-  // public async showStudentInfoEdit({ request, response, view }: HttpContextContract) {
-  //   try {
-  //     const studentUsers = await User.query()
-  //       .where('role', 'student')
-  //       .andWhere('user_id', request.param('id'))
-  //       .preload('student')
-  //     const studentUser = studentUsers[0]
-  //     if (studentUser.student.adviser_id) {
-  //       const adviser = await User.findOrFail(studentUser.student.adviser_id)
-  //       studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
-  //     }
-  //     const disabled = studentUser.student.plan === null ? '' : 'disabled'
-  //     const studentInfo = [
-  //       { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
-  //       { title: 'Email', value: studentUser.email, key: 'email' },
-  //       { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
-  //       { title: 'Department', value: studentUser.student.department, key: 'department' },
-  //       { title: 'Position', value: studentUser.student.position, key: 'position' },
-  //       { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
-  //       { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
-  //       {
-  //         title: 'Mentor’s Position',
-  //         value: studentUser.student.mentor_position,
-  //         key: 'mentorPosition',
-  //       },
-  //       { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
-  //       { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
-  //       {
-  //         title: 'Advisor',
-  //         value: studentUser.student['adviserFullName']
-  //           ? studentUser.student['adviserFullName']
-  //           : '',
-  //         key: 'adviserFullName',
-  //       },
-  //     ]
-  //     // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
-  //     return view.render('edit-student', { studentUser, disabled, studentInfo })
-  //   } catch (error) {
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
+  public async showStudentInfoEdit({ request, response, view }: HttpContextContract) {
+    try {
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      if (studentUser.student.adviser_id) {
+        const adviser = await User.findOrFail(studentUser.student.adviser_id)
+        studentUser.student['adviserFullName'] = adviser.firstname + ' ' + adviser.lastname
+      }
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['adviserFullName']
+            ? studentUser.student['adviserFullName']
+            : '',
+          key: 'adviserFullName',
+        },
+      ]
+      // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
+      return view.render('edit-student', { studentUser, disabled, studentInfo })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
   public async gen() {
     try {
       let resultDocs: any
       let resultStatuses: any
+      let year: any
       const docs = await Document.all()
       if (docs && docs.length === 0) {
         resultDocs = await Document.createMany([
@@ -1211,7 +1221,6 @@ export default class UsersController {
       }
       const users = await User.all()
       if (users && users.length === 0) {
-        let year: any
         const currentYear = await AcademicYear.query().orderBy('updated_at', 'desc')
         if (!currentYear || currentYear.length === 0) {
           year = await AcademicYear.create({
@@ -1239,30 +1248,37 @@ export default class UsersController {
         const arr = [
           {
             user_id: 'nuchanart.boo',
+            firstname: 'Saowatharn',
+            lastname: 'Suparat',
             role: 'staff',
             password: 'Fxig08',
             approved: true,
           },
           {
             user_id: 'sirinthip.suk',
+            firstname: 'Theetika',
+            lastname: 'Yuvaves',
             role: 'staff',
             password: 'Fxig08',
             approved: true,
           },
           {
             user_id: 'krant.bur',
+            firstname: 'Kantsak',
+            lastname: 'Sivaraksa',
             role: 'adviser',
             password: 'Fxig08',
             approved: true,
           },
           {
             user_id: 'manee.mun',
+            firstname: 'Karn',
+            lastname: 'Dahkling',
             role: 'adviser',
             password: 'Fxig08',
             approved: true,
           },
         ]
-        console.log(year)
         const usersArr = await User.createMany(arr)
         usersArr.forEach(async (user) =>
           user.role === 'staff'
@@ -1292,6 +1308,7 @@ export default class UsersController {
           }
         }
       }
+      return year
     } catch (error) {
       console.log(error)
     }

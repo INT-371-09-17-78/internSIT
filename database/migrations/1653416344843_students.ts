@@ -24,7 +24,7 @@ export default class Students extends BaseSchema {
       // table.string('reasons', 500).nullable()
       // table.string('remember_me_token').nullable()
       // table.string('user_id')
-      table.string('adviser_id').references('users.user_id').onDelete('CASCADE')
+      table.string('adviser_id').references('advisers.adviser_id').onDelete('CASCADE')
 
       table.timestamp('created_at', { useTz: true }).notNullable()
       table.timestamp('updated_at', { useTz: true }).notNullable()
