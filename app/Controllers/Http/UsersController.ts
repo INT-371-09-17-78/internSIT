@@ -1167,7 +1167,7 @@ export default class UsersController {
         mentorPosition,
         mentorEmail,
         mentorTel,
-        advisorFullName,
+        // advisorFullName,
         // approve,
       } = request.only([
         'firm',
