@@ -911,33 +911,35 @@ export default class UsersController {
       const userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('updated_at', 'desc')
-      const userHasDocResultForTime = await UserHasDoc.query()
-        .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        .orderBy('updated_at', 'asc')
+      // const userHasDocResultForTime = await UserHasDoc.query()
+      //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+      //   .orderBy('updated_at', 'asc')
       let submission: any = []
-      for (let i = 0; i < userHasDocResultForTime.length; i++) {
-        const docWStat = await Document_Status.query().where(
-          'id',
-          userHasDocResultForTime[i].doc_stat_id
-        )
-
-        if (docWStat[0].status_id === 'Pending') {
-          const docWStatSe = docWStat[0].serialize()
-          docWStatSe.created_at = moment(userHasDocResultForTime[i].createdAt.toString())
-            .tz('Asia/Bangkok')
-            .format('MMMM D, YYYY h:mm A')
-          submission.push(docWStatSe)
-        }
-      }
 
       let stepFile: any
       let userHasDoc
       if (userHasDocResult[0]) {
         userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
         // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
-        const file = await File.query().where('doc_name', userHasDoc[0].document_id)
-        stepFile = file[0].file_id
+        // const file = await File.query().where('doc_name', userHasDoc[0].document_id)
+        // stepFile = file[0].file_id
+        const docStatToSubmission = await Document_Status.query()
+          .where('document_id', userHasDoc[0].document_id)
+          .andWhere('status_id', 'Pending')
+        const userHasDocResultForTime = await UserHasDoc.query()
+          .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+          .andWhere('doc_stat_id', docStatToSubmission[0].id)
+          .orderBy('updated_at', 'asc')
+
+        for (let i = 0; i < userHasDocResultForTime.length; i++) {
+          let docWStatSe: any
+          docWStatSe = moment(userHasDocResultForTime[i].createdAt.toString())
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
+          submission.push({ created_at: docWStatSe })
+        }
       }
+
       // console.log(submission)
       // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
@@ -1042,6 +1044,7 @@ export default class UsersController {
         //   .wherePivot('student_id', studentUser.student_id)
         //   .delete()
         const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
+        console.log(userHasDoc[0])
         // console.log(userHasDoc[0])
         if (userHasDoc[0]) {
           await File.query().where('user_has_doc_id', userHasDoc[0].id).delete()
