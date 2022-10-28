@@ -233,11 +233,8 @@ export default class UsersController {
             message
               .from('iunnuidev2@gmail.com')
               .to('iunnuidev2@gmail.com')
-              .subject('test')
-              .htmlView('emails/welcome', {
-                user: { fullName: 'Some Name' },
-                url: 'https://your-app.com/verification-url',
-              })
+              .subject('Registration Success')
+              .htmlView('emails/welcome')
           })
         }
         return response.redirect('/success-regis')
@@ -472,7 +469,7 @@ export default class UsersController {
     }
   }
 
-  public async updateCourseInformation({ request, response }: HttpContextContract) {
+  public async updateCourseInformation({ auth, request, response }: HttpContextContract) {
     try {
       const { year, isCurrent } = request.all()
       let AcademicYearCfResult: any = []
@@ -485,6 +482,13 @@ export default class UsersController {
           AcademicYearCf = new AcademicYear()
           AcademicYearCf.academic_year = year
           await AcademicYearCf.save()
+          if (auth.user) {
+            await AcademicYearCf.related('users').attach({
+              [auth.user.user_id]: {
+                approved: true,
+              },
+            })
+          }
         }
       }
       // else {
@@ -517,6 +521,13 @@ export default class UsersController {
               .attach({ [user.user_id]: { approved: true } })
             // user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
             // usersArr.push(user)
+            await Mail.use('smtp').send((message) => {
+              message
+                .from('iunnuidev2@gmail.com')
+                .to('iunnuidev2@gmail.com')
+                .subject('Registration Success')
+                .htmlView('emails/confirmStaff')
+            })
           }
         }
 
@@ -1126,6 +1137,13 @@ export default class UsersController {
           .andWhere('user_id', user.id)
         UsersInAcademicYear[0].approved = user.approve
         await UsersInAcademicYear[0].save()
+        await Mail.use('smtp').send((message) => {
+          message
+            .from('iunnuidev2@gmail.com')
+            .to('iunnuidev2@gmail.com')
+            .subject('Registration Success')
+            .htmlView('emails/confirm')
+        })
       })
       // if (approve) {
       //   response.redirect(`/students/request`)
@@ -1534,15 +1552,15 @@ export default class UsersController {
         }
       }
 
-      const files = await File.all()
-      if (files && files.length === 0) {
-        await File.create({
-          file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
-          file_name: 'TR-01TEST',
-          file_size: '200.06 KB',
-          doc_name: 'TR-01',
-        })
-      }
+      // const files = await File.all()
+      // if (files && files.length === 0) {
+      //   await File.create({
+      //     file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
+      //     file_name: 'TR-01TEST',
+      //     file_size: '200.06 KB',
+      //     doc_name: 'TR-01',
+      //   })
+      // }
 
       return year
     } catch (error) {

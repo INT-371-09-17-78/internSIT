@@ -41,7 +41,7 @@ export default class PostsController {
           topic: topic,
           usersInAcademicYearId: usersInAcademicYear[0].id,
         })
-
+        console.log(post)
         const con = new FilesController()
         const resultErr = await con.store(request, post.post_id, [])
         if (resultErr && resultErr.length > 0) {
