@@ -69,7 +69,7 @@ export default class PostsController {
         .where('user_id', user.user_id)
         .andWhere('academic_year', AcademicYearCf[0].academic_year)
       if (post?.usersInAcademicYearId !== usersInAcademicYear[0].id) {
-        return response.status(403).send({ message: 'invalid post' })
+        return response.status(403).send({ message: 'invalid post maybe editing post from past' })
       }
       if (user) {
         // const post = await usersInAcademicYear[0].related('posts').updateOrCreate(
