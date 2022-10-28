@@ -4,11 +4,17 @@ import Student from 'App/Models/Student'
 import Status from 'App/Models/Status'
 import File from 'App/Models/File'
 import Document from 'App/Models/Document'
+import Advisor from 'App/Models/Advisor'
 import Document_Status from 'App/Models/DocumentStatus'
-// import Adviser from 'App/Models/Adviser'
+import AcademicYear from 'App/Models/AcademicYear'
+import UserHasDoc from 'App/Models/UserHasDoc'
+import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
+// import UserHasDoc from 'App/Models/UserHasDoc'
+// import Advisor from 'App/Models/Advisor'
 // import Staff from 'App/Models/Staff'
 import LdapAuth from 'ldapauth-fork'
 import moment from 'moment-timezone'
+import Mail from '@ioc:Adonis/Addons/Mail'
 
 interface LdapOptions {
   url: string
@@ -29,54 +35,101 @@ export default class UsersController {
   //     email: 'nuchanart.boo',
   //   })
   // }
-  // public async show({ params }: HttpContextContract) {
-  //   return await User.find(params.id)
+  // public async register({ request, response, session }: HttpContextContract) {
+  //   try {
+  //     let { userId, email } = request.all()
+  //     const uniEmailFormat = '@mail.kmutt.ac.th'
+  //     const regxEmail =
+  //       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  //     if (!email) throw new Error('empty email')
+  //     if (email.includes(uniEmailFormat)) {
+  //       if (!regxEmail.test(email)) {
+  //         throw new Error('bad email format')
+  //       }
+  //     } else {
+  //       email += uniEmailFormat
+  //     }
+  //     if (!userId) {
+  //       throw new Error('empty userId')
+  //     }
+  //     if (userId.length < 11) {
+  //       throw new Error('bad userId length')
+  //     }
+  //     let user: any
+  //     let student: any
+  //     user = await User.findBy('user_id', userId)
+
+  //     const year = await AcademicYearConfig.query().orderBy('updated_at', 'desc')
+
+  //     // if (!user) {
+  //     //   year[0].related('users').create({
+  //     //     user_id: userId,
+  //     //     email: email,
+  //     //   })
+  //     // }
+
+  //     if (!user) {
+  //       user = new User()
+  //       user.user_id = userId
+  //       user.email = email
+  //       user.conf_id = year[0]
+  //       await user.save()
+  //     }
+
+  //     if (user && user.role === 'student') {
+  //       student = await Student.findBy('student_id', userId)
+  //       if (!student) {
+  //         await user?.related('student').create({})
+  //       }
+  //     }
+
+  //     await Mail.use('smtp').send((message) => {
+  //       message
+  //         .from('iunnuidev2@gmail.com')
+  //         .to('iunnuidev2@gmail.com')
+  //         .subject('test')
+  //         .htmlView('emails/welcome', {
+  //           user: { fullName: 'Some Name' },
+  //           url: 'https://your-app.com/verification-url',
+  //         })
+  //     })
+
+  //     return response.redirect('/success-regis')
+  //   } catch (error) {
+  //     session.flash({
+  //       error: error.message,
+  //       type: 'negative',
+  //     })
+  //     return response.redirect('/register')
+  //   }
   // }
+
   public async verify({ auth, request, response, session }: HttpContextContract) {
     try {
-      const { username, password, isRemember, role } = request.all()
-
-      if (!role) {
-        throw new Error('empty role')
-      }
+      const { username, password, isRemember } = request.all()
 
       let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
-      let ldRole: string = role === 'adviser' || role === 'staff' ? 'staff' : 'st'
       let user: any
-      let student: any
-
-      if (username === 'admin') {
-        await auth.attempt(username, password, rememberMe)
-        return response.redirect('/announcement')
-      } else {
-        const ldapUser: any = await this.authenticate(username, password, ldRole)
-        const fullname = ldapUser.cn.split(' ')
-        if (ldapUser) {
-          user = await User.findBy('user_id', username)
-          if (!user) {
-            user = new User()
-            user.user_id = ldapUser.uid
-            user.firstname = fullname[0]
-            user.lastname = fullname[1]
-            user.email = ldapUser.mail
-            user.password = password
-            user.role = role
-            await user.save()
-          }
-
-          await auth.use('web').login(user, rememberMe)
-          if (user && ldRole === 'st') {
-            student = await Student.findBy('student_id', ldapUser.uid)
-            if (!student) {
-              await user?.related('student').create({})
-            }
-          }
-
-          return response.redirect('/announcement')
-        }
+      user = await User.findBy('user_id', username)
+      if (!user) {
+        throw new Error('cannot find user')
       }
+
+      let ldRole: string = user.role === 'advisor' || user.role === 'staff' ? 'staff' : 'st'
+
+      const ldapUser: any = await this.authenticate(username, password, ldRole)
+      const fullname = ldapUser.cn.split(' ')
+      if (user && ldapUser && (!user.firstname || !user.lastname || !user.mail || !user.password)) {
+        user.firstname = fullname[0]
+        user.lastname = fullname[1]
+        user.email = ldapUser.mail
+        user.password = password
+        await user.save()
+      }
+
+      await auth.attempt(username, password, rememberMe)
+      return response.redirect('/announcement')
     } catch (error) {
-      // console.log(error.message)
       if (
         error.message === 'no password given' ||
         error.message === 'empty username' ||
@@ -84,6 +137,125 @@ export default class UsersController {
       ) {
         session.flash({
           error: 'All fields are required',
+          type: 'negative',
+        })
+      } else {
+        session.flash({
+          error: 'Invalid creditials',
+          type: 'negative',
+        })
+      }
+      return response.redirect('/')
+    }
+  }
+
+  public async verify2({ auth, request, response, session }: HttpContextContract) {
+    try {
+      const { username, password, isRemember } = request.all()
+      if (!username) {
+        throw new Error('empty username')
+      }
+      // if (username.length < 11) {
+      //   throw new Error('bad userName length')
+      // }
+      // const resultTest = await st?.related('documentsStatuses').create({
+      //   // no_approve_reason: 'test',$
+      // })
+      let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
+      let user: any
+      user = await User.findBy('user_id', username)
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const checkExist = await UsersInAcademicYearModel.query()
+        .where('academic_year', years[0].academic_year)
+        .andWhere('user_id', username)
+      // const checkExist = await years[0].related('users').query()
+      // console.log(checkExist)
+      if (user && user.role === 'admin') {
+        if (!checkExist || checkExist.length <= 0) {
+          await years[0].related('users').attach({ [user.user_id]: { approved: true } })
+        }
+        await auth.attempt(username, password, rememberMe)
+        return response.redirect('/course-info/edit')
+      } else if (user && user.role === 'student' && checkExist && checkExist.length > 0) {
+        const st = await Student.findBy('student_id', user.user_id)
+        if (!st) {
+          await user?.related('student').create({})
+        }
+        if (checkExist[0].approved) {
+          await auth.attempt(username, password, rememberMe)
+          return response.redirect(`/student/${user.user_id}`) //student ที่ approved แล้ว
+        } else {
+          return response.redirect('/success-regis') //student ที่ยังไม่ approved
+        }
+        // }
+      } else if (user && user.role !== 'student') {
+        if (!checkExist || checkExist.length <= 0) {
+          throw new Error('no privacy in this academic_year')
+        } else {
+          await auth.attempt(username, password, rememberMe) //staff เข้าได้เลยรึปะ
+          if (years && years.length > 0) {
+            return response.redirect('/student-information')
+          }
+          return response.redirect('/course-info/edit')
+        }
+      } else {
+        const ldapUser: any = await this.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
+        const fullname = ldapUser.cn.split(' ')
+        if (ldapUser) {
+          const year = await AcademicYear.query().orderBy('updated_at', 'desc')
+          //   .preload('users')
+          // console.log(year[0].users)
+          if (user) {
+            await year[0].related('users').attach([user.user_id])
+          } else {
+            await year[0].related('users').create({
+              user_id: username,
+              firstname: fullname[0],
+              lastname: fullname[1],
+              email: ldapUser.mail,
+              password: password,
+            })
+          }
+
+          // user = new User()
+          // user.user_id = username
+          // user.firstname = fullname[0]
+          // user.lastname = fullname[1]
+          // user.email = ldapUser.mail
+          // user.password = password
+          // await user.save()
+          const lastestUsers = await User.find(username)
+          const st = await Student.findBy('student_id', username)
+          if (!st && lastestUsers) {
+            await lastestUsers.related('student').create({})
+          }
+          await Mail.use('smtp').send((message) => {
+            message
+              .from('iunnuidev2@gmail.com')
+              .to('iunnuidev2@gmail.com')
+              .subject('test')
+              .htmlView('emails/welcome', {
+                user: { fullName: 'Some Name' },
+                url: 'https://your-app.com/verification-url',
+              })
+          })
+        }
+        return response.redirect('/success-regis')
+      }
+    } catch (error) {
+      console.log(error)
+      if (
+        error.message === 'no password given' ||
+        error.message === 'empty username'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      } else if (error.message === 'no privacy in this academic_year') {
+        session.flash({
+          error: 'No Permission In This Academic Year',
           type: 'negative',
         })
       } else {
@@ -120,55 +292,470 @@ export default class UsersController {
     return response.redirect('/')
   }
 
-  public async showStudentUser({ response, view }: HttpContextContract) {
+  public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
-      // const role = request.param('role')
-      // const studentUser = await Student.query().preload('document_status')
-      const studentUser = await User.query()
-        .where('role', 'student')
-        // .andWhere('user_id', request.param('id'))
-        .preload('student')
-      for (let i = 0; i < studentUser.length; i++) {
-        const documentStatus = await Document_Status.query()
-          .where('student_id', studentUser[i].user_id)
-          .orderBy('updated_at', 'desc')
-        if (documentStatus && documentStatus.length > 0) {
-          console.log('เข้า')
-          studentUser[i].serialize()
-          studentUser[i]['lastestStatus'] =
-            documentStatus[0].document_id + ' ' + documentStatus[0].status_id
-        } else {
-          studentUser[i].serialize()
-          studentUser[i].student.plan
-            ? (studentUser[i]['lastestStatus'] = 'Accepted by firm')
-            : (studentUser[i]['lastestStatus'] = `Haven't chosen a plan yet.`)
+      // console.log(request.cookie('year'))
+      const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const AcademicYearCf = await AcademicYear.query().where(
+        'academic_year',
+        request.cookie('year')
+      )
+      let studentUsers: any = []
+      let result: any = []
+      let advisorUsersResult: any = []
+      let staffUsersResult: any = []
+      // let year: any
+      let allAmoutSt: any
+      let noApprove: any
+      let advisorById: any
+      let studentUsersByAdOne: any = []
+      // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
+      //   console.log('asdasd')
+
+      //   return view.render('errors/not-found')
+      // }
+
+      if (request.qs().advisor) {
+        advisorById = await Advisor.find(request.qs().advisor)
+        const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        const users = await User.query().where('role', 'student')
+        for (let i = 0; i < users.length; i++) {
+          const result = await UsersInAcademicYearModel.query()
+            .where('user_id', users[i].user_id)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            .andWhere('advisor_id', request.qs().advisor)
+          if (result && result.length > 0) {
+            studentUsersByAdOne.push(result[0])
+          }
         }
-        // console.log(documentStatus)
-
-        // studentUser[i].toJSON()
-        // studentUser[i]['lastestStatus'] = documentStatus[0].document_id
+        // console.log(test);
       }
+      // const ad = await Advisor.query()
+      const ad = await User.query().where('role', 'advisor')
+      let adSe: any = []
+      for (let i = 0; i < ad.length; i++) {
+        const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].user_id)
+        const tmp = ad[i].serialize()
+        tmp['st'] = result.map((re) => re.serialize())
+        adSe.push(tmp)
+      }
+      // stafftUsers = await User.query().where('role', 'staff')
+      // advisorUsers = await User.query().where('role', 'advisor')
+      // const advisorUsersJSON = advisorUsers.map((post) => post.serialize())
+      // console.log(advisorUsersJSON)
+      if (AcademicYearCf && AcademicYearCf.length > 0) {
+        const UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
+          'academic_year',
+          AcademicYearCf[0].academic_year
+        )
+        for (let i = 0; i < UsersInAcademicYear.length; i++) {
+          const result = await User.query()
+            .where('role', 'student')
+            .andWhere('user_id', UsersInAcademicYear[i].user_id)
+            .preload('student')
+          if (result[0]) {
+            const resultSe = result[0].serialize()
+            resultSe['approved'] = UsersInAcademicYear[i].approved
+            // console.log(resultSe)
+            studentUsers.push(resultSe)
+          }
+        }
+        // console.log(studentUsers)
+        // console.log(studentUsers)
+        allAmoutSt = studentUsers.length
+        // console.log(studentUsers)
 
-      // const document_status = await Document_Status.query().where('student_id')
-      // return response.status(200).json(result)
-      // console.log(studentUser)
-      // const result = await document.related('statuses').query().where('status_id', 'test2')
-      // return response.send(studentUser)
-      return view.render('students', { studentUser })
+        noApprove = studentUsers.filter((st) => !st.approved)
+        if (request.qs().month) {
+          studentUsers = studentUsers.filter(
+            (userPre) => userPre.student.plan === parseInt(request.qs().month)
+          )
+          // console.log(studentUsers)
+          // studentUsers = studentUsers.map((st) => st.serialize())
+        }
+
+        const advisorUsers = await User.query().where('role', 'advisor')
+        const staffUsers = await User.query().where('role', 'staff')
+        for (let i = 0; i < advisorUsers.length; i++) {
+          const check = await UsersInAcademicYearModel.query()
+            .where('user_id', advisorUsers[i].user_id)
+            .andWhere('academic_year', AcademicYearAll[0].academic_year)
+          if (check && check.length > 0) {
+            advisorUsersResult.push(check[0])
+          }
+        }
+        for (let i = 0; i < staffUsers.length; i++) {
+          const check = await UsersInAcademicYearModel.query()
+            .where('user_id', staffUsers[i].user_id)
+            .andWhere('academic_year', AcademicYearAll[0].academic_year)
+          if (check && check.length > 0) {
+            staffUsersResult.push(check[0])
+          }
+        }
+      } else {
+        studentUsers = []
+      }
+      // console.log(advisorUsersResult)
+      // console.log(studentUsers.length)
+      if (studentUsers && studentUsers.length > 0) {
+        for (let i = 0; i < studentUsers.length; i++) {
+          // const documentStatuses = await studentUsers[i].student
+          //   .related('documentsStatuses')
+          //   .query()
+          //   .orderBy('pivot_updated_at', 'desc')
+          // if (documentStatuses && documentStatuses.length > 0) {
+          //   studentUsers[i].serialize()
+          //   if (documentStatuses[0].status_id === 'Waiting') {
+          //     studentUsers[i]['lastestStatus'] =
+          //       documentStatuses[0].status_id + ' for ' + documentStatuses[0].document_id
+          //   } else {
+          //     studentUsers[i]['lastestStatus'] =
+          //       documentStatuses[0].document_id + ' ' + documentStatuses[0].status_id
+          //   }
+          // } else {
+          //   studentUsers[i].serialize()
+          //   studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
+          // }
+          const usersInAcademicYear = await UsersInAcademicYearModel.query()
+            .where('user_id', studentUsers[i].user_id)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
+          // console.log(userHasDoc)
+          if (userHasDoc && userHasDoc.length > 0) {
+            // studentUsers[i].serialize()
+            if (userHasDoc[0].status_id === 'Waiting') {
+              studentUsers[i]['lastestStatus'] =
+                userHasDoc[0].status_id + ' for ' + userHasDoc[0].document_id
+            } else {
+              studentUsers[i]['lastestStatus'] =
+                userHasDoc[0].document_id + ' ' + userHasDoc[0].status_id
+            }
+          } else {
+            // studentUsers[i].serialize()
+            studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
+          }
+          // await UserHasDoc.query().where
+          // for(let i =0;i< usersInAcademicYear.length;i++){
+
+          // }
+          // console.log(usersInAcademicYear)
+          // await UserHasDoc.query().where('user_in_academic_year_id')
+          // const await DocumentStatus[0].related('usersInAcademicYear').query()
+        }
+
+        if (request.qs().status && request.qs().step) {
+          const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
+          result = this.queryStringFilter(resultPre, request.qs().step)
+        } else if (request.qs().status) {
+          result = this.queryStringFilter(studentUsers, request.qs().status)
+        } else if (request.qs().step) {
+          result = this.queryStringFilter(studentUsers, request.qs().step)
+        }
+      }
+      // response.cookie('year', year)
+      return view.render('student-information', {
+        studentUsers:
+          (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
+            ? result
+            : studentUsers,
+        advisorUsers: advisorUsersResult,
+        staffUsers: staffUsersResult,
+        noApprove: noApprove ? noApprove.length : 0,
+        allAmoutSt: allAmoutSt,
+        academicYears: AcademicYearAll,
+        advisorById: advisorById,
+        studentUsersByAd: adSe,
+        studentUsersByAdOne: studentUsersByAdOne,
+      })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
   }
 
-  public async showStudentUserById({ request, response, view }: HttpContextContract) {
+  public async updateCourseInformation({ request, response }: HttpContextContract) {
+    try {
+      const { year, isCurrent } = request.all()
+      let AcademicYearCfResult: any = []
+      if (isCurrent) {
+        AcademicYearCfResult = await AcademicYear.query()
+          .where('academic_year', year)
+          .orderBy('updated_at', 'desc')
+        let AcademicYearCf: any
+        if (!AcademicYearCfResult || AcademicYearCfResult.length === 0 || !year) {
+          AcademicYearCf = new AcademicYear()
+          AcademicYearCf.academic_year = year
+          await AcademicYearCf.save()
+        }
+      }
+      // else {
+      response.cookie('year', year)
+      // }
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async updateUsersCourseInformation({ request, response }: HttpContextContract) {
+    try {
+      const { users } = request.all()
+      // console.log(users)
+      let AcademicYearCfResult: any
+      // let usersArr: any = []
+      AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
+
+      if (
+        (users.advisors && users.advisors.length > 0) ||
+        (users.staffs && users.staffs.length > 0)
+      ) {
+        const newUser = users.advisors.concat(users.staffs)
+
+        for (let i = 0; i < newUser.length; i++) {
+          const user = await User.find(newUser[i])
+          if (user) {
+            await AcademicYearCfResult[0]
+              .related('users')
+              .attach({ [user.user_id]: { approved: true } })
+            // user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
+            // usersArr.push(user)
+          }
+        }
+
+        // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+      }
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async updateAdvisorHasStudent({ request, response }: HttpContextContract) {
+    try {
+      const { students, advisor } = request.all()
+      console.log(students, advisor.advisor_id)
+
+      let AcademicYearCfResult: any
+      AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const advisorResult = await Advisor.query().where('advisor_id', advisor.advisor_id)
+      if (students && students.length > 0) {
+        for (let i = 0; i < students.length; i++) {
+          const usi = await UsersInAcademicYearModel.query()
+            .where('user_id', students[i])
+            .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
+          usi[0].advisor_id = advisorResult[0].advisor_id
+          await usi[0].save()
+        }
+
+        // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
+      }
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async showAdvisorUser({ response }: HttpContextContract) {
+    try {
+      let advisorUsers: any
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // // console.log(AcademicYearCf[0].conf_id)
+      // if (AcademicYearCf && AcademicYearCf.length > 0) {
+      //   advisorUsers = await User.query().where('role', 'advisor')
+      //   // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      //   if (!advisorUsers || advisorUsers.length <= 0) {
+      //     advisorUsers = await User.query().where('role', 'advisor')
+      //   }
+      // } else {
+      advisorUsers = await User.query().where('role', 'advisor')
+      //   // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      // }
+      // console.log(advisorUsers)
+      return response.status(200).json({ advisorUsers: advisorUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async showStaffUser({ response }: HttpContextContract) {
+    try {
+      let staffUsers: any
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // if (AcademicYearCf && AcademicYearCf.length > 0) {
+      //   staffUsers = await User.query().where('role', 'staff')
+      //   // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      //   if (!staffUsers || staffUsers.length <= 0) {
+      //     staffUsers = await User.query().where('role', 'staff')
+      //   }
+      // } else {
+      staffUsers = await User.query().where('role', 'staff')
+      // .andWhere('conf_id', AcademicYearCf[0].conf_id)
+      // }
+
+      return response.status(200).json({ staffUsers: staffUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async getStaffUserCuurentYear({ response }: HttpContextContract) {
+    try {
+      let staffUsers: any = []
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const users = await User.query().where('role', 'staff')
+      for (let i = 0; i < users.length; i++) {
+        const result = await UsersInAcademicYearModel.query()
+          .where('user_id', users[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        if (result && result.length > 0) {
+          staffUsers.push(result[0])
+        }
+      }
+      // await UsersInAcademicYearModel.query().where()
+
+      return response.status(200).json({ staffUsers: staffUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async getAdvisorUserCuurentYear({ response }: HttpContextContract) {
+    try {
+      let advisorUsers: any = []
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const users = await User.query().where('role', 'advisor')
+      for (let i = 0; i < users.length; i++) {
+        const result = await UsersInAcademicYearModel.query()
+          .where('user_id', users[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        if (result && result.length > 0) {
+          advisorUsers.push(result[0])
+        }
+      }
+      // await UsersInAcademicYearModel.query().where()
+
+      return response.status(200).json({ advisorUsers: advisorUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async getStudentUserCuurentYear({ response }: HttpContextContract) {
+    try {
+      let studentUsers: any = []
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const users = await User.query().where('role', 'student')
+      for (let i = 0; i < users.length; i++) {
+        const result = await UsersInAcademicYearModel.query()
+          .where('user_id', users[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        if (result && result.length > 0) {
+          studentUsers.push(result[0])
+        }
+      }
+      // await UsersInAcademicYearModel.query().where()
+
+      return response.status(200).json({ studentUsers: studentUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async getStudentUserByAdvisor({ request, response }: HttpContextContract) {
+    try {
+      const { advisor } = request.all()
+      let studentUsers: any = []
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const users = await User.query().where('role', 'student')
+      for (let i = 0; i < users.length; i++) {
+        const result = await UsersInAcademicYearModel.query()
+          .where('user_id', users[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('advisor_id', advisor)
+        if (result && result.length > 0) {
+          studentUsers.push(result[0])
+        }
+      }
+      // await UsersInAcademicYearModel.query().where()
+
+      return response.status(200).json({ studentUsers: studentUsers })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async delUsersInAcademicYear({ request, response }: HttpContextContract) {
+    try {
+      // const { userId } = request.all()
+      const userId = request.param('id')
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const delUser = await UsersInAcademicYearModel.query()
+        .where('academic_year', AcademicYearCf[0].academic_year)
+        .andWhere('user_id', userId)
+      await delUser[0].delete()
+      return response.status(200).json('success')
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async delUsersFromAdvisor({ request, response }: HttpContextContract) {
+    try {
+      // const { userId } = request.all()
+      const userId = request.param('id')
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const delUser = await UsersInAcademicYearModel.query()
+        .where('academic_year', AcademicYearCf[0].academic_year)
+        .andWhere('user_id', userId)
+      const newTmp = new UsersInAcademicYearModel()
+      newTmp.academic_year = delUser[0].academic_year
+      newTmp.user_id = delUser[0].user_id
+      newTmp.approved = delUser[0].approved
+      await delUser[0].delete()
+      await newTmp.save()
+      return response.status(200).json('success')
+    } catch (error) {
+      console.log(error)
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  private queryStringFilter(arr, queryString) {
+    const result = arr.filter((word) => {
+      if (Array.isArray(queryString)) {
+        for (const qs of queryString) {
+          if (word['lastestStatus'].toUpperCase().includes(qs.toUpperCase())) {
+            return true
+          }
+        }
+        return false
+      } else {
+        if (word['lastestStatus'].toUpperCase().includes(queryString.toUpperCase())) {
+          return true
+        }
+        return false
+      }
+    })
+    return result
+  }
+
+  public async showStudentUserById({ auth, request, response, view }: HttpContextContract) {
     try {
       // const role = request.param('role')
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // console.log(auth.user)
+      let AcademicYearCf: any
+      if (auth.user?.role === 'student') {
+        AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      } else {
+        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      }
+
       const studentUsers = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
         .preload('student')
       const studentUser = studentUsers[0]
       // return response.status(200).json(studentUser)
+      // const { lastStepPaging, gnext } = request.only(['lastStepPaging', 'gnext'])
+      const qs = request.qs()
       const plans = [2, 4, 6]
       const studentInfo = [
         'Firm',
@@ -186,9 +773,6 @@ export default class UsersController {
       let steps: any =
         studentUser.student.plan === 6
           ? [
-              {
-                name: 'Accepted by firm',
-              },
               {
                 name: 'TR-01',
               },
@@ -238,22 +822,24 @@ export default class UsersController {
           : studentUser.student.plan === 4
           ? [
               {
-                name: 'Accepted by firm',
-              },
-              {
                 name: 'TR-01',
+                status: 'Approved',
               },
               {
                 name: 'TR-02',
+                status: 'Approved',
               },
               {
                 name: 'TR-03 and TR-05 (1/4)',
+                status: 'Approved',
               },
               {
                 name: 'Informed supervision (1/4)',
+                status: '',
               },
               {
                 name: 'TR-03 and TR-05 (2/4)',
+                status: '',
               },
               {
                 name: 'Informed supervision (2/4)',
@@ -275,9 +861,6 @@ export default class UsersController {
               },
             ]
           : [
-              {
-                name: 'Accepted by firm',
-              },
               {
                 name: 'TR-01',
               },
@@ -301,67 +884,126 @@ export default class UsersController {
               },
             ]
       let nextStep: any
-      let currentSteps: any
+      let currentSteps: any = {}
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
-      const student = await Student.findOrFail(request.param('id'))
+      // const student = await Student.findOrFail(request.param('id'))
 
-      const documentStatuses = await student
-        .related('document_status')
-        .query()
-        .where('student_id', request.param('id'))
+      // const documentStatuses = await student
+      //   .related('documentsStatuses')
+      //   .query()
+      //   .wherePivot('student_id', request.param('id'))
+      //   .orderBy('pivot_updated_at', 'desc')
 
-      for (let i = 0; i < steps.length; i++) {
-        for (let j = 0; j < documentStatuses.length; j++) {
-          steps[i]['createAt'] = moment(documentStatuses[j].created_at.toString())
+      const usersInAcademicYear = await UsersInAcademicYearModel.query()
+        .where('user_id', studentUser.user_id)
+        .andWhere('academic_year', AcademicYearCf[0].academic_year)
+      const userHasDocResult = await UserHasDoc.query()
+        .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        .orderBy('updated_at', 'desc')
+      const userHasDocResultForTime = await UserHasDoc.query()
+        .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        .orderBy('updated_at', 'asc')
+      let submission: any = []
+      for (let i = 0; i < userHasDocResultForTime.length; i++) {
+        const docWStat = await Document_Status.query().where(
+          'id',
+          userHasDocResultForTime[i].doc_stat_id
+        )
+
+        if (docWStat[0].status_id === 'Pending') {
+          const docWStatSe = docWStat[0].serialize()
+          docWStatSe.created_at = moment(userHasDocResultForTime[i].createdAt.toString())
             .tz('Asia/Bangkok')
             .format('MMMM D, YYYY h:mm A')
-          if (documentStatuses[j].no_approve_reason) {
-            steps[i]['reason'] = documentStatuses[j].no_approve_reason
-              ? documentStatuses[j].no_approve_reason
-              : ''
-          }
-          if (
-            steps[i].name === documentStatuses[j].document_id
-            // || (i === 0 && studentUser.student.plan)
-          ) {
-            steps[i]['result'] = true
-            // if (i > 0) {
-            steps[i]['status'] = documentStatuses[j].status_id
-            // }
+          submission.push(docWStatSe)
+        }
+      }
 
-            break
+      let stepFile: any
+      let userHasDoc
+      if (userHasDocResult[0]) {
+        userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+        // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
+        const file = await File.query().where('doc_name', userHasDoc[0].document_id)
+        stepFile = file[0].file_id
+      }
+      // console.log(submission)
+      // console.log(userHasDocResult[0])
+      // userHasDocResult[0].related('')
+      if (userHasDoc && userHasDoc.length > 0) {
+        const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+        currentSteps['file'] = stepFile
+        currentSteps['name'] = documentStatusesJsonCurrent.document_id
+        currentSteps['status'] = documentStatusesJsonCurrent.status_id
+        currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
+          .tz('Asia/Bangkok')
+          .format('MMMM D, YYYY h:mm A')
+        currentSteps['reason'] = userHasDocResult[0].$extras.no_approve_reason
+
+        const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
+        if (stepIndex >= 0) {
+          if (userHasDoc[0].status_id === 'Approved') {
+            nextStep = steps[stepIndex + 1]
           } else {
-            steps[i]['result'] = false
+            nextStep = steps[stepIndex]
           }
         }
-      }
+        let index: any
+        for (let i = 0; i < steps.length; i++) {
+          for (let j = 0; j < userHasDoc.length; j++) {
+            if (steps[i].name === userHasDoc[j].document_id) {
+              // steps[0]['status'] = 'Approved'
+              index = i
 
-      const index = steps.map((ele) => ele.result).lastIndexOf(true)
-      console.log(index)
-      if (index >= 0) {
-        if (steps[index].status === 'Approved') {
-          console.log('asdasd')
+              steps[i]['status'] = userHasDoc[j].status_id
+              break
+            } else {
+              steps[i]['status'] = ''
+            }
+          }
         }
-        steps[index].status === 'Approved'
-          ? ((nextStep = steps[index + 1]), (currentSteps = steps[index]))
-          : ((nextStep = steps[index]), (currentSteps = nextStep))
+
+        for (let i = 0; i < index; i++) {
+          steps[i]['status'] = 'Approved'
+        }
       } else {
+        currentSteps['name'] = steps[0].name
+        currentSteps['status'] = ''
+        currentSteps['createAt'] = ''
+        currentSteps['reason'] = ''
         nextStep = steps[0]
-        currentSteps = steps[0]
-        currentSteps.status = ''
+        // nextStep['status'] = 'Waiting'
       }
+      console.log(steps)
       console.log(currentSteps)
       console.log(nextStep)
 
+      let stepPaged = []
+      if (qs.firstStepPaging) {
+        const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
+        stepPaged =
+          qs.gnext === 'true'
+            ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
+            : steps.slice(firstStepPagingIndex - 4, firstStepPagingIndex)
+      } else {
+        stepPaged = steps.slice(0, 4)
+      }
+      const lastOfAllStep = steps[steps.length - 1].name
+      const firstOfAllStep = steps[0].name
       return view.render('student', {
         studentUser,
         plans,
         disabled,
-        steps,
         nextStep,
         currentSteps,
+        stepPaged,
+        firstOfAllStep,
+        lastOfAllStep,
         studentInfo,
+        submission: submission,
+        // userHasDoc: userHasDoc[0].id,
       })
+      // return response.redirect('/announcement')
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -369,23 +1011,38 @@ export default class UsersController {
 
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
+      console.log('dsadasa')
+
       const { study, status, doc, reason } = request.only(['study', 'status', 'doc', 'reason'])
-      console.log(doc)
+      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const studentUser = await Student.findOrFail(request.param('id'))
+      const usersInAcademicYear = await UsersInAcademicYearModel.query()
+        .where('user_id', studentUser.student_id)
+        .andWhere('academic_year', AcademicYearCf[0].academic_year)
       let statusResult: Status
       let docResult: Document
       if (study) {
         studentUser.plan = study
         await studentUser.save()
-        await Document_Status.query().where('student_id', studentUser.student_id).delete()
-        await File.query().where('user_id', studentUser.student_id).delete()
+
+        // await studentUser
+        //   .related('documentsStatuses')
+        //   .query()
+        //   .wherePivot('student_id', studentUser.student_id)
+        //   .delete()
+        const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
+        // console.log(userHasDoc[0])
+        if (userHasDoc[0]) {
+          await File.query().where('user_has_doc_id', userHasDoc[0].id).delete()
+        }
+        await usersInAcademicYear[0].related('documentStatus').query().delete()
       }
       // if (status && doc) {
-      statusResult = await Status.findOrFail(status || 'Pending')
-      docResult = await Document.findOrFail(doc || 'Accepted by firm')
+      statusResult = await Status.findOrFail(status || 'Waiting')
+      docResult = await Document.findOrFail(doc || 'TR-01')
 
       const docStat = await Document_Status.query()
-        .where('student_id', studentUser.student_id)
+        .where('status_id', statusResult.status_name)
         .andWhere('document_id', docResult.doc_name)
         .orderBy('updated_at', 'desc')
       // await studentUser.related('document_status').updateOrCreate(
@@ -395,31 +1052,103 @@ export default class UsersController {
       //     status_id: statusResult.status_name,
       //   }
       // )
+      // console.log();
 
       if (docStat && docStat.length > 0) {
-        await studentUser
-          .related('document_status')
-          .query()
-          .where('student_id', studentUser.student_id)
-          .andWhere('document_id', docResult.doc_name)
-          .update({
-            status_id: statusResult.status_name,
+        // const st = await studentUser
+        //   .related('documentsStatuses')
+        //   .query()
+        //   .wherePivot('student_id', studentUser.student_id)
+        //   .andWherePivot('doc_stat_id', docStat[0].id)
+        //   .orderBy('pivot_updated_at', 'desc')
+        //   .preload('students')
+        // console.log(st[0].$extras.pivot_doc_stat_id)
+        // console.log(docStat[0].id)
+        // st[0].$extras.pivot_doc_stat_id = docStat[0].id
+        // await st[0].save()
+        // if (st && st.length > 0) {
+        // }
+        await usersInAcademicYear[0].related('documentStatus').attach({
+          [docStat[0].id]: {
             no_approve_reason:
               reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
-          })
-      } else {
-        await studentUser.related('document_status').create({
-          student_id: studentUser.student_id,
-          document_id: docResult.doc_name,
-          status_id: statusResult.status_name,
-          // no_approve_reason:
-          //   reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
+          },
         })
+        // await studentUser.related('documentsStatuses').attach({
+        //   [docStat[0].id]: {
+        //     no_approve_reason:
+        //       reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
+        //   },
+        // })
+        // await studentUser.related('documentsStatuses').attach([docStat[0].id])
       }
+      // if (docStat && docStat.length > 0) {
+      //   await studentUser
+      //     .related('documentsStatuses')
+      //     .query()
+      //     .where('student_id', docStat[0].id)
+      //     .update({
+      //       doc_stat_id: statusResult.status_name,
+      //       no_approve_reason:
+      //         reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
+      //     })
+      // } else {
+      // await studentUser.related('document_status').create({
+      //   student_id: studentUser.student_id,
+      //   document_id: docResult.doc_name,
+      //   status_id: statusResult.status_name,
+      //   // no_approve_reason:
+      //   //   reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
+      // })
+      // }
       // }
 
       response.redirect('/student/' + studentUser.student_id)
       // return response.status(200).json(result)
+    } catch (error) {
+      console.log(error)
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async updateStudentUserApprove({ request, response }: HttpContextContract) {
+    try {
+      const { users } = request.only(['users'])
+      users.forEach(async (user) => {
+        // const studentUsers = await User.query().where('user_id', user.id).preload('student')
+        // const studentUser = studentUsers[0]
+        // studentUser.approved = user.approve
+        // await studentUser.save()
+
+        const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+        const UsersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('academic_year', years[0].academic_year)
+          .andWhere('user_id', user.id)
+        UsersInAcademicYear[0].approved = user.approve
+        await UsersInAcademicYear[0].save()
+      })
+      // if (approve) {
+      //   response.redirect(`/students/request`)
+      // } else {
+      //   response.redirect(`/student/${studentUser.user_id}/information`)
+      // }
+      // response.status(200).send('success')
+      response.redirect(`/student-informationstudents`)
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async deleteStudentUser({ request, response }: HttpContextContract) {
+    try {
+      // const { user } = request.only(['user'])
+      const user = await User.find(request.param('id'))
+      if (user) {
+        user.delete()
+      } else {
+        throw Error('cannot find user')
+      }
+      response.status(200).send('success')
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -438,7 +1167,8 @@ export default class UsersController {
         mentorPosition,
         mentorEmail,
         mentorTel,
-        adviserFullName,
+        advisorFullName,
+        // approve,
       } = request.only([
         'firm',
         'email',
@@ -450,7 +1180,8 @@ export default class UsersController {
         'mentorPosition',
         'mentorEmail',
         'mentorTel',
-        'adviserFullName',
+        'advisorFullName',
+        // 'approve',
       ])
       const studentUsers = await User.query()
         .where('user_id', request.param('id'))
@@ -467,6 +1198,7 @@ export default class UsersController {
       studentUser.student.mentor_email = mentorEmail
       studentUser.student.mentor_tel_no = mentorTel
       studentUser.email = email
+      // studentUser.approved = approve
       // if (email) {
       //   const studentUser = await User.query()
       //     .where('user_id', request.param('id'))
@@ -474,171 +1206,347 @@ export default class UsersController {
       //   studentUser[0].email = email
       //   await studentUser[0].save()
       // }
-      console.log(adviserFullName)
-      if (adviserFullName) {
-        const adviserFullNameSplit = adviserFullName.split(' ')
-        if (adviserFullNameSplit && adviserFullNameSplit.length > 1) {
-          const adviserUser = await User.query()
-            .where('firstName', adviserFullNameSplit[0])
-            .andWhere('lastName', adviserFullNameSplit[1])
-            .andWhere('role', 'adviser')
-          if (adviserUser && adviserUser.length > 0) {
-            studentUser.student.adviser_id = adviserUser[0].user_id
-            // adviserUser[0].related('student')
-          }
-        }
-      }
+      // if (advisorFullName) {
+      //   const advisorFullNameSplit = advisorFullName.split(' ')
+      //   if (advisorFullNameSplit && advisorFullNameSplit.length > 1) {
+      //     const roleAdvisorUser = await User.query()
+      //       .where('firstName', advisorFullNameSplit[0])
+      //       .andWhere('lastName', advisorFullNameSplit[1])
+      //       .andWhere('role', 'advisor')
+      //     if (roleAdvisorUser && roleAdvisorUser.length > 0) {
+      //       const advisorUsers = await Advisor.query().where(
+      //         'advisor_id',
+      //         roleAdvisorUser[0].user_id
+      //       )
+      //       studentUser.student.advisor_id = advisorUsers[0].advisor_id
+      //       // advisorUsers[0].related('students').updateOrCreate({
+
+      //       // })
+      //       // studentUser.student.advisor_id = advisorUser[0].user_id
+      //       // advisorUser[0].related('student')
+      //     }
+      //   }
+      // }
 
       await studentUser.save()
       await studentUser.student.save()
+      // if (approve) {
+      //   response.redirect(`/register-request`)
+      // } else {
       response.redirect(`/student/${studentUser.user_id}/information`)
+      // }
+      // response.redirect(`/student/${studentUser.user_id}/information`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
   }
 
-  // public async test({ response }: HttpContextContract) {
-  //   try {
-  //     await Document.create({
-  //       doc_name: 'test1',
-  //     })
-  //     await Status.create({
-  //       status_name: 'test2',
-  //     })
-  //     const student = await Student.find('65130000001')
-  //     console.log(student)
-  //     if (student) {
-  //       const result = student.related('document_status').create({
-  //         document_id: 'test1',
-  //         status_id: 'test2',
-  //       })
-  //       return response.status(200).json({ 1: result })
-  //     }
-  //     // const result = Document
-  //     // const document = await Document.find('test1')
-  //     // const status = await Status.find('test2')
+  public async showStudentInfo({ request, response, view }: HttpContextContract) {
+    try {
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      // if (studentUser.student.advisor_id) {
+      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
+      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
+      // }
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['advisorFullName']
+            ? studentUser.student['advisorFullName']
+            : '',
+          key: 'advisorFullName',
+        },
+      ]
+      return view.render('student-info', {
+        studentUser,
+        disabled,
+        studentInfo,
+      })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
-  //     // let result = []
-  //     // if (status && document) {
-  //     //   //   await document?.related('statuses').attach([status.status_name])
-  //     //   const result = await document.related('statuses').query().where('status_id', 'test2')
-  //     //   return response.status(200).json({ 1: result })
-  //     // }
-
-  //     // const result = await Document_Status.find('test2')
-  //     // const terst = await Document.query().where('doc_name', 'test2')
-  //     // terst.statuses()
-
-  //     // const { study, status } = request.only(['study', 'status'])
-  //     // console.log(status)
-  //     // console.log(study)
-  //     // const studentUser = await Student.findOrFail(request.param('id'))
-  //     // studentUser.status = 'เลือกแล้วครับ'
-  //     // studentUser.study = study
-  //     // const result = await studentUser.save()
-  //     // response.redirect('/student/' + result.student_id)
-  //   } catch (error) {
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
+  public async showStudentInfoEdit({ request, response, view }: HttpContextContract) {
+    try {
+      const studentUsers = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      // if (studentUser.student.advisor_id) {
+      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
+      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
+      // }
+      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['advisorFullName']
+            ? studentUser.student['advisorFullName']
+            : '',
+          key: 'advisorFullName',
+        },
+      ]
+      // request.qs().editing && request.qs().editing !== '' ? (editing = true) : (editing = false)
+      return view.render('edit-student', { studentUser, disabled, studentInfo })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
   public async gen() {
     try {
-      await Document.createMany([
-        {
-          doc_name: 'Accepted by firm',
-        },
-        {
+      let resultDocs: any
+      let resultStatuses: any
+      let year: any
+      const docs = await Document.all()
+      if (docs && docs.length === 0) {
+        resultDocs = await Document.createMany([
+          // {
+          //   doc_name: 'Resume, portfolio',
+          // },
+          {
+            doc_name: 'TR-01',
+          },
+          {
+            doc_name: 'TR-02',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (1/6)',
+          },
+          {
+            doc_name: 'Informed supervision (1/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (2/6)',
+          },
+          {
+            doc_name: 'Informed supervision (2/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (3/6)',
+          },
+          {
+            doc_name: 'Informed supervision (3/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (4/6)',
+          },
+          {
+            doc_name: 'Informed supervision (4/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (5/6)',
+          },
+          {
+            doc_name: 'Informed supervision (5/6)',
+          },
+          {
+            doc_name: 'Sent Presentation',
+          },
+          {
+            doc_name: 'Presentation',
+          },
+          {
+            doc_name: 'TR-03 and TR-06 (6/6)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (1/4)',
+          },
+          {
+            doc_name: 'Informed supervision (1/4)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (2/4)',
+          },
+          {
+            doc_name: 'Informed supervision (2/4)',
+          },
+          {
+            doc_name: 'TR-03 and TR-05 (3/4)',
+          },
+          {
+            doc_name: 'Informed supervision (3/4)',
+          },
+          {
+            doc_name: 'TR-03 and TR-06 (4/4)',
+          },
+          {
+            doc_name: 'Informed supervision',
+          },
+          {
+            doc_name: 'Informed presentation day',
+          },
+          {
+            doc_name: 'TR-03 and TR-08',
+          },
+        ])
+      }
+      const statuses = await Status.all()
+      if (statuses && statuses.length === 0) {
+        resultStatuses = await Status.createMany([
+          {
+            status_name: 'Pending',
+          },
+          {
+            status_name: 'Disapproved',
+          },
+          {
+            status_name: 'Approved',
+          },
+          {
+            status_name: 'Waiting',
+          },
+        ])
+      }
+      const users = await User.all()
+      if (users && users.length === 0) {
+        const currentYear = await AcademicYear.query().orderBy('updated_at', 'desc')
+        if (!currentYear || currentYear.length === 0) {
+          year = await AcademicYear.create({
+            academic_year: new Date().getFullYear(),
+          })
+        } else {
+          year = currentYear[0]
+        }
+        // year = await AcademicYear.create({
+        //   academic_year: new Date().getFullYear(),
+        // })
+        //   .preload('users')
+        // console.log(year[0].users)
+        // if (user) {
+        //   await year[0].related('users').attach([user.user_id])
+        // } else {
+        //   await year[0].related('users').create({
+        //     user_id: username,
+        //     firstname: fullname[0],
+        //     lastname: fullname[1],
+        //     email: ldapUser.mail,
+        //     password: password,
+        //   })
+        // }
+        const arr = [
+          {
+            user_id: 'nuchanart.boo',
+            firstname: 'Saowatharn',
+            lastname: 'Suparat',
+            role: 'staff',
+            password: 'Fxig08',
+            // approved: true,
+          },
+          {
+            user_id: 'sirinthip.suk',
+            firstname: 'Theetika',
+            lastname: 'Yuvaves',
+            role: 'staff',
+            password: 'Fxig08',
+            // approved: true,
+          },
+          {
+            user_id: 'krant.bur',
+            firstname: 'Kantsak',
+            lastname: 'Sivaraksa',
+            role: 'admin',
+            password: 'Fxig08',
+            // approved: true,
+          },
+          {
+            user_id: 'manee.mun',
+            firstname: 'Karn',
+            lastname: 'Dahkling',
+            role: 'advisor',
+            password: 'Fxig08',
+            // approved: true,
+          },
+          {
+            user_id: 'piti.ket',
+            firstname: 'Tinnakit',
+            lastname: 'Kulawanit',
+            role: 'advisor',
+            password: 'Fxig08',
+            // approved: true,
+          },
+        ]
+        const usersArr = await User.createMany(arr)
+        usersArr.forEach(
+          async (user) =>
+            user.role === 'staff'
+              ? await user.related('staff').create({})
+              : // ,
+                // await year.related('users').attach([user.user_id]))
+                await user.related('advisor').create({})
+          // ,
+          // await year.related('users').attach([user.user_id]))
+        )
+      }
+      const docsStatuses = await Document_Status.all()
+      if (
+        docsStatuses &&
+        docsStatuses.length === 0 &&
+        resultDocs &&
+        resultDocs.length >= 1 &&
+        resultStatuses &&
+        resultStatuses.length >= 1
+      ) {
+        for (let doc of resultDocs) {
+          for (let status of resultStatuses) {
+            await Document_Status.createMany([
+              {
+                document_id: doc.doc_name,
+                status_id: status.status_name,
+              },
+            ])
+          }
+        }
+      }
+
+      const files = await File.all()
+      if (files && files.length === 0) {
+        await File.create({
+          file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
+          file_name: 'TR-01TEST',
+          file_size: '200.06 KB',
           doc_name: 'TR-01',
-        },
-        {
-          doc_name: 'TR-02',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (1/6)',
-        },
-        {
-          doc_name: 'Informed supervision (1/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (2/6)',
-        },
-        {
-          doc_name: 'Informed supervision (2/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (3/6)',
-        },
-        {
-          doc_name: 'Informed supervision (3/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (4/6)',
-        },
-        {
-          doc_name: 'Informed supervision (4/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (5/6)',
-        },
-        {
-          doc_name: 'Informed supervision (5/6)',
-        },
-        {
-          doc_name: 'Sent Presentation',
-        },
-        {
-          doc_name: 'Presentation',
-        },
-        {
-          doc_name: 'TR-03 and TR-06 (6/6)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (1/4)',
-        },
-        {
-          doc_name: 'Informed supervision (1/4)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (2/4)',
-        },
-        {
-          doc_name: 'Informed supervision (2/4)',
-        },
-        {
-          doc_name: 'TR-03 and TR-05 (3/4)',
-        },
-        {
-          doc_name: 'Informed supervision (3/4)',
-        },
-        {
-          doc_name: 'TR-03 and TR-06 (4/4)',
-        },
-        {
-          doc_name: 'Informed supervision',
-        },
-        {
-          doc_name: 'Informed presentation day',
-        },
-        {
-          doc_name: 'TR-03 and TR-08',
-        },
-      ])
-      await Status.createMany([
-        {
-          status_name: 'Pending',
-        },
-        {
-          status_name: 'Disapproved',
-        },
-        {
-          status_name: 'Approved',
-        },
-      ])
-      // next()
+        })
+      }
+
+      return year
     } catch (error) {
-      // console.log(error)
-      // return response.status(400).json({ message: error.message })
+      console.log(error)
     }
   }
 }

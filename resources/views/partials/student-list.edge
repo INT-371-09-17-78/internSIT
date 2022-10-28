@@ -1,0 +1,86 @@
+<div class="p-8">
+  <div class="pr-20 flex items-end">
+    <p class="text-base px-2 lg:text-3xl text-base-content font-semibold">Student information</p>
+    <div class="dropdown ml-auto">
+      <label tabindex="0" class="select select-sm" id="selectInput">Filter by</label>
+      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box mt-2 space-y-2">
+        <p>Steps</p>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-01">
+          <p>TR-01</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-02">
+          <p>TR-02</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-03">
+          <p>TR-03</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-04">
+          <p>TR-04</p>
+        </div>
+        <p>Status</p>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Pending">
+          <p>Pending</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Waiting for TR-01">
+          <p>Waiting for TR-01</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Approved">
+          <p>Approved</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Disapproved">
+          <p>Not approved</p>
+        </div>
+      </ul>
+    </div>
+  </div>
+  <div class="flex space-x-5 h-full">
+        <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+          <li class="{{activeAll}}">
+            <a href="{{ request.cookie('year') ? route('/student-information') : route('/academic-year') }}">All</a>
+          </li>
+          <li class="{{activeTwoMonth}}">
+            <a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 2}}) : route('/academic-year') }}">INT340 (2 months)</a>
+          </li>
+          <li class="{{activeFourMonth}}"><a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 4}}) : route('/academic-year') }}">INT350 (4 months)</a></li>
+          <li class="{{activeSixMonth}}"><a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 6}}) : route('/academic-year') }}">INT370 (6 months)</a></li>
+        </ul>
+        @if(allAmoutSt !== noApprove)
+        <div class="flex-1 pr-20">
+          <table class="table w-full mt-5">
+            <thead>
+              <tr class="border-2 border-[#F6F7F9]">
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @each((student,index) in studentUsers)
+              @if(student.approved)
+                  <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
+                    <td>{{student.user_id}}</td>
+                    <td>{{student.firstname + " " + student.lastname}}</td>
+                    <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+                  </tr>
+              @end
+              @end
+            </tbody>
+          </table>
+        </div>
+        @else
+        <div class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+            <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
+            <p>No students in the system</p>
+            <p class="text-base">Please add students into the system first or Check your filters.</p>
+        </div>
+        @end
+  </div>
+</div>

@@ -1,11 +1,8 @@
-@set('borderColor', '')
-@set('borderWidth', '')
-@set('selectError', '')
-@if(flashMessages.has('error'))
-@set('borderColor', 'input-error')
-@set('borderWidth', 'border-2')
-@set('selectError', 'select-error')
-@else
+@set('borderColorId', '')
+@set('borderWidthId', '')
+@if(flashMessages.get('error')==='bad userId length' || flashMessages.get('error')==='empty userId')
+@set('borderColorId', 'input-error')
+@set('borderWidthId', 'border-2')
 @end 
 <div class="register-form bg-white h-fit rounded-xl p-10 mt-5 shadow-md md:mt-0 md:w-80 lg:p-8 lg:w-[400px] max-w-xs md:max-w-none">
     <p class="register-title font-medium text-base lg:text-2xl">Register with KMUTT email</p>
@@ -14,20 +11,23 @@
                 <label class="label" for="user-id">
                     <span class="label-text font-bold text-sm lg:text-base">Student ID</span>
                 </label>
-                <input type="text" id="user-id" name="userId" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <input type="text" id="user-id" name="userId" maxlength="11" class="input input-xs input-bordered {{borderColorId}} {{borderWidthId}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                @if(flashMessages.get('error', ''))
+                <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
+                @end
                 <label class="label" for="email">
                     <span class="label-text font-bold text-sm lg:text-base">Email</span>
                 </label>
-                <input type="email" id="email" name="email" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <input id="email" name="email" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                @if(flashMessages.get('error', ''))
+                <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
+                @end
                 <p class="text-right text-sm lg:text-base mt-2 font-semibold text-[#858D95]">@mail.kmutt.ac.th</p>
-            @if(flashMessages.get('error', ''))
-            <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
-            @end
             @!common.button({
                 text: 'Register',
                 type: 'submit',
                 classProps: 'btn-primary btn-block text-base btn-xs h-9 lg:text-base lg:h-14 mt-2 rounded-xl',
             })
-            <p class="text-center mt-6 text-sm lg:text-base font-medium">Already have an account <a href="" class="link link-primary">Login now</a></p>
+            <p class="text-center mt-6 text-sm lg:text-base font-medium">Already have an account <a href="{{ route('/') }}" class="link link-primary">Login now</a></p>
         </form>
 </div>

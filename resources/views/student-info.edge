@@ -30,12 +30,12 @@
             </div>
           </a>
           <div class="bg-white rounded-xl w-full h-fit flex flex-col p-6">
-            <div class="grid grid-cols-2 gap-y-3 w-fit" id="test">
+            {{--  <div class="grid grid-cols-2 gap-y-3 w-fit" id="test">
               @each(info in studentInfo)
               <p class="font-bold">{{info.title}}</p>
               <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
               @end
-            </div>
+            </div>  --}}
             @if(auth.user.role === "staff")
             <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="self-center mt-2">
               <button type="submit" class="w-20 btn btn-sm btn-primary rounded-3xl text-white capitalize">edit</button>

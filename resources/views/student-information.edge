@@ -1,0 +1,571 @@
+@layout('layouts/app')
+@set('title', 'student-information page')
+@set('activeInfoTab', 'text-[#495057] fill-[#495057]')
+@set('activeCourseTab', 'text-[#495057] fill-[#495057]')
+@set('activeRequestTab', 'text-[#495057] fill-[#495057]')
+@set('activeTwoMonth', '')
+@set('activeFourMonth', '')
+@set('activeSixMonth', '')
+@set('activeAll', '')
+
+@section('student-information')
+@if(request.matchesRoute('/register-request'))
+@set('activeRequestTab', 'bg-white text-primary fill-primary')
+@elseif(request.matchesRoute('/student-information'))
+@set('activeInfoTab', 'bg-white text-primary fill-primary')
+@else
+@set('activeCourseTab', 'bg-white text-primary fill-primary')
+@end
+
+  @if(request.qs().month == 2)
+   @set('activeTwoMonth', 'bg-[#484F56]/10')
+  @elseif(request.qs().month == 4)
+   @set('activeFourMonth', 'bg-[#484F56]/10')
+  @elseif(request.qs().month == 6)
+    @set('activeSixMonth', 'bg-[#484F56]/10')
+  @else
+    @set('activeAll', 'bg-[#484F56]/10')
+  @end
+  <section class="flex flex-col h-full w-full z-[5] bg-white">
+      <div class="flex px-8 bg-[#F0F3F4] w-full py-6">
+        @if(request.matchesRoute('/academic-year'))
+        <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
+          Academic year
+        </p>
+        @else
+        <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
+        {{auth.user.user_id}} | {{auth.user.role}}
+        </p>
+        <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
+          <p class="font-bold">Academic year: {{request.cookie('year')}}</p>
+          <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
+        </div>
+        @end
+      </div>
+      @if(request.matchesRoute('/academic-year'))
+        @include('partials/academic-year')
+      @else
+        @include('partials/info-tab')
+      @end
+      @if(request.matchesRoute('/student-information'))
+        @include('partials/student-list')
+      @elseif(request.matchesRoute('/register-request'))
+        @include('partials/register-request')
+      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/edit/supervised-student'))
+        @include('partials/course-info')
+      @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit'))
+        @include('partials/steps')
+      @end
+  </section>
+
+<script>
+  const year = document.getElementById("acdemic-years")
+
+  const closeAlertAddAcademicYear =()=>{
+    document.getElementById("modal-add-academic-year").remove()
+  }
+  const showAddAcademicYear = () =>{
+    document.getElementById('container-add-year').classList.remove('hidden')
+    document.getElementById('container-add-year').classList.add('flex')
+  }
+  let acdemicYear
+  const showAlertAddAcademicYear = () =>{
+    if(!document.getElementById('acdemic_year').value) return
+    acdemicYear = document.getElementById('acdemic_year').value
+    const alertAddAcademicYear = 
+    `<div id="modal-add-academic-year" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10 flex justify-center items-center">
+      <div class="max-w-sm">
+        <div class="alert bg-base-100 shadow-lg flex flex-col">
+            <svg class="w-16 h-16" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.4352 5.79177L2.73015 27.0018C2.46821 27.4554 2.3296 27.9697 2.32814 28.4936C2.32667 29.0174 2.46239 29.5325 2.72179 29.9876C2.9812 30.4427 3.35524 30.8219 3.80671 31.0875C4.25819 31.3532 4.77135 31.496 5.29515 31.5018H30.7052C31.229 31.496 31.7421 31.3532 32.1936 31.0875C32.6451 30.8219 33.0191 30.4427 33.2785 29.9876C33.5379 29.5325 33.6736 29.0174 33.6722 28.4936C33.6707 27.9697 33.5321 27.4554 33.2702 27.0018L20.5652 5.79177C20.2977 5.35093 19.9212 4.98645 19.4719 4.7335C19.0227 4.48054 18.5158 4.34766 18.0002 4.34766C17.4845 4.34766 16.9776 4.48054 16.5284 4.7335C16.0791 4.98645 15.7026 5.35093 15.4352 5.79177V5.79177Z" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 13.5V19.5" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 24V24.75" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p class="font-bold">Your input </p>
+            <p class="text-red-500 font-bold border-2 border-red-500 px-5 py-2 rounded-md">${acdemicYear}</p>
+            <span class="block text-center">Please make sure of new acacemic year. After <span class="font-medium">'confirm'</span>, you can’t edit. If you would like to edit please contact admin.</span>
+            <div class="self-end">
+              <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertAddAcademicYear()">cancel</button>
+              <button type="submit" class="btn btn-sm btn-info rounded-3xl" onclick="addYear()">confirm</button>
+            </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertAddAcademicYear
+    document.getElementById('acdemic_year').value = acdemicYear
+  }
+
+  const updateYear = async (y) =>{
+    const year = {year: y}
+    await fetch('/api/user/courseInfo?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(year),
+    }).then(() => {
+        const urlParams = new URLSearchParams()
+        urlParams.append('month', 2)
+        window.location.href = `/student-information?${urlParams}`
+    })
+  }
+
+  const addYear =  async () => { 
+    const year = {year: acdemicYear , isCurrent: true}
+    await fetch('/api/user/courseInfo?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(year),
+    }).then(() => {
+        const urlParams = new URLSearchParams()
+        urlParams.append('month', 2)
+        window.location.href = `/student-information?${urlParams}`
+    })
+  }
+  
+
+  // const selectCurrentYear = async () =>{
+  //   const year = {year: document.getElementById('academic-years').value, isCurrent: true}
+  //   await fetch('/api/user/courseInfo?_method=PATCH', {
+  //       method: "PATCH",
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(year),
+  //   }).then(() => {
+  //       window.location.reload()
+  //   })
+  // }
+
+  if(document.getElementById('inputYear')) document.getElementById('inputYear').placeholder = new Date().getFullYear()
+  const params = new URLSearchParams(window.location.search);
+  document.querySelectorAll('input[name=selectStep]').forEach((checkbox)=>{
+    params.getAll('step').forEach((step)=>{
+      if(step === checkbox.value) {
+        checkbox.checked = true
+      }
+    })
+  })
+
+  document.querySelectorAll('input[name=selectStatus]').forEach((checkbox)=>{
+    params.getAll('status').forEach((status)=>{
+      if(status === checkbox.value) {
+        checkbox.checked = true
+      }
+    })
+  })
+
+
+  let advisorTemp = []
+  const searchAdvisor = async () => {
+    const response =  await fetch(`/api/user/advisorUser`)
+    const { advisorUsers } = await response.json()
+    const searchValue = document.getElementById('advisor').value
+    if(searchValue && advisorUsers.length > 0) document.getElementById('advisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    let countNotFound = 0
+    advisorUsers.forEach(advisor => {
+      if(searchValue === advisor.user_id){
+        document.getElementById('add-advisor-button').disabled = false
+      }else{
+        document.getElementById('add-advisor-button').disabled = true
+      }
+      if(advisor.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
+        if(advisorTemp.length > 0){
+          advisorTemp.forEach(t =>{
+            if(t !== advisor.user_id){
+              document.getElementById('ul').innerHTML += `<li onclick="deleteAdvisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
+            }else{
+              countNotFound++
+            }
+          })
+        }else{
+          document.getElementById('ul').innerHTML += `<li onclick="deleteAdvisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
+        }
+      }else{
+        countNotFound++
+      }
+    })
+    if(countNotFound === advisorUsers.length){
+      document.getElementById('add-advisor-button').disabled = true
+      document.getElementById('advisor_list').innerHTML = ''
+    }
+  }
+
+  const searchStudent = async () => {
+    const response =  await fetch(`/api/user/studentCYear`)
+    const { studentUsers } = await response.json()
+    const searchValue = document.getElementById('student').value
+    if(searchValue && studentUsers.length > 0) document.getElementById('student_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    let countNotFound = 0
+    studentUsers.forEach(student => {
+      console.log(student)
+      if(searchValue === student.user_id){
+        document.getElementById('add-student-button').disabled = false
+      }else{
+        document.getElementById('add-student-button').disabled = true
+      }
+      if(student.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
+        if(student.length > 0){
+          student.forEach(t =>{
+            if(t !== student.user_id){
+              document.getElementById('ul').innerHTML += `<li onclick="deleteStudentList('${student.user_id}')"><a>${student.user_id}</a></li>`
+            }else{
+              countNotFound++
+            }
+          })
+        }else{
+          document.getElementById('ul').innerHTML += `<li onclick="deleteStudentList('${student.user_id}')"><a>${student.user_id}</a></li>`
+        }
+      }else{
+        countNotFound++
+      }
+    })
+    if(countNotFound === studentUsers.length){
+      document.getElementById('add-student-button').disabled = true
+      document.getElementById('student_list').innerHTML = ''
+    }
+  }
+
+  const searchStaff = async () => {
+    const response =  await fetch(`/api/user/staffUser`)
+    const { staffUsers } = await response.json()
+    const searchValue = document.getElementById('staff').value
+    if(searchValue && staffUsers.length > 0) document.getElementById('staff_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="staff-ul"></ul>'
+    let countNotFound = 0
+    staffUsers.forEach(staff => {
+      if(searchValue === staff.user_id){
+        document.getElementById('add-staff-button').disabled = false
+      }else{
+        document.getElementById('add-staff-button').disabled = true
+      }
+      if(staff.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
+        if(staffTemp.length > 0){
+          staffTemp.forEach(t =>{
+            if(t !== staff.user_id){
+              document.getElementById('staff-ul').innerHTML += `<li onclick="deleteStaffList('${staff.user_id}')"><a>${staff.user_id}</a></li>`
+            }else{
+              countNotFound++
+            }
+          })
+        }else{
+          document.getElementById('staff-ul').innerHTML += `<li onclick="deleteStaffList('${staff.user_id}')"><a>${staff.user_id}</a></li>`
+        }
+      }else{
+        countNotFound++
+      }
+    })
+    if(countNotFound === staffUsers.length){
+      document.getElementById('add-staff-button').disabled = true
+      document.getElementById('staff_list').innerHTML = ''
+    }
+  }
+
+  const updateSettings =  async () => { 
+    const users = {
+      users:{
+        advisors: advisorTemp,
+        staffs: staffTemp
+      }
+    }
+    await fetch('/api/user/courseInfoUs?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(users),
+    }).then(() => {
+        window.location.href = `/course-info`
+    })
+  }
+
+  const updateSettings2 =  async () => { 
+    const params = new URLSearchParams(window.location.search);
+    console.log(params.getAll('advisor')[0])
+    const users = {
+      students: studentTemp,
+      advisor:{
+        advisor_id: params.getAll('advisor')[0]
+      }
+    }
+    console.log(users)
+
+    await fetch('/api/user/advisor/st?_method=PATCH', {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(users),
+    }).then(() => {
+        window.location.href = `/course-info`
+    })
+  }
+  const deleteStudentList = (id) =>{
+    document.getElementById('student').value = id
+    document.getElementById('student_list').innerHTML = ''
+    document.getElementById('add-student-button').disabled = false
+  }
+  if(document.getElementById('student') || document.getElementById('student')){
+    if(!document.getElementById('student').value) document.getElementById('add-student-button').disabled = true
+    if(!document.getElementById('student').value) document.getElementById('add-student-button').disabled = true
+  }
+  const deleteAdvisorList = (id) =>{
+    document.getElementById('advisor').value = id
+    document.getElementById('advisor_list').innerHTML = ''
+    document.getElementById('add-advisor-button').disabled = false
+  }
+  if(document.getElementById('advisor') || document.getElementById('staff')){
+    if(!document.getElementById('advisor').value) document.getElementById('add-advisor-button').disabled = true
+    if(!document.getElementById('staff').value) document.getElementById('add-staff-button').disabled = true
+  }
+  const deleteStaffList = (id) =>{
+    document.getElementById('staff').value = id
+    document.getElementById('staff_list').innerHTML = ''
+    document.getElementById('add-staff-button').disabled = false
+  }
+  let studentTemp = []
+  const addStudent = () => {
+    
+    if(!document.getElementById('student').value) {
+      document.getElementById('add-student-button').disabled = true
+      return
+    }
+    
+    studentTemp.push(document.getElementById('student').value)
+    studentTemp.forEach(t=>{
+      if(t===document.getElementById('student').value){
+        document.getElementById('add-student-button').disabled = true
+      }
+    })
+    
+    document.getElementById('student-table-row').innerHTML += `<tr id="${document.getElementById('student').value}"><td>${document.getElementById('student').value}</td> <td class="text-right"><div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStudent('${document.getElementById('student').value}')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td></tr>`
+    document.getElementById('student_list').innerHTML = ''
+    document.getElementById('student').value = ''
+  }
+  const addAdvisor = () => {
+    
+    if(!document.getElementById('advisor').value) {
+      document.getElementById('add-advisor-button').disabled = true
+      return
+    }
+    
+    advisorTemp.push(document.getElementById('advisor').value)
+    advisorTemp.forEach(t=>{
+      if(t===document.getElementById('advisor').value){
+        document.getElementById('add-advisor-button').disabled = true
+      }
+    })
+    
+    document.getElementById('advisor-table-row').innerHTML += `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalAdvisor('${document.getElementById('advisor').value}')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td></tr>`
+    document.getElementById('advisor_list').innerHTML = ''
+    document.getElementById('advisor').value = ''
+  }
+  let staffTemp =[]
+  const addStaff = () => {
+    if(!document.getElementById('staff').value) {
+      document.getElementById('add-staff-button').disabled = true
+      return
+    }
+    
+    staffTemp.push(document.getElementById('staff').value)
+    staffTemp.forEach(t=>{
+      if(t===document.getElementById('staff').value){
+        document.getElementById('add-staff-button').disabled = true
+      }
+    })
+    
+    document.getElementById('staff-table-row').innerHTML += `<tr id="${document.getElementById('staff').value}"><td>${document.getElementById('staff').value}</td> <td class="text-right"><div class="flex justify-end"> 
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStaff('${document.getElementById('staff').value}')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td></tr>`
+    document.getElementById('staff_list').innerHTML = ''
+    document.getElementById('staff').value = ''
+   
+  }
+
+  const deleteLocalAdvisor = (id) => {
+    document.getElementById(id).remove()
+    advisorTemp = advisorTemp.filter(e => e !== id)
+  }
+
+  const deleteLocalStudent = (id) => {
+    document.getElementById(id).remove()
+    studentTemp = studentTemp.filter(e => e !== id)
+  }
+
+  const deleteStudent = async (id) => {
+    await fetch(`/api/user/delUserAdv/${id}?_method=DELETE`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+
+  const deleteAdvisor = async (id) => {
+    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+  const deleteStaff = async (id) => {
+    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+
+  const deleteLocalStaff = (id) => {
+    document.getElementById(id).remove()
+    staffTemp = staffTemp.filter(e => e !== id)
+  }
+  if(document.querySelectorAll('input[name=selectStep]:checked').length > 0 || document.querySelectorAll('input[name=selectStatus]:checked').length > 0){
+    document.getElementById('selectInput').focus()
+  }
+
+  const filterStudents = () =>{
+    const params = new URLSearchParams(window.location.search)
+    const urlParams = new URLSearchParams()
+    urlParams.append('month', params.getAll('month'))
+    document.querySelectorAll('input[name=selectStep]:checked').forEach((box)=>{
+        urlParams.append('step', box.value)
+    })
+    document.querySelectorAll('input[name=selectStatus]:checked').forEach((box)=>{
+      urlParams.append('status', box.value)
+    })
+    window.location.href = `/student-information?${urlParams}`
+  }
+
+  let checkStatus = (str) => {
+    if(!str) return
+    if (str.includes('Approved')) {
+    return 'text-green-700'
+    } else if (str.includes('Pending')) {
+      return 'text-yellow-700'
+    } else if (str.includes('Disapproved')) {
+      return 'text-red-700'
+    } else if (str.includes('Waiting')) {
+      return 'text-blue-700'
+    } else {
+      return ''
+    }
+  }
+   const openAlertDeleteRequest = (id) => {
+    const alertDeleteRequest = 
+    `<div id="modal-confirm-delete-request" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+      <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
+        <div class="alert bg-base-100 shadow-lg font-bold">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-error flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Are you sure delete this post ?</span>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertDeleteRequest()">no</button>
+            <form id="formElem">
+            <button class="btn btn-sm btn-error rounded-3xl text-white" onclick="deleteRequest(${id})">yes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertDeleteRequest
+  }
+
+  const closeAlertDeleteRequest = () => {
+    const element = document.getElementById('modal-confirm-delete-request')
+    element.remove()
+  }
+
+  let checkedCount = 0
+  checkboxes = document.getElementsByName('checkStudent')
+  checkboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+      checkedCount++
+      }
+  })
+  const checkAllBox = document.getElementById('checkAllBox')
+  if(checkedCount === checkboxes.length && checkAllBox){
+    checkAllBox.checked = true
+    checkAllBox.disabled = true
+  }
+
+  const checkAll = (source) => {
+    checkboxes = document.getElementsByName('checkStudent')
+    checkboxes.forEach(checkbox => {
+      if(checkbox.disabled) return
+      checkbox.checked = source.checked
+    })
+  }
+
+  const updateCheckAll = () =>{
+    let checkedCount = 0
+    checkboxes = document.getElementsByName('checkStudent')
+    checkboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+      checkedCount++
+      }
+    })
+    if (checkedCount === checkboxes.length) {
+      document.getElementById('checkAllBox').checked = true
+    }else{
+      document.getElementById('checkAllBox').checked = false
+    }
+  } 
+  
+  const deleteRequest = async (id) => {
+        await fetch(`/api/user/student/${id}?_method=DELETE`, {
+        method: 'POST',
+        }).then(() => {
+            window.location.reload()
+        })
+  }
+
+  const formElem = document.getElementById('formElem')
+  if(formElem)
+  formElem.onsubmit = async (event) => {
+    event.preventDefault()
+    const checkboxs = []
+    document.getElementsByName('checkStudent').forEach(async (checkbox) => {
+      if(checkbox.checked){
+      checkboxs.push({id : checkbox.id , approve : checkbox.checked})
+       }
+    })
+    const body = {users : checkboxs}
+        await fetch('/api/user/student/regis/approve?_method=PATCH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+        }).then(() => {
+          window.location.href = `/academic-year`
+        })
+  }
+</script>
+@end

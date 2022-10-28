@@ -1,0 +1,83 @@
+<div class="p-8">
+    <div class="pr-20 flex items-end">
+        <p class="text-base px-2 lg:text-3xl text-base-content font-semibold">Steps</p>
+        {{--  @component('components/common/button',{
+            text: 'Create new step',
+            type: 'text',
+            classProps: 'bg-white rounded-3xl text-base-content gap-2 btn-sm text-base lg:text-lg h-10 lg:px-4 lg:h-12 w-fit ml-auto border-0 hover:bg-secondary hover:text-white group',
+          })
+          <svg class="fill-[#A8B0B8] group-hover:fill-white w-7 h-7 lg:w-8 lg:h-8" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        @end  --}}
+      </div>
+      <div class="flex space-x-5 h-full">
+        <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+          <li class="{{activeTwoMonth}}">
+            <a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 2,year: request.cookie('year') }}) : route('/academic-year') }}">INT340 (2 months)</a>
+          </li>
+          <li class="{{activeFourMonth}}"><a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 4,year: request.cookie('year') }}) : route('/academic-year') }}">INT350 (4 months)</a></li>
+          <li class="{{activeSixMonth}}"><a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 6,year: request.cookie('year') }}) : route('/academic-year') }}">INT370 (6 months)</a></li>
+        </ul>
+
+            <div class="flex flex-col flex-wrap">
+                <div class="flex font-medium items-center space-x-2 mt-2 h-fit">
+                    <a href="{{ route('/steps')}}" class="hover:text-blue-800">
+                    <p>Steps</p>
+                    </a>
+                    {{--  <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
+                    <p>Create new step</p>  --}}
+                  </div>
+                  <div class="flex items-center h-fit">
+                      <p>Name</p>
+                      <p>-</p>
+                      {{--  <input type="text" placeholder="Type here" class="input input-sm w-full" />  --}}
+                  </div>
+                  <div class="bg-[#F4F4F4] p-5 rounded-md w-[30rem]">
+                    <p class="font-medium">Files for students to download and submission</p>
+                    <div class="form-control mt-2 flex">
+                        <form id="step-files">
+                            {{--  <div class="input-group" >  --}}
+                                <label for="test" class="btn btn-primary btn-block">Choose File</label>
+                                <input type="file" id="test" name="images" class="hidden">
+                                {{--  <input type="text" class="input input-bordered" />
+                                <span class="btn btn-primary">Add</span>  --}}
+                            {{--  </div>  --}}
+                        </form>
+                    </div>
+                  </div>
+            </div> 
+            <div class="flex justify-end items-end space-x-2">
+                <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+                  cancel
+                </a>
+                <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">save change</button>
+            </div>
+      </div>
+</div>
+<script>
+    const middleEllipsis = (str) => {
+    if (str.length > 35) {
+      return str.substring(0, 20) + '...' + str.substring(str.length - 10)
+    }
+    return str
+    }
+
+    const stepFileForm = document.getElementById("step-files")
+    const stepFile = document.getElementById("test")
+    let files = []
+    stepFile.onchange = (e) =>{
+        const [file] = e.target.files
+        files.push(file)
+        const p = document.createElement('p')
+        const div = document.createElement('div')
+        div.innerHTML +=   `<p class="w-full mr-2">${files.length}. ${middleEllipsis(file.name)}</p>
+                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                            </svg>
+                            </button>`
+        div.classList.add('flex')
+        div.classList.add('mt-5')
+        stepFileForm.appendChild(div)
+        stepFile.value = ""
+    }
+</script>

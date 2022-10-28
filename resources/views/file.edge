@@ -92,7 +92,6 @@
     event.preventDefault()
     const response = await fetch(`/api/file/${fileId}?_method=DELETE`, {
         method: 'POST',
-        // body: formData,
     })
     closeAlertDeleteFile()  
     const deletedElem = document.getElementById(fileId)
@@ -101,8 +100,8 @@
   }
 
   const closeAlertDeleteFile = () => {
-    const element = document.getElementById('modal-confirm');
-    element.remove();
+    const element = document.getElementById('modal-confirm')
+    element.remove()
   }
 
 </script>

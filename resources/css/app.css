@@ -14,3 +14,7 @@
 .steps .step {
     min-width: 10rem;
 }
+
+.steps .step:after {
+    content: '';
+}

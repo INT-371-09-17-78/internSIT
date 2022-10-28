@@ -5,7 +5,7 @@ export default class RoleDetector {
     // code for middleware goes here. ABOVE THE NEXT CALL
     if (
       auth.user?.role === 'staff' ||
-      auth.user?.role === 'adviser' ||
+      auth.user?.role === 'advisor' ||
       auth.user?.role === 'admin'
     ) {
       await next()

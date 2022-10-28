@@ -9,7 +9,12 @@ export default class Posts extends BaseSchema {
       table.string('topic', 80).notNullable()
       table.string('content', 10000).notNullable()
       table.integer('fav').nullable()
-      table.string('user_id').references('users.user_id').onDelete('CASCADE').notNullable()
+      table
+        .integer('user_in_academic_year_id')
+        .unsigned()
+        .references('users_in_academic_years.id')
+        .onDelete('CASCADE')
+        .notNullable()
       /**
        * Uses timestampz for PostgreSQL and DATETIME2 for MSSQL
        */

@@ -17,6 +17,8 @@ export default class Document extends BaseModel {
   })
   public statuses: ManyToMany<typeof Status>
 
-  @hasMany(() => File, { foreignKey: 'file_id' })
+  // @hasOne(() => Fi)
+  // public profile: HasOne<typeof Profile>
+  @hasMany(() => File)
   public files: HasMany<typeof File>
 }
