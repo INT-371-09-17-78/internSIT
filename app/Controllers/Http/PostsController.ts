@@ -159,7 +159,15 @@ export default class PostsController {
         if (auth.user?.role === 'student') {
           AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         } else {
-          AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+          // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+          if (request.cookie('year')) {
+            AcademicYearCf = await AcademicYear.query().where(
+              'academic_year',
+              request.cookie('year')
+            )
+          } else {
+            AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          }
         }
         const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
         AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
@@ -198,7 +206,20 @@ export default class PostsController {
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
-        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        // AcademicYearCf = request.cookie('year')
+        //   ? await AcademicYear.query().where('academic_year', request.cookie('year'))
+        //   : AcademicYear.query().orderBy('updated_at', 'desc')
+        console.log(request.cookie('year'))
+        if (request.cookie('year')) {
+          AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        } else {
+          AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          // } else {
+          //   }
+          //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+          // console.log(AcademicYearCf)
+        }
       }
       // console.log(AcademicYearCf[0].academic_year)
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
