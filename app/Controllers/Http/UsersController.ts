@@ -290,12 +290,8 @@ export default class UsersController {
 
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
-      // console.log(request.cookie('year'))
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       let AcademicYearCf: any
-      // request.cookie('year')
-      //   ? await AcademicYear.query().where('academic_year', request.cookie('year'))
-      //   : AcademicYear.query().orderBy('updated_at', 'desc')
 
       if (request.cookie('year')) {
         AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
@@ -316,35 +312,58 @@ export default class UsersController {
 
       //   return view.render('errors/not-found')
       // }
-
+      // const advisorResult = await User.query()
+      //   .where('role', 'advisor')
+      //   .andWhere('user_id', 'manee.mun')
+      //   .join('advisors', 'users.user_id', '=', 'advisors.advisor_id')
+      // console.log(advisorResult[0])
       if (request.qs().advisor) {
         advisorById = await Advisor.find(request.qs().advisor)
-        const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-        const users = await User.query().where('role', 'student')
-        for (let i = 0; i < users.length; i++) {
-          const result = await UsersInAcademicYearModel.query()
-            .where('user_id', users[i].user_id)
-            .andWhere('academic_year', AcademicYearCf[0].academic_year)
-            .andWhere('advisor_id', request.qs().advisor)
-          if (result && result.length > 0) {
-            studentUsersByAdOne.push(result[0])
-          }
+        // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        // const users = await User.query().where('role', 'student')
+        // for (let i = 0; i < users.length; i++) {
+        //   const result = await UsersInAcademicYearModel.query()
+        //     .where('user_id', users[i].user_id)
+        //     .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        //     .andWhere('advisor_ac_id', advisorById.advisor_id)
+        //   if (result && result.length > 0) {
+        //     studentUsersByAdOne.push(result[0])
+        //   }
+        // }
+
+        const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', advisorById.advisor_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+
+        if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
+          const id = checkAdvisorExistInAcademicYear[0].id
+          const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
+          const tmp = advisorById.serialize()
+          tmp['st'] = result.map((re) => re.serialize())
+          studentUsersByAdOne.push(tmp)
+          // adSe.push(tmp)
         }
-        // console.log(test);
+
+        console.log(studentUsersByAdOne)
       }
-      // const ad = await Advisor.query()
-      const ad = await User.query().where('role', 'advisor')
+      const ad = await User.query().where('role', 'advisor').preload('academicYear')
       let adSe: any = []
       for (let i = 0; i < ad.length; i++) {
-        const result = await UsersInAcademicYearModel.query().where('advisor_id', ad[i].user_id)
-        const tmp = ad[i].serialize()
-        tmp['st'] = result.map((re) => re.serialize())
-        adSe.push(tmp)
+        // console.log(AcademicYearCf[0].academic_year)
+        // console.log(ad[i].academicYear[0].$extras.pivot_id)
+        // console.log(
+        const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', ad[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+
+        if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
+          const id = checkAdvisorExistInAcademicYear[0].id
+          const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
+          const tmp = ad[i].serialize()
+          tmp['st'] = result.map((re) => re.serialize())
+          adSe.push(tmp)
+        }
       }
-      // stafftUsers = await User.query().where('role', 'staff')
-      // advisorUsers = await User.query().where('role', 'advisor')
-      // const advisorUsersJSON = advisorUsers.map((post) => post.serialize())
-      // console.log(advisorUsersJSON)
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         const UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
           'academic_year',
@@ -362,18 +381,13 @@ export default class UsersController {
             studentUsers.push(resultSe)
           }
         }
-        // console.log(studentUsers)
-        // console.log(studentUsers)
         allAmoutSt = studentUsers.length
-        // console.log(studentUsers)
 
         noApprove = studentUsers.filter((st) => !st.approved)
         if (request.qs().month) {
           studentUsers = studentUsers.filter(
             (userPre) => userPre.student.plan === parseInt(request.qs().month)
           )
-          // console.log(studentUsers)
-          // studentUsers = studentUsers.map((st) => st.serialize())
         }
 
         const advisorUsers = await User.query().where('role', 'advisor')
@@ -381,7 +395,7 @@ export default class UsersController {
         for (let i = 0; i < advisorUsers.length; i++) {
           const check = await UsersInAcademicYearModel.query()
             .where('user_id', advisorUsers[i].user_id)
-            .andWhere('academic_year', AcademicYearAll[0].academic_year)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (check && check.length > 0) {
             advisorUsersResult.push(check[0])
           }
@@ -389,7 +403,7 @@ export default class UsersController {
         for (let i = 0; i < staffUsers.length; i++) {
           const check = await UsersInAcademicYearModel.query()
             .where('user_id', staffUsers[i].user_id)
-            .andWhere('academic_year', AcademicYearAll[0].academic_year)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (check && check.length > 0) {
             staffUsersResult.push(check[0])
           }
@@ -401,33 +415,20 @@ export default class UsersController {
       // console.log(studentUsers.length)
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
-          // const documentStatuses = await studentUsers[i].student
-          //   .related('documentsStatuses')
-          //   .query()
-          //   .orderBy('pivot_updated_at', 'desc')
-          // if (documentStatuses && documentStatuses.length > 0) {
-          //   studentUsers[i].serialize()
-          //   if (documentStatuses[0].status_id === 'Waiting') {
-          //     studentUsers[i]['lastestStatus'] =
-          //       documentStatuses[0].status_id + ' for ' + documentStatuses[0].document_id
-          //   } else {
-          //     studentUsers[i]['lastestStatus'] =
-          //       documentStatuses[0].document_id + ' ' + documentStatuses[0].status_id
-          //   }
-          // } else {
-          //   studentUsers[i].serialize()
-          //   studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
-          // }
           const usersInAcademicYear = await UsersInAcademicYearModel.query()
             .where('user_id', studentUsers[i].user_id)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
-          const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
+          const userHasDoc = await usersInAcademicYear[0]
+            .related('documentStatus')
+            .query()
+            .orderBy('pivot_updated_at', 'desc')
           // console.log(userHasDoc)
           if (userHasDoc && userHasDoc.length > 0) {
             // studentUsers[i].serialize()
             if (userHasDoc[0].status_id === 'Waiting') {
               studentUsers[i]['lastestStatus'] =
                 userHasDoc[0].status_id + ' for ' + userHasDoc[0].document_id
+              console.log(studentUsers[i]['lastestStatus'])
             } else {
               studentUsers[i]['lastestStatus'] =
                 userHasDoc[0].document_id + ' ' + userHasDoc[0].status_id
@@ -436,13 +437,6 @@ export default class UsersController {
             // studentUsers[i].serialize()
             studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
           }
-          // await UserHasDoc.query().where
-          // for(let i =0;i< usersInAcademicYear.length;i++){
-
-          // }
-          // console.log(usersInAcademicYear)
-          // await UserHasDoc.query().where('user_in_academic_year_id')
-          // const await DocumentStatus[0].related('usersInAcademicYear').query()
         }
 
         if (request.qs().status && request.qs().step) {
@@ -511,7 +505,6 @@ export default class UsersController {
       let AcademicYearCfResult: any
       // let usersArr: any = []
       AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
-
       if (
         (users.advisors && users.advisors.length > 0) ||
         (users.staffs && users.staffs.length > 0)
@@ -550,15 +543,27 @@ export default class UsersController {
 
       let AcademicYearCfResult: any
       AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const advisorResult = await Advisor.query().where('advisor_id', advisor.advisor_id)
-      if (students && students.length > 0) {
+      // const advisorResult = await Advisor.query().where('advisor_id', advisor.advisor_id)
+      const advisorResult = await User.query()
+        .where('role', 'advisor')
+        .andWhere('user_id', advisor.advisor_id)
+        .join('advisors', 'users.user_id', '=', 'advisors.advisor_id')
+      if (advisorResult[0].$extras.advisor_id && students && students.length > 0) {
+        const AdvisorInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', advisorResult[0].$extras.advisor_id)
+          .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
+        // const usersInAcademicYear = await.query()
+        // if () {
+        console.log(AdvisorInAcademicYear[0].id)
         for (let i = 0; i < students.length; i++) {
           const usi = await UsersInAcademicYearModel.query()
             .where('user_id', students[i])
             .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
-          usi[0].advisor_id = advisorResult[0].advisor_id
+          usi[0].advisor_ac_id = AdvisorInAcademicYear[0].id
           await usi[0].save()
         }
+        // }
+        // console.log(advisorResult[0])
 
         // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
       }
@@ -684,7 +689,7 @@ export default class UsersController {
         const result = await UsersInAcademicYearModel.query()
           .where('user_id', users[i].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
-          .andWhere('advisor_id', advisor)
+          .andWhere('advisor_ac_id', advisor)
         if (result && result.length > 0) {
           studentUsers.push(result[0])
         }

@@ -46,10 +46,10 @@ export default class UsersInAcademicYear extends BaseModel {
   public documentStatus: ManyToMany<typeof DocumentStatus>
 
   @column()
-  public advisor_id: string
+  public advisor_ac_id: number
 
-  @belongsTo(() => Advisor)
-  public advisor: BelongsTo<typeof Advisor>
+  @belongsTo(() => UsersInAcademicYear)
+  public usersInAcademicYear: BelongsTo<typeof UsersInAcademicYear>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
