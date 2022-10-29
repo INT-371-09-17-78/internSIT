@@ -41,7 +41,6 @@ export default class PostsController {
           topic: topic,
           usersInAcademicYearId: usersInAcademicYear[0].id,
         })
-
         const con = new FilesController()
         const resultErr = await con.store(request, post.post_id, [])
         if (resultErr && resultErr.length > 0) {
@@ -69,7 +68,7 @@ export default class PostsController {
         .where('user_id', user.user_id)
         .andWhere('academic_year', AcademicYearCf[0].academic_year)
       if (post?.usersInAcademicYearId !== usersInAcademicYear[0].id) {
-        return response.status(403).send({ message: 'invalid post' })
+        return response.status(403).send({ message: 'invalid post maybe editing post from past' })
       }
       if (user) {
         // const post = await usersInAcademicYear[0].related('posts').updateOrCreate(
@@ -159,7 +158,15 @@ export default class PostsController {
         if (auth.user?.role === 'student') {
           AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         } else {
-          AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+          // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+          if (request.cookie('year')) {
+            AcademicYearCf = await AcademicYear.query().where(
+              'academic_year',
+              request.cookie('year')
+            )
+          } else {
+            AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          }
         }
         const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
         AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
@@ -198,7 +205,20 @@ export default class PostsController {
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
-        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        // AcademicYearCf = request.cookie('year')
+        //   ? await AcademicYear.query().where('academic_year', request.cookie('year'))
+        //   : AcademicYear.query().orderBy('updated_at', 'desc')
+        console.log(request.cookie('year'))
+        if (request.cookie('year')) {
+          AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        } else {
+          AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          // } else {
+          //   }
+          //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+          // console.log(AcademicYearCf)
+        }
       }
       // console.log(AcademicYearCf[0].academic_year)
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')

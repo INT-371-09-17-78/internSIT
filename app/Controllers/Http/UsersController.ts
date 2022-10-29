@@ -107,7 +107,6 @@ export default class UsersController {
   public async verify({ auth, request, response, session }: HttpContextContract) {
     try {
       const { username, password, isRemember } = request.all()
-
       let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
       let user: any
       user = await User.findBy('user_id', username)
@@ -233,11 +232,8 @@ export default class UsersController {
             message
               .from('iunnuidev2@gmail.com')
               .to('iunnuidev2@gmail.com')
-              .subject('test')
-              .htmlView('emails/welcome', {
-                user: { fullName: 'Some Name' },
-                url: 'https://your-app.com/verification-url',
-              })
+              .subject('Registration Success')
+              .htmlView('emails/welcome')
           })
         }
         return response.redirect('/success-regis')
@@ -296,10 +292,16 @@ export default class UsersController {
     try {
       // console.log(request.cookie('year'))
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const AcademicYearCf = await AcademicYear.query().where(
-        'academic_year',
-        request.cookie('year')
-      )
+      let AcademicYearCf: any
+      // request.cookie('year')
+      //   ? await AcademicYear.query().where('academic_year', request.cookie('year'))
+      //   : AcademicYear.query().orderBy('updated_at', 'desc')
+
+      if (request.cookie('year')) {
+        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      } else {
+        AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      }
       let studentUsers: any = []
       let result: any = []
       let advisorUsersResult: any = []
@@ -472,7 +474,7 @@ export default class UsersController {
     }
   }
 
-  public async updateCourseInformation({ request, response }: HttpContextContract) {
+  public async updateCourseInformation({ auth, request, response }: HttpContextContract) {
     try {
       const { year, isCurrent } = request.all()
       let AcademicYearCfResult: any = []
@@ -485,6 +487,13 @@ export default class UsersController {
           AcademicYearCf = new AcademicYear()
           AcademicYearCf.academic_year = year
           await AcademicYearCf.save()
+          if (auth.user) {
+            await AcademicYearCf.related('users').attach({
+              [auth.user.user_id]: {
+                approved: true,
+              },
+            })
+          }
         }
       }
       // else {
@@ -517,6 +526,13 @@ export default class UsersController {
               .attach({ [user.user_id]: { approved: true } })
             // user.conf_id = AcademicYearCf ? AcademicYearCf.conf_id : AcademicYearCfResult[0].conf_id
             // usersArr.push(user)
+            await Mail.use('smtp').send((message) => {
+              message
+                .from('iunnuidev2@gmail.com')
+                .to('iunnuidev2@gmail.com')
+                .subject('Registration Success')
+                .htmlView('emails/confirmStaff')
+            })
           }
         }
 
@@ -547,6 +563,7 @@ export default class UsersController {
         // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
       }
     } catch (error) {
+      console.log(error)
       return response.status(400).json({ message: error.message })
     }
   }
@@ -745,7 +762,11 @@ export default class UsersController {
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
-        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        if (request.cookie('year')) {
+          AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        } else {
+          AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        }
       }
 
       const studentUsers = await User.query()
@@ -900,33 +921,35 @@ export default class UsersController {
       const userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('updated_at', 'desc')
-      const userHasDocResultForTime = await UserHasDoc.query()
-        .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        .orderBy('updated_at', 'asc')
+      // const userHasDocResultForTime = await UserHasDoc.query()
+      //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+      //   .orderBy('updated_at', 'asc')
       let submission: any = []
-      for (let i = 0; i < userHasDocResultForTime.length; i++) {
-        const docWStat = await Document_Status.query().where(
-          'id',
-          userHasDocResultForTime[i].doc_stat_id
-        )
-
-        if (docWStat[0].status_id === 'Pending') {
-          const docWStatSe = docWStat[0].serialize()
-          docWStatSe.created_at = moment(userHasDocResultForTime[i].createdAt.toString())
-            .tz('Asia/Bangkok')
-            .format('MMMM D, YYYY h:mm A')
-          submission.push(docWStatSe)
-        }
-      }
 
       let stepFile: any
       let userHasDoc
       if (userHasDocResult[0]) {
         userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
         // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
-        const file = await File.query().where('doc_name', userHasDoc[0].document_id)
-        stepFile = file[0].file_id
+        // const file = await File.query().where('doc_name', userHasDoc[0].document_id)
+        // stepFile = file[0].file_id
+        const docStatToSubmission = await Document_Status.query()
+          .where('document_id', userHasDoc[0].document_id)
+          .andWhere('status_id', 'Pending')
+        const userHasDocResultForTime = await UserHasDoc.query()
+          .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+          .andWhere('doc_stat_id', docStatToSubmission[0].id)
+          .orderBy('updated_at', 'asc')
+
+        for (let i = 0; i < userHasDocResultForTime.length; i++) {
+          let docWStatSe: any
+          docWStatSe = moment(userHasDocResultForTime[i].createdAt.toString())
+            .tz('Asia/Bangkok')
+            .format('MMMM D, YYYY h:mm A')
+          submission.push({ created_at: docWStatSe })
+        }
       }
+
       // console.log(submission)
       // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
@@ -1031,6 +1054,7 @@ export default class UsersController {
         //   .wherePivot('student_id', studentUser.student_id)
         //   .delete()
         const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
+        console.log(userHasDoc[0])
         // console.log(userHasDoc[0])
         if (userHasDoc[0]) {
           await File.query().where('user_has_doc_id', userHasDoc[0].id).delete()
@@ -1126,6 +1150,13 @@ export default class UsersController {
           .andWhere('user_id', user.id)
         UsersInAcademicYear[0].approved = user.approve
         await UsersInAcademicYear[0].save()
+        await Mail.use('smtp').send((message) => {
+          message
+            .from('iunnuidev2@gmail.com')
+            .to('iunnuidev2@gmail.com')
+            .subject('Registration Success')
+            .htmlView('emails/confirm')
+        })
       })
       // if (approve) {
       //   response.redirect(`/students/request`)
@@ -1167,7 +1198,7 @@ export default class UsersController {
         mentorPosition,
         mentorEmail,
         mentorTel,
-        advisorFullName,
+        // advisorFullName,
         // approve,
       } = request.only([
         'firm',
@@ -1534,15 +1565,15 @@ export default class UsersController {
         }
       }
 
-      const files = await File.all()
-      if (files && files.length === 0) {
-        await File.create({
-          file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
-          file_name: 'TR-01TEST',
-          file_size: '200.06 KB',
-          doc_name: 'TR-01',
-        })
-      }
+      // const files = await File.all()
+      // if (files && files.length === 0) {
+      //   await File.create({
+      //     file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
+      //     file_name: 'TR-01TEST',
+      //     file_size: '200.06 KB',
+      //     doc_name: 'TR-01',
+      //   })
+      // }
 
       return year
     } catch (error) {

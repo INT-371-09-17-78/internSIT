@@ -33,7 +33,7 @@
             {{--  <div class="grid grid-cols-2 gap-y-3 w-fit" id="test">
               @each(info in studentInfo)
               <p class="font-bold">{{info.title}}</p>
-              <p class="break-words">{{info.key === 'duration' ? info.value + ' months' : info.value || '-'}}</p>
+              <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
               @end
             </div>  --}}
             @if(auth.user.role === "staff")

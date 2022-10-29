@@ -3,8 +3,8 @@
 @section('announcement')
   <section class="h-full w-full z-[5]">
     @include('partials/announcement-header')
-      <div class="card-group flex flex-col space-y-5 mt-2 overflow-y-auto h-[85%] px-40">
-        @if(posts.length === 0)
+      <div class="card-group flex flex-col space-y-5 mt-2 overflow-y-auto h-[85%] px-5">
+        @if(posts.length === 0 && auth.user?.role != "student")
         <div class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">
           <a href="{{ route('/announcement/create')}}" class="h-fit w-fit">
             Click here to start a new post

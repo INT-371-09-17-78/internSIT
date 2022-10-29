@@ -4,12 +4,12 @@ import {
   BaseModel,
   belongsTo,
   BelongsTo,
-  manyToMany,
-  ManyToMany,
+  // manyToMany,
+  // ManyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
-import Advisor from 'App/Models/Advisor'
-import Document_Status from 'App/Models/DocumentStatus'
+// import Advisor from 'App/Models/Advisor'
+// import Document_Status from 'App/Models/DocumentStatus'
 
 export default class Student extends BaseModel {
   @column({ isPrimary: true })

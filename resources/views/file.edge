@@ -35,8 +35,10 @@
                   <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
                     <li><a href="{{ route('/api/file/:fileId', { fileId: file.file_id }) }}"
                         class="font-medium py-2 px-5">Download</a></li>
+                    @if(auth.user?.role != "student")
                     <li><a onclick="openAlertDeleteFile('{{file.file_id}}')"
                         class="font-medium py-2 px-5 text-red-500 active:bg-transparent">Delete</a></li>
+                    @end
                   </ul>
                 </div>
               </div>

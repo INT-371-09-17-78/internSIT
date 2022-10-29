@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
-import Student from 'App/Models/Student'
+// import Student from 'App/Models/Student'
 import UsersInAcademicYear from 'App/Models/UsersInAcademicYear'
 
 export default class Advisor extends BaseModel {
