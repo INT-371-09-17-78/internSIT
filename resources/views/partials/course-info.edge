@@ -43,8 +43,8 @@
           <p class="col-span-4">-</p>
           @end
         </div>
-        <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize w-fit ml-auto">
-            edit
+        <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit ml-auto">
+          edit
         </a>
         @else
         <div class="flex font-medium items-center space-x-2 mt-2">
@@ -101,10 +101,10 @@
           </table>
         </div>             
         <div class="flex justify-end items-end space-x-2">
-          <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+          <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit" href="{{ route('/course-info')}}">
             cancel
           </a>
-          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="updateSettings2()">save change</button>
+          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="updateSettings2()">save change</button>
         </div>
         @else
         <div class="grid grid-cols-5 font-medium gap-y-5">
@@ -192,10 +192,10 @@
           </table>
         </div>             
         <div class="flex justify-end items-end space-x-2">
-          <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+          <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit" href="{{ route('/course-info')}}">
             cancel
           </a>
-          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="updateSettings()">save change</button>
+          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="updateSettings()">save change</button>
         </div>
         @end
       @end

@@ -13,8 +13,11 @@
 
 .steps .step {
     min-width: 10rem;
+    grid-template-rows: 50px 1fr;
 }
 
 .steps .step:after {
-    content: '';
+    content: var(--my-content-var);
+    width: 3rem;
+    height: 3rem;
 }

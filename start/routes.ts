@@ -69,6 +69,8 @@ Route.group(() => {
   Route.get('/:id/edit', 'UsersController.showStudentInfoEdit')
 
   Route.get('/:id', 'UsersController.showStudentUserById')
+
+  Route.get('/:id/editInformedSupervision', 'UsersController.showStudentUserById')
 }).prefix('/student')
 
 Route.get('/student-information', 'UsersController.showStudentUser')
