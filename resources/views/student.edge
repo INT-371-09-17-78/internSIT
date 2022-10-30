@@ -329,14 +329,16 @@
         </a>
         @end
       </div>
-      <div class="bg-[#F0F3F8] w-[40rem] rounded-md p-5 m-auto space-y-2 flex flex-col my-10">
-        <p class="font-bold text-xl">Supervision completed</p>
-        <div class="flex flex-col"> 
-          <p class="font-medium">Advisor’s comment : </p>
-          <textarea class="textarea mt-4"></textarea>
-          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit ml-auto mt-5">add</button>
+        @if(auth.user.role!=="student")
+        <div class="bg-[#F0F3F8] w-[40rem] rounded-md p-5 m-auto space-y-2 flex flex-col my-10">
+          <p class="font-bold text-xl">Supervision completed</p>
+          <div class="flex flex-col"> 
+            <p class="font-medium">Advisor’s comment : </p>
+            <textarea class="textarea mt-4"></textarea>
+            <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit ml-auto mt-5">add</button>
+          </div>
         </div>
-      </div>
+        @end
       @end
     @end
   @else
