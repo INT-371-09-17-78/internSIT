@@ -121,6 +121,7 @@ Route.group(() => {
     Route.get('/studentByAdv', 'UsersController.getStudentUserByAdvisor')
     Route.delete('/delUserAc/:id', 'UsersController.delUsersInAcademicYear')
     Route.delete('/delUserAdv/:id', 'UsersController.delUsersFromAdvisor')
+    Route.patch('/supervision/:id', 'UsersController.updateSupervision')
   })
     // .middleware('login')
     .prefix('/user')

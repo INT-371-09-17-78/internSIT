@@ -219,6 +219,7 @@
       </div>
     </div>
     @else
+    <form onsubmit="updateSupervision()">
       @if(request.matchesRoute('/student/:id/editInformedSupervision'))
       <div class="bg-[#F0F3F8] w-[46rem] rounded-md p-7 m-auto space-y-2 flex flex-col my-10">
         <p class="font-bold text-xl">{{nextStep.name}}</p>
@@ -231,9 +232,9 @@
         @else
         <div class="grid grid-cols-3 px-3 gap-y-2">
           <p class="font-medium">Date confirm :</p>
-          <input type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
+          <input id="advisorDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
           <div class="flex space-x-2">
-            <input type="checkbox" class="checkbox" />
+            <input id="isSameDate" type="checkbox" class="checkbox" />
             <p class="text-[#495057]">Same day as the student</p>
           </div>
         </div>
@@ -250,9 +251,9 @@
         @else
         <div class="grid grid-cols-2 px-3 gap-y-2">
           <p class="font-medium">Date confirm :</p>
-          <input type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
+          <input id="studentDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
           <p class="font-medium">Meeting link :</p>
-          <input type="text" class="input input-bordered input-sm w-full max-w-xs" />
+          <input id="meetLink" type="text" class="input input-bordered input-sm w-full max-w-xs" />
         </div>
         @end
         <div class="border-b-2 border-[#A8B0B8] py-2"></div>
@@ -267,22 +268,22 @@
         @elseif(auth.user.role === 'staff')
         <div class="grid grid-cols-2 px-3 gap-y-2">
           <p class="font-medium">Date confirm :</p>
-          <select class="select select-bordered select-sm w-40 max-w-xs">
+          <select  id="dateStatus" class="select select-bordered select-sm w-40 max-w-xs">
             <option disabled selected>Status</option>
-            <option>Pending</option>
-            <option>Done</option>
+            <option value="Pending">Pending</option>
+            <option value="Done">Done</option>
           </select>
           <p class="font-medium">Supervision status :</p>
-          <select class="select select-bordered select-sm w-40 max-w-xs">
+          <select id="supervisionStatus" class="select select-bordered select-sm w-40 max-w-xs">
             <option disabled selected>Status</option>
-            <option>Pending</option>
-            <option>Done</option>
+            <option value="Pending">Pending</option>
+            <option value="Done">Done</option>
           </select>
         </div>
         @end
         <div class="flex ml-auto space-x-2 pt-5">
           <a href="{{ route('/student/:id', { id: studentUser.user_id }) }}">
-            <button class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">cancel</button>
+            <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">cancel</button>
           </a>
           <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }) }}">
             <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit">save change</button>
@@ -292,14 +293,14 @@
       @else
       <div class="bg-[#F0F3F8] w-[40rem] rounded-md p-5 m-auto space-y-2 flex flex-col mt-10">
         <p class="font-bold text-xl">{{nextStep.name}}</p>
-        <p class="text-primary font-medium">Avisor</p>
+        <p class="text-primary font-medium">Advisor</p>
         <div class="grid grid-cols-2 px-3 gap-y-2">
           <p class="font-medium">Date confirm :</p>
           <p>-</p>
         </div>
         @if(auth.user.role==="advisor")
         <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }) }}" class="ml-auto">
-          <button class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
+          <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
         @end
         <div class="border-b-2 border-[#A8B0B8] py-2"></div>
@@ -312,7 +313,7 @@
         </div>
         @if(auth.user.role==="student")
         <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }) }}" class="ml-auto">
-          <button class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
+          <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
         @end
         <div class="border-b-2 border-[#A8B0B8] py-2"></div>
@@ -325,7 +326,7 @@
         </div>
         @if(auth.user.role==="staff")
         <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }) }}" class="ml-auto">
-          <button class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
+          <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
         @end
       </div>
@@ -334,13 +335,14 @@
           <p class="font-bold text-xl">Supervision completed</p>
           <div class="flex flex-col"> 
             <p class="font-medium">Advisor’s comment : </p>
-            <textarea class="textarea mt-4"></textarea>
+            <textarea id="advisorComment" class="textarea mt-4"></textarea>
             <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit ml-auto mt-5">add</button>
           </div>
         </div>
         @end
       @end
     @end
+  </form>
   @else
   @if(auth.user.role === 'student')
   <div class="absolute left-80 top-16">
@@ -409,6 +411,81 @@
       gnext: gnext
     })
     window.location.href = '/student/{{studentUser.user_id}}?' + urlParams
+  }
+
+  const updateSupervision = async () => {
+    let studentDate
+    let advisorDate
+    let meetLink 
+    let isSameDate
+    let supervisionStatus
+    let dateStatus
+    let advisorComment
+    if(document.getElementById('studentDate')){studentDate = document.getElementById('studentDate').value}
+    if(document.getElementById('advisorDate')){advisorDate = document.getElementById('advisorDate').value}
+    if(document.getElementById('meetLink')){meetLink  = document.getElementById('meetLink').value}
+    if(document.getElementById('isSameDate')){isSameDate = document.getElementById('isSameDate').value}
+    if(document.getElementById('supervisionStatus')){supervisionStatus = document.getElementById('supervisionStatus').value}
+    if(document.getElementById('dateStatus')){dateStatus = document.getElementById('dateStatus').value}
+    if(document.getElementById('advisorComment')){advisorComment = document.getElementById('advisorComment').value}
+    // const advisorDate = document.getElementById('advisorDate').value
+    
+    // const meetLink = document.getElementById('meetLink').value
+    // const isSameDate = document.getElementById('isSameDate').value
+    const body = {date : studentDate || advisorDate, docStatId: {{currentSteps.id}} , meetingLink: meetLink , supervisionStatus : supervisionStatus , dateStatus:dateStatus , advisorComment:advisorComment}
+    console.log(body)
+        fetch('/api/user/supervision/{{studentUser.user_id}}?_method=PATCH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+        }).then(() => {
+          window.location.href = '/student/{{studentUser.user_id}}'
+        })
+        
+
+        if(studentDate){
+    const docStatBody = {
+      status : 'Approved',
+      doc: '{{nextStep.name}}',
+    }
+    
+    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+      method: 'PATCH',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(docStatBody),
+    }).then(() => {
+          window.location.href = '/student/{{studentUser.user_id}}'
+        })
+        }
+
+        // window.location.href = '/student/{{studentUser.user_id}}'
+// console.log('{{nextStep.name}}')
+        
+      
+  }
+
+  const updateTest = async() => {
+    if(studentDate){
+    const docStatBody = {
+      status : 'Approved',
+      doc: '{{nextStep.name}}',
+    }
+    
+    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+      method: 'PATCH',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(docStatBody),
+    })
+        }
   }
 
   // const formElem2 = document.getElementById('formElem2')

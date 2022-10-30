@@ -19,6 +19,12 @@ export default class UserHasDocs extends BaseSchema {
         .references('users_in_academic_years.id')
         .onDelete('CASCADE')
       table.string('no_approve_reason', 500).nullable()
+      table.dateTime('advisor_date').nullable()
+      table.dateTime('student_date').nullable()
+      table.string('meeting_link').nullable()
+      table.string('supervision_status').nullable()
+      table.string('advisor_comment').nullable()
+      table.string('date_confirm_status').nullable()
       // table.unique(['doc_stat_id', 'user_in_academic_year_id'])
       // table.unique(['student_id', 'doc_stat_id'])
       /**

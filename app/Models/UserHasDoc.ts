@@ -17,6 +17,29 @@ export default class UserHasDoc extends BaseModel {
   @hasMany(() => File, { foreignKey: 'id' })
   public files: HasMany<typeof File>
 
+  @column()
+  public advisor_date: DateTime
+
+  @column()
+  public student_date: DateTime
+
+  @column()
+  public meeting_link: string
+
+  @column()
+  public supervision_status: string
+
+  @column()
+  public advisor_comment: string
+
+  @column()
+  public date_confirm_status: string
+
+  // table.dateTime('advisor_date').nullable()
+  //     table.dateTime('student_date').nullable()
+  //     table.string('meeting_link').nullable()
+  //     table.string('supervision_status').nullable()
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

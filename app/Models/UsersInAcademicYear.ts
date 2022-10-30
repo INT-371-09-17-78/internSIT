@@ -12,7 +12,7 @@ import {
 import Post from 'App/Models/Post'
 import DocumentStatus from 'App/Models/DocumentStatus'
 // import File from 'App/Models/File'
-import Advisor from 'App/Models/Advisor'
+// import Advisor from 'App/Models/Advisor'
 
 export default class UsersInAcademicYear extends BaseModel {
   public static table = 'users_in_academic_years'
