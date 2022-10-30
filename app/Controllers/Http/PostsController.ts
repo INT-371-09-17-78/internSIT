@@ -209,7 +209,7 @@ export default class PostsController {
         // AcademicYearCf = request.cookie('year')
         //   ? await AcademicYear.query().where('academic_year', request.cookie('year'))
         //   : AcademicYear.query().orderBy('updated_at', 'desc')
-        console.log(request.cookie('year'))
+        // console.log(request.cookie('year'))
         if (request.cookie('year')) {
           AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
         } else {

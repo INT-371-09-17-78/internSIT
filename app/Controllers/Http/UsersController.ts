@@ -225,6 +225,10 @@ export default class UsersController {
           // await user.save()
           const lastestUsers = await User.find(username)
           const st = await Student.findBy('student_id', username)
+          if (st) {
+            st.plan = 0
+            await st.save()
+          }
           if (!st && lastestUsers) {
             await lastestUsers.related('student').create({})
           }
@@ -328,7 +332,7 @@ export default class UsersController {
           // adSe.push(tmp)
         }
 
-        console.log(studentUsersByAdOne)
+        // console.log(studentUsersByAdOne)
       }
       const ad = await User.query().where('role', 'advisor').preload('academicYear')
       let adSe: any = []
@@ -412,7 +416,7 @@ export default class UsersController {
             if (userHasDoc[0].status_id === 'Waiting') {
               studentUsers[i]['lastestStatus'] =
                 userHasDoc[0].status_id + ' for ' + userHasDoc[0].document_id
-              console.log(studentUsers[i]['lastestStatus'])
+              // console.log(studentUsers[i]['lastestStatus'])
             } else {
               studentUsers[i]['lastestStatus'] =
                 userHasDoc[0].document_id + ' ' + userHasDoc[0].status_id
@@ -456,7 +460,7 @@ export default class UsersController {
     try {
       const { date, docStatId, supervisionStatus, meetingLink, advisorComment, dateConfirmStatus } =
         request.all()
-      console.log('เข้า')
+      // console.log('เข้า')
 
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const user = await User.query().where('user_id', request.param('id'))
@@ -469,7 +473,7 @@ export default class UsersController {
           .where('doc_stat_id', docStatId)
           .andWhere('user_in_academic_year_id', userAc[0].id)
           .orderBy('updated_at', 'desc')
-        console.log(UserhasSupervision[0])
+        // console.log(UserhasSupervision[0])
         if (date) {
           if (user[0].role === 'advisor') {
             UserhasSupervision[0].advisor_date = date
@@ -493,7 +497,7 @@ export default class UsersController {
         if (dateConfirmStatus) {
           UserhasSupervision[0].date_confirm_status = dateConfirmStatus
         }
-        console.log(UserhasSupervision[0])
+        // console.log(UserhasSupervision[0])
         await UserhasSupervision[0].save()
       }
     } catch (error) {
@@ -572,7 +576,7 @@ export default class UsersController {
   public async updateAdvisorHasStudent({ request, response }: HttpContextContract) {
     try {
       const { students, advisor } = request.all()
-      console.log(students, advisor.advisor_id)
+      // console.log(students, advisor.advisor_id)
 
       let AcademicYearCfResult: any
       AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -587,7 +591,7 @@ export default class UsersController {
           .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
         // const usersInAcademicYear = await.query()
         // if () {
-        console.log(AdvisorInAcademicYear[0].id)
+        // console.log(AdvisorInAcademicYear[0].id)
         for (let i = 0; i < students.length; i++) {
           const usi = await UsersInAcademicYearModel.query()
             .where('user_id', students[i])
@@ -971,7 +975,8 @@ export default class UsersController {
             ]
       let nextStep: any
       let currentSteps: any = {}
-      const disabled = studentUser.student.plan === null ? '' : 'disabled'
+      const disabled =
+        studentUser.student.plan === null || studentUser.student.plan === 0 ? '' : 'disabled'
       // const student = await Student.findOrFail(request.param('id'))
 
       // const documentStatuses = await student
@@ -983,9 +988,18 @@ export default class UsersController {
       const usersInAcademicYear = await UsersInAcademicYearModel.query()
         .where('user_id', studentUser.user_id)
         .andWhere('academic_year', AcademicYearCf[0].academic_year)
-      const userHasDocResult = await UserHasDoc.query()
+      let userHasDocResult: any
+
+      // if (request.qs().doc && request.qs().status) {
+      //   userHasDocResult = await UserHasDoc.query()
+      //     .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+      //     .where('doc_stat_id', request.qs().step)
+      // } else {
+      userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('created_at', 'desc')
+      // }
+
       // const userHasDocResultForTime = await UserHasDoc.query()
       //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
       //   .orderBy('updated_at', 'asc')
@@ -994,7 +1008,15 @@ export default class UsersController {
       let stepFile: any
       let userHasDoc
       if (userHasDocResult[0]) {
-        userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+        if (request.qs().doc && request.qs().status) {
+          userHasDoc = await Document_Status.query()
+            .where('document_id', request.qs().doc)
+            .andWhere('status_id', request.qs().status)
+        } else {
+          userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+        }
+        // if()
+        // userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
         // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
         // const file = await File.query().where('doc_name', userHasDoc[0].document_id)
         // stepFile = file[0].file_id
@@ -1016,7 +1038,7 @@ export default class UsersController {
       }
 
       // console.log(submission)
-      console.log(userHasDocResult[0])
+      // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
       // console.log(userHasDoc[0])
       if (userHasDoc && userHasDoc.length > 0) {
@@ -1044,12 +1066,21 @@ export default class UsersController {
             if (steps[i].name === userHasDoc[j].document_id) {
               // steps[0]['status'] = 'Approved'
               index = i
-
               steps[i]['status'] = userHasDoc[j].status_id
               break
-            } else {
-              steps[i]['status'] = ''
             }
+            // else {
+            //   steps[i]['status'] = ''
+            // }
+
+            // }
+            // console.log(steps[i].name)
+
+            // const index = userHasDoc.findIndex(
+            //   (usr) => console.log(usr.document_id.toLowerCase());
+
+            // )
+            // console.log(index)
           }
         }
 
@@ -1101,10 +1132,7 @@ export default class UsersController {
 
   public async updateStudentUserStatus({ request, response }: HttpContextContract) {
     try {
-      console.log('dsadasa')
       const { study, status, doc, reason } = request.only(['study', 'status', 'doc', 'reason'])
-      console.log(doc)
-      console.log(status)
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const studentUser = await Student.findOrFail(request.param('id'))
       const usersInAcademicYear = await UsersInAcademicYearModel.query()
@@ -1122,7 +1150,7 @@ export default class UsersController {
         //   .wherePivot('student_id', studentUser.student_id)
         //   .delete()
         const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
-        console.log(userHasDoc[0])
+        // console.log(userHasDoc[0])
         // console.log(userHasDoc[0])
         if (userHasDoc[0]) {
           await File.query().where('user_has_doc_id', userHasDoc[0].id).delete()

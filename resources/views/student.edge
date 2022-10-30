@@ -83,7 +83,7 @@
     <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
       <div>
         @if(currentSteps.status !== "Waiting")
-        <a href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">
+        <a href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&statId={{currentSteps.status}}&&prev=prev">
           <div class="group cursor-pointer hover:bg-[#495057]/50 h-96 w-72 absolute flex justify-center items-center">
             <p class="text-transparent group-hover:text-white font-medium text-lg">Click to open PDF file</p>
           </div>
