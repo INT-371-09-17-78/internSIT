@@ -295,6 +295,7 @@ export default class UsersController {
   public async showStudentUser({ request, response, view }: HttpContextContract) {
     try {
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+
       let AcademicYearCf: any
 
       if (request.cookie('year')) {

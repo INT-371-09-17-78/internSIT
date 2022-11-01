@@ -16,8 +16,10 @@
     <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <div class="flex space-x-2">
       <p>{{studentUser.user_id}}</p>
+      @if(studentUser.student.plan )
       <p>|</p>
-      <p>{{studentUser.student.plan ? studentUser.student.plan + " month" : "" }}</p>
+      <p>{{studentUser.student.plan + " month" }}</p>
+      @end
     </div>
 
     <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
@@ -57,7 +59,9 @@
           @elseif(index === stepPaged.length - 1)
             @set('lastStep', step.name)
           @end
-          <li class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Waiting" ? "text-blue-700" : step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}" style="--my-content-var: url({{ step.status==='Approved' ? asset('assets/images/check.svg') : asset('assets/images/nothing.png')}})">{{step.name}} {{step.status ? step.status : ""}}</li>
+          <a class="after:cursor-pointer step font-bold {{nextStep.name === step.name && "after:border-4 after:border-[#F4C064]"}} {{step.status === "Waiting" ? "text-blue-700" : step.status === "Pending" ? "text-yellow-700 step-primary" : step.status === "Approved" ? "text-green-700 step-primary" : step.status === "Disapproved" ? "text-red-700 step-primary" : ""}}" style="--my-content-var: url({{ step.status==='Approved' ? asset('assets/images/check.svg') : asset('assets/images/nothing.png')}})" href="{{ route('/student/:id', { id : studentUser.user_id } , {qs: {doc: step.name , status: step.status  } })}}">
+            <li>{{step.name}} {{step.status ? step.status : ""}}</li>
+          </a>
         @end
       </ul>
       @if(firstStep !== firstOfAllStep)
@@ -82,8 +86,8 @@
     @if(!nextStep.name.includes('Informed supervision'))
     <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
       <div>
-        @if(currentSteps.status !== "Waiting")
-        <a href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&statId={{currentSteps.status}}&&prev=prev">
+        @if(currentSteps.status !== "Waiting" && currentSteps.status !== "Approved")
+        <a target="_blank" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&statId={{currentSteps.status}}&&prev=prev">
           <div class="group cursor-pointer hover:bg-[#495057]/50 h-96 w-72 absolute flex justify-center items-center">
             <p class="text-transparent group-hover:text-white font-medium text-lg">Click to open PDF file</p>
           </div>
@@ -101,7 +105,7 @@
       <div class="flex flex-col pt-5">
         <form id="formElem">
           <div class="flex flex-col space-y-2">
-            <p class="font-medium text-lg">{{nextStep.name}}</p>
+            <p class="font-medium text-lg">{{currentSteps.name}}</p>
             @if(auth.user.role === "student")
             <button type="button" class="btn btn-primary btn-sm h-10 w-fit">Download plain document</button>
             @end
@@ -232,10 +236,12 @@
         @else
         <div class="grid grid-cols-3 px-3 gap-y-2">
           <p class="font-medium">Date confirm :</p>
-          <input id="advisorDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
-          <div class="flex space-x-2">
-            <input id="isSameDate" type="checkbox" class="checkbox" />
-            <p class="text-[#495057]">Same day as the student</p>
+          <div class="flex items-center col-span-2 space-x-2">
+            <input id="advisorDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-1">
+            <div class="flex space-x-2">
+              <input id="isSameDate" type="checkbox" class="checkbox" />
+              <p class="text-[#495057]">Same day as the student</p>
+            </div>
           </div>
         </div>
         @end
@@ -393,15 +399,7 @@
     }
     return str
     }
-  let pdfFile
-  const input = document.getElementById("myPdf")
-  if(input){  
-    input.onchange = (e) => {
-    const [file] = e.target.files
-    pdfFile = file
-    document.getElementById('showInput').value = middleEllipsis(file.name)
-  }
-  }
+
 
   const changeSteps = async (firstStepPaging, gnext) => {
     console.log(firstStepPaging)
@@ -535,7 +533,6 @@
     formData.append('docId', '{{nextStep.name}}')
     formData.append('statId', 'Pending')
     formData.append('studentId', {{studentUser.user_id}})
-    
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -544,10 +541,13 @@
       },
       body: JSON.stringify(body),
     })
-    await fetch('/api/file/steps?_method=POST', {
+
+    if(pdfFile){
+      await fetch('/api/file/steps?_method=POST', {
         method: 'POST',
         body: formData,
-    })
+      })
+    }
     window.location.reload()
   }
 
@@ -635,7 +635,7 @@ function onNextPage() {
 
 if(document.getElementById('control-page')){
   document.getElementById('control-page').classList.add("hidden")
-  if({{currentSteps.status !== "Waiting"}})
+  if({{currentSteps.status !== "Waiting"}} && {{currentSteps.status !== "Approved"}})
     pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
       pdfDoc = pdfDoc_
       if(pdfDoc.numPages > 1)
@@ -644,8 +644,12 @@ if(document.getElementById('control-page')){
     })
 
 }
+let pdfFile
 $("#myPdf").on("change", async function(e){
-	var file = e.target.files[0]
+	let file = e.target.files[0]
+  if(!file || file.type !== "application/pdf") return
+  pdfFile = file
+  document.getElementById('showInput').value = middleEllipsis(file.name)
 	if(file.type == "application/pdf"){
 		var fileReader = new FileReader()  
 		fileReader.onload = function() {

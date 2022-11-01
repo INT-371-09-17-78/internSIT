@@ -28,6 +28,10 @@ View.global('middleEllipsis', (str: string) => {
   return str
 })
 
+View.global('getCurrentYear', () => {
+  return new Date().getFullYear()
+})
+
 View.global('checkStatus', (str: string) => {
   if (str.includes('Approved')) {
     return 'text-green-700'

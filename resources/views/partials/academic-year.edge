@@ -1,24 +1,28 @@
-@if(academicYears[0].academic_year)
-<div class="flex items-centera ml-auto">
-  <p class="my-auto p-6 font-bold">Active year: {{academicYears[0].academic_year}}</p>
-</div>
-@end
- <div class="flex">
-    <div class="grid grid-cols-4 gap-5 w-full px-10 min-w-0 place-items-center">
-        <div class="flex flex-col items-center">
-              <div class="bg-[#F0F3F4] w-72 h-40 rounded-md flex justify-center items-center cursor-pointer" onclick="showAddAcademicYear()">
-                <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.2188 7.84961V11.9805H0.675781V7.84961H18.2188ZM11.6797 0.800781V19.4336H7.23242V0.800781H11.6797Z" fill="#495057"/>
-                </svg>              
-              </div>
-              <div class="w-60 bg-white rounded-md shadow-md p-5 font-medium flex-col space-y-2 hidden absolute top-72" id="container-add-year">
+<div class="flex">
+    <div class="grid grid-cols-4 gap-5 w-full px-10 min-w-0 place-items-center p-10">
+        {{--  <div class="flex flex-col items-center">  --}}
+              @if(academicYears[0].academic_year !== getCurrentYear())
+                <div class="bg-white w-72 h-40 rounded-md shadow-md flex flex-col justify-center items-center p-3 space-y-5">
+                    <div class="flex space-x-7">
+                      <p class="font-medium text-3xl" name="acdemic_year" id="acdemic_year">{{getCurrentYear()}}</p>
+                      @if(academicYears[0].status)
+                        <button type="button" class="btn btn-primary btn-sm capitalize p-4 flex-nowrap font-normal" onclick="addYear()">Activate</button>
+                      @else
+                      <div class="tooltip" data-tip="You must finish the current activated year first.">
+                        <button type="button" class="btn btn-primary btn-sm capitalize p-4 flex-nowrap font-normal disabled:text-white" disabled onclick="addYear()">Activate</button>
+                      </div>
+                      @end
+                    </div>
+                </div>
+              @end
+              {{--  <div class="w-60 bg-white rounded-md shadow-md p-5 font-medium flex-col space-y-2 hidden absolute top-72" id="container-add-year">
                 <p>Add new academic year</p>
                 <div>
                   <input type="text" maxlength="4" class="input input-sm max-w-xs w-24 border-[#ACB5BD]" name="acdemic_year" id="acdemic_year"/>
                   <button type="button" class="btn btn-primary btn-sm capitalize" onclick="showAlertAddAcademicYear()">Add</button>
                 </div>
-              </div>
-        </div>
+              </div>  --}}
+        {{--  </div>  --}}
         @if(academicYears.length === 0)
             <div class="absolute left-80">
               <svg width="103" height="25" viewBox="0 0 103 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,8 +33,8 @@
         @end  
         @each(year in academicYears)
         <a href="{{ route('/student-information', {} ,{qs: {month: 2}}) }}" onclick="updateYear({{year.academic_year}})">
-          <div class="w-72 h-40 rounded-md flex justify-center items-center cursor-pointer  {{year.academic_year == request.cookie('year') ? 'bg-[#B6D3FF] text-primary' : 'bg-[#F0F3F4]'}}">
-            <p class="font-bold text-xl">{{year.academic_year}}</p>        
+          <div class="w-72 h-40 rounded-md flex justify-center items-center cursor-pointer shadow-md {{year.academic_year == academicYears[0].academic_year  ? 'bg-[#B6D3FF] text-primary' : 'bg-[#F0F3F4]'}}">
+            <p class="font-bold text-3xl">{{year.academic_year}}</p>    
           </div>
         </a>
         @end  

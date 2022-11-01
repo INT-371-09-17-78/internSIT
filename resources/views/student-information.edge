@@ -7,6 +7,7 @@
 @set('activeFourMonth', '')
 @set('activeSixMonth', '')
 @set('activeAll', '')
+@set('activeStudentByAdvisor','')
 
 @section('student-information')
 @if(request.matchesRoute('/register-request'))
@@ -18,16 +19,18 @@
 @end
 
   @if(request.qs().month == 2)
-   @set('activeTwoMonth', 'bg-[#484F56]/10')
+   @set('activeTwoMonth', 'bg-[#DAF0FF]')
   @elseif(request.qs().month == 4)
-   @set('activeFourMonth', 'bg-[#484F56]/10')
+   @set('activeFourMonth', 'bg-[#DAF0FF]')
   @elseif(request.qs().month == 6)
-    @set('activeSixMonth', 'bg-[#484F56]/10')
+    @set('activeSixMonth', 'bg-[#DAF0FF]')
+  @elseif(request.qs().advisor)
+    @set('activeStudentByAdvisor', 'bg-[#DAF0FF]')
   @else
-    @set('activeAll', 'bg-[#484F56]/10')
+    @set('activeAll', 'bg-[#DAF0FF]')
   @end
   <section class="flex flex-col h-full w-full z-[5] bg-white">
-      <div class="flex px-8 bg-[#F0F3F4] w-full py-6">
+      <div class="flex px-8 bg-[#F0F3F8] w-full py-6">
         @if(request.matchesRoute('/academic-year'))
         <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
           Academic year
@@ -42,7 +45,7 @@
                 <path d="M5.9998 6.62069C7.82805 6.62069 9.31014 5.1386 9.31014 3.31034C9.31014 1.48209 7.82805 0 5.9998 0C4.17154 0 2.68945 1.48209 2.68945 3.31034C2.68945 5.1386 4.17154 6.62069 5.9998 6.62069Z" fill="#4263EB"/>
                 <path d="M6 6.59766C2.68629 6.59766 0 9.28395 0 12.5977H12C12 9.28395 9.31371 6.59766 6 6.59766Z" fill="#4263EB"/>
               </svg> 
-              <p class="text-primary font-medium">{{auth.user.role}}</p>
+              <p class="text-primary font-medium capitalize">{{auth.user.role}}</p>
             </div>
         </div>
         <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
@@ -77,32 +80,30 @@
     document.getElementById('container-add-year').classList.remove('hidden')
     document.getElementById('container-add-year').classList.add('flex')
   }
-  let acdemicYear
-  const showAlertAddAcademicYear = () =>{
-    if(!document.getElementById('acdemic_year').value) return
-    acdemicYear = document.getElementById('acdemic_year').value
-    const alertAddAcademicYear = 
-    `<div id="modal-add-academic-year" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10 flex justify-center items-center">
-      <div class="max-w-sm">
-        <div class="alert bg-base-100 shadow-lg flex flex-col">
-            <svg class="w-16 h-16" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15.4352 5.79177L2.73015 27.0018C2.46821 27.4554 2.3296 27.9697 2.32814 28.4936C2.32667 29.0174 2.46239 29.5325 2.72179 29.9876C2.9812 30.4427 3.35524 30.8219 3.80671 31.0875C4.25819 31.3532 4.77135 31.496 5.29515 31.5018H30.7052C31.229 31.496 31.7421 31.3532 32.1936 31.0875C32.6451 30.8219 33.0191 30.4427 33.2785 29.9876C33.5379 29.5325 33.6736 29.0174 33.6722 28.4936C33.6707 27.9697 33.5321 27.4554 33.2702 27.0018L20.5652 5.79177C20.2977 5.35093 19.9212 4.98645 19.4719 4.7335C19.0227 4.48054 18.5158 4.34766 18.0002 4.34766C17.4845 4.34766 16.9776 4.48054 16.5284 4.7335C16.0791 4.98645 15.7026 5.35093 15.4352 5.79177V5.79177Z" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18 13.5V19.5" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18 24V24.75" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <p class="font-bold">Your input </p>
-            <p class="text-red-500 font-bold border-2 border-red-500 px-5 py-2 rounded-md">${acdemicYear}</p>
-            <span class="block text-center">Please make sure of new acacemic year. After <span class="font-medium">'confirm'</span>, you can’t edit. If you would like to edit please contact admin.</span>
-            <div class="self-end">
-              <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertAddAcademicYear()">cancel</button>
-              <button type="submit" class="btn btn-sm btn-info rounded-3xl" onclick="addYear()">confirm</button>
-            </div>
-        </div>
-      </div>
-    </div> `
-    document.body.innerHTML += alertAddAcademicYear
-    document.getElementById('acdemic_year').value = acdemicYear
-  }
+  // let acdemicYear
+  // const showAlertAddAcademicYear = () =>{
+  //   // if(!document.getElementById('acdemic_year').innerHTML) return
+  //   acdemicYear = document.getElementById('acdemic_year').innerHTML
+  //   const alertAddAcademicYear = 
+  //   `<div id="modal-add-academic-year" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10 flex justify-center items-center">
+  //     <div class="max-w-sm">
+  //       <div class="alert bg-base-100 shadow-lg flex flex-col">
+  //           <svg class="w-16 h-16" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //           <path d="M15.4352 5.79177L2.73015 27.0018C2.46821 27.4554 2.3296 27.9697 2.32814 28.4936C2.32667 29.0174 2.46239 29.5325 2.72179 29.9876C2.9812 30.4427 3.35524 30.8219 3.80671 31.0875C4.25819 31.3532 4.77135 31.496 5.29515 31.5018H30.7052C31.229 31.496 31.7421 31.3532 32.1936 31.0875C32.6451 30.8219 33.0191 30.4427 33.2785 29.9876C33.5379 29.5325 33.6736 29.0174 33.6722 28.4936C33.6707 27.9697 33.5321 27.4554 33.2702 27.0018L20.5652 5.79177C20.2977 5.35093 19.9212 4.98645 19.4719 4.7335C19.0227 4.48054 18.5158 4.34766 18.0002 4.34766C17.4845 4.34766 16.9776 4.48054 16.5284 4.7335C16.0791 4.98645 15.7026 5.35093 15.4352 5.79177V5.79177Z" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //           <path d="M18 13.5V19.5" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //           <path d="M18 24V24.75" stroke="#F03D3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //           </svg>
+  //           <span class="block text-center">Please make sure of new acacemic year. After <span class="font-medium">'confirm'</span>, you can’t edit. If you would like to edit please contact admin.</span>
+  //           <div class="self-end">
+  //             <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertAddAcademicYear()">cancel</button>
+  //             <button type="submit" class="btn btn-sm btn-info rounded-3xl" onclick="addYear()">confirm</button>
+  //           </div>
+  //       </div>
+  //     </div>
+  //   </div> `
+  //   document.body.innerHTML += alertAddAcademicYear
+  //   document.getElementById('acdemic_year').value = acdemicYear
+  // }
 
   const updateYear = async (y) =>{
     const year = {year: y}
@@ -121,7 +122,7 @@
   }
 
   const addYear =  async () => { 
-    const year = {year: acdemicYear , isCurrent: true}
+    const year = {year: document.getElementById('acdemic_year').innerHTML , isCurrent: true}
     await fetch('/api/user/courseInfo?_method=PATCH', {
         method: "PATCH",
         headers: {
@@ -130,9 +131,10 @@
         },
         body: JSON.stringify(year),
     }).then(() => {
-        const urlParams = new URLSearchParams()
-        urlParams.append('month', 2)
-        window.location.href = `/student-information?${urlParams}`
+      window.location.reload()
+        // const urlParams = new URLSearchParams()
+        // urlParams.append('month', 2)
+        // window.location.href = `/student-information?${urlParams}`
     })
   }
   

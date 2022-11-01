@@ -355,6 +355,7 @@ module.exports = {
       DEFAULT: '1',
     },
     fontFamily: {
+      roboto: ['Roboto'],
       sans: [
         'ui-sans-serif',
         'system-ui',
