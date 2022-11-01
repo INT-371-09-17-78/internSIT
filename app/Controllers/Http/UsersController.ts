@@ -310,7 +310,7 @@ export default class UsersController {
       let allAmoutSt: any
       let noApprove: any
       let advisorById: any
-      let studentUsersByAdOne: any = []
+      let studentUsersByAdOne: any
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
 
@@ -328,12 +328,13 @@ export default class UsersController {
           const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
           const tmp = advisorById.serialize()
           tmp['st'] = result.map((re) => re.serialize())
-          studentUsersByAdOne.push(tmp)
+          studentUsersByAdOne = tmp
           // adSe.push(tmp)
         }
 
         // console.log(studentUsersByAdOne)
       }
+      // console.log(adSe)
       const ad = await User.query().where('role', 'advisor').preload('academicYear')
       let adSe: any = []
       for (let i = 0; i < ad.length; i++) {
