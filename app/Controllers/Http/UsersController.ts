@@ -309,7 +309,7 @@ export default class UsersController {
       // let year: any
       let allAmoutSt: any
       let noApprove: any
-      let advisorById: any
+      let advisorById: any = []
       let studentUsersByAdOne: any
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
@@ -317,16 +317,18 @@ export default class UsersController {
       //   return view.render('errors/not-found')
       // }
       if (request.qs().advisor) {
-        advisorById = await Advisor.find(request.qs().advisor)
-
+        // advisorById = await Advisor.find(request.qs().advisor)
+        advisorById = await User.query()
+          .where('user_id', request.qs().advisor)
+          .andWhere('role', 'advisor')
         const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
-          .where('user_id', advisorById.advisor_id)
+          .where('user_id', advisorById[0].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
-
+        // console.log(advisorById)
         if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
           const id = checkAdvisorExistInAcademicYear[0].id
           const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
-          const tmp = advisorById.serialize()
+          const tmp = advisorById[0].serialize()
           tmp['st'] = result.map((re) => re.serialize())
           studentUsersByAdOne = tmp
           // adSe.push(tmp)
@@ -334,7 +336,6 @@ export default class UsersController {
 
         // console.log(studentUsersByAdOne)
       }
-      // console.log(adSe)
       const ad = await User.query().where('role', 'advisor').preload('academicYear')
       let adSe: any = []
       for (let i = 0; i < ad.length; i++) {
@@ -353,6 +354,7 @@ export default class UsersController {
           adSe.push(tmp)
         }
       }
+      // console.log(adSe)
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         const UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
           'academic_year',
@@ -394,8 +396,14 @@ export default class UsersController {
             .where('user_id', staffUsers[i].user_id)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (check && check.length > 0) {
-            staffUsersResult.push(check[0])
+            const staffUser = await User.query().where('user_id', check[0].user_id)
+            if (staffUser && staffUser.length > 0) {
+              staffUsersResult.push(check[0])
+              // console.log(staffUsersResult)
+            }
           }
+
+          // console.log(check)
         }
       } else {
         studentUsers = []
@@ -448,11 +456,13 @@ export default class UsersController {
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
         academicYears: AcademicYearAll,
-        advisorById: advisorById,
+        advisorById: advisorById[0],
         studentUsersByAd: adSe,
         studentUsersByAdOne: studentUsersByAdOne,
       })
     } catch (error) {
+      console.log(error)
+
       return response.status(400).json({ message: error.message })
     }
   }
@@ -587,12 +597,13 @@ export default class UsersController {
         .andWhere('user_id', advisor.advisor_id)
         .join('advisors', 'users.user_id', '=', 'advisors.advisor_id')
       if (advisorResult[0].$extras.advisor_id && students && students.length > 0) {
+        // console.log(advisorResult[0])
         const AdvisorInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', advisorResult[0].$extras.advisor_id)
           .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
         // const usersInAcademicYear = await.query()
         // if () {
-        // console.log(AdvisorInAcademicYear[0].id)
+        // console.log(AdvisorInAcademicYear[0])
         for (let i = 0; i < students.length; i++) {
           const usi = await UsersInAcademicYearModel.query()
             .where('user_id', students[i])
