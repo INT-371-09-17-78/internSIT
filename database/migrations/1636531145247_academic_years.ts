@@ -7,7 +7,7 @@ export default class AcademicYears extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       // table.increments('conf_id')
       table.integer('academic_year').primary()
-
+      table.boolean('status').notNullable().defaultTo(false)
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

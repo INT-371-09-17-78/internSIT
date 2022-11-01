@@ -528,6 +528,7 @@ export default class UsersController {
         if (!AcademicYearCfResult || AcademicYearCfResult.length === 0 || !year) {
           AcademicYearCf = new AcademicYear()
           AcademicYearCf.academic_year = year
+          AcademicYearCf.status = true
           await AcademicYearCf.save()
           if (auth.user) {
             await AcademicYearCf.related('users').attach({
