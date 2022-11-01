@@ -1109,7 +1109,14 @@ export default class UsersController {
         )
         console.log(realCurrentStep)
 
-        for (let i = 0; i <= realCurrentStep; i++) {
+        for (
+          let i = 0;
+          i <=
+          (userHasDocForRC[userHasDocForRC.length - 1].status_id === 'Approved'
+            ? realCurrentStep
+            : realCurrentStep - 1);
+          i++
+        ) {
           steps[i]['status'] = 'Approved'
         }
       } else {
