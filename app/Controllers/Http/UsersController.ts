@@ -916,9 +916,9 @@ export default class UsersController {
               {
                 name: 'Sent Presentation',
               },
-              {
-                name: 'Presentation',
-              },
+              // {
+              //   name: 'Presentation',
+              // },
               {
                 name: 'TR-03 and TR-06 (6/6)',
               },
@@ -957,9 +957,9 @@ export default class UsersController {
               {
                 name: 'Sent Presentation',
               },
-              {
-                name: 'Presentation',
-              },
+              // {
+              //   name: 'Presentation',
+              // },
               {
                 name: 'TR-03 and TR-06 (4/4)',
               },
@@ -977,9 +977,9 @@ export default class UsersController {
               {
                 name: 'Informed presentation day',
               },
-              {
-                name: 'Presentation',
-              },
+              // {
+              //   name: 'Presentation',
+              // },
               {
                 name: 'Sent Presentation',
               },
@@ -1068,37 +1068,48 @@ export default class UsersController {
 
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
         if (stepIndex >= 0) {
+          steps[stepIndex]['status'] = userHasDoc[0].status_id
           if (userHasDoc[0].status_id === 'Approved') {
             nextStep = steps[stepIndex + 1]
           } else {
             nextStep = steps[stepIndex]
           }
         }
-        let index: any
-        for (let i = 0; i < steps.length; i++) {
-          for (let j = 0; j < userHasDoc.length; j++) {
-            if (steps[i].name === userHasDoc[j].document_id) {
-              // steps[0]['status'] = 'Approved'
-              index = i
-              steps[i]['status'] = userHasDoc[j].status_id
-              break
-            }
-            // else {
-            //   steps[i]['status'] = ''
-            // }
+        // let index: any
+        // for (let i = 0; i < steps.length; i++) {
+        //   for (let j = 0; j < userHasDoc.length; j++) {
+        //     if (steps[i].name === userHasDoc[j].document_id) {
+        //       // steps[0]['status'] = 'Approved'
+        //       index = i
+        //       steps[i]['status'] = userHasDoc[j].status_id
+        //       break
+        //     }
+        //     // else {
+        //     //   steps[i]['status'] = ''
+        //     // }
 
-            // }
-            // console.log(steps[i].name)
+        //     // }
+        //     // console.log(steps[i].name)
 
-            // const index = userHasDoc.findIndex(
-            //   (usr) => console.log(usr.document_id.toLowerCase());
+        //     // const index = userHasDoc.findIndex(
+        //     //   (usr) => console.log(usr.document_id.toLowerCase());
 
-            // )
-            // console.log(index)
-          }
-        }
+        //     // )
+        //     // console.log(index)
+        //   }
+        // }
+        // const CurrentStepIndex = steps.findIndex((step) => step.name === userHasDoc[0].document_id)
+        // steps[CurrentStepIndex]['status'] = userHasDoc[0].status_id
+        const userHasDocForRC = await Document_Status.query().where(
+          'id',
+          userHasDocResult[0].doc_stat_id
+        )
+        const realCurrentStep = steps.findIndex(
+          (step) => step.name === userHasDocForRC[0].document_id
+        )
+        console.log(realCurrentStep)
 
-        for (let i = 0; i < index; i++) {
+        for (let i = 0; i <= realCurrentStep; i++) {
           steps[i]['status'] = 'Approved'
         }
       } else {
@@ -1519,9 +1530,9 @@ export default class UsersController {
           {
             doc_name: 'Sent Presentation',
           },
-          {
-            doc_name: 'Presentation',
-          },
+          // {
+          //   doc_name: 'Presentation',
+          // },
           {
             doc_name: 'TR-03 and TR-06 (6/6)',
           },
@@ -1580,6 +1591,7 @@ export default class UsersController {
         if (!currentYear || currentYear.length === 0) {
           year = await AcademicYear.create({
             academic_year: new Date().getFullYear(),
+            status: true,
           })
         } else {
           year = currentYear[0]
