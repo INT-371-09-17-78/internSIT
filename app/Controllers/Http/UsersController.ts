@@ -4,7 +4,6 @@ import Student from 'App/Models/Student'
 import Status from 'App/Models/Status'
 import File from 'App/Models/File'
 import Document from 'App/Models/Document'
-import Advisor from 'App/Models/Advisor'
 import Document_Status from 'App/Models/DocumentStatus'
 import AcademicYear from 'App/Models/AcademicYear'
 import UserHasDoc from 'App/Models/UserHasDoc'
@@ -1067,6 +1066,8 @@ export default class UsersController {
         currentSteps['reason'] = userHasDocResult[0].$extras.no_approve_reason
 
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
+        console.log(userHasDoc[0].document_id)
+        console.log(currentSteps.name)
         if (stepIndex >= 0) {
           steps[stepIndex]['status'] = userHasDoc[0].status_id
           if (userHasDoc[0].status_id === 'Approved') {
@@ -1143,6 +1144,8 @@ export default class UsersController {
       }
       const lastOfAllStep = steps[steps.length - 1].name
       const firstOfAllStep = steps[0].name
+      // console.log(request.updateQs({}))
+      // return response.redirect('/student/' + studentUser.student.student_id)
       return view.render('student', {
         studentUser,
         plans,
