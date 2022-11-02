@@ -329,12 +329,17 @@ export default class UsersController {
           const id = checkAdvisorExistInAcademicYear[0].id
           const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
           const tmp = advisorById[0].serialize()
-          tmp['st'] = result.map((re) => re.serialize())
+          tmp['st'] = []
+          for (let i = 0; i < result.length; i++) {
+            const user = await User.query().where('user_id', result[i].user_id)
+            tmp['st'].push(user[0].serialize())
+          }
+          // tmp['st'] = result.map((re) => re.serialize())
           studentUsersByAdOne = tmp
           // adSe.push(tmp)
         }
 
-        // console.log(studentUsersByAdOne)
+        console.log(studentUsersByAdOne)
       }
       const ad = await User.query().where('role', 'advisor').preload('academicYear')
       let adSe: any = []
