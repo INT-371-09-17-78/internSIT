@@ -1019,12 +1019,14 @@ export default class UsersController {
       let submission: any = []
 
       let stepFile: any
-      let userHasDoc
+      let userHasDoc: any
+      let isChangeStep: any = false
       if (userHasDocResult[0]) {
         if (request.qs().doc && request.qs().status) {
           userHasDoc = await Document_Status.query()
             .where('document_id', request.qs().doc)
             .andWhere('status_id', request.qs().status)
+          isChangeStep = true
         } else {
           userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
         }
@@ -1149,6 +1151,7 @@ export default class UsersController {
       return view.render('student', {
         studentUser,
         plans,
+        isChangeStep,
         disabled,
         nextStep,
         currentSteps,
