@@ -4,13 +4,14 @@ import {
   column,
   hasMany,
   HasMany,
-  manyToMany,
-  ManyToMany,
-  belongsTo,
-  BelongsTo,
+  // manyToMany,
+  // ManyToMany,
+  // belongsTo,
+  // BelongsTo,
 } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
-import DocumentStatus from 'App/Models/DocumentStatus'
+import UserHasDoc from 'App/Models/UserHasDoc'
+// import stepsStatuses from 'App/Models/StepStatus'
 // import File from 'App/Models/File'
 // import Advisor from 'App/Models/Advisor'
 
@@ -34,22 +35,24 @@ export default class UsersInAcademicYear extends BaseModel {
   // @hasMany(() => File, { foreignKey: 'id' })
   // public files: HasMany<typeof File>
 
-  @manyToMany(() => DocumentStatus, {
-    localKey: 'id',
-    pivotForeignKey: 'user_in_academic_year_id',
-    relatedKey: 'id',
-    pivotRelatedForeignKey: 'doc_stat_id',
-    pivotTable: 'users_has_docs',
-    pivotTimestamps: true,
-  })
-  //   public skills: ManyToMany<typeof Skill>
-  public documentStatus: ManyToMany<typeof DocumentStatus>
+  // @manyToMany(() => stepsStatuses, {
+  //   localKey: 'id',
+  //   pivotForeignKey: 'user_in_academic_year_id',
+  //   relatedKey: 'id',
+  //   pivotRelatedForeignKey: 'step_status_id',
+  //   pivotTable: 'users_has_docs',
+  //   pivotTimestamps: true,
+  // })
+  // //   public skills: ManyToMany<typeof Skill>
+  // public stepsStatuses: ManyToMany<typeof stepsStatuses>
 
   @column()
   public advisor_ac_id: number
 
-  @belongsTo(() => UsersInAcademicYear)
-  public usersInAcademicYear: BelongsTo<typeof UsersInAcademicYear>
+  @hasMany(() => UserHasDoc, { foreignKey: 'user_in_academic_year_id' })
+  public userHasDoc: HasMany<typeof UserHasDoc>
+  // @belongsTo(() => UsersInAcademicYear)
+  // public usersInAcademicYear: BelongsTo<typeof UsersInAcademicYear>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

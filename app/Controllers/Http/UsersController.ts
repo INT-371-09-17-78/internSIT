@@ -1,10 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Student from 'App/Models/Student'
-import Status from 'App/Models/Status'
+// import Status from 'App/Models/Status'
 import File from 'App/Models/File'
-import Document from 'App/Models/Document'
-import Document_Status from 'App/Models/DocumentStatus'
+import { StepStatus, Steps } from 'Contracts/enum'
+// import Document from 'App/Models/Document'
+// import StepStatusModel from 'App/Models/StepStatus'
 import AcademicYear from 'App/Models/AcademicYear'
 import UserHasDoc from 'App/Models/UserHasDoc'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
@@ -324,7 +325,6 @@ export default class UsersController {
         const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', advisorById[0].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
-        // console.log(advisorById)
         if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
           const id = checkAdvisorExistInAcademicYear[0].id
           const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
@@ -339,7 +339,7 @@ export default class UsersController {
           // adSe.push(tmp)
         }
 
-        console.log(studentUsersByAdOne)
+        // console.log(studentUsersByAdOne)
       }
       const ad = await User.query().where('role', 'advisor').preload('academicYear')
       let adSe: any = []
@@ -347,16 +347,32 @@ export default class UsersController {
         // console.log(AcademicYearCf[0].academic_year)
         // console.log(ad[i].academicYear[0].$extras.pivot_id)
         // console.log(
+        // console.log(ad[i])
+
         const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', ad[i].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
-
+        // console.log(checkAdvisorExistInAcademicYear)
         if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
           const id = checkAdvisorExistInAcademicYear[0].id
           const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
           const tmp = ad[i].serialize()
-          tmp['st'] = result.map((re) => re.serialize())
+
+          tmp['st'] = []
+          if (result && result.length > 0) {
+            for (let i = 0; i < result.length; i++) {
+              console.log(result[i])
+              const user = await User.query().where('user_id', result[i].user_id)
+              tmp['st'].push(user[0].serialize())
+            }
+          }
+
+          // tmp['st'] = result.map((re) => re.serialize())
           adSe.push(tmp)
+          // console.log(tmp)
+          // const tmp = ad[i].serialize()
+          // tmp['st'] = result.map((re) => re.serialize())
+          // adSe.push(tmp)
         }
       }
       // console.log(adSe)
@@ -420,20 +436,17 @@ export default class UsersController {
           const usersInAcademicYear = await UsersInAcademicYearModel.query()
             .where('user_id', studentUsers[i].user_id)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
-          const userHasDoc = await usersInAcademicYear[0]
-            .related('documentStatus')
-            .query()
-            .orderBy('pivot_updated_at', 'desc')
+          const userHasDoc = await UserHasDoc.query()
+            .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+            .orderBy('updated_at', 'desc')
           // console.log(userHasDoc)
           if (userHasDoc && userHasDoc.length > 0) {
             // studentUsers[i].serialize()
-            if (userHasDoc[0].status_id === 'Waiting') {
-              studentUsers[i]['lastestStatus'] =
-                userHasDoc[0].status_id + ' for ' + userHasDoc[0].document_id
+            if (userHasDoc[0].status === StepStatus.WAITING) {
+              studentUsers[i]['lastestStatus'] = userHasDoc[0].status + ' for ' + userHasDoc[0].step
               // console.log(studentUsers[i]['lastestStatus'])
             } else {
-              studentUsers[i]['lastestStatus'] =
-                userHasDoc[0].document_id + ' ' + userHasDoc[0].status_id
+              studentUsers[i]['lastestStatus'] = userHasDoc[0].step + ' ' + userHasDoc[0].status
             }
           } else {
             // studentUsers[i].serialize()
@@ -472,54 +485,64 @@ export default class UsersController {
     }
   }
 
-  public async updateSupervision({ request, response }: HttpContextContract) {
-    try {
-      const { date, docStatId, supervisionStatus, meetingLink, advisorComment, dateConfirmStatus } =
-        request.all()
-      // console.log('เข้า')
+  // public async updateSupervision({ request, response }: HttpContextContract) {
+  //   try {
+  //     const {
+  //       date,
+  //       // stepStatId,
+  //       supervisionStatus,
+  //       meetingLink,
+  //       advisorComment,
+  //       dateConfirmStatus,
+  //     } = request.all()
+  //     // console.log('เข้า')
 
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const user = await User.query().where('user_id', request.param('id'))
-      if (user && user.length > 0) {
-        const userAc = await UsersInAcademicYearModel.query()
-          .where('user_id', user[0].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
-        // console.log(userAc[0].id);
-        const UserhasSupervision = await UserHasDoc.query()
-          .where('doc_stat_id', docStatId)
-          .andWhere('user_in_academic_year_id', userAc[0].id)
-          .orderBy('updated_at', 'desc')
-        // console.log(UserhasSupervision[0])
-        if (date) {
-          if (user[0].role === 'advisor') {
-            UserhasSupervision[0].advisor_date = date
-          } else {
-            UserhasSupervision[0].student_date = date
-          }
-        }
+  //     const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+  //     const user = await User.query().where('user_id', request.param('id'))
+  //     if (user && user.length > 0) {
+  //       const userAc = await UsersInAcademicYearModel.query()
+  //         .where('user_id', user[0].user_id)
+  //         .andWhere('academic_year', AcademicYearCf[0].academic_year)
+  //       // console.log(userAc[0].id);
+  //       // const UserhasSupervision = await UserHasDoc.query()
+  //       //   .where('id', stepStatId)
+  //       //   .andWhere('user_in_academic_year_id', userAc[0].id)
+  //       //   .orderBy('updated_at', 'desc')
+  //       const UserhasSupervision = new UserHasDoc()
+  //       // console.log(UserhasSupervision[0])
+  //       if (date) {
+  //         if (user[0].role === 'advisor') {
+  //           UserhasSupervision.advisor_date = date
+  //         } else {
+  //           UserhasSupervision.student_date = date
+  //         }
+  //       }
 
-        if (supervisionStatus) {
-          UserhasSupervision[0].supervision_status = supervisionStatus
-        }
+  //       if (supervisionStatus) {
+  //         UserhasSupervision.supervision_status = supervisionStatus
+  //       }
 
-        if (meetingLink) {
-          UserhasSupervision[0].meeting_link = meetingLink
-        }
+  //       if (meetingLink) {
+  //         UserhasSupervision.meeting_link = meetingLink
+  //       }
 
-        if (advisorComment) {
-          UserhasSupervision[0].advisor_comment = advisorComment
-        }
+  //       if (advisorComment) {
+  //         UserhasSupervision.advisor_comment = advisorComment
+  //       }
 
-        if (dateConfirmStatus) {
-          UserhasSupervision[0].date_confirm_status = dateConfirmStatus
-        }
-        // console.log(UserhasSupervision[0])
-        await UserhasSupervision[0].save()
-      }
-    } catch (error) {
-      return response.status(400).json({ message: error.message })
-    }
-  }
+  //       if (dateConfirmStatus) {
+  //         UserhasSupervision.date_confirm_status = dateConfirmStatus
+  //       }
+  //       // console.log(UserhasSupervision[0])
+  //       UserhasSupervision.user_in_academic_year_id = userAc[0].id
+  //       await UserhasSupervision.save()
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+
+  //     return response.status(400).json({ message: error.message })
+  //   }
+  // }
 
   public async updateCourseInformation({ auth, request, response }: HttpContextContract) {
     try {
@@ -882,113 +905,96 @@ export default class UsersController {
         studentUser.student.plan === 6
           ? [
               {
-                name: 'TR-01',
+                name: Steps.TR01,
               },
               {
-                name: 'TR-02',
+                name: Steps.TR02,
               },
               {
-                name: 'TR-03 and TR-05 (1/6)',
+                name: Steps.TR03_AND_TR05_1_6,
               },
               {
-                name: 'Informed supervision (1/6)',
+                name: Steps.INFORMED_SUPERVISION_1_6,
               },
               {
-                name: 'TR-03 and TR-05 (2/6)',
+                name: Steps.TR03_AND_TR05_2_6,
               },
               {
-                name: 'Informed supervision (2/6)',
+                name: Steps.INFORMED_SUPERVISION_2_6,
               },
               {
-                name: 'TR-03 and TR-05 (3/6)',
+                name: Steps.TR03_AND_TR05_3_6,
               },
               {
-                name: 'Informed supervision (3/6)',
+                name: Steps.INFORMED_SUPERVISION_3_6,
               },
               {
-                name: 'TR-03 and TR-05 (4/6)',
+                name: Steps.TR03_AND_TR05_4_6,
               },
               {
-                name: 'Informed supervision (4/6)',
+                name: Steps.INFORMED_SUPERVISION_4_6,
               },
               {
-                name: 'TR-03 and TR-05 (5/6)',
+                name: Steps.TR03_AND_TR05_5_6,
               },
               {
-                name: 'Informed supervision (5/6)',
+                name: Steps.INFORMED_SUPERVISION_5_6,
               },
               {
-                name: 'Sent Presentation',
+                name: Steps.SENT_PRESENTATION,
               },
-              // {
-              //   name: 'Presentation',
-              // },
               {
-                name: 'TR-03 and TR-06 (6/6)',
+                name: Steps.TR03_AND_TR05_6_6,
               },
             ]
           : studentUser.student.plan === 4
           ? [
               {
-                name: 'TR-01',
-                status: 'Approved',
+                name: Steps.TR01,
               },
               {
-                name: 'TR-02',
-                status: 'Approved',
+                name: Steps.TR02,
               },
               {
-                name: 'TR-03 and TR-05 (1/4)',
-                status: 'Approved',
+                name: Steps.TR03_AND_TR05_1_4,
               },
               {
-                name: 'Informed supervision (1/4)',
-                status: '',
+                name: Steps.INFORMED_SUPERVISION_1_4,
               },
               {
-                name: 'TR-03 and TR-05 (2/4)',
-                status: '',
+                name: Steps.TR03_AND_TR05_2_4,
               },
               {
-                name: 'Informed supervision (2/4)',
+                name: Steps.INFORMED_SUPERVISION_2_4,
               },
               {
-                name: 'TR-03 and TR-05 (3/4)',
+                name: Steps.TR03_AND_TR05_3_4,
               },
               {
-                name: 'Informed supervision (3/4)',
+                name: Steps.INFORMED_SUPERVISION_3_4,
               },
               {
-                name: 'Sent Presentation',
+                name: Steps.SENT_PRESENTATION,
               },
-              // {
-              //   name: 'Presentation',
-              // },
               {
-                name: 'TR-03 and TR-06 (4/4)',
+                name: Steps.TR03_AND_TR05_4_6,
               },
             ]
           : [
               {
-                name: 'TR-01',
+                name: Steps.TR01,
               },
               {
-                name: 'TR-02',
+                name: Steps.TR02,
               },
               {
-                name: 'Informed supervision',
+                name: Steps.INFORMED_SUPERVISION,
               },
               {
-                name: 'Informed presentation day',
-              },
-              // {
-              //   name: 'Presentation',
-              // },
-              {
-                name: 'Sent Presentation',
+                name: Steps.SENT_PRESENTATION,
               },
               {
-                name: 'TR-03 and TR-08',
+                name: Steps.TR03_AND_TR08,
               },
             ]
       let nextStep: any
@@ -1024,33 +1030,35 @@ export default class UsersController {
       let submission: any = []
 
       let stepFile: any
-      let userHasDoc: any
+      let userHasDoc: any = []
       let isChangeStep: any = false
       if (userHasDocResult[0]) {
-        if (request.qs().doc && request.qs().status) {
-          userHasDoc = await Document_Status.query()
-            .where('document_id', request.qs().doc)
-            .andWhere('status_id', request.qs().status)
+        if (request.qs().step && request.qs().status) {
+          userHasDoc = await UserHasDoc.query()
+            .where('step', request.qs().step)
+            .andWhere('status', request.qs().status)
           isChangeStep = true
         } else {
-          userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
+          userHasDoc.push(userHasDocResult[0])
         }
         // if()
         // userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
         // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
         // const file = await File.query().where('doc_name', userHasDoc[0].document_id)
         // stepFile = file[0].file_id
-        const docStatToSubmission = await Document_Status.query()
-          .where('document_id', userHasDoc[0].document_id)
-          .andWhere('status_id', 'Pending')
-        const userHasDocResultForTime = await UserHasDoc.query()
-          .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .andWhere('doc_stat_id', docStatToSubmission[0].id)
+        const stepStatToSubmission = await UserHasDoc.query()
+          .where('step', userHasDoc[0].step)
+          .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          .andWhere('status', 'Pending')
           .orderBy('updated_at', 'asc')
+        // const userHasDocResultForTime = await UserHasDoc.query()
+        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        //   .andWhere('step_stat_id', stepStatToSubmission[0].id)
+        //   .orderBy('updated_at', 'asc')
 
-        for (let i = 0; i < userHasDocResultForTime.length; i++) {
+        for (let i = 0; i < stepStatToSubmission.length; i++) {
           let docWStatSe: any
-          docWStatSe = moment(userHasDocResultForTime[i].createdAt.toString())
+          docWStatSe = moment(stepStatToSubmission[i].createdAt.toString())
             .tz('Asia/Bangkok')
             .format('MMMM D, YYYY h:mm A')
           submission.push({ created_at: docWStatSe })
@@ -1063,21 +1071,20 @@ export default class UsersController {
       // console.log(userHasDoc[0])
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+        console.log(documentStatusesJsonCurrent.status)
         currentSteps['id'] = documentStatusesJsonCurrent.id
         currentSteps['file'] = stepFile
-        currentSteps['name'] = documentStatusesJsonCurrent.document_id
-        currentSteps['status'] = documentStatusesJsonCurrent.status_id
+        currentSteps['name'] = documentStatusesJsonCurrent.step
+        currentSteps['status'] = documentStatusesJsonCurrent.status
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
           .tz('Asia/Bangkok')
           .format('MMMM D, YYYY h:mm A')
-        currentSteps['reason'] = userHasDocResult[0].$extras.no_approve_reason
+        currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
 
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
-        console.log(userHasDoc[0].document_id)
-        console.log(currentSteps.name)
         if (stepIndex >= 0) {
-          steps[stepIndex]['status'] = userHasDoc[0].status_id
-          if (userHasDoc[0].status_id === 'Approved') {
+          steps[stepIndex]['status'] = userHasDoc[0].status
+          if (userHasDoc[0].status === 'Approved') {
             nextStep = steps[stepIndex + 1]
           } else {
             nextStep = steps[stepIndex]
@@ -1108,21 +1115,15 @@ export default class UsersController {
         // }
         // const CurrentStepIndex = steps.findIndex((step) => step.name === userHasDoc[0].document_id)
         // steps[CurrentStepIndex]['status'] = userHasDoc[0].status_id
-        const userHasDocForRC = await Document_Status.query().where(
-          'id',
-          userHasDocResult[0].doc_stat_id
-        )
-        const realCurrentStep = steps.findIndex(
-          (step) => step.name === userHasDocForRC[0].document_id
-        )
-        console.log(realCurrentStep)
+        const userHasDocForRC = await UserHasDoc.query()
+          .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+          .orderBy('updated_at', 'desc')
+        const realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
+        // console.log(userHasDocForRC)
 
         for (
           let i = 0;
-          i <=
-          (userHasDocForRC[userHasDocForRC.length - 1].status_id === 'Approved'
-            ? realCurrentStep
-            : realCurrentStep - 1);
+          i <= (userHasDocForRC[0].status === 'Approved' ? realCurrentStep : realCurrentStep - 1);
           i++
         ) {
           steps[i]['status'] = 'Approved'
@@ -1173,16 +1174,47 @@ export default class UsersController {
     }
   }
 
-  public async updateStudentUserStatus({ request, response }: HttpContextContract) {
+  public async updateStudentUserStatus({ auth, request, response }: HttpContextContract) {
     try {
-      const { study, status, doc, reason } = request.only(['study', 'status', 'doc', 'reason'])
+      const {
+        study,
+        status,
+        step,
+        reason,
+        date,
+        // stepStatId,
+        supervisionStatus,
+        meetingLink,
+        advisorComment,
+        dateConfirmStatus,
+      } = request.only([
+        'study',
+        'status',
+        'step',
+        'reason',
+        'date',
+        'stepStatId',
+        'supervisionStatus',
+        'meetingLink',
+        'advisorComment',
+        'dateConfirmStatus',
+      ])
+
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const studentUser = await Student.findOrFail(request.param('id'))
+      let user: any
+      if (auth.user) {
+        user = await User.query().where('user_id', auth.user.user_id)
+      }
+
       const usersInAcademicYear = await UsersInAcademicYearModel.query()
         .where('user_id', studentUser.student_id)
         .andWhere('academic_year', AcademicYearCf[0].academic_year)
-      let statusResult: Status
-      let docResult: Document
+      // let statusResult: Status
+      // console.log(status)
+      // console.log(step)
+
+      // let docResult: Document
       if (study) {
         studentUser.plan = study
         await studentUser.save()
@@ -1192,82 +1224,61 @@ export default class UsersController {
         //   .query()
         //   .wherePivot('student_id', studentUser.student_id)
         //   .delete()
-        const userHasDoc = await usersInAcademicYear[0].related('documentStatus').query()
+        // console.log(usersInAcademicYear[0].id)
+        const userHasDoc = await UserHasDoc.query().where(
+          'user_in_academic_year_id',
+          usersInAcademicYear[0].id
+        )
+        // const userHasDoc = await usersInAcademicYear[0].related('stepsStatuses').query()
         // console.log(userHasDoc[0])
-        // console.log(userHasDoc[0])
-        if (userHasDoc[0]) {
-          await File.query().where('user_has_doc_id', userHasDoc[0].id).delete()
+
+        if (userHasDoc && userHasDoc.length > 0) {
+          for (let i = 0; i < userHasDoc.length; i++) {
+            await File.query().where('user_has_doc_id', userHasDoc[i].id).delete()
+            userHasDoc[i].delete()
+          }
+          // await File.query().where('user_has_doc_id', userHasDoc[0].id).delete()
+          // await usersInAcademicYear[0].related('userHasDoc').
+          // userHasDoc[0].delete()
         }
-        await usersInAcademicYear[0].related('documentStatus').query().delete()
+
+        // await usersInAcademicYear[0].related('stepsStatuses').query().delete()
       }
-      // if (status && doc) {
-      statusResult = await Status.findOrFail(status || 'Waiting')
-      docResult = await Document.findOrFail(doc || 'TR-01')
 
-      const docStat = await Document_Status.query()
-        .where('status_id', statusResult.status_name)
-        .andWhere('document_id', docResult.doc_name)
-        .orderBy('updated_at', 'desc')
-      // await studentUser.related('document_status').updateOrCreate(
-      //   { student_id: studentUser.student_id },
-      //   {
-      //     document_id: docResult.doc_name,
-      //     status_id: statusResult.status_name,
-      //   }
-      // )
-      // console.log();
-
-      if (docStat && docStat.length > 0) {
-        // const st = await studentUser
-        //   .related('documentsStatuses')
-        //   .query()
-        //   .wherePivot('student_id', studentUser.student_id)
-        //   .andWherePivot('doc_stat_id', docStat[0].id)
-        //   .orderBy('pivot_updated_at', 'desc')
-        //   .preload('students')
-        // console.log(st[0].$extras.pivot_doc_stat_id)
-        // console.log(docStat[0].id)
-        // st[0].$extras.pivot_doc_stat_id = docStat[0].id
-        // await st[0].save()
-        // if (st && st.length > 0) {
-        // }
-        await usersInAcademicYear[0].related('documentStatus').attach({
-          [docStat[0].id]: {
-            no_approve_reason:
-              reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
-          },
-        })
-        // await studentUser.related('documentsStatuses').attach({
-        //   [docStat[0].id]: {
-        //     no_approve_reason:
-        //       reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
-        //   },
-        // })
-        // await studentUser.related('documentsStatuses').attach([docStat[0].id])
+      const body = {}
+      if (status && step) {
+        body['status'] = status
+        body['step'] = step
+        body['no_approve_reason'] =
+          reason && reason !== null && status === 'Disapproved' ? reason : null
       }
-      // if (docStat && docStat.length > 0) {
-      //   await studentUser
-      //     .related('documentsStatuses')
-      //     .query()
-      //     .where('student_id', docStat[0].id)
-      //     .update({
-      //       doc_stat_id: statusResult.status_name,
-      //       no_approve_reason:
-      //         reason && reason !== '' && statusResult.status_name === 'Disapproved' ? reason : null,
-      //     })
-      // } else {
-      // await studentUser.related('document_status').create({
-      //   student_id: studentUser.student_id,
-      //   document_id: docResult.doc_name,
-      //   status_id: statusResult.status_name,
-      //   // no_approve_reason:
-      //   //   reason && reason !== '' && statusResult.status_name === 'Not Approve' ? reason : null,
-      // })
-      // }
-      // }
 
-      response.redirect('/student/' + studentUser.student_id)
-      // return response.status(200).json(result)
+      if (date) {
+        if (user[0].role === 'advisor') {
+          body['advisor_date'] = date
+        } else {
+          body['student_date'] = date
+        }
+      }
+
+      if (supervisionStatus) {
+        body['supervision_status'] = supervisionStatus
+      }
+
+      if (meetingLink) {
+        body['meeting_link'] = meetingLink
+      }
+
+      if (advisorComment) {
+        body['advisor_comment'] = advisorComment
+      }
+
+      if (dateConfirmStatus) {
+        body['date_confirm_status'] = dateConfirmStatus
+      }
+      await usersInAcademicYear[0].related('userHasDoc').create(body)
+      // return response.redirect('/student/' + studentUser.student_id)
+      return response.status(200).json({ url: 'https://www.google.com' })
     } catch (error) {
       console.log(error)
       return response.status(400).json({ message: error.message })
@@ -1500,109 +1511,7 @@ export default class UsersController {
 
   public async gen() {
     try {
-      let resultDocs: any
-      let resultStatuses: any
       let year: any
-      const docs = await Document.all()
-      if (docs && docs.length === 0) {
-        resultDocs = await Document.createMany([
-          // {
-          //   doc_name: 'Resume, portfolio',
-          // },
-          {
-            doc_name: 'TR-01',
-          },
-          {
-            doc_name: 'TR-02',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (1/6)',
-          },
-          {
-            doc_name: 'Informed supervision (1/6)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (2/6)',
-          },
-          {
-            doc_name: 'Informed supervision (2/6)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (3/6)',
-          },
-          {
-            doc_name: 'Informed supervision (3/6)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (4/6)',
-          },
-          {
-            doc_name: 'Informed supervision (4/6)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (5/6)',
-          },
-          {
-            doc_name: 'Informed supervision (5/6)',
-          },
-          {
-            doc_name: 'Sent Presentation',
-          },
-          // {
-          //   doc_name: 'Presentation',
-          // },
-          {
-            doc_name: 'TR-03 and TR-06 (6/6)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (1/4)',
-          },
-          {
-            doc_name: 'Informed supervision (1/4)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (2/4)',
-          },
-          {
-            doc_name: 'Informed supervision (2/4)',
-          },
-          {
-            doc_name: 'TR-03 and TR-05 (3/4)',
-          },
-          {
-            doc_name: 'Informed supervision (3/4)',
-          },
-          {
-            doc_name: 'TR-03 and TR-06 (4/4)',
-          },
-          {
-            doc_name: 'Informed supervision',
-          },
-          {
-            doc_name: 'Informed presentation day',
-          },
-          {
-            doc_name: 'TR-03 and TR-08',
-          },
-        ])
-      }
-      const statuses = await Status.all()
-      if (statuses && statuses.length === 0) {
-        resultStatuses = await Status.createMany([
-          {
-            status_name: 'Pending',
-          },
-          {
-            status_name: 'Disapproved',
-          },
-          {
-            status_name: 'Approved',
-          },
-          {
-            status_name: 'Waiting',
-          },
-        ])
-      }
       const users = await User.all()
       if (users && users.length === 0) {
         const currentYear = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -1614,22 +1523,6 @@ export default class UsersController {
         } else {
           year = currentYear[0]
         }
-        // year = await AcademicYear.create({
-        //   academic_year: new Date().getFullYear(),
-        // })
-        //   .preload('users')
-        // console.log(year[0].users)
-        // if (user) {
-        //   await year[0].related('users').attach([user.user_id])
-        // } else {
-        //   await year[0].related('users').create({
-        //     user_id: username,
-        //     firstname: fullname[0],
-        //     lastname: fullname[1],
-        //     email: ldapUser.mail,
-        //     password: password,
-        //   })
-        // }
         const arr = [
           {
             user_id: 'nuchanart.boo',
@@ -1684,36 +1577,6 @@ export default class UsersController {
           // await year.related('users').attach([user.user_id]))
         )
       }
-      const docsStatuses = await Document_Status.all()
-      if (
-        docsStatuses &&
-        docsStatuses.length === 0 &&
-        resultDocs &&
-        resultDocs.length >= 1 &&
-        resultStatuses &&
-        resultStatuses.length >= 1
-      ) {
-        for (let doc of resultDocs) {
-          for (let status of resultStatuses) {
-            await Document_Status.createMany([
-              {
-                document_id: doc.doc_name,
-                status_id: status.status_name,
-              },
-            ])
-          }
-        }
-      }
-
-      // const files = await File.all()
-      // if (files && files.length === 0) {
-      //   await File.create({
-      //     file_id: '80de0c10-b3fa-48da-b596-0b801425cdc4.pdf',
-      //     file_name: 'TR-01TEST',
-      //     file_size: '200.06 KB',
-      //     doc_name: 'TR-01',
-      //   })
-      // }
 
       return year
     } catch (error) {

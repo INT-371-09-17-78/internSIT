@@ -61,7 +61,7 @@
           @end
           <li class="step font-bold {{step.status === "Waiting" ? "text-blue-700" : step.status === "Pending" ? "text-yellow-700 step-primary " : step.status === "Approved" ? "text-green-700 step-primary " : step.status === "Disapproved" ? "text-red-700 step-primary " : ""}}">
             {{step.name}} {{step.status ? step.status : ""}}
-            <a id="{{step.name}}" onclick="{{ step.status!=="Approved" && nextStep.name !== step.name ? 'return false' : ``}}" href="{{ step.status==="Approved" || nextStep.name === step.name ? route('/student/:id', { id : studentUser.user_id } , {qs: {doc: step.name , status: step.status  } }) : route('/student/:id', { id : studentUser.user_id }) }}" class="{{step.status==="Approved" || nextStep.name === step.name ? "cursor-pointer" : "cursor-default"}} w-12 h-12 relative row-start-1 col-start-1 grid rounded-full z-10 place-self-center place-items-center {{step.status ? "bg-primary" : "bg-[#D9D9D9]"}} {{isChangeStep ? currentSteps.name === step.name ? "border-4 border-[#F4C064]" : ''  : nextStep.name === step.name ? "border-4 border-[#F4C064]" : ''}}">
+            <a id="{{step.name}}" onclick="{{ step.status!=="Approved" && nextStep.name !== step.name ? 'return false' : ``}}" href="{{ step.status==="Approved" || nextStep.name === step.name ? route('/student/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status  } }) : route('/student/:id', { id : studentUser.user_id }) }}" class="{{step.status==="Approved" || nextStep.name === step.name ? "cursor-pointer" : "cursor-default"}} w-12 h-12 relative row-start-1 col-start-1 grid rounded-full z-10 place-self-center place-items-center {{step.status ? "bg-primary" : "bg-[#D9D9D9]"}} {{isChangeStep ? currentSteps.name === step.name ? "border-4 border-[#F4C064]" : ''  : nextStep.name === step.name ? "border-4 border-[#F4C064]" : ''}}">
               @if(step.status==="Approved")
               <svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M23.297 4.22613L10.636 17.2751C9.69845 18.2416 8.17758 18.2416 7.23913 17.2751L0.703438 10.5382C-0.234479 9.57162 -0.234479 8.00385 0.703438 7.03713C1.64153 6.07022 3.16229 6.07022 4.09997 7.03676L8.93808 12.0235L19.8999 0.724907C20.838 -0.242002 22.3589 -0.241269 23.2966 0.724907C24.2344 1.69163 24.2344 3.25885 23.297 4.22613Z" fill="white"/>
@@ -93,8 +93,8 @@
     @if(!nextStep.name.includes('Informed supervision'))
     <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
       <div>
-        @if(currentSteps.status !== "Waiting" && currentSteps.status !== "Approved")
-        <a target="_blank" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&statId={{currentSteps.status}}&&prev=prev">
+        @if(currentSteps.status !== "Approved")
+        <a target="_blank" href="/api/file/steps?userId={{studentUser.user_id}}&&step={{currentSteps.name}}&&status={{currentSteps.status}}&&prev=prev">
           <div class="group cursor-pointer hover:bg-[#495057]/50 h-96 w-72 absolute flex justify-center items-center">
             <p class="text-transparent group-hover:text-white font-medium text-lg">Click to open PDF file</p>
           </div>
@@ -112,7 +112,7 @@
       <div class="flex flex-col">
         <form id="formElem">
           <div class="flex flex-col space-y-2">
-            <p class="font-medium text-lg">{{request.qs().doc || nextStep.name}}</p>
+            <p class="font-medium text-lg">{{request.qs().step || nextStep.name}}</p>
             @if(auth.user.role === "student")
             <button type="button" class="btn btn-primary btn-sm h-10 w-fit">Download plain document</button>
             @end
@@ -246,7 +246,7 @@
       </div>
     </div>
     @else
-    <form onsubmit="updateSupervision()">
+    <form id="updateSupervision">
       @if(request.matchesRoute('/student/:id/editInformedSupervision'))
       <div class="bg-[#F0F3F8] w-[46rem] rounded-md p-7 m-auto space-y-2 flex flex-col my-10">
         <p class="font-bold text-xl">{{nextStep.name}}</p>
@@ -434,7 +434,11 @@
     window.location.href = '/student/{{studentUser.user_id}}?' + urlParams
   }
 
-  const updateSupervision = async () => {
+
+  const updateSupervision  = document.getElementById('updateSupervision')
+  if(updateSupervision )
+  updateSupervision .onsubmit = async (event) => {
+    event.preventDefault() 
     let studentDate
     let advisorDate
     let meetLink 
@@ -453,61 +457,20 @@
     
     // const meetLink = document.getElementById('meetLink').value
     // const isSameDate = document.getElementById('isSameDate').value
-    const body = {date : studentDate || advisorDate, docStatId: {{currentSteps.id}} , meetingLink: meetLink , supervisionStatus : supervisionStatus , dateStatus:dateStatus , advisorComment:advisorComment}
+    const body = {status : 'Approved',step: '{{nextStep.name}}',date : studentDate || advisorDate, stepStatId: {{currentSteps.id}} , meetingLink: meetLink , supervisionStatus : supervisionStatus , dateStatus:dateStatus , advisorComment:advisorComment}
     console.log(body)
-        fetch('/api/user/supervision/{{studentUser.user_id}}?_method=PATCH', {
+        fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(body),
-        }).then(() => {
-          window.location.href = '/student/{{studentUser.user_id}}'
         })
-        
 
-        if(studentDate){
-    const docStatBody = {
-      status : 'Approved',
-      doc: '{{nextStep.name}}',
-    }
-    
-    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
-      method: 'PATCH',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(docStatBody),
-    }).then(() => {
-          window.location.href = '/student/{{studentUser.user_id}}'
-        })
-        }
-
-        // window.location.href = '/student/{{studentUser.user_id}}'
-// console.log('{{nextStep.name}}')
-        
-      
+        window.location.href = '/student/{{studentUser.user_id}}'
   }
 
-  const updateTest = async() => {
-    if(studentDate){
-    const docStatBody = {
-      status : 'Approved',
-      doc: '{{nextStep.name}}',
-    }
-    
-    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
-      method: 'PATCH',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(docStatBody),
-    })
-        }
-  }
 
   // const formElem2 = document.getElementById('formElem2')
   // if(formElem2)
@@ -548,13 +511,13 @@
     }
     const body = {
       status : status,
-      doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
+      step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
       reason : reason
     }
     const formData = new FormData(formElem)
     formData.append('files', pdfFile)
-    formData.append('docId', '{{nextStep.name}}')
-    formData.append('statId', 'Pending')
+    formData.append('step', '{{nextStep.name}}')
+    formData.append('status', 'Pending')
     formData.append('studentId', {{studentUser.user_id}})
     if((body.reason !== '' && status === 'Disapproved') || pdfFile || status === 'Approved'){
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
@@ -583,7 +546,7 @@
     event.preventDefault() 
     const body = {
       status : 'Approved',
-      doc: '{{nextStep.name}}'
+      step: '{{nextStep.name}}'
     }
 
     await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
@@ -597,7 +560,7 @@
     
     window.location.reload()
   }
-var url ='/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&statId={{currentSteps.status}}' 
+var url ='/api/file/steps?userId={{studentUser.user_id}}&&stepId={{currentSteps.name}}&&status={{currentSteps.status}}' 
 var pdfjsLib = window['pdfjs-dist/build/pdf']
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js'  

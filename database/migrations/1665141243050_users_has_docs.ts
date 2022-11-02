@@ -1,4 +1,5 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { StepStatus, Steps } from 'Contracts/enum'
 
 export default class UserHasDocs extends BaseSchema {
   protected tableName = 'users_has_docs'
@@ -8,11 +9,7 @@ export default class UserHasDocs extends BaseSchema {
       table.increments('id').primary()
       //   table.primary(['student_id', 'document_id'])
       //   table.string('student_id', 80).references('students.student_id').onDelete('CASCADE')
-      table
-        .integer('doc_stat_id')
-        .unsigned()
-        .references('documents_statuses.id')
-        .onDelete('CASCADE')
+      // table.integer('step_status_id').unsigned().references('steps_statuses.id').onDelete('CASCADE')
       table
         .integer('user_in_academic_year_id')
         .unsigned()
@@ -25,6 +22,16 @@ export default class UserHasDocs extends BaseSchema {
       table.string('supervision_status').nullable()
       table.string('advisor_comment').nullable()
       table.string('date_confirm_status').nullable()
+      table.enu('step', Object.values(Steps), {
+        useNative: true,
+        enumName: 'steps',
+        existingType: false,
+      })
+      table.enu('status', Object.values(StepStatus), {
+        useNative: true,
+        enumName: 'statuses',
+        existingType: false,
+      })
       // table.unique(['doc_stat_id', 'user_in_academic_year_id'])
       // table.unique(['student_id', 'doc_stat_id'])
       /**

@@ -20,6 +20,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
 import UsersController from 'App/Controllers/Http/UsersController'
+// import DocumentStatus from 'App/Models/StepStatus'
+// import Status from 'App/Models/Status'
 
 View.global('middleEllipsis', (str: string) => {
   if (str.length > 30) {
@@ -121,7 +123,7 @@ Route.group(() => {
     Route.get('/studentByAdv', 'UsersController.getStudentUserByAdvisor')
     Route.delete('/delUserAc/:id', 'UsersController.delUsersInAcademicYear')
     Route.delete('/delUserAdv/:id', 'UsersController.delUsersFromAdvisor')
-    Route.patch('/supervision/:id', 'UsersController.updateSupervision')
+    // Route.patch('/supervision/:id', 'UsersController.updateSupervision')
   })
     // .middleware('login')
     .prefix('/user')

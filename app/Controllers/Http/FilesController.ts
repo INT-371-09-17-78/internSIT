@@ -6,7 +6,8 @@ import File from 'App/Models/File'
 import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
 // import Document from 'App/Models/Document'
-import DocumentStatus from 'App/Models/DocumentStatus'
+// import StepStatusModel from 'App/Models/StepStatus'
+// import { StepStatus, Steps } from 'Contracts/enum'
 import moment from 'moment-timezone'
 import AcademicYear from 'App/Models/AcademicYear'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
@@ -73,7 +74,7 @@ export default class FilesController {
 
   public async storeDirect({ request, response }: HttpContextContract) {
     try {
-      const { docId, studentId, statId } = request.only(['docId', 'studentId', 'statId'])
+      const { step, studentId, status } = request.only(['step', 'studentId', 'status'])
       // console.log(docId)
       // console.log(statId)
       const files = request.files('files', {
@@ -96,9 +97,9 @@ export default class FilesController {
           const user = await User.findOrFail(studentId)
           // const doc = await Document.find(docId)
           // doc?.related('')
-          const docStat = await DocumentStatus.query()
-            .where('document_id', docId)
-            .andWhere('status_id', statId)
+          // const stepStat = await StepStatusModel.query()
+          //   .where('step', step)
+          //   .andWhere('status', status)
           // docStat[0].related('usersInAcademicYear').create({})
           const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
           const usersInAcademicYear = await UsersInAcademicYearModel.query()
@@ -107,7 +108,8 @@ export default class FilesController {
           // console.log(docStat[0].id)
           // console.log(usersInAcademicYear[0].id)
           const userHasDocResult = await UserHasDoc.query()
-            .where('doc_stat_id', docStat[0].id)
+            .where('step', step)
+            .andWhere('status', status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
             .orderBy('updated_at', 'desc')
 
@@ -249,11 +251,11 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const { userId, docId, prev, statId } = request.qs()
+      const { userId, step, prev, status } = request.qs()
       let file: any
       let path = ''
       let preview: any = prev === 'prev' ? 'inline' : undefined
-      if (userId && docId) {
+      if (userId && step) {
         // const result = await File.query().where('user_id', userId).andWhere('doc_id', docId)
         // if (result && result.length > 0) {
         //   file = result[0]
@@ -263,9 +265,12 @@ export default class FilesController {
         const user = await User.findOrFail(userId)
         // const doc = await Document.find(docId)
         // doc?.related('')
-        const docStat = await DocumentStatus.query()
-          .where('document_id', docId)
-          .andWhere('status_id', statId === 'Disapproved' ? 'Pending' : statId)
+        // const stepStat = await StepStatusModel.query()
+        //   .where('step', step)
+        //   .andWhere(
+        //     'status_id',
+        //     status === 'Disapproved' || status === 'Approved' ? 'Pending' : status
+        //   )
         // docStat[0].related('usersInAcademicYear').create({})
         const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         const usersInAcademicYear = await UsersInAcademicYearModel.query()
@@ -273,7 +278,11 @@ export default class FilesController {
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
 
         const userHasDocResult = await UserHasDoc.query()
-          .where('doc_stat_id', docStat[0].id)
+          .where('step', step)
+          .andWhere(
+            'status_id',
+            status === 'Disapproved' || status === 'Approved' ? 'Pending' : status
+          )
           .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
           .orderBy('updated_at', 'desc')
 
