@@ -1,0 +1,12 @@
+{
+    "welcome": {
+        "title": "Manage your internship task",
+        "subTitle": "School of Information Technology",
+        "login": {
+            "title": "Welcome",
+            "subTitle": "Login Now!",
+            "remmemberMe": "Remember me",
+            "button": "Login"
+        }
+    }
+}

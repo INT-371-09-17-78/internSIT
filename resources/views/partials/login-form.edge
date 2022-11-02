@@ -15,8 +15,8 @@
     <div class="form-control py-3">    
         <form action="{{ route('auth.login') }}" method="POST">
             <div class="space-y-4">
-                <input type="text" name="username" placeholder="Username" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
-                <input type="password" name="password" placeholder="Password" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <input type="text" name="username" placeholder="Username" autocomplete="username" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
+                <input type="password" name="password" placeholder="Password" autocomplete="current-password" class="input input-xs input-bordered {{borderColor}} {{borderWidth}} w-full h-9 lg:h-14 rounded-xl p-4 lg:text-base">
             </div>
             @if(flashMessages.get('error', ''))
             <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>

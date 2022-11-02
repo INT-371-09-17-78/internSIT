@@ -359,7 +359,7 @@
         </a>
         @end
       </div>
-        @if(auth.user.role!=="student")
+        @if(auth.user.role==="advisor")
         <div class="bg-[#F0F3F8] w-[40rem] rounded-md p-5 m-auto space-y-2 flex flex-col my-10">
           <p class="font-bold text-xl">Supervision completed</p>
           <div class="flex flex-col"> 
@@ -660,11 +660,16 @@ function onNextPage() {
 }
 
 if(document.getElementById('control-page')){
+  if({{currentSteps.status === "Waiting"}} || {{request.qs().status === "Approved"}} || {{currentSteps.status == "Approved" && currentSteps.name !== "TR-01"}})
   document.getElementById('control-page').classList.add("hidden")
   if({{currentSteps.status !== "Waiting"}} && {{currentSteps.status !== "Approved"}})
     pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
       pdfDoc = pdfDoc_
-      if(pdfDoc.numPages > 1)
+      if(pdfDoc.numPages > 1){
+          document.getElementById('control-page').classList.remove("hidden")
+      }else{
+          document.getElementById('control-page').classList.add("hidden")
+      }
       document.getElementById('page_count').textContent = pdfDoc.numPages
       renderPage(pageNum)
     })

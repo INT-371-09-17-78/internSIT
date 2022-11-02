@@ -59,10 +59,6 @@ Route.get('/', async ({ view, auth, response }) => {
   }
 })
 
-Route.get('/register', async ({ view }) => {
-  return view.render('home')
-})
-
 Route.get('/success-regis', async ({ view }) => {
   return view.render('success-regis')
 })
