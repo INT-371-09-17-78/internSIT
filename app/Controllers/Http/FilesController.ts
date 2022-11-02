@@ -280,7 +280,7 @@ export default class FilesController {
         const userHasDocResult = await UserHasDoc.query()
           .where('step', step)
           .andWhere(
-            'status_id',
+            'status',
             status === 'Disapproved' || status === 'Approved' ? 'Pending' : status
           )
           .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
