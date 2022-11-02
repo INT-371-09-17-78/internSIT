@@ -388,7 +388,7 @@ export default class UsersController {
             .where('user_id', advisorUsers[i].user_id)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (check && check.length > 0) {
-            advisorUsersResult.push(check[0])
+            advisorUsersResult.push(advisorUsers[i])
           }
         }
         for (let i = 0; i < staffUsers.length; i++) {
@@ -396,13 +396,13 @@ export default class UsersController {
             .where('user_id', staffUsers[i].user_id)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (check && check.length > 0) {
-            const staffUser = await User.query().where('user_id', check[0].user_id)
-            if (staffUser && staffUser.length > 0) {
-              staffUsersResult.push(check[0])
-              // console.log(staffUsersResult)
-            }
-          }
+            // const staffUser = await User.query().where('user_id', check[0].user_id)
+            // if (staffUser && staffUser.length > 0) {
+            staffUsersResult.push(staffUsers[i])
 
+            // }
+          }
+          // console.log(staffUsersResult)
           // console.log(check)
         }
       } else {
