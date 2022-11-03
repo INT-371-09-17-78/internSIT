@@ -909,6 +909,7 @@ export default class UsersController {
           ? [
               {
                 name: Steps.TR01,
+                // defaultFile:
               },
               {
                 name: Steps.TR02,
@@ -1628,6 +1629,17 @@ export default class UsersController {
           // ,
           // await year.related('users').attach([user.user_id]))
         )
+        await File.create({
+          file_id: 'TR-01DEF.pdf',
+          file_name: 'TR-01DEF.pdf',
+          file_size: '200.06 KB'
+        })
+
+        await File.create({
+          file_id: 'TR-02DEF.pdf',
+          file_name: 'TR-02DEF.pdf',
+          file_size: '200.06 KB'
+        })
       }
 
       return year
