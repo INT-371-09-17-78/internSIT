@@ -319,9 +319,12 @@ export default class UsersController {
       // }
       if (request.qs().advisor) {
         // advisorById = await Advisor.find(request.qs().advisor)
+        // console.log(request.qs().advisor);
+
         advisorById = await User.query()
           .where('user_id', request.qs().advisor)
           .andWhere('role', 'advisor')
+        // console.log(advisorById);
         const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', advisorById[0].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
@@ -361,7 +364,7 @@ export default class UsersController {
           tmp['st'] = []
           if (result && result.length > 0) {
             for (let i = 0; i < result.length; i++) {
-              console.log(result[i])
+              // console.log(result[i])
               const user = await User.query().where('user_id', result[i].user_id)
               tmp['st'].push(user[0].serialize())
             }
@@ -1071,7 +1074,7 @@ export default class UsersController {
       // console.log(userHasDoc[0])
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
-        console.log(documentStatusesJsonCurrent.status)
+        // console.log(documentStatusesJsonCurrent.status)
         currentSteps['id'] = documentStatusesJsonCurrent.id
         currentSteps['file'] = stepFile
         currentSteps['name'] = documentStatusesJsonCurrent.step
@@ -1082,10 +1085,12 @@ export default class UsersController {
         currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
 
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
+        // console.log(stepIndex)
         if (stepIndex >= 0) {
           steps[stepIndex]['status'] = userHasDoc[0].status
           if (userHasDoc[0].status === 'Approved') {
-            nextStep = steps[stepIndex + 1]
+            nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : { name: 'finised' }
+            // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
           }
@@ -1241,7 +1246,7 @@ export default class UsersController {
           // await usersInAcademicYear[0].related('userHasDoc').
           // userHasDoc[0].delete()
         }
-
+        return response.redirect('/student/' + studentUser.student_id)
         // await usersInAcademicYear[0].related('stepsStatuses').query().delete()
       }
 
@@ -1277,8 +1282,8 @@ export default class UsersController {
         body['date_confirm_status'] = dateConfirmStatus
       }
       await usersInAcademicYear[0].related('userHasDoc').create(body)
-      // return response.redirect('/student/' + studentUser.student_id)
-      return response.status(200).json({ url: 'https://www.google.com' })
+
+      return response.status(200).json('success')
     } catch (error) {
       console.log(error)
       return response.status(400).json({ message: error.message })
