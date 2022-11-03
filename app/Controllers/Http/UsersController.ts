@@ -1035,13 +1035,43 @@ export default class UsersController {
       let stepFile: any
       let userHasDoc: any = []
       let isChangeStep: any = false
+      let realCurrentStep: any
       if (userHasDocResult[0]) {
         if (request.qs().step && request.qs().status) {
-          userHasDoc = await UserHasDoc.query()
-            .where('step', request.qs().step)
-            .andWhere('status', request.qs().status)
-          isChangeStep = true
+          if (request.cookie('isChangeStepSame') === request.qs().step) {
+            const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
+            console.log(stepIndex - (stepIndex % 4))
+            return response.redirect(
+              '/student/' +
+                studentUser.user_id +
+                '?firstStepPaging=' +
+                (stepIndex > 3
+                  ? steps[stepIndex - (4 + (stepIndex % 4))].name + '&gnext=true'
+                  : steps[4].name) +
+                '&gnext=false'
+            )
+          } else {
+            const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
+            // console.log(stepIndex)
+            if (stepIndex > 3) {
+              qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
+              qs.gnext = 'true'
+              // console.log(qs)
+            }
+            userHasDoc = await UserHasDoc.query()
+              .where('step', request.qs().step)
+              .andWhere('status', request.qs().status)
+            isChangeStep = true
+          }
+          response.cookie('isChangeStepSame', request.qs().step)
         } else {
+          const stepIndex = steps.findIndex((step) => step.name === userHasDocResult[0].step)
+          // let zero: any
+          if (Object.keys(request.qs()).length === 0 && stepIndex > 3) {
+            qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
+            qs.gnext = 'true'
+          }
+          response.cookie('isChangeStepSame', '')
           userHasDoc.push(userHasDocResult[0])
         }
         // if()
@@ -1082,14 +1112,31 @@ export default class UsersController {
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
           .tz('Asia/Bangkok')
           .format('MMMM D, YYYY h:mm A')
+        // console.log(new Date(documentStatusesJsonCurrent.student_date));
+
         currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
+        currentSteps['advisorDate'] = documentStatusesJsonCurrent.advisor_date
+          ? moment(documentStatusesJsonCurrent.advisor_date)
+              .tz('Asia/Bangkok')
+              .format('MMMM D, YYYY h:mm A')
+          : undefined
+
+        currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
+          ? moment(documentStatusesJsonCurrent.student_date)
+              .tz('Asia/Bangkok')
+              .format('MMMM D, YYYY')
+          : undefined
+        currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
+        currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
+        currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
+        currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
 
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
         // console.log(stepIndex)
         if (stepIndex >= 0) {
           steps[stepIndex]['status'] = userHasDoc[0].status
           if (userHasDoc[0].status === 'Approved') {
-            nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : { name: 'finised' }
+            nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
             // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
@@ -1123,7 +1170,7 @@ export default class UsersController {
         const userHasDocForRC = await UserHasDoc.query()
           .where('user_in_academic_year_id', usersInAcademicYear[0].id)
           .orderBy('updated_at', 'desc')
-        const realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
+        realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
         // console.log(userHasDocForRC)
 
         for (

@@ -26,10 +26,10 @@ export default class UserHasDoc extends BaseModel {
   public files: HasMany<typeof File>
 
   @column()
-  public advisor_date: DateTime
+  public advisor_date: Date
 
   @column()
-  public student_date: DateTime
+  public student_date: Date
 
   @column()
   public meeting_link: string
