@@ -13,13 +13,13 @@
         <li>
           <a href="{{route('/',{},{qs: {lang : 'en'}})}}">
             <img class="w-5 h-5" src="{{ asset('assets/images/united-kingdom.png') }}" alt="en-flag">
-            <p>English</p>
+            <p>{{ t('messages.welcome.language.english') }}</p>
           </a>
         </li>
         <li>
           <a href="{{route('/',{},{qs: {lang : 'th'}})}}">
             <img class="w-5 h-5" src="{{ asset('assets/images/thailand.png') }}" alt="th-flag">
-            <p>Thai</p>
+            <p>{{ t('messages.welcome.language.thai') }}</p>
           </a>
         </li>
       </ul>

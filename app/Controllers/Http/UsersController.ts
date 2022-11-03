@@ -453,7 +453,7 @@ export default class UsersController {
             }
           } else {
             // studentUsers[i].serialize()
-            studentUsers[i]['lastestStatus'] = `Waiting for TR-01`
+            studentUsers[i]['lastestStatus'] = `No plan selected`
           }
         }
 
@@ -1192,7 +1192,6 @@ export default class UsersController {
       console.log(steps)
       console.log(currentSteps)
       console.log(nextStep)
-
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
@@ -1201,6 +1200,19 @@ export default class UsersController {
             ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
             : steps.slice(firstStepPagingIndex - 4, firstStepPagingIndex)
       } else {
+        // if (nextStepIndex / 4 <= 1) {
+        //   console.log('1')
+        //   stepPaged = steps.slice(0, 4)
+        // } else if (nextStepIndex / 4 <= 2) {
+        //   console.log('2')
+        //   stepPaged = steps.slice(4, 8)
+        // } else if (nextStepIndex / 4 <= 3) {
+        //   console.log('3')
+        //   stepPaged = steps.slice(8, 12)
+        // } else {
+        //   console.log('4')
+        //   stepPaged = steps.slice(8, 10)
+        // }
         stepPaged = steps.slice(0, 4)
       }
       const lastOfAllStep = steps[steps.length - 1].name

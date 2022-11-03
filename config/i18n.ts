@@ -49,7 +49,7 @@ const i18nConfig: I18nConfig = {
   | inside the `resources/lang` directory.
   |
   */
-  supportedLocales: ['th', 'en'],
+  supportedLocales: ['th'],
 
   /*
   |--------------------------------------------------------------------------
@@ -62,7 +62,7 @@ const i18nConfig: I18nConfig = {
   | If not configured, all languages will fallback to the defaultLocale
   |
   */
-  // fallbackLocales: {},
+  // fallbackLocales: { th: 'en' },
 
   /*
   |--------------------------------------------------------------------------

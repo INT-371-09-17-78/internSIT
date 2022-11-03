@@ -38,7 +38,7 @@
         @else
         <div class="flex items-center space-x-5">
           <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
-            {{auth.user.user_id}}
+            {{auth.user.firstname + ' ' +  auth.user.lastname}}
             </p>
             <div class="flex items-center space-x-2">
               <svg class="w-4 h-4" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +63,7 @@
         @include('partials/student-list')
       @elseif(request.matchesRoute('/register-request'))
         @include('partials/register-request')
-      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/edit/supervised-student'))
+      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/edit/supervised-student') || request.matchesRoute('/course-info/complete-course'))
         @include('partials/course-info')
       @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit'))
         @include('partials/steps')
@@ -79,6 +79,13 @@
   const showAddAcademicYear = () =>{
     document.getElementById('container-add-year').classList.remove('hidden')
     document.getElementById('container-add-year').classList.add('flex')
+  }
+
+  const isCheckEndCourse =()=>{
+    if(document.getElementById('accept-end-course').checked) 
+    document.getElementById('confirm-end-course-button').disabled = false
+    else 
+    document.getElementById('confirm-end-course-button').disabled = true
   }
   // let acdemicYear
   // const showAlertAddAcademicYear = () =>{
@@ -114,10 +121,6 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(year),
-    }).then(() => {
-        const urlParams = new URLSearchParams()
-        urlParams.append('month', 2)
-        window.location.href = `/student-information?${urlParams}`
     })
   }
 
@@ -314,7 +317,7 @@
         },
         body: JSON.stringify(users),
     }).then(() => {
-        window.location.href = `/course-info`
+        window.location.reload()
     })
   }
   const deleteStudentList = (id) =>{

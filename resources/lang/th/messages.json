@@ -159,8 +159,12 @@
         "login": {
             "title": "ยินดีต้อนรับ",
             "subTitle": "เข้าสู่ระบบกันเลย!",
-            "remmemberMe": "จดจำฉันไว้",
+            "rememberMe": "จดจำฉันไว้",
             "button": "เข้าสู่ระบบ"
+        },
+        "language":{
+            "thai": "ไทย",
+            "english" : "อังกฤษ"
         }
     }
 }

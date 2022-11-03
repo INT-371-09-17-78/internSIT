@@ -5,8 +5,12 @@
         "login": {
             "title": "Welcome",
             "subTitle": "Login Now!",
-            "remmemberMe": "Remember me",
+            "rememberMe": "Remember me",
             "button": "Login"
+        },
+        "language":{
+            "thai": "Thai",
+            "english" : "English"
         }
     }
 }

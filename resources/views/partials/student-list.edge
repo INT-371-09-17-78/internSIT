@@ -27,10 +27,6 @@
           <p>Pending</p>
         </div>
         <div class="flex flex-row space-x-2">
-          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Waiting for TR-01">
-          <p>Waiting for TR-01</p>
-        </div>
-        <div class="flex flex-row space-x-2">
           <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Approved">
           <p>Approved</p>
         </div>
@@ -51,7 +47,9 @@
           </li>
           <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 4}}) : route('/academic-year') }}">INT350 (4 months)</a></li>
           <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 6}}) : route('/academic-year') }}">INT370 (6 months)</a></li>
+          @if(auth.user.role ==="advisor")
           <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a></li>
+          @end
         </ul>
         @if(allAmoutSt !== noApprove)
         <div class="flex-1 pr-20">
