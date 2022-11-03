@@ -465,10 +465,12 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(body),
-        }).then(
-          window.location.href = `/student/{{studentUser.user_id}}?${window.location.search}`
+        }).then(() => {window.location.href = `/student/{{studentUser.user_id}}?${window.location.search}`}
+          
+        ).then(
+          () => {window.location.reload()} 
         )
-        window.location.reload()
+        
   }
 
 

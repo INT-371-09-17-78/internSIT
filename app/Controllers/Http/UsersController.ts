@@ -603,7 +603,7 @@ export default class UsersController {
               message
                 .from('iunnuidev2@gmail.com')
                 .to('iunnuidev2@gmail.com')
-                .subject('Registration Success')
+                .subject('Granted account')
                 .htmlView('emails/confirmStaff')
             })
           }
@@ -1369,7 +1369,7 @@ export default class UsersController {
           message
             .from('iunnuidev2@gmail.com')
             .to('iunnuidev2@gmail.com')
-            .subject('Registration Success')
+            .subject('You have been approved')
             .htmlView('emails/confirm')
         })
       })
@@ -1644,13 +1644,13 @@ export default class UsersController {
         await File.create({
           file_id: 'TR-01DEF.pdf',
           file_name: 'TR-01DEF.pdf',
-          file_size: '200.06 KB'
+          file_size: '200.06 KB',
         })
 
         await File.create({
           file_id: 'TR-02DEF.pdf',
           file_name: 'TR-02DEF.pdf',
-          file_size: '200.06 KB'
+          file_size: '200.06 KB',
         })
       }
 
