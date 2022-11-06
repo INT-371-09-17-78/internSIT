@@ -1,4 +1,4 @@
-@layout('layouts/app')
+{{--  @layout('layouts/app')  --}}
 @set('title', 'students page')
 @set('firstStep', '')
 @set('lastStep', '')
@@ -13,7 +13,7 @@
       </div>
     </a>
     @end
-    <p class="text-xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
+    <p class="text-2xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <div class="flex space-x-2">
       <p>{{studentUser.user_id}}</p>
       @if(studentUser.student.plan )
@@ -22,7 +22,7 @@
       @end
     </div>
 
-    <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>
+    {{--  <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>  --}}
   </div>
   {{--  @if(auth.user.role === "student" && !studentUser.student.plan)
     <div class="w-full h-full absolute top-0 flex justify-center items-center">
@@ -36,7 +36,7 @@
     @if(nextStep.name === "TR-01" && auth.user.role === "student" && !studentUser.student.plan)
     <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH" class="flex space-x-2 z-10">
       <select {{disabled}} id="study" name="study"
-      class="select select-sm rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
+      class="select rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
 
       <option disabled selected>{{studentUser.student.plan ? studentUser.student.plan + " month" : "Please assigns your plan"}}</option>
       @each(plan in plans)
@@ -46,7 +46,7 @@
       @if(disabled)
         <button id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="editPlan(event)">edit</button>
       @else
-        <button id="submitButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize">confirm</button>
+        <button id="submitButton" class="btn btn-primary btn-sm capitalize my-auto font-normal">confirm</button>
       @end
     </form>
     @end
@@ -217,45 +217,47 @@
       @end
     </form>
     @else
-    <div class="flex flex-wrap w-full space-x-5 pt-9 justify-center">
-      <div>
-        @if(currentSteps.status !== "Approved" && currentSteps.status)
-        <a target="_blank" href="/api/file/steps?userId={{studentUser.user_id}}&&step={{currentSteps.name}}&&status={{currentSteps.status}}&&prev=prev">
-          <div class="group cursor-pointer hover:bg-[#495057]/50 h-96 w-72 absolute flex justify-center items-center">
-            <p class="text-transparent group-hover:text-white font-medium text-lg">Click to open PDF file</p>
-          </div>
-        </a>
-        @end
-        <canvas id="pdfViewer" class="h-96 w-72 bg-[#DDE2E5]"></canvas>
-        <div class="mt-2" id="control-page">
-          <button id="prev" class="btn btn-sm btn-primary rounded-3xl text-white" onclick="onPrevPage()">Previous</button>
-          <button id="next" class="btn btn-sm btn-primary rounded-3xl text-white" onclick="onNextPage()">Next</button>
-          <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-        </div>
-      </div>
+    <div class="flex justify-center py-7 space-x-20">
 
+      <div class="grid grid-cols-2 gap-y-3 w-[30rem]" id="test">
+        @each(info in studentInfo)
+          <p class="font-bold">{{info.title}}</p>
+          <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
+        @end
+      </div>
       
-      <div class="flex flex-col">
-        <form id="formElem">
+      <div class="flex flex-col w-[35rem]">
+        <form onsubmit="submitStepForm(event)">
           <div class="flex flex-col">
             @if(nextStep.name === 'finished')
-            <p class="font-medium text-lg">{{lastOfAllStep}}</p>
+            <p class="font-bold text-2xl">{{lastOfAllStep}}</p>
             @else
-            <p class="font-medium text-lg">{{request.qs().step || nextStep.name}}</p>
+            <p class="font-bold text-2xl">{{request.qs().step || nextStep.name}}</p>
+            <p>
+              <span class="font-medium">Description:</span> เอกสารขอความอนุเคราะห์เข้าฝึกงาน นักศึกษากรอกข้อมูลในเอกสารให้ครบถ้วนก่อนส่ง เข้าระบบให้อาจารย์เซ็น
+            </p>
             @end
-            @if(auth.user.role === "student")
-            <a href="{{ route('/api/file/:fileId', { fileId: currentSteps.name + 'DEF.pdf' }) }}">
-              <button type="button" class="btn btn-primary btn-sm h-5 w-fit my-3">Download plain document</button>
-            </a>
-            @end
-            <div class="bg-[#F4F4F4] w-[26rem] rounded-md p-5 mt-3">
-              <div class="border-b-2 border-[#A8B0B8] pb-5 space-y-2">
-                <p class="font-medium">Submission</p>
+
+            <div class="my-3 flex flex-col space-y-2">
+              <p class="font-medium">Template document</p>
+              <a href="{{ route('/api/file/:fileId', { fileId: currentSteps.name + 'DEF.pdf' }) }}" class="flex bg-white rounded-md border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2">
+                  <svg class="w-8 h-8" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.7203 3.69231C10.3981 3.69231 10.1111 3.43408 10.1111 3.11538V0H0.60923C0.286998 0 0 0.258231 0 0.576923V18.3462C0 18.6641 0.272999 18.9413 0.59453 18.9423L13.4408 19H13.4419C13.597 19 13.7321 18.9202 13.8414 18.8125C13.9512 18.7042 14 18.538 14 18.3846V3.69231H10.7203ZM10.7592 13.9231H3.05922C2.73698 13.9231 2.47589 13.6648 2.47589 13.3462C2.47589 13.0275 2.73698 12.7692 3.05922 12.7692H10.7592C11.0814 12.7692 11.3425 13.0275 11.3425 13.3462C11.3425 13.6648 11.0814 13.9231 10.7592 13.9231ZM10.7592 11.3846H3.05922C2.73698 11.3846 2.47589 11.1264 2.47589 10.8077C2.47589 10.489 2.73698 10.2308 3.05922 10.2308H10.7592C11.0814 10.2308 11.3425 10.489 11.3425 10.8077C11.3425 11.1264 11.0814 11.3846 10.7592 11.3846ZM10.7592 8.84615H3.05922C2.73698 8.84615 2.47589 8.58792 2.47589 8.26923C2.47589 7.95054 2.73698 7.69231 3.05922 7.69231H10.7592C11.0814 7.69231 11.3425 7.95054 11.3425 8.26923C11.3425 8.58792 11.0814 8.84615 10.7592 8.84615ZM10.7592 6.46154H3.05922C2.73698 6.46154 2.47589 6.20331 2.47589 5.88462C2.47589 5.56592 2.73698 5.30769 3.05922 5.30769H10.7592C11.0814 5.30769 11.3425 5.56592 11.3425 5.88462C11.3425 6.20331 11.0814 6.46154 10.7592 6.46154ZM13.7874 2.53846H11.2777V0.183308L13.7874 2.53846Z" fill="#ACB5BD"/>
+                  </svg>    
+                  <div>
+                    <p>TR-01_IT62.pdf</p>    
+                    <p class="text-sm text-[#ACB5BD]">2.4 MB</p> 
+                  </div>     
+              </a>
+            </div>
+            <div class="bg-[#F4F4F4] w-full rounded-md p-5 mt-3">
+              <div class="space-y-2 flex flex-col">
+                <p class="font-medium text-lg">Submission</p>
                 @if(currentSteps.status ==="Pending" || currentSteps.status === "Disapproved" || (currentSteps.status === "Approved" && request.qs().status=== "Approved") || nextStep.name === 'finished')
                 <div class="text-[#858D95] flex flex-col max-h-24 h-fit overflow-auto">
                   <p>Submitted:</p>
                   @each((submit,index) in submission)
-                  <p>{{index+1}}. {{submit.created_at}}</p>
+                  <p class="pl-5">{{index+1}}. {{submit.created_at}}</p>
                   @end
                 </div>
                 @else
@@ -264,23 +266,58 @@
                 {{--  <div class="form-control">
                   <label class="input-group input-group-sm">
                     <span>Choose file</span>
-                    <input type="file" id="myPdf" class="input input-primary hidden" />
+                    <input type="file" id="myFile" class="input input-primary hidden" />
                     <input type="text" class="input border-none disabled:bg-white disabled:text-black disabled:cursor-default input-sm" disabled />
                     <span>Submit</span>
                   </label>
                 </div>  --}}
-                @if(auth.user.role == 'student' && request.qs().status !== 'Approved' && nextStep.name !== 'finished')
-                <div class="form-control">
-                  <label class="input-group input-group-sm">
-                    <label for="myPdf" class="flex-shrink-0 btn btn-outline btn-sm border-[#A8B0B8]">Choose file</label>
-                    <input type="file" id="myPdf" class="input input-primary hidden" />
-                    <input type="text" id="showInput" class="input input-bordered border-[#A8B0B8] disabled:bg-white disabled:text-black disabled:cursor-default input-sm" disabled />
-                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-                  </label>
+                @if(auth.user.role === 'student')
+                <div class="flex items-center space-x-2">
+                  <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                  <input type="file" id="myFile" class="input hidden" onchange="getFile(event)"/>
+                  <p id="showInput" class="text-[#858D95]">No file choosen</p>
                 </div>
                 @end
+                <p class="text-[#858D95]">Attachment :</p>
+                @if(true)
+                {{--  <div class="flex flex-col space-y-3 overflow-y-auto h-56 w-fit pr-5">  --}}
+                  <a href="{{ route('/api/file/:fileId', { fileId: currentSteps.name + 'DEF.pdf' }) }}" class="flex rounded-md bg-white border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2">
+                    <svg class="w-8 h-8" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.7203 3.69231C10.3981 3.69231 10.1111 3.43408 10.1111 3.11538V0H0.60923C0.286998 0 0 0.258231 0 0.576923V18.3462C0 18.6641 0.272999 18.9413 0.59453 18.9423L13.4408 19H13.4419C13.597 19 13.7321 18.9202 13.8414 18.8125C13.9512 18.7042 14 18.538 14 18.3846V3.69231H10.7203ZM10.7592 13.9231H3.05922C2.73698 13.9231 2.47589 13.6648 2.47589 13.3462C2.47589 13.0275 2.73698 12.7692 3.05922 12.7692H10.7592C11.0814 12.7692 11.3425 13.0275 11.3425 13.3462C11.3425 13.6648 11.0814 13.9231 10.7592 13.9231ZM10.7592 11.3846H3.05922C2.73698 11.3846 2.47589 11.1264 2.47589 10.8077C2.47589 10.489 2.73698 10.2308 3.05922 10.2308H10.7592C11.0814 10.2308 11.3425 10.489 11.3425 10.8077C11.3425 11.1264 11.0814 11.3846 10.7592 11.3846ZM10.7592 8.84615H3.05922C2.73698 8.84615 2.47589 8.58792 2.47589 8.26923C2.47589 7.95054 2.73698 7.69231 3.05922 7.69231H10.7592C11.0814 7.69231 11.3425 7.95054 11.3425 8.26923C11.3425 8.58792 11.0814 8.84615 10.7592 8.84615ZM10.7592 6.46154H3.05922C2.73698 6.46154 2.47589 6.20331 2.47589 5.88462C2.47589 5.56592 2.73698 5.30769 3.05922 5.30769H10.7592C11.0814 5.30769 11.3425 5.56592 11.3425 5.88462C11.3425 6.20331 11.0814 6.46154 10.7592 6.46154ZM13.7874 2.53846H11.2777V0.183308L13.7874 2.53846Z" fill="#ACB5BD"/>
+                    </svg>    
+                    <div>
+                      <p>TR-01_IT62.pdf</p>    
+                      <p class="text-sm text-[#ACB5BD]">2.4 MB</p> 
+                    </div>     
+                  </a>
+                  @if(auth.user.role ==='staff')
+                  <p class="text-[#E7AA3D] font-medium pt-3">Waiting for advisor sign the document</p>
+                  @elseif(auth.user.role ==='advisor')
+                  <div class="flex items-center space-x-2 pt-2">
+                    <input type="checkbox" class="checkbox rounded-none bg-white border-2" id="isFeedback" onchange="getIsFeedback()" />
+                    <p class="text-[#858D95] font-medium">Give feedback</p>
+                  </div>
+                  <textarea id="advisorReasons" class="textarea hidden" id="reason" placeholder="Write reason for the student to correct the document"></textarea>
+                  <div class="border-[#A8B0B8] border-b-2 pt-5"></div>
+                  <div class="pt-5 flex flex-col space-y-2">
+                      <p class="font-medium text-lg">Signature</p>
+                      <p>
+                        <span class="font-medium">Description:</span> เอกสาร TR-01 ที่นักศึกษาส่งเข้าระบบและมีการเซ็นรับรองของอาจารย์แล้ว
+                      </p>
+                      <p class="text-[#858D95]">Not Submitted</p>
+                    <div class="flex items-center space-x-2">
+                      <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                      <input type="file" id="myFile" class="input hidden" onchange="getFile(event)"/>
+                      <p id="showInput" class="text-[#858D95]">No file choosen</p>
+                    </div>
+                  </div>
+                  @end
+                {{--  </div>  --}}
+                @end
+                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>Confirm</button>
+                {{--  @end  --}}
               </div>
-              <div class="pt-5">
+              {{--  <div class="pt-5">
                 <p class="font-medium">Approval</p>
                 <div class="flex flex-col space-y-2">
                   @if(auth.user.role != "student" )
@@ -358,7 +395,7 @@
                     {{--  <button class="btn btn-sm btn-primary rounded-3xl text-white">not approve</button>
                     <textarea onkeyup="validateInput()" id="no_approve_reason" name="no_approve_reason" class="p-3 w-full h-28 text-xs rounded-lg border-2 border-red-500 placeholder="Write your content...">{{post ? post.content : ''}}</textarea>  --}}
               </div>
-              </div>
+              </div>  --}}
             </div>
             {{--  @if(currentSteps.status != "Approved")
             <a class="link link-primary" href="/api/file/steps?userId={{studentUser.user_id}}&&docId={{currentSteps.name}}&&prev=prev">Open PDF file</a>
@@ -371,7 +408,7 @@
           </div> 
           @end
           @if(auth.user.role === "student")
-            <input type="file" id="myPdf" class="mt-5" /><br>
+            <input type="file" id="myFile" class="mt-5" /><br>
             <button class="btn btn-sm btn-primary rounded-3xl text-white mt-2">submit</button>
           @end  --}}
         </form>
@@ -394,6 +431,13 @@
   @end
 </section>
 <script>  
+  const getIsFeedback = () => {
+    if(document.getElementById('isFeedback').checked){
+      document.getElementById('advisorReasons').classList.remove('hidden')
+    }else{
+      document.getElementById('advisorReasons').classList.add('hidden')
+    }
+  }
   // window.location.href = '/student/{{studentUser.user_id}}'
   // window.history.replaceState({}, '', '/student/{{studentUser.user_id}}')
   const showTextArea = () => {
@@ -424,7 +468,7 @@
 
   const middleEllipsis = (str) => {
     if (str.length > 35) {
-      return str.substring(0, 10) + '...' + str.substring(str.length - 10)
+      return str.substring(0, 20) + '...' + str.substring(str.length - 20)
     }
     return str
     }
@@ -497,30 +541,33 @@
     
   //   window.location.reload()
   // }
-  const formElem = document.getElementById('formElem')
-  if(formElem)
-  formElem.onsubmit = async (event) => {
+  let file
+  const getFile =(event)=>{
+    file = event.target.files[0]
+    if(file) document.getElementById('submitStepButton').disabled = false
+    document.getElementById('showInput').innerHTML = middleEllipsis(file.name)
+  }
+
+  const submitStepForm = async (event) => {
     event.preventDefault() 
-    let status, reason = ''
+    let reason
     if(!document.querySelector('input[name="radio"]:checked')){
       status = 'Pending'
-    }else{
-      status = document.querySelector('input[name="radio"]:checked').value
     }
     if(document.getElementById('reason')){
       reason = document.getElementById('reason').value
     }
     const body = {
-      status : status,
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
       reason : reason
     }
-    const formData = new FormData(formElem)
-    formData.append('files', pdfFile)
+
+    const formData = new FormData()
+    formData.append('files', file)
     formData.append('step', '{{nextStep.name}}')
     formData.append('status', 'Pending')
     formData.append('studentId', {{studentUser.user_id}})
-    if((body.reason !== '' && status === 'Disapproved') || pdfFile || status === 'Approved'){
+    if('{{auth.user.role==='advisor'}}' || (body.reason !== '') || file){
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -529,15 +576,12 @@
       },
       body: JSON.stringify(body),
       })
-    }
-
-
-    if(pdfFile){
       await fetch('/api/file/steps?_method=POST', {
         method: 'POST',
         body: formData,
       })
     }
+
     window.location.reload()
   }
 
@@ -561,109 +605,109 @@
     
     window.location.reload()
   }
-var url ='/api/file/steps?userId={{studentUser.user_id}}&&step={{currentSteps.name}}&&status={{currentSteps.status}}' 
-var pdfjsLib = window['pdfjs-dist/build/pdf']
+// var url ='/api/file/steps?userId={{studentUser.user_id}}&&step={{currentSteps.name}}&&status={{currentSteps.status}}' 
+// var pdfjsLib = window['pdfjs-dist/build/pdf']
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js'  
-if(document.getElementById('pdfViewer'))
-var pdfDoc = null,
-    pageNum = 1,
-    pageRendering = false,
-    pageNumPending = null,
-    scale = 0.8,
-    canvas = document.getElementById('pdfViewer'),
-    ctx = canvas.getContext('2d')
+// pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js'  
+// if(document.getElementById('pdfViewer'))
+// var pdfDoc = null,
+//     pageNum = 1,
+//     pageRendering = false,
+//     pageNumPending = null,
+//     scale = 0.8,
+//     canvas = document.getElementById('pdfViewer'),
+//     ctx = canvas.getContext('2d')
 
-function renderPage(num) {
-  pageRendering = true
-  pdfDoc.getPage(num).then(function(page) {
-    var viewport = page.getViewport({scale: scale})
-    canvas.height = viewport.height
-    canvas.width = viewport.width
+// function renderPage(num) {
+//   pageRendering = true
+//   pdfDoc.getPage(num).then(function(page) {
+//     var viewport = page.getViewport({scale: scale})
+//     canvas.height = viewport.height
+//     canvas.width = viewport.width
 
-    var renderContext = {
-      canvasContext: ctx,
-      viewport: viewport
-    }
-    var renderTask = page.render(renderContext)
+//     var renderContext = {
+//       canvasContext: ctx,
+//       viewport: viewport
+//     }
+//     var renderTask = page.render(renderContext)
 
-    renderTask.promise.then(function() {
-      pageRendering = false
-      if (pageNumPending !== null) {
-        renderPage(pageNumPending)
-        pageNumPending = null
-      }
-    })
-  })
+//     renderTask.promise.then(function() {
+//       pageRendering = false
+//       if (pageNumPending !== null) {
+//         renderPage(pageNumPending)
+//         pageNumPending = null
+//       }
+//     })
+//   })
 
-  document.getElementById('page_num').textContent = num
-}
+//   document.getElementById('page_num').textContent = num
+// }
 
-function queueRenderPage(num) {
-  if (pageRendering) {
-    pageNumPending = num
-  } else {
-    renderPage(num)
-  }
-}
+// function queueRenderPage(num) {
+//   if (pageRendering) {
+//     pageNumPending = num
+//   } else {
+//     renderPage(num)
+//   }
+// }
 
- function onPrevPage() {
-  if (pageNum <= 1) {
-    return
-  }
-  pageNum--
-  queueRenderPage(pageNum)
-}
+//  function onPrevPage() {
+//   if (pageNum <= 1) {
+//     return
+//   }
+//   pageNum--
+//   queueRenderPage(pageNum)
+// }
 
-function onNextPage() {
-  if (pageNum >= pdfDoc.numPages) {
-    return
-  }
-  pageNum++
-  queueRenderPage(pageNum)
-}
+// function onNextPage() {
+//   if (pageNum >= pdfDoc.numPages) {
+//     return
+//   }
+//   pageNum++
+//   queueRenderPage(pageNum)
+// }
 
-if(document.getElementById('control-page')){
-  if('{{!currentSteps.status}}' || {{request.qs().status == "Approved"}} || {{currentSteps.status == "Approved" && currentSteps.name !== "TR-01"}})
-  document.getElementById('control-page').classList.add("hidden")
-  if('{{currentSteps.status}}')
-    pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
-      pdfDoc = pdfDoc_
-      if(pdfDoc.numPages > 1){
-          document.getElementById('control-page').classList.remove("hidden")
-      }else{
-          document.getElementById('control-page').classList.add("hidden")
-      }
-      document.getElementById('page_count').textContent = pdfDoc.numPages
-      renderPage(pageNum)
-    })
-}
+// if(document.getElementById('control-page')){
+//   if('{{!currentSteps.status}}' || {{request.qs().status == "Approved"}} || {{currentSteps.status == "Approved" && currentSteps.name !== "TR-01"}})
+//   document.getElementById('control-page').classList.add("hidden")
+//   if('{{currentSteps.status}}')
+//     pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
+//       pdfDoc = pdfDoc_
+//       if(pdfDoc.numPages > 1){
+//           document.getElementById('control-page').classList.remove("hidden")
+//       }else{
+//           document.getElementById('control-page').classList.add("hidden")
+//       }
+//       document.getElementById('page_count').textContent = pdfDoc.numPages
+//       renderPage(pageNum)
+//     })
+// }
+  
+// let file
+// $("#myFile").on("change", async function(e){
+// 	let file = e.target.files[0]
+//   if(!file || file.type !== "application/pdf") return
+//   file = file
+//   document.getElementById('showInput').value = middleEllipsis(file.name)
+// 	if(file.type == "application/pdf"){
+// 		var fileReader = new FileReader()  
+// 		fileReader.onload = function() {
+// 			var pdfData = new Uint8Array(this.result)
 
-let pdfFile
-$("#myPdf").on("change", async function(e){
-	let file = e.target.files[0]
-  if(!file || file.type !== "application/pdf") return
-  pdfFile = file
-  document.getElementById('showInput').value = middleEllipsis(file.name)
-	if(file.type == "application/pdf"){
-		var fileReader = new FileReader()  
-		fileReader.onload = function() {
-			var pdfData = new Uint8Array(this.result)
+//       pdfjsLib.getDocument({data: pdfData}).promise.then(function(pdfDoc_) {
+//         pdfDoc = pdfDoc_
+//         if(pdfDoc.numPages > 1){
+//           document.getElementById('control-page').classList.remove("hidden")
+//         }else{
+//           document.getElementById('control-page').classList.add("hidden")
+//         }
+//         document.getElementById('page_count').textContent = pdfDoc.numPages
+//         renderPage(pageNum)
+//       })
 
-      pdfjsLib.getDocument({data: pdfData}).promise.then(function(pdfDoc_) {
-        pdfDoc = pdfDoc_
-        if(pdfDoc.numPages > 1){
-          document.getElementById('control-page').classList.remove("hidden")
-        }else{
-          document.getElementById('control-page').classList.add("hidden")
-        }
-        document.getElementById('page_count').textContent = pdfDoc.numPages
-        renderPage(pageNum)
-      })
-
-		}
-		fileReader.readAsArrayBuffer(file)
-	}
-})
+// 		}
+// 		fileReader.readAsArrayBuffer(file)
+// 	}
+// })
 </script>
 @end

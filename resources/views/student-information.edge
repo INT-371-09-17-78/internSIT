@@ -12,7 +12,7 @@
 @section('student-information')
 @if(request.matchesRoute('/register-request'))
 @set('activeRequestTab', 'bg-white text-primary fill-primary')
-@elseif(request.matchesRoute('/student-information'))
+@elseif(request.matchesRoute(['/student-information', '/student-information/:id']))
 @set('activeInfoTab', 'bg-white text-primary fill-primary')
 @else
 @set('activeCourseTab', 'bg-white text-primary fill-primary')
@@ -30,6 +30,7 @@
     @set('activeAll', 'bg-[#DAF0FF]')
   @end
   <section class="flex flex-col h-full w-full z-[5] bg-white">
+    @if(auth.user.role !== "student")
       <div class="flex px-8 bg-[#F0F3F8] w-full py-6">
         @if(request.matchesRoute('/academic-year'))
         <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
@@ -54,10 +55,11 @@
         </div>
         @end
       </div>
-      @if(request.matchesRoute('/academic-year'))
-        @include('partials/academic-year')
-      @else
-        @include('partials/info-tab')
+        @if(request.matchesRoute('/academic-year'))
+          @include('partials/academic-year')
+        @else
+          @include('partials/info-tab')
+        @end
       @end
       @if(request.matchesRoute('/student-information'))
         @include('partials/student-list')
@@ -67,6 +69,8 @@
         @include('partials/course-info')
       @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit'))
         @include('partials/steps')
+      @elseif(request.matchesRoute('/student-information/:id'))
+        @include('partials/student')
       @end
   </section>
 

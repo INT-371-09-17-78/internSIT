@@ -64,7 +64,7 @@
             <tbody>
               @each((student,index) in studentUsers)
               @if(student.approved)
-                  <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
+                  <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="window.location='/student-information/{{student.user_id}}'">
                     <td>{{student.user_id}}</td>
                     <td>{{student.firstname + " " + student.lastname}}</td>
                     <td class="{{checkStatus(student.lastestStatus)}} font-bold">{{student.lastestStatus}}</td>

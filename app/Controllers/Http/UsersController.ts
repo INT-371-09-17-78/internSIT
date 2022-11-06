@@ -1219,7 +1219,7 @@ export default class UsersController {
       const firstOfAllStep = steps[0].name
       // console.log(request.updateQs({}))
       // return response.redirect('/student/' + studentUser.student.student_id)
-      return view.render('student', {
+      return view.render('student-information', {
         studentUser,
         plans,
         isChangeStep,
@@ -1379,7 +1379,11 @@ export default class UsersController {
       //   response.redirect(`/student/${studentUser.user_id}/information`)
       // }
       // response.status(200).send('success')
-      response.redirect(`/student-informationstudents`)
+      const studentUsers = await User.query()
+        .where('user_id', request.param('id'))
+        .preload('student')
+      const studentUser = studentUsers[0]
+      response.redirect(`/student/${studentUser.user_id}`)
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }

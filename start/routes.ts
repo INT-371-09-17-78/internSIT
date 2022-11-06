@@ -75,7 +75,10 @@ Route.group(() => {
   Route.get('/:id/editInformedSupervision', 'UsersController.showStudentUserById')
 }).prefix('/student')
 
-Route.get('/student-information', 'UsersController.showStudentUser')
+Route.group(() => {
+  Route.get('/', 'UsersController.showStudentUser')
+  Route.get('/:id', 'UsersController.showStudentUserById')
+}).prefix('/student-information')
 
 Route.get('/academic-year', 'UsersController.showStudentUser')
 

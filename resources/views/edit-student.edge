@@ -23,7 +23,7 @@
         </form>  --}}
         
         <div class="px-16 py-5">
-          <a href="{{ route('/student/:id', { id: studentUser.user_id }) }}">
+          <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}">
             <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
               <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
               <p class="font-semibold">Back</p>
@@ -33,7 +33,11 @@
             <div class="grid grid-cols-2 w-fit gap-y-3">
               @each(info in studentInfo)
               <p class="font-bold">{{info.title}}</p>
-              <input type="{{info.key==='tel' ? 'tel' : 'text'}}" class="border border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}">
+              @if(info.key!=='advisorFullName')
+              <input type="{{info.key.toLowerCase().includes('tel') ? 'tel' : 'text'}}" class="border border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}" id="{{info.key}}" maxlength="{{info.key==='tel' && 12}}" oninput="test(event)">
+              @else
+              <p class="font-bold">{{info.value || '-'}}</p>
+              @end
               @end
             </div>
             @if(auth.user.role === "staff")
@@ -44,4 +48,17 @@
           </form>
         </div>
   </section>
+  <script>
+    const test =(event)=>{
+      const inputId = event.target.id
+      const key = event.keyCode || event.charCode;
+      const isDel = key === 8 || key === 46 
+      if(inputId.toLowerCase().includes('tel')){
+          event.target.value = event.target.value.replace(/[^0-9]/g, '')
+          const phoneString = event.target.value.replace(/\D/g, '').match(/(\d{3})(\d{3})(\d{4})/)
+          if(phoneString)
+          event.target.value = phoneString[1] + '-' + phoneString[2] + '-' + phoneString[3];
+      }
+    }
+  </script>
 @end
