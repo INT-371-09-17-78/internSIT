@@ -46,8 +46,8 @@ services:
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
     restart: always
-    expose:
-      - 8081
+    ports:
+      - 80
     networks:
       intern-sit-network:
         ipv4_address: 172.24.0.14
