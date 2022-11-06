@@ -32,6 +32,18 @@ services:
     #    - ./init.sh:/init.sh
     # entrypoint: sh -c "/init.sh"
     # command: mysql -udbuser -phelloDEV371_
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+      - intern-sit-db
+    environment:
+      PMA_HOST: intern-sit-db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8081:81
   intern-sit:
     depends_on:
       - db
