@@ -11,7 +11,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./intern-sit.crt:/etc/ssl/intern-sit.crt
-      - ./etc/ssl/intern-sit.key:/etc/ssl/intern-sit.key
+      - ./intern-sit.key:/etc/ssl/intern-sit.key
       # - /home/ubuntu/ssl:/ssl/
     networks:
       intern-sit-network:
