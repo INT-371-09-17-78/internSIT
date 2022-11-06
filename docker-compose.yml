@@ -46,7 +46,7 @@ services:
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
     restart: always
-    ports:
+    expose:
       - 80
     networks:
       intern-sit-network:
