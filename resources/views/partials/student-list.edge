@@ -40,18 +40,18 @@
   <div class="flex space-x-5 h-full">
         <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
           <li class="{{activeAll}}">
-            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ request.cookie('year') ? route('/student-information') : route('/academic-year') }}">All Student</a>
+            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information') }}">All Student</a>
           </li>
           <li class="{{activeTwoMonth}}">
-            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 2}}) : route('/academic-year') }}">INT340 (2 months)</a>
+            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 2}})  }}">INT340 (2 months)</a>
           </li>
-          <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 4}}) : route('/academic-year') }}">INT350 (4 months)</a></li>
-          <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 6}}) : route('/academic-year') }}">INT370 (6 months)</a></li>
+          <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
+          <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
           @if(auth.user.role ==="advisor")
           <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a></li>
           @end
         </ul>
-        @if(allAmoutSt !== noApprove)
+        @if(allAmoutSt !== noApprove && studentUsers.length > 0)
         <div class="flex-1 pr-20">
           <table class="table w-full mt-5">
             <thead>

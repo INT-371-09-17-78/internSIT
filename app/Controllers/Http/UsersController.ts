@@ -887,23 +887,35 @@ export default class UsersController {
         .andWhere('user_id', request.param('id'))
         .preload('student')
       const studentUser = studentUsers[0]
-      // return response.status(200).json(studentUser)
-      // const { lastStepPaging, gnext } = request.only(['lastStepPaging', 'gnext'])
+      // if (studentUser.student.advisor_id) {
+      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
+      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
+      // }
+      const studentInfo = [
+        { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+        { title: 'Email', value: studentUser.email, key: 'email' },
+        { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+        { title: 'Department', value: studentUser.student.department, key: 'department' },
+        { title: 'Position', value: studentUser.student.position, key: 'position' },
+        { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+        { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+        {
+          title: 'Mentor’s Position',
+          value: studentUser.student.mentor_position,
+          key: 'mentorPosition',
+        },
+        { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+        { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+        {
+          title: 'Advisor',
+          value: studentUser.student['advisorFullName']
+            ? studentUser.student['advisorFullName']
+            : '',
+          key: 'advisorFullName',
+        },
+      ]
       const qs = request.qs()
       const plans = [2, 4, 6]
-      const studentInfo = [
-        'Firm',
-        'Email',
-        'Tel.',
-        'Department',
-        'Position',
-        'Internship duration',
-        'Mentor',
-        'Mentor’s Position',
-        'Mentor’s Email',
-        'Mentor’s Tel.',
-        'Advisor',
-      ]
       let steps: any =
         studentUser.student.plan === 6
           ? [
@@ -1043,7 +1055,7 @@ export default class UsersController {
             const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
             console.log(stepIndex - (stepIndex % 4))
             return response.redirect(
-              '/student/' +
+              '/student-information/' +
                 studentUser.user_id +
                 '?firstStepPaging=' +
                 (stepIndex > 3
@@ -1229,8 +1241,8 @@ export default class UsersController {
         stepPaged,
         firstOfAllStep,
         lastOfAllStep,
-        studentInfo,
         submission: submission,
+        studentInfo: studentInfo,
         // userHasDoc: userHasDoc[0].id,
       })
       // return response.redirect('/announcement')
@@ -1306,7 +1318,7 @@ export default class UsersController {
           // await usersInAcademicYear[0].related('userHasDoc').
           // userHasDoc[0].delete()
         }
-        return response.redirect('/student/' + studentUser.student_id)
+        return response.redirect('/student-information/' + studentUser.student_id)
         // await usersInAcademicYear[0].related('stepsStatuses').query().delete()
       }
 

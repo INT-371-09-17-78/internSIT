@@ -61,7 +61,7 @@
           @end
           <li class="step font-bold {{step.status === "Waiting" ? "text-blue-700" : step.status === "Pending" ? "text-yellow-700 step-primary " : step.status === "Approved" ? "text-green-700 step-primary " : step.status === "Disapproved" ? "text-red-700 step-primary " : ""}}">
             {{step.name}} {{step.status ? step.status : ""}}
-            <a id="{{step.name}}" onclick="{{ step.status!=="Approved" && nextStep.name !== step.name ? 'return false' : ``}}" href="{{ step.status==="Approved" || nextStep.name === step.name ? route('/student/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status, firstStepPaging: request.qs().firstStepPaging, gnext: request.qs().gnext  } }) : route('/student/:id', { id : studentUser.user_id }) }}" class="{{step.status==="Approved" || nextStep.name === step.name ? "cursor-pointer" : "cursor-default"}} w-12 h-12 relative row-start-1 col-start-1 grid rounded-full z-10 place-self-center place-items-center {{step.status ? "bg-primary" : "bg-[#D9D9D9]"}} {{isChangeStep ? currentSteps.name === step.name ? "border-4 border-[#F4C064]" : ''  : nextStep.name === step.name ? "border-4 border-[#F4C064]" : ''}}">
+            <a id="{{step.name}}" onclick="{{ step.status!=="Approved" && nextStep.name !== step.name ? 'return false' : ``}}" href="{{ step.status==="Approved" || nextStep.name === step.name ? route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status, firstStepPaging: request.qs().firstStepPaging, gnext: request.qs().gnext  } }) : route('/student-information/:id', { id : studentUser.user_id }) }}" class="{{step.status==="Approved" || nextStep.name === step.name ? "cursor-pointer" : "cursor-default"}} w-12 h-12 relative row-start-1 col-start-1 grid rounded-full z-10 place-self-center place-items-center {{step.status ? "bg-primary" : "bg-[#D9D9D9]"}} {{isChangeStep ? currentSteps.name === step.name ? "border-4 border-[#F4C064]" : ''  : nextStep.name === step.name ? "border-4 border-[#F4C064]" : ''}}">
               @if(step.status==="Approved")
               <svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M23.297 4.22613L10.636 17.2751C9.69845 18.2416 8.17758 18.2416 7.23913 17.2751L0.703438 10.5382C-0.234479 9.57162 -0.234479 8.00385 0.703438 7.03713C1.64153 6.07022 3.16229 6.07022 4.09997 7.03676L8.93808 12.0235L19.8999 0.724907C20.838 -0.242002 22.3589 -0.241269 23.2966 0.724907C24.2344 1.69163 24.2344 3.25885 23.297 4.22613Z" fill="white"/>
@@ -92,7 +92,7 @@
   @if(studentUser.student.plan)
     @if((request.qs().step && request.qs().step.includes('Informed supervision')) || (nextStep.name.includes('Informed supervision') && !request.qs().step) )
     <form id="updateSupervision">
-      @if(request.matchesRoute('/student/:id/editInformedSupervision'))
+      @if(request.matchesRoute('/student-information/:id/editInformedSupervision'))
       <div class="bg-[#F0F3F8] w-[46rem] rounded-md p-7 m-auto space-y-2 flex flex-col my-10">
         <p class="font-bold text-xl">{{nextStep.name}}</p>
         <p class="text-primary font-medium">Advisor</p>
@@ -156,10 +156,10 @@
         </div>
         @end
         <div class="flex ml-auto space-x-2 pt-5">
-          <a href="{{ route('/student/:id', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}">
+          <a href="{{ route('/student-information/:id', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}">
             <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">cancel</button>
           </a>
-          <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }) }}">
+          <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }) }}">
             <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit">save change</button>
           </a>
         </div>
@@ -173,7 +173,7 @@
           <p>-</p>
         </div>
         @if(auth.user.role==="advisor")
-        <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
+        <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
           <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
         @end
@@ -186,7 +186,7 @@
           <a class="link link-hover link-primary" href="{{currentSteps.meetingLink}}" target="_blank">{{currentSteps.meetingLink || '-'}}</a>
         </div>
         @if(auth.user.role==="student")
-        <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
+        <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
           <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
         @end
@@ -199,7 +199,7 @@
           <p>-</p>
         </div>
         @if(auth.user.role==="staff")
-        <a href="{{ route('/student/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
+        <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
           <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
         @end
@@ -219,7 +219,7 @@
     @else
     <div class="flex justify-center py-7 space-x-20">
 
-      <div class="grid grid-cols-2 gap-y-3 w-[30rem]" id="test">
+      <div class="grid grid-cols-2 gap-y-3 w-[30rem] h-fit" id="studentInfo">
         @each(info in studentInfo)
           <p class="font-bold">{{info.title}}</p>
           <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
@@ -290,14 +290,20 @@
                       <p class="text-sm text-[#ACB5BD]">2.4 MB</p> 
                     </div>     
                   </a>
+                  @if(currentSteps.reason && (auth.user.role ==='staff' || auth.user.role ==='student'))
+                  <p class="font-medium">Feedback: <span class="font-normal">{{currentSteps.reason}}</span></p>
+                  @end
                   @if(auth.user.role ==='staff')
-                  <p class="text-[#E7AA3D] font-medium pt-3">Waiting for advisor sign the document</p>
+                    <p class="text-[#E7AA3D] font-medium pt-3">Waiting for advisor sign the document</p>
                   @elseif(auth.user.role ==='advisor')
                   <div class="flex items-center space-x-2 pt-2">
-                    <input type="checkbox" class="checkbox rounded-none bg-white border-2" id="isFeedback" onchange="getIsFeedback()" />
+                    <input type="checkbox" class="checkbox rounded-none bg-white border-2" {{currentSteps.reason && 'checked disabled'}} id="isFeedback" onchange="getIsFeedback()" />
                     <p class="text-[#858D95] font-medium">Give feedback</p>
                   </div>
-                  <textarea id="advisorReasons" class="textarea hidden" id="reason" placeholder="Write reason for the student to correct the document"></textarea>
+                    @if(currentSteps.reason)
+                    <p class="font-medium">Feedback: <span class="font-normal">{{currentSteps.reason}}</span></p>
+                    @end
+                    <textarea id="advisorReasons" class="textarea hidden" placeholder="Write reason for the student to correct the document"></textarea>
                   <div class="border-[#A8B0B8] border-b-2 pt-5"></div>
                   <div class="pt-5 flex flex-col space-y-2">
                       <p class="font-medium text-lg">Signature</p>
@@ -306,7 +312,7 @@
                       </p>
                       <p class="text-[#858D95]">Not Submitted</p>
                     <div class="flex items-center space-x-2">
-                      <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                      <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md {{currentSteps.reason && 'btn-disabled'}}">Choose file</label>
                       <input type="file" id="myFile" class="input hidden" onchange="getFile(event)"/>
                       <p id="showInput" class="text-[#858D95]">No file choosen</p>
                     </div>
@@ -314,7 +320,7 @@
                   @end
                 {{--  </div>  --}}
                 @end
-                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>Confirm</button>
+                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
                 {{--  @end  --}}
               </div>
               {{--  <div class="pt-5">
@@ -417,7 +423,7 @@
     @end
   @else
   @if(auth.user.role === 'student')
-  <div class="absolute left-80 top-16">
+  <div class="absolute left-80 top-12">
     <svg width="103" height="25" viewBox="0 0 103 25" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M10.1783 11.7942C41.1941 -3.08664 71.6458 -3.60876 103 8.66143C100.744 11.4026 98.827 10.3584 97.3608 9.83624C86.0823 6.31181 74.4655 5.92018 62.9614 5.39805C46.382 4.61487 30.7052 9.05306 15.3662 16.2324C14.6895 16.4935 14.1254 17.0156 12.7719 18.0599C20.5541 19.8873 28.3367 16.7545 35.1037 20.4095C34.9906 20.9316 34.9906 21.5843 34.878 22.1064C29.8027 22.498 24.6148 22.8896 19.539 23.4118C14.4637 23.9339 9.50157 24.5866 4.42628 24.9782C0.704399 25.2392 -0.874757 23.1507 0.478653 19.2347C2.17042 14.1439 4.53888 9.44462 6.6816 4.61487C6.90735 4.09274 7.2457 3.44005 7.69666 3.17899C8.93746 2.65687 10.1783 2.5263 11.5317 2.13468C11.7569 3.44006 12.321 4.87593 12.2084 6.05074C11.9826 7.61712 11.1933 8.92249 10.1783 11.7942Z" fill="#4263EB"/>
     </svg>
@@ -438,23 +444,7 @@
       document.getElementById('advisorReasons').classList.add('hidden')
     }
   }
-  // window.location.href = '/student/{{studentUser.user_id}}'
-  // window.history.replaceState({}, '', '/student/{{studentUser.user_id}}')
-  const showTextArea = () => {
-    const c = document.getElementById("reason")
-    if(c) return
-    const referenceNode = document.getElementById("radio-group")
-    const ele = document.createElement("textarea")
-    ele.id = "reason"
-    ele.name = "reason"
-    ele.className = "p-3 w-full h-28 text-xs rounded-lg"
-    ele.placeholder = "Write your reasons why disapproved..."
-    referenceNode.parentNode.insertBefore(ele, referenceNode.nextSibling)
-  }
-  const removeTextArea = () => {
-    const c = document.getElementById("reason")
-    if(c) c.remove()
-  }
+
   const editPlan = (event) => {
     event.preventDefault()
     document.getElementById("study").disabled = false
@@ -481,7 +471,7 @@
       firstStepPaging: firstStepPaging,
       gnext: gnext
     })
-    window.location.href = '/student/{{studentUser.user_id}}?' + urlParams
+    window.location.href = '/student-information/{{studentUser.user_id}}?' + urlParams
   }
 
 
@@ -497,10 +487,7 @@
     if(document.getElementById('supervisionStatus')){supervisionStatus = document.getElementById('supervisionStatus').value}
     if(document.getElementById('dateStatus')){dateStatus = document.getElementById('dateStatus').value}
     if(document.getElementById('advisorComment')){advisorComment = document.getElementById('advisorComment').value}
-    // const advisorDate = document.getElementById('advisorDate').value
-    
-    // const meetLink = document.getElementById('meetLink').value
-    // const isSameDate = document.getElementById('isSameDate').value
+
     const body = {status : 'Approved',step: '{{nextStep.name}}',date : studentDate || advisorDate, stepStatId: {{currentSteps.id}} , meetingLink: meetLink , supervisionStatus : supervisionStatus , dateStatus:dateStatus , advisorComment:advisorComment}
         fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
         method: 'POST',
@@ -509,7 +496,7 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(body),
-        }).then(() => {window.location.href = `/student/{{studentUser.user_id}}?${window.location.search}`}
+        }).then(() => {window.location.href = `/student-information/{{studentUser.user_id}}?${window.location.search}`}
           
         ).then(
           () => {window.location.reload()} 
@@ -517,30 +504,6 @@
         
   }
 
-
-  // const formElem2 = document.getElementById('formElem2')
-  // if(formElem2)
-  // formElem2.onsubmit = async (event) => {
-  //   event.preventDefault() 
-  //   console.log('dsadsas')
-  //   const status = document.querySelector('input[name="radio"]:checked').value
-  //   const body = {
-  //     status : status,
-  //     doc: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-  //     reason : status === "Approved" ? "" : document.getElementById('reason').value
-  //   }
-
-  //   await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(body),
-  //   })
-    
-  //   window.location.reload()
-  // }
   let file
   const getFile =(event)=>{
     file = event.target.files[0]
@@ -550,24 +513,22 @@
 
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason
-    if(!document.querySelector('input[name="radio"]:checked')){
-      status = 'Pending'
-    }
-    if(document.getElementById('reason')){
-      reason = document.getElementById('reason').value
+    let reason = ''
+    if(document.getElementById('advisorReasons')){
+      reason = document.getElementById('advisorReasons').value
     }
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-      reason : reason
+      status: reason ? 'Disapproved' : !reason && {{auth.user.role === 'advisor'}} ? 'Approved' : 'Pending',
+      reason : reason 
     }
-
+    console.log(body)
     const formData = new FormData()
     formData.append('files', file)
     formData.append('step', '{{nextStep.name}}')
-    formData.append('status', 'Pending')
+    formData.append('status', status)
     formData.append('studentId', {{studentUser.user_id}})
-    if('{{auth.user.role==='advisor'}}' || (body.reason !== '') || file){
+    if(file){
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -584,130 +545,5 @@
 
     window.location.reload()
   }
-
-  const formElem3 = document.getElementById('formElem3')
-  if(formElem3)
-  formElem3.onsubmit = async (event) => {
-    event.preventDefault() 
-    const body = {
-      status : 'Approved',
-      step: '{{nextStep.name}}'
-    }
-
-    await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body),
-    })
-    
-    window.location.reload()
-  }
-// var url ='/api/file/steps?userId={{studentUser.user_id}}&&step={{currentSteps.name}}&&status={{currentSteps.status}}' 
-// var pdfjsLib = window['pdfjs-dist/build/pdf']
-
-// pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js'  
-// if(document.getElementById('pdfViewer'))
-// var pdfDoc = null,
-//     pageNum = 1,
-//     pageRendering = false,
-//     pageNumPending = null,
-//     scale = 0.8,
-//     canvas = document.getElementById('pdfViewer'),
-//     ctx = canvas.getContext('2d')
-
-// function renderPage(num) {
-//   pageRendering = true
-//   pdfDoc.getPage(num).then(function(page) {
-//     var viewport = page.getViewport({scale: scale})
-//     canvas.height = viewport.height
-//     canvas.width = viewport.width
-
-//     var renderContext = {
-//       canvasContext: ctx,
-//       viewport: viewport
-//     }
-//     var renderTask = page.render(renderContext)
-
-//     renderTask.promise.then(function() {
-//       pageRendering = false
-//       if (pageNumPending !== null) {
-//         renderPage(pageNumPending)
-//         pageNumPending = null
-//       }
-//     })
-//   })
-
-//   document.getElementById('page_num').textContent = num
-// }
-
-// function queueRenderPage(num) {
-//   if (pageRendering) {
-//     pageNumPending = num
-//   } else {
-//     renderPage(num)
-//   }
-// }
-
-//  function onPrevPage() {
-//   if (pageNum <= 1) {
-//     return
-//   }
-//   pageNum--
-//   queueRenderPage(pageNum)
-// }
-
-// function onNextPage() {
-//   if (pageNum >= pdfDoc.numPages) {
-//     return
-//   }
-//   pageNum++
-//   queueRenderPage(pageNum)
-// }
-
-// if(document.getElementById('control-page')){
-//   if('{{!currentSteps.status}}' || {{request.qs().status == "Approved"}} || {{currentSteps.status == "Approved" && currentSteps.name !== "TR-01"}})
-//   document.getElementById('control-page').classList.add("hidden")
-//   if('{{currentSteps.status}}')
-//     pdfjsLib.getDocument(url).promise.then((pdfDoc_)=> {
-//       pdfDoc = pdfDoc_
-//       if(pdfDoc.numPages > 1){
-//           document.getElementById('control-page').classList.remove("hidden")
-//       }else{
-//           document.getElementById('control-page').classList.add("hidden")
-//       }
-//       document.getElementById('page_count').textContent = pdfDoc.numPages
-//       renderPage(pageNum)
-//     })
-// }
-  
-// let file
-// $("#myFile").on("change", async function(e){
-// 	let file = e.target.files[0]
-//   if(!file || file.type !== "application/pdf") return
-//   file = file
-//   document.getElementById('showInput').value = middleEllipsis(file.name)
-// 	if(file.type == "application/pdf"){
-// 		var fileReader = new FileReader()  
-// 		fileReader.onload = function() {
-// 			var pdfData = new Uint8Array(this.result)
-
-//       pdfjsLib.getDocument({data: pdfData}).promise.then(function(pdfDoc_) {
-//         pdfDoc = pdfDoc_
-//         if(pdfDoc.numPages > 1){
-//           document.getElementById('control-page').classList.remove("hidden")
-//         }else{
-//           document.getElementById('control-page').classList.add("hidden")
-//         }
-//         document.getElementById('page_count').textContent = pdfDoc.numPages
-//         renderPage(pageNum)
-//       })
-
-// 		}
-// 		fileReader.readAsArrayBuffer(file)
-// 	}
-// })
 </script>
 @end
