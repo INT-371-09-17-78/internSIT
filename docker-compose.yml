@@ -44,33 +44,13 @@ services:
     environment:
       PMA_HOST: intern-sit-db
       PMA_PORT: 3306
-      PMA_ABSOLUTE_URI: https://intern-sit.sytes.net/phpmyadmin/
       PMA_ARBITRARY: 1
     restart: always
     ports:
       - 8081:80
     networks:
       intern-sit-network:
-        ipv4_address: 172.24.0.14
-  intern-sit:
-    depends_on:
-      - db
-    container_name: intern-sit-app
-    restart: always
-    # build:
-    #   context: .
-      #target: build
-    # image: intern_sit:dev
-    image: ghcr.io/int-371-09-17-78/intern-sit:1.0.0
-    #volumes:
-     # - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
-     # - ./mysqlinit:/etc/ssl/certs/
-    expose:
-      #running inside container
-      - 3333
-    networks:
-      intern-sit-network:
-        ipv4_address: 172.24.0.11
+        ipv4_address: 172.24.0.16
 networks:
   intern-sit-network:
     # external: true
