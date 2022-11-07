@@ -19,24 +19,24 @@ services:
     #    - ./init.sh:/init.sh
     # entrypoint: sh -c "/init.sh"
     # command: mysql -udbuser -phelloDEV371_
-  phpmyadmin:
-    depends_on:
-      - db
-    image: phpmyadmin:5.2.0-apache
-    container_name: intern-sit-pma
-    links:
-      - db
-    expose: 
-      - 80
-    environment:
-      PMA_HOST: intern-sit-db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-      PMA_ABSOLUTE_URI: http://intern-sit.sytes.net/phpmyadmin/
-    restart: always
-    networks:
-      intern-sit-network:
-        ipv4_address: 172.24.0.16
+  # phpmyadmin:
+  #   depends_on:
+  #     - db
+  #   image: phpmyadmin:5.2.0-apache
+  #   container_name: intern-sit-pma
+  #   links:
+  #     - db
+  #   expose: 
+  #     - 80
+  #   environment:
+  #     PMA_HOST: intern-sit-db
+  #     PMA_PORT: 3306
+  #     PMA_ARBITRARY: 1
+  #     PMA_ABSOLUTE_URI: http://intern-sit.sytes.net/phpmyadmin/
+  #   restart: always
+  #   networks:
+  #     intern-sit-network:
+  #       ipv4_address: 172.24.0.16
 
   intern-sit:
     depends_on:
@@ -59,8 +59,8 @@ services:
         ipv4_address: 172.24.0.11
 
   nginx:
-    depends_on:
-      - phpmyadmin
+    # depends_on:
+    #   - phpmyadmin
     image: nginx:latest
     container_name: intern-sit-nginx
     restart: unless-stopped
