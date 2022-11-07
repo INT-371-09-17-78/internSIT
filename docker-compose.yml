@@ -45,7 +45,7 @@ services:
       PMA_HOST: intern-sit-db
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
-      PMA_ABSOLUTE_URI: http://intern-sit.sytes.net/phpmyadmin/
+      PMA_ABSOLUTE_URI: http://intern-sit.sytes.net/phpmyadmin
     restart: always
     ports:
       - 8081:80
