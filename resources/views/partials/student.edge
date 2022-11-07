@@ -6,7 +6,7 @@
 <section class="h-full w-full z-[5] relative flex flex-col pt-5 overflow-auto">
   <div class="flex flex-col z-10 px-11">
     @if(auth.user.role !== "student")
-    <a href="{{ route('/student-information', {}, { qs: { month: 2 }}) }}">
+    <a href="{{ route('/student-information') }}">
       <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
         <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
         <p class="font-semibold">Back</p>
@@ -104,57 +104,42 @@
         @else
         <div class="grid grid-cols-3 px-3 gap-y-2">
           <p class="font-medium">Date confirm :</p>
-          <div class="flex items-center col-span-2 space-x-2">
-            <input id="advisorDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-1">
-            <div class="flex space-x-2">
-              <input id="isSameDate" type="checkbox" class="checkbox" />
-              <p class="text-[#495057]">Same day as the student</p>
-            </div>
+          <p class="font-medium">Start Date</p>
+          <div class="flex space-x-2">
+            <input id="advisorStartDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-1" min="{{new Date().toISOString().split("T")[0]}}" onchange="checkEndDateMin()">
+            <p class="text-red-700">*</p>
+          </div>
+          <p></p>
+          <p class="font-medium">End Date</p>
+          <div class="flex space-x-2">
+            <input id="advisorEndDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-1" onchange="checkStartDateMax()">
+            <p class="text-red-700">*</p>
           </div>
         </div>
         @end
         <div class="border-b-2 border-[#A8B0B8] py-2"></div>
         <p class="text-primary font-medium">Student</p>
-        @if(auth.user.role === 'staff' || auth.user.role === 'advisor')
-        <div class="grid grid-cols-2 px-3 gap-y-2">
-          <p class="font-medium">Date confirm :</p>
-          <p>-</p>
-          <p class="font-medium">Meeting link :</p>
-          <p>-</p>
-        </div>
-        @else
-        <div class="grid grid-cols-2 px-3 gap-y-2">
-          <p class="font-medium">Date confirm :</p>
-          <input id="studentDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
-          <p class="font-medium">Meeting link :</p>
-          <input id="meetLink" type="text" class="input input-bordered input-sm w-full max-w-xs" />
-        </div>
-        @end
-        <div class="border-b-2 border-[#A8B0B8] py-2"></div>
-        <p class="text-primary font-medium">Staff</p>
-        @if(auth.user.role === 'student' || auth.user.role === 'advisor')
-        <div class="grid grid-cols-2 px-3 gap-y-2">
-          <p class="font-medium">Date confirm :</p>
-          <p>-</p>
-          <p class="font-medium">Supervision status :</p>
-          <p>-</p>
-        </div>
-        @elseif(auth.user.role === 'staff')
-        <div class="grid grid-cols-2 px-3 gap-y-2">
-          <p class="font-medium">Date confirm :</p>
-          <select  id="dateStatus" class="select select-bordered select-sm w-40 max-w-xs">
-            <option disabled selected>Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Done">Done</option>
-          </select>
-          <p class="font-medium">Supervision status :</p>
-          <select id="supervisionStatus" class="select select-bordered select-sm w-40 max-w-xs">
-            <option disabled selected>Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Done">Done</option>
-          </select>
-        </div>
-        @end
+          @if(auth.user.role === 'staff' || auth.user.role === 'advisor')
+          <div class="grid grid-cols-2 px-3 gap-y-2">
+            <p class="font-medium">Date confirm :</p>
+            <p>-</p>
+            <p class="font-medium">Meeting link :</p>
+            <p>-</p>
+          </div>
+          @else
+          <div class="grid grid-cols-2 px-3 gap-y-2">
+            <p class="font-medium">Date confirm :</p>
+            <div class="flex space-x-2">
+              <input id="studentDate" type="date" class="w-52 border-black/20 rounded-md border px-2 py-[2px]">
+              <p class="text-red-700">*</p>
+            </div>
+            <p class="font-medium">Meeting link :</p>
+            <div class="flex space-x-2">
+              <input id="meetLink" type="text" class="input input-bordered input-sm w-full max-w-xs" />
+              <p class="text-red-700">*</p>
+            </div>
+          </div>
+          @end
         <div class="flex ml-auto space-x-2 pt-5">
           <a href="{{ route('/student-information/:id', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}">
             <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">cancel</button>
@@ -168,15 +153,14 @@
       <div class="bg-[#F0F3F8] w-[40rem] rounded-md p-5 m-auto space-y-2 flex flex-col mt-10">
         <p class="font-bold text-xl">{{nextStep.name}}</p>
         <p class="text-primary font-medium">Advisor</p>
-        <div class="grid grid-cols-2 px-3 gap-y-2">
-          <p class="font-medium">Date confirm :</p>
+        <div class="grid grid-cols-3 px-3 gap-y-2">
+          <p class="font-medium">Available date :</p>
+          <p class="font-medium">Start date</p>
+          <p>-</p>
+          <p></p>
+          <p class="font-medium">End date</p>
           <p>-</p>
         </div>
-        @if(auth.user.role==="advisor")
-        <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
-          <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
-        </a>
-        @end
         <div class="border-b-2 border-[#A8B0B8] py-2"></div>
         <p class="text-primary font-medium">Student</p>
         <div class="grid grid-cols-2 px-3 gap-y-2">
@@ -185,24 +169,12 @@
           <p class="font-medium">Meeting link :</p>
           <a class="link link-hover link-primary" href="{{currentSteps.meetingLink}}" target="_blank">{{currentSteps.meetingLink || '-'}}</a>
         </div>
-        @if(auth.user.role==="student")
+        @if(auth.user.role !== 'advisor')
+        <p class="text-[#E7AA3D]">Waiting for advisor inform the date.</p>
+        @end
         <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
           <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
         </a>
-        @end
-        <div class="border-b-2 border-[#A8B0B8] py-2"></div>
-        <p class="text-primary font-medium">Staff</p>
-        <div class="grid grid-cols-2 px-3 gap-y-2">
-          <p class="font-medium">Date confirm :</p>
-          <p>-</p>
-          <p class="font-medium">Supervision status :</p>
-          <p>-</p>
-        </div>
-        @if(auth.user.role==="staff")
-        <a href="{{ route('/student-information/:id/editInformedSupervision', { id: studentUser.user_id }, {qs:{firstStepPaging: request.qs().firstStepPaging , gnext: request.qs().gnext}}) }}" class="ml-auto">
-          <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
-        </a>
-        @end
       </div>
         @if(auth.user.role==="advisor")
         <div class="bg-[#F0F3F8] w-[40rem] rounded-md p-5 m-auto space-y-2 flex flex-col my-10">
@@ -218,26 +190,28 @@
     </form>
     @else
     <div class="flex justify-center py-7 space-x-20">
-
       <div class="grid grid-cols-2 gap-y-3 w-[30rem] h-fit" id="studentInfo">
         @each(info in studentInfo)
           <p class="font-bold">{{info.title}}</p>
           <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
         @end
       </div>
-      
       <div class="flex flex-col w-[35rem]">
         <form onsubmit="submitStepForm(event)">
           <div class="flex flex-col">
             @if(nextStep.name === 'finished')
             <p class="font-bold text-2xl">{{lastOfAllStep}}</p>
             @else
-            <p class="font-bold text-2xl">{{request.qs().step || nextStep.name}}</p>
+            <p class="font-bold text-2xl {{request.qs().status === "Approved" && 'text-green-700'}}">
+              {{request.qs().step || nextStep.name}} 
+              @if(request.qs().status === "Approved")
+              <span class="text-xl">Completed</span>
+              @end
+            </p>
             <p>
               <span class="font-medium">Description:</span> เอกสารขอความอนุเคราะห์เข้าฝึกงาน นักศึกษากรอกข้อมูลในเอกสารให้ครบถ้วนก่อนส่ง เข้าระบบให้อาจารย์เซ็น
             </p>
             @end
-
             <div class="my-3 flex flex-col space-y-2">
               <p class="font-medium">Template document</p>
               <a href="{{ route('/api/file/:fileId', { fileId: currentSteps.name + 'DEF.pdf' }) }}" class="flex bg-white rounded-md border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2">
@@ -271,14 +245,15 @@
                     <span>Submit</span>
                   </label>
                 </div>  --}}
-                @if(auth.user.role === 'student')
+                @if(auth.user.role === 'student' && currentSteps.name !== 'TR-02' && currentSteps.status !== "Approved" || (auth.user.role === 'staff' && nextStep.name === 'TR-02' && currentSteps.status !== 'Approved') || nextStep.name.includes('TR-03') && auth.user.role !== 'advisor' )
                 <div class="flex items-center space-x-2">
                   <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
                   <input type="file" id="myFile" class="input hidden" onchange="getFile(event)"/>
                   <p id="showInput" class="text-[#858D95]">No file choosen</p>
                 </div>
                 @end
-                <p class="text-[#858D95]">Attachment :</p>
+
+                <p class="text-[#858D95] pt-5">Attachment:</p>
                 @if(true)
                 {{--  <div class="flex flex-col space-y-3 overflow-y-auto h-56 w-fit pr-5">  --}}
                   <a href="{{ route('/api/file/:fileId', { fileId: currentSteps.name + 'DEF.pdf' }) }}" class="flex rounded-md bg-white border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2">
@@ -291,36 +266,43 @@
                     </div>     
                   </a>
                   @if(currentSteps.reason && (auth.user.role ==='staff' || auth.user.role ==='student'))
+                  <p class="text-sm text-red-700">Please correct your document and resubmit</p> 
                   <p class="font-medium">Feedback: <span class="font-normal">{{currentSteps.reason}}</span></p>
                   @end
-                  @if(auth.user.role ==='staff')
+                  @if(auth.user.role ==='staff' && currentSteps.name === 'TR-01' && currentSteps.status !== 'Approved')
                     <p class="text-[#E7AA3D] font-medium pt-3">Waiting for advisor sign the document</p>
-                  @elseif(auth.user.role ==='advisor')
+                  @elseif((auth.user.role ==='student' || auth.user.role ==='advisor') && nextStep.name === 'TR-02' && currentSteps.status !== 'Approved')
+                    <p class="text-[#E7AA3D] font-medium pt-3">Wait for the acceptance of the company's request for assistance, fill out the information to accept the internship</p>
+                  @elseif((auth.user.role ==='advisor' && nextStep.name === 'TR-01') || (auth.user.role ==='staff' && nextStep.name.includes('TR-03')))
                   <div class="flex items-center space-x-2 pt-2">
                     <input type="checkbox" class="checkbox rounded-none bg-white border-2" {{currentSteps.reason && 'checked disabled'}} id="isFeedback" onchange="getIsFeedback()" />
-                    <p class="text-[#858D95] font-medium">Give feedback</p>
+                    <p class="text-[#858D95] font-medium">Incomplete documentation</p>
                   </div>
                     @if(currentSteps.reason)
                     <p class="font-medium">Feedback: <span class="font-normal">{{currentSteps.reason}}</span></p>
                     @end
                     <textarea id="advisorReasons" class="textarea hidden" placeholder="Write reason for the student to correct the document"></textarea>
-                  <div class="border-[#A8B0B8] border-b-2 pt-5"></div>
-                  <div class="pt-5 flex flex-col space-y-2">
-                      <p class="font-medium text-lg">Signature</p>
-                      <p>
-                        <span class="font-medium">Description:</span> เอกสาร TR-01 ที่นักศึกษาส่งเข้าระบบและมีการเซ็นรับรองของอาจารย์แล้ว
-                      </p>
-                      <p class="text-[#858D95]">Not Submitted</p>
-                    <div class="flex items-center space-x-2">
-                      <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md {{currentSteps.reason && 'btn-disabled'}}">Choose file</label>
-                      <input type="file" id="myFile" class="input hidden" onchange="getFile(event)"/>
-                      <p id="showInput" class="text-[#858D95]">No file choosen</p>
+                    @if(nextStep.name === 'TR-01')
+                    <div class="border-[#A8B0B8] border-b-2 pt-5"></div>
+                    <div class="pt-5 flex flex-col space-y-2">
+                        <p class="font-medium text-lg">Signature</p>
+                        <p>
+                          <span class="font-medium">Description:</span> เอกสาร TR-01 ที่นักศึกษาส่งเข้าระบบและมีการเซ็นรับรองของอาจารย์แล้ว
+                        </p>
+                        <p class="text-[#858D95]">Not Submitted</p>
+                      <div class="flex items-center space-x-2">
+                        <label for="myFile" class="btn btn-outline btn-sm bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md {{currentSteps.reason && 'btn-disabled'}}">Choose file</label>
+                        <input type="file" id="myFile" class="input hidden" onchange="getFile(event)"/>
+                        <p id="showInput" class="text-[#858D95]">No file choosen</p>
+                      </div>
                     </div>
-                  </div>
+                    @end
                   @end
                 {{--  </div>  --}}
                 @end
+                @if(auth.user.role ==='staff' && nextStep.name === 'TR-02' || nextStep.name.includes('TR-03') || currentSteps.status !== 'Approved')
                 <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+                @end
                 {{--  @end  --}}
               </div>
               {{--  <div class="pt-5">
@@ -437,6 +419,14 @@
   @end
 </section>
 <script>  
+const checkEndDateMin = () =>{
+  document.getElementById('advisorEndDate').min = document.getElementById('advisorStartDate').value
+}
+
+const checkStartDateMax = () => {
+  document.getElementById('advisorEndDate').min = ""
+  document.getElementById('advisorStartDate').max = document.getElementById('advisorEndDate').value
+}
   const getIsFeedback = () => {
     if(document.getElementById('isFeedback').checked){
       document.getElementById('advisorReasons').classList.remove('hidden')
@@ -483,7 +473,7 @@
     if(document.getElementById('studentDate')){studentDate = document.getElementById('studentDate').value}
     if(document.getElementById('advisorDate')){advisorDate = document.getElementById('advisorDate').value}
     if(document.getElementById('meetLink')){meetLink  = document.getElementById('meetLink').value}
-    if(document.getElementById('isSameDate')){isSameDate = document.getElementById('isSameDate').value}
+    // if(document.getElementById('isSameDate')){isSameDate = document.getElementById('isSameDate').value}
     if(document.getElementById('supervisionStatus')){supervisionStatus = document.getElementById('supervisionStatus').value}
     if(document.getElementById('dateStatus')){dateStatus = document.getElementById('dateStatus').value}
     if(document.getElementById('advisorComment')){advisorComment = document.getElementById('advisorComment').value}
@@ -496,9 +486,7 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(body),
-        }).then(() => {window.location.href = `/student-information/{{studentUser.user_id}}?${window.location.search}`}
-          
-        ).then(
+        }).then(() => {window.location.href = `/student-information/{{studentUser.user_id}}?${window.location.search}`}).then(
           () => {window.location.reload()} 
         )
         
@@ -519,7 +507,7 @@
     }
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-      status: reason ? 'Disapproved' : !reason && {{auth.user.role === 'advisor'}} ? 'Approved' : 'Pending',
+      status: reason ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending',
       reason : reason 
     }
     console.log(body)

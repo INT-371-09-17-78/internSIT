@@ -182,7 +182,7 @@ export default class UsersController {
         }
         if (checkExist[0].approved) {
           await auth.attempt(username, password, rememberMe)
-          return response.redirect(`/student/${user.user_id}`) //student ที่ approved แล้ว
+          return response.redirect(`/student-information/${user.user_id}`) //student ที่ approved แล้ว
         } else {
           return response.redirect('/success-regis') //student ที่ยังไม่ approved
         }
@@ -1230,6 +1230,7 @@ export default class UsersController {
       const lastOfAllStep = steps[steps.length - 1].name
       const firstOfAllStep = steps[0].name
       // console.log(request.updateQs({}))
+      const academicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       // return response.redirect('/student/' + studentUser.student.student_id)
       return view.render('student-information', {
         studentUser,
@@ -1243,6 +1244,7 @@ export default class UsersController {
         lastOfAllStep,
         submission: submission,
         studentInfo: studentInfo,
+        academicYears: academicYearAll,
         // userHasDoc: userHasDoc[0].id,
       })
       // return response.redirect('/announcement')

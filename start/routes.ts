@@ -71,13 +71,12 @@ Route.group(() => {
   Route.get('/:id/edit', 'UsersController.showStudentInfoEdit')
 
   Route.get('/:id', 'UsersController.showStudentUserById')
-
-  Route.get('/:id/editInformedSupervision', 'UsersController.showStudentUserById')
 }).prefix('/student')
 
 Route.group(() => {
   Route.get('/', 'UsersController.showStudentUser')
   Route.get('/:id', 'UsersController.showStudentUserById')
+  Route.get('/:id/editInformedSupervision', 'UsersController.showStudentUserById')
 }).prefix('/student-information')
 
 Route.get('/academic-year', 'UsersController.showStudentUser')

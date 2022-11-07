@@ -12,7 +12,7 @@
 @section('student-information')
 @if(request.matchesRoute('/register-request'))
 @set('activeRequestTab', 'bg-white text-primary fill-primary')
-@elseif(request.matchesRoute(['/student-information', '/student-information/:id']))
+@elseif(request.matchesRoute(['/student-information', '/student-information/:id','/student-information/:id/editInformedSupervision']))
 @set('activeInfoTab', 'bg-white text-primary fill-primary')
 @else
 @set('activeCourseTab', 'bg-white text-primary fill-primary')
@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
-          <p class="font-bold">Academic year: {{request.cookie('year')}}</p>
+          <p class="font-bold">Academic year: {{request.cookie('year') || academicYears[0].academic_year}} </p>
           <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
         </div>
         @end
@@ -65,11 +65,11 @@
         @include('partials/student-list')
       @elseif(request.matchesRoute('/register-request'))
         @include('partials/register-request')
-      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/edit/supervised-student') || request.matchesRoute('/course-info/complete-course'))
+      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/complete-course'))
         @include('partials/course-info')
-      @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit'))
+      @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit') || request.matchesRoute('/course-info/edit/supervised-student'))
         @include('partials/steps')
-      @elseif(request.matchesRoute('/student-information/:id'))
+      @elseif(request.matchesRoute('/student-information/:id') || request.matchesRoute('/student-information/:id/editInformedSupervision'))
         @include('partials/student')
       @end
   </section>
