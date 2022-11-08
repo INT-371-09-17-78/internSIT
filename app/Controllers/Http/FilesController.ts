@@ -213,12 +213,14 @@ export default class FilesController {
       // console.log(testQuery)
       for (const file of files) {
         const posts = await Post.query().where('post_id', file.post_id)
-        const checkAcademicYearData = await posts[0]
-          .related('usersInAcademicYear')
-          .query()
-          .where('academic_year', AcademicYearCf[0].academic_year)
-        if (checkAcademicYearData && checkAcademicYearData.length > 0) {
-          newFiles.push(file)
+        if (posts[0]) {
+          const checkAcademicYearData = await posts[0]
+            .related('usersInAcademicYear')
+            .query()
+            .where('academic_year', AcademicYearCf[0].academic_year)
+          if (checkAcademicYearData && checkAcademicYearData.length > 0) {
+            newFiles.push(file)
+          }
         }
       }
       const filesJSON = newFiles.map((result) => result.serialize())

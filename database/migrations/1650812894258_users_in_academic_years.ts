@@ -6,12 +6,12 @@ export default class UsersInAcademicYears extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
+      table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       table
         .integer('academic_year')
         // .unsigned()
         .references('academic_years.academic_year')
         .onDelete('CASCADE')
-      table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       table.boolean('approved').defaultTo(false).notNullable()
       table.unique(['academic_year', 'user_id'])
       table

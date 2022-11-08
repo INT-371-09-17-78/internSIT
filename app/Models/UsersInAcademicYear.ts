@@ -8,12 +8,17 @@ import {
   // ManyToMany,
   // belongsTo,
   // BelongsTo,
+  hasOne,
+  HasOne,
 } from '@ioc:Adonis/Lucid/Orm'
 import Post from 'App/Models/Post'
 import UserHasDoc from 'App/Models/UserHasDoc'
+import Student from 'App/Models/Student'
 // import stepsStatuses from 'App/Models/StepStatus'
 // import File from 'App/Models/File'
 // import Advisor from 'App/Models/Advisor'
+import Advisor from 'App/Models/Advisor'
+import Staff from 'App/Models/Staff'
 
 export default class UsersInAcademicYear extends BaseModel {
   public static table = 'users_in_academic_years'
@@ -45,6 +50,15 @@ export default class UsersInAcademicYear extends BaseModel {
   // })
   // //   public skills: ManyToMany<typeof Skill>
   // public stepsStatuses: ManyToMany<typeof stepsStatuses>
+
+  @hasOne(() => Student, { foreignKey: 'student_id' })
+  public student: HasOne<typeof Student>
+
+  @hasOne(() => Advisor, { foreignKey: 'advisor_id' })
+  public advisor: HasOne<typeof Advisor>
+
+  @hasOne(() => Staff, { foreignKey: 'staff_id' })
+  public staff: HasOne<typeof Staff>
 
   @column()
   public advisor_ac_id: number

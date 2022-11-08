@@ -176,9 +176,9 @@ export default class UsersController {
         await auth.attempt(username, password, rememberMe)
         return response.redirect('/course-info/edit')
       } else if (user && user.role === 'student' && checkExist && checkExist.length > 0) {
-        const st = await Student.findBy('student_id', user.user_id)
+        const st = await Student.findBy('student_id', checkExist[0].id)
         if (!st) {
-          await user?.related('student').create({})
+          await checkExist[0]?.related('student').create({})
         }
         if (checkExist[0].approved) {
           await auth.attempt(username, password, rememberMe)
@@ -223,14 +223,20 @@ export default class UsersController {
           // user.email = ldapUser.mail
           // user.password = password
           // await user.save()
-          const lastestUsers = await User.find(username)
+          const lastestUsers = await UsersInAcademicYearModel.query()
+            .where('user_id', username)
+            .andWhere('academic_year', year[0].academic_year)
           const st = await Student.findBy('student_id', username)
           if (st) {
             st.plan = 0
             await st.save()
           }
-          if (!st && lastestUsers) {
-            await lastestUsers.related('student').create({})
+          if (!st && lastestUsers && lastestUsers.length > 0) {
+            await lastestUsers[0].related('student').create({})
+            // await UsersInAcademicYearModel.create({
+            //   academic_year: year[0].academic_year,
+            //   user_id: lastestUsers.user_id,
+            // })
           }
           await Mail.use('smtp').send((message) => {
             message
@@ -388,20 +394,29 @@ export default class UsersController {
           const result = await User.query()
             .where('role', 'student')
             .andWhere('user_id', UsersInAcademicYear[i].user_id)
-            .preload('student')
+          // .preload('student')
           if (result[0]) {
-            const resultSe = result[0].serialize()
-            resultSe['approved'] = UsersInAcademicYear[i].approved
-            // console.log(resultSe)
-            studentUsers.push(resultSe)
+            const resultSt = await UsersInAcademicYearModel.query()
+              .where('user_id', result[0].user_id)
+              .andWhere('academic_year', UsersInAcademicYear[0].academic_year)
+            const students = await Student.query().where('student_id', resultSt[0].id)
+            if (students[0]) {
+              const resultSe = result[0].serialize()
+              resultSe['approved'] = UsersInAcademicYear[i].approved
+              resultSe['plan'] = students[0].plan || 0
+              // console.log(resultSe)
+              studentUsers.push(resultSe)
+            }
           }
         }
+        console.log(studentUsers)
+
         allAmoutSt = studentUsers.length
 
         noApprove = studentUsers.filter((st) => !st.approved)
         if (request.qs().month) {
           studentUsers = studentUsers.filter(
-            (userPre) => userPre.student.plan === parseInt(request.qs().month)
+            (userPre) => userPre.plan === parseInt(request.qs().month)
           )
         }
 
@@ -881,12 +896,28 @@ export default class UsersController {
           AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         }
       }
-
-      const studentUsers = await User.query()
+      let studentUser: any
+      let usersInAcademicYear: any
+      const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
-        .preload('student')
-      const studentUser = studentUsers[0]
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .preload('student')
+        console.log(usersInAcademicYear)
+
+        if (usersInAcademicYear[0]) {
+          const stSerialize = studentUsersRole[0].serialize()
+          stSerialize['student'] = usersInAcademicYear[0].student
+          studentUser = stSerialize
+        }
+      }
+
       // if (studentUser.student.advisor_id) {
       //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
       //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
@@ -1025,9 +1056,9 @@ export default class UsersController {
       //   .wherePivot('student_id', request.param('id'))
       //   .orderBy('pivot_updated_at', 'desc')
 
-      const usersInAcademicYear = await UsersInAcademicYearModel.query()
-        .where('user_id', studentUser.user_id)
-        .andWhere('academic_year', AcademicYearCf[0].academic_year)
+      // const usersInAcademicYear = await UsersInAcademicYearModel.query()
+      //   .where('user_id', studentUser.user_id)
+      //   .andWhere('academic_year', AcademicYearCf[0].academic_year)
       let userHasDocResult: any
 
       // if (request.qs().doc && request.qs().status) {
@@ -1279,24 +1310,47 @@ export default class UsersController {
         'dateConfirmStatus',
       ])
 
-      const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      const studentUser = await Student.findOrFail(request.param('id'))
+      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      let studentUser: any
+      let usersInAcademicYear: any
+      const studentUsersRole = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+        // console.log(usersInAcademicYear)
+        console.log(usersInAcademicYear[0].student)
+
+        // if (usersInAcademicYear[0]) {
+        //   const stSerialize = studentUsersRole[0].serialize()
+        //   stSerialize['student'] = usersInAcademicYear[0].student
+        //   studentUser = stSerialize
+        // }
+      }
       let user: any
       if (auth.user) {
         user = await User.query().where('user_id', auth.user.user_id)
       }
 
-      const usersInAcademicYear = await UsersInAcademicYearModel.query()
-        .where('user_id', studentUser.student_id)
-        .andWhere('academic_year', AcademicYearCf[0].academic_year)
+      // const usersInAcademicYear = await UsersInAcademicYearModel.query()
+      //   .where('user_id', studentUser.student_id)
+      //   .andWhere('academic_year', AcademicYearCf[0].academic_year)
       // let statusResult: Status
       // console.log(status)
       // console.log(step)
 
       // let docResult: Document
       if (study) {
-        studentUser.plan = study
-        await studentUser.save()
+        usersInAcademicYear[0].student.plan = study
+        console.log(usersInAcademicYear[0].student)
+        await usersInAcademicYear[0].student.save()
 
         // await studentUser
         //   .related('documentsStatuses')
@@ -1320,7 +1374,7 @@ export default class UsersController {
           // await usersInAcademicYear[0].related('userHasDoc').
           // userHasDoc[0].delete()
         }
-        return response.redirect('/student-information/' + studentUser.student_id)
+        return response.redirect('/student-information/' + usersInAcademicYear[0].user_id)
         // await usersInAcademicYear[0].related('stepsStatuses').query().delete()
       }
 
@@ -1393,9 +1447,8 @@ export default class UsersController {
       //   response.redirect(`/student/${studentUser.user_id}/information`)
       // }
       // response.status(200).send('success')
-      const studentUsers = await User.query()
-        .where('user_id', request.param('id'))
-        .preload('student')
+      const studentUsers = await User.query().where('user_id', request.param('id'))
+      // .preload('student')
       const studentUser = studentUsers[0]
       response.redirect(`/student/${studentUser.user_id}`)
     } catch (error) {
@@ -1447,21 +1500,44 @@ export default class UsersController {
         'advisorFullName',
         // 'approve',
       ])
-      const studentUsers = await User.query()
-        .where('user_id', request.param('id'))
-        .preload('student')
-      const studentUser = studentUsers[0]
+
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      let studentUser: any
+      let usersInAcademicYear: any
+      const studentUsersRole = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+        // console.log(usersInAcademicYear)
+
+        if (usersInAcademicYear[0]) {
+          // const stSerialize = studentUsersRole[0].serialize()
+          // stSerialize['student'] = usersInAcademicYear[0].student
+          studentUser = usersInAcademicYear[0].student
+        }
+      }
+      // const studentUsers = await User.query()
+      //   .where('user_id', request.param('id'))
+      //   .preload('student')
+      // const studentUser = studentUsers[0]
       // const studentUser = await Student.findOrFail(request.param('id'))
-      studentUser.student.firm = firm
-      studentUser.student.tel = tel
-      studentUser.student.department = department
-      studentUser.student.position = position
-      studentUser.student.plan = duration
-      studentUser.student.mentor_name = mentor
-      studentUser.student.mentor_position = mentorPosition
-      studentUser.student.mentor_email = mentorEmail
-      studentUser.student.mentor_tel_no = mentorTel
-      studentUser.email = email
+      studentUser.firm = firm
+      studentUser.tel = tel
+      studentUser.department = department
+      studentUser.position = position
+      studentUser.plan = duration
+      studentUser.mentor_name = mentor
+      studentUser.mentor_position = mentorPosition
+      studentUser.mentor_email = mentorEmail
+      studentUser.mentor_tel_no = mentorTel
+      // studentUser.email = email
       // studentUser.approved = approve
       // if (email) {
       //   const studentUser = await User.query()
@@ -1493,7 +1569,7 @@ export default class UsersController {
       // }
 
       await studentUser.save()
-      await studentUser.student.save()
+      // await studentUser.student.save()
       // if (approve) {
       //   response.redirect(`/register-request`)
       // } else {
@@ -1505,13 +1581,40 @@ export default class UsersController {
     }
   }
 
-  public async showStudentInfo({ request, response, view }: HttpContextContract) {
+  public async showStudentInfo({ auth, request, response, view }: HttpContextContract) {
     try {
-      const studentUsers = await User.query()
+      let years: any
+      if (auth.user?.role === 'student') {
+        years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      } else {
+        // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        if (request.cookie('year')) {
+          years = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        } else {
+          years = await AcademicYear.query().orderBy('updated_at', 'desc')
+        }
+      }
+      let studentUser: any
+      let usersInAcademicYear: any
+      const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
-        .preload('student')
-      const studentUser = studentUsers[0]
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+        // console.log(usersInAcademicYear)
+
+        if (usersInAcademicYear[0]) {
+          const stSerialize = studentUsersRole[0].serialize()
+          stSerialize['student'] = usersInAcademicYear[0].student
+          studentUser = stSerialize
+        }
+      }
       // if (studentUser.student.advisor_id) {
       //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
       //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
@@ -1550,13 +1653,40 @@ export default class UsersController {
     }
   }
 
-  public async showStudentInfoEdit({ request, response, view }: HttpContextContract) {
+  public async showStudentInfoEdit({ auth, request, response, view }: HttpContextContract) {
     try {
-      const studentUsers = await User.query()
+      let years: any
+      if (auth.user?.role === 'student') {
+        years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      } else {
+        // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        if (request.cookie('year')) {
+          years = await AcademicYear.query().where('academic_year', request.cookie('year'))
+        } else {
+          years = await AcademicYear.query().orderBy('updated_at', 'desc')
+        }
+      }
+      let studentUser: any
+      let usersInAcademicYear: any
+      const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
-        .preload('student')
-      const studentUser = studentUsers[0]
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+        // console.log(usersInAcademicYear)
+
+        if (usersInAcademicYear[0]) {
+          const stSerialize = studentUsersRole[0].serialize()
+          stSerialize['student'] = usersInAcademicYear[0].student
+          studentUser = stSerialize
+        }
+      }
       // if (studentUser.student.advisor_id) {
       //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
       //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname

@@ -5,7 +5,12 @@ export default class Students extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.string('student_id').primary().references('users.user_id').onDelete('CASCADE')
+      table
+        .integer('student_id')
+        .unsigned()
+        .primary()
+        .references('users_in_academic_years.id')
+        .onDelete('CASCADE')
       table.string('department', 80).nullable()
       table.string('position', 80).nullable()
       table.string('firm', 80).nullable()
