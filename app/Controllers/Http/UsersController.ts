@@ -1250,7 +1250,16 @@ export default class UsersController {
               if (allUserHasDoc[i].no_approve_reason) {
                 obj['reason'] = allUserHasDoc[i].no_approve_reason
               }
-              currentSteps['file'].row.push(obj)
+              if (
+                !(
+                  obj && // 👈 null and undefined check
+                  Object.keys(obj).length === 0 &&
+                  Object.getPrototypeOf(obj) === Object.prototype
+                )
+              ) {
+                currentSteps['file'].row.push(obj)
+              }
+
               // obj['TR-05File'] = {}
               // obj['feedbackFile'] = {}
               // const result03 = await File.query()
