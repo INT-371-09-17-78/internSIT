@@ -193,10 +193,17 @@
     </form>
     @else
     <div class="flex justify-center py-7 space-x-16">
-      <div class="grid grid-cols-2 gap-y-3 w-[26rem] h-fit text-sm" id="studentInfo">
-        @each(info in studentInfo)
-          <p class="font-bold">{{info.title}}</p>
-          <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
+      <div class="flex flex-col space-y-10">
+        <div class="grid grid-cols-2 gap-y-3 w-[26rem] h-fit text-sm" id="studentInfo">
+          @each(info in studentInfo)
+            <p class="font-bold">{{info.title}}</p>
+            <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value || '-'}}</p>
+          @end
+        </div>
+        @if(auth.user.role === "student")
+        <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="self-end">
+          <button type="button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
+        </a>
         @end
       </div>
       <div class="flex flex-col w-[47rem]">
@@ -271,7 +278,9 @@
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <div class="space-y-2 w-44 whitespace-normal">
-                          <p class="link link-primary w-fit">{{row.studentFile.file_name || ''}}</p>
+                          <a class="link link-primary w-fit" href="#" target="_blank">
+                            {{row.studentFile.file_name || ''}}
+                          </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
                         </div>
                       </td>
@@ -281,7 +290,9 @@
                         @else
                         <div class="space-y-2 w-44 whitespace-normal">
                           <p>{{row.reason}}</p>
-                          <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">{{row.feedbackFile.file_name || '-'}}</p>
+                          <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="#" target="_blank">
+                            {{row.feedbackFile.file_name || '-'}}
+                          </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
                         </div>
                         @end
@@ -291,7 +302,9 @@
                         <p>-</p>
                         @else
                         <div class="space-y-2 w-44 whitespace-normal">
-                          <p class="{{row.signedFile.file_name && 'link link-primary' }}">{{row.signedFile.file_name || '-'}}</p>
+                          <a class="{{row.signedFile.file_name && 'link link-primary' }}" href="#" target="_blank">
+                            {{row.signedFile.file_name || '-'}}
+                          </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
                         </div>
                           @end
@@ -357,7 +370,9 @@
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">
                     <div class="space-y-2 whitespace-normal">
-                      <p class="link link-primary w-fit">{{row.file_name || ''}}</p>
+                      <a class="link link-primary w-fit" href="#" target="_blank">
+                        {{row.file_name || ''}}
+                      </a>
                       <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
                     </div>
                   </td>
@@ -413,7 +428,9 @@
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">
                           <div class="space-y-2 w-44 whitespace-normal">
-                            <p class="link link-primary w-fit">{{row.TR_03_TR_05File && row.TR_03_TR_05File.file_name || ''}}</p>
+                            <a class="link link-primary w-fit" href="#" target="_blank">
+                              {{row.TR_03_TR_05File && row.TR_03_TR_05File.file_name || ''}}
+                            </a>
                             <p class="text-[#858D95]">Submitted: <span>{{row.TR_03_TR_05File && row.TR_03_TR_05File.created_at}}</span></p>
                           </div>
                         </td>
@@ -423,7 +440,9 @@
                           @else
                           <div class="space-y-2 w-44 whitespace-normal">
                             <p>{{row.reason}}</p>
-                            <p class="{{row.feedbackFile && row.feedbackFile.file_name && 'link link-primary' }}">{{row.feedbackFile && row.feedbackFile.file_name || '-'}}</p>
+                            <a class="{{row.feedbackFile && row.feedbackFile.file_name && 'link link-primary' }}" href="#" target="_blank">
+                              {{row.feedbackFile && row.feedbackFile.file_name || '-'}}
+                            </a>
                             <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile && row.feedbackFile.created_at}}</span></p>
                           </div>
                           @end
