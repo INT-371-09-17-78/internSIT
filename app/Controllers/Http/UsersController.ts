@@ -1164,18 +1164,6 @@ export default class UsersController {
           usersInAcademicYear[0].id
         )
 
-        if (documentStatusesJsonCurrent.step === 'TR-02') {
-          const currentStepFile = await File.query().where(
-            'user_has_doc_id',
-            documentStatusesJsonCurrent.id
-          )
-          // {
-          // console.log(result)
-          if (currentStepFile[0]) {
-            currentSteps['file'].row.push(currentStepFile[0].serialize())
-          }
-        }
-
         // }
         // const stFile = await UserHasDoc.query()
         //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
@@ -1353,6 +1341,24 @@ export default class UsersController {
             // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
+          }
+        }
+
+        if (
+          (request.qs().step && request.qs().step.includes('TR-03')) ||
+          (documentStatusesJsonCurrent.step === 'TR-02' &&
+            documentStatusesJsonCurrent.status === 'Approved') ||
+          (documentStatusesJsonCurrent.step.includes('TR-03') &&
+            !nextStep.name.includes('Informed supervision'))
+        ) {
+          const currentStepFile = await File.query().where(
+            'user_has_doc_id',
+            documentStatusesJsonCurrent.id
+          )
+          // {
+          // console.log(result)
+          if (currentStepFile[0]) {
+            currentSteps['file'].row.push(currentStepFile[0].serialize())
           }
         }
         // let index: any
