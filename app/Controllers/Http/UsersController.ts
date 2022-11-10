@@ -1349,7 +1349,7 @@ export default class UsersController {
       }
       // console.log(steps)
       console.log(currentSteps)
-      console.log(currentSteps.file.row)
+      // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
       // console.log(nextStep)
