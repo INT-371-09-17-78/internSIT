@@ -168,7 +168,7 @@
           <p class="font-medium">Date confirm :</p>
           <p>{{currentSteps.studentDate || '-'}}</p>
           <p class="font-medium">Meeting link :</p>
-          <a class="link link-hover link-primary" href="{{currentSteps.meetingLink}}" target="_blank">{{currentSteps.meetingLink || '-'}}</a>
+          <a class="link link-primary" href="{{currentSteps.meetingLink}}" target="_blank">{{currentSteps.meetingLink || '-'}}</a>
         </div>
         @if(auth.user.role !== 'advisor')
         <p class="text-[#E7AA3D]">Waiting for advisor inform the date.</p>
@@ -226,6 +226,7 @@
               </a>
             </div>
             <p class="font-bold text-lg">Submission</p>
+            @if(request.qs().step === 'TR-01' || currentSteps.name === 'TR-01' && nextStep.name !== 'TR-02')
             <table class="table w-full mt-2">
               <thead>
                 <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -263,66 +264,117 @@
                 </tr>
               </thead>
               <tbody>
-                @if(auth.user.role === 'advisor')
-                <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="">
-                  <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">1</td>
-                  <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">-</td>
-                  <td class="align-top border-2 border-[#F6F7F9] cursor-default">
-                    <div class="w-44">
-                      <textarea id="feedback" class="p-3 w-56 h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
-                      <div class="flex items-center space-x-2">
-                        <label for="myFeedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                        <input type="file" id="myFeedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
-                        <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="align-top border-2 border-[#F6F7F9] cursor-default">
-                    <div class="flex items-center space-x-2 w-44">
-                      <label for="mySignedFile" id="labelSignedFile" class="btn btn-outline btn-xs h-7 w-fit bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                      <input type="file" id="mySignedFile" class="input hidden" onchange="getFile(event,'showSignedFile')"/>
-                      <div id="showSignedFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
-                    </div>
-                  </td>
-                </tr>
-                @elseif(auth.user.role === 'student')
-                <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="">
-                  <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">1</td>
-                  <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">
-                    <div class="flex items-center space-x-2 w-44">
-                      <label for="myStudentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                      <input type="file" id="myStudentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
-                      <div id="showStudentFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
-                    </div>
-                  </td>
-                  <td class="align-top border-2 border-[#F6F7F9] cursor-default">-</td>
-                  <td class="align-top border-2 border-[#F6F7F9] cursor-default">-</td>
-                </tr>
-                @end
-                {{--  @each((step,index) in steps)
-                    <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="window.location='/student-information/{{student.user_id}}'">
-                      <td>{{index+1}}</td>
-                      <td>{{step.name}}</td>
-                      <td>{{step.type}}</td>
-                      <td>
-                          <div class="dropdown dropdown-top">
-                            <label tabindex="0">
-                              <div class="w-5 h-5 cursor-pointer">
-                                <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z"/></svg>
-                              </div>
-                            </label>
-                            <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
-                              <li><a href="#" class="font-medium py-2 px-5">Edit</a></li>
-                              <li><a href="#" class="font-medium py-2 px-5 text-red-500 active:bg-transparent">Delete</a></li>
-                            </ul>
-                          </div>
+              @each((row,index) in currentSteps.file.row)
+                    <tr class="font-medium border-2 border-[#F6F7F9]">
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <p class="link link-primary w-fit">{{row.studentFile.file_name || ''}}</p>
+                          <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
+                        </div>
+                      </td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        @if(row.feedbackFile && Object.keys(row.feedbackFile).length === 0 && Object.getPrototypeOf(row.feedbackFile) === Object.prototype)
+                        <p>-</p>
+                        @else
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <p>{{row.reason}}</p>
+                          <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">{{row.feedbackFile.file_name || '-'}}</p>
+                          <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
+                        </div>
+                        @end
+                      </td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        @if(row.signedFile && Object.keys(row.signedFile).length === 0 && Object.getPrototypeOf(row.signedFile) === Object.prototype)
+                        <p>-</p>
+                        @else
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <p class="{{row.signedFile.file_name && 'link link-primary' }}">{{row.signedFile.file_name || '-'}}</p>
+                          <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
+                        </div>
+                          @end
                       </td>
                     </tr>
-                @end  --}}
+              @end
+              @if(currentSteps.status !== 'Approved')
+                @if(auth.user.role === 'advisor')
+                  <tr class="font-medium border-2 border-[#F6F7F9]">
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">-</td>
+                    <td class="align-top border-2 border-[#F6F7F9]">
+                        <textarea id="feedback" class="p-3 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
+                        <div class="flex items-center space-x-2 w-44">
+                          <label for="myFeedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                          <input type="file" id="myFeedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
+                          <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                        </div>
+                    </td>
+                    <td class="align-top border-2 border-[#F6F7F9]">
+                      <div class="flex items-center space-x-2 w-44">
+                        <label for="mySignedFile" id="labelSignedFile" class="btn btn-outline btn-xs h-7 w-fit bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                        <input type="file" id="mySignedFile" class="input hidden" onchange="getFile(event,'showSignedFile')"/>
+                        <div id="showSignedFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                      </div>
+                    </td>
+                  </tr>
+                  @elseif(auth.user.role === 'student' && nextStep.name !== 'TR-02')
+                  <tr class="font-medium border-2 border-[#F6F7F9]">
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <div class="flex items-center space-x-2 w-44">
+                        <label for="myStudentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                        <input type="file" id="myStudentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
+                        <div id="showStudentFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                      </div>
+                    </td>
+                    <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                    <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                  </tr>
+                  {{--  @elseif(auth.user.role === 'staff')
+                  <tr class="font-medium border-2 border-[#F6F7F9]">
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <div class="flex items-center space-x-2 w-44">
+                        <label for="myStudentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                        <input type="file" id="myStudentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
+                        <div id="showStudentFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                      </div>
+                    </td>
+                    <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                    <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                  </tr>  --}}
+                  @end
+                @end
               </tbody>
             </table>
-            @if(auth.user.role ==='staff' && nextStep.name === 'TR-02' || nextStep.name.includes('TR-03') || currentSteps.status !== 'Approved')
-            <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+            @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved' || currentSteps.name === 'TR-02' && nextStep.name !== 'TR-03')
+              <table class="table w-full mt-2">    
+              <thead>
+                  <tr class="border-2 border-[#E6E7EA] rounded-none">
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"></th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      <div class="flex items-center space-x-2">
+                        <p class="text-base">TR-02</p>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                @if(auth.user.role === 'staff')
+                <tr class="font-medium border-2 border-[#F6F7F9]">
+                  <td class="align-top border-2 border-[#F6F7F9] text-sm">{{(!(currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1')}}</td>
+                  <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                    <div class="flex items-center space-x-2 w-44">
+                      <label for="myStaffFile" id="labelStaffFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                      <input type="file" id="myStaffFile" class="input hidden" onchange="getFile(event,'showStaffFile')"/>
+                      <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                    </div>
+                  </td>
+                </tr>
+                @end
+              </table>
+              @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
+              <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+              @end
             @end
             {{--  <div class="bg-[#F4F4F4] w-full rounded-md p-5 mt-3">
               <div class="space-y-2 flex flex-col">
