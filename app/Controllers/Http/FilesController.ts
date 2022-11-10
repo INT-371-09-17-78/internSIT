@@ -157,6 +157,7 @@ export default class FilesController {
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
             template_step: template === 'true' ? step : null,
+            // step_sep: stepSep && stepSep !== '' ? stepSep : null,
           })
           // userHasDoc[0].related('f')
           // newFile.related('userHasDoc')

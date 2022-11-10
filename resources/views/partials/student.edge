@@ -373,7 +373,7 @@
               @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
               <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
               @end
-              @elseif(request.qs().step.includes('TR-03') || currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved' || currentSteps.name.includes('TR-03') && !nextStep.name.includes('Informed supervision'))
+              @elseif(request.qs().step && request.qs().step.includes('TR-03') || currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved' || currentSteps.name.includes('TR-03') && !nextStep.name.includes('Informed supervision'))
               <table class="table w-full mt-2">
                 <thead>
                   <tr class="border-2 border-[#E6E7EA] rounded-none">

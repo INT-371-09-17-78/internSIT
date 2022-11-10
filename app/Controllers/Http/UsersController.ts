@@ -1180,43 +1180,92 @@ export default class UsersController {
         //   .andWhere('status', 'Pending')
         //   .orderBy('updated_at', 'desc')
         // const resultStFile = await File.query().where('user_has_doc_id', stFile[0].id)
-        if (documentStatusesJsonCurrent.step === 'TR-01') {
+        if (documentStatusesJsonCurrent.step !== 'TR-02') {
           currentSteps['file'].row = []
           for (let i = 0; i < allUserHasDoc.length; i++) {
-            const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+            if (allUserHasDoc[i].step === 'TR-01' && documentStatusesJsonCurrent.step === 'TR-01') {
+              const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+              const obj = {}
+              obj['feedbackFile'] = {}
+              obj['signedFile'] = {}
+              obj['studentFile'] = {}
+              obj['reason'] = ''
+              if (result && result.length > 0) {
+                if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
+                  const result = await File.query().where(
+                    'user_has_doc_id',
+                    allUserHasDoc[i - 1].id
+                  )
+                  obj['studentFile'] = result[0].serialize()
+                }
+                if (allUserHasDoc[i].is_adv_react) {
+                  if (!allUserHasDoc[i].is_signed) {
+                    obj['feedbackFile'] = result[0].serialize()
+                  }
+                  if (allUserHasDoc[i].is_signed) {
+                    obj['signedFile'] = result[0].serialize()
+                  }
+                }
 
-            const obj = {}
-            obj['feedbackFile'] = {}
-            obj['signedFile'] = {}
-            obj['studentFile'] = {}
-            obj['reason'] = ''
-            if (result && result.length > 0) {
+                if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
+                  obj['studentFile'] = result[0].serialize()
+                }
+              }
+
               if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
                 const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
                 obj['studentFile'] = result[0].serialize()
               }
+              if (allUserHasDoc[i].no_approve_reason) {
+                obj['reason'] = allUserHasDoc[i].no_approve_reason
+              }
+              currentSteps['file'].row.push(obj)
+            } else if (
+              allUserHasDoc[i].step.includes('TR-03') &&
+              documentStatusesJsonCurrent.step.includes('TR-03')
+            ) {
+              const obj = {}
+              obj['TR-03-TR-05File'] = {}
+              obj['feedbackFile'] = {}
+              obj['reason'] = ''
               if (allUserHasDoc[i].is_adv_react) {
-                if (!allUserHasDoc[i].is_signed) {
+                const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+                if (result[0]) {
                   obj['feedbackFile'] = result[0].serialize()
                 }
-                if (allUserHasDoc[i].is_signed) {
-                  obj['signedFile'] = result[0].serialize()
+
+                const resultFeedback = await File.query().where(
+                  'user_has_doc_id',
+                  allUserHasDoc[i - 1].id
+                )
+                if (resultFeedback[0]) {
+                  obj['TR_03_TR_05File'] = resultFeedback[0].serialize()
+                }
+              } else {
+                const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+                if (result[0]) {
+                  obj['TR_03_TR_05File'] = result[0].serialize()
                 }
               }
-
-              if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
-                obj['studentFile'] = result[0].serialize()
+              if (allUserHasDoc[i].no_approve_reason) {
+                obj['reason'] = allUserHasDoc[i].no_approve_reason
               }
+              currentSteps['file'].row.push(obj)
+              // obj['TR-05File'] = {}
+              // obj['feedbackFile'] = {}
+              // const result03 = await File.query()
+              //   .where('user_has_doc_id', allUserHasDoc[i].id)
+              //   .andWhere('step_sep', 'TR-03')
+              // obj['TR-03File'] = result03[0].serialize()
+              // const result05 = await File.query()
+              //   .where('user_has_doc_id', allUserHasDoc[i].id)
+              //   .andWhere('step_sep', 'TR-05')
+              // obj['TR-05File'] = result05[0].serialize()
+              // if (allUserHasDoc[i].is_adv_react) {
+              //   const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
+              //   obj['feedbackFile'] = result[0].serialize()
+              // }
             }
-
-            if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
-              const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
-              obj['studentFile'] = result[0].serialize()
-            }
-            if (allUserHasDoc[i].no_approve_reason) {
-              obj['reason'] = allUserHasDoc[i].no_approve_reason
-            }
-            currentSteps['file'].row.push(obj)
           }
         }
         // const advReact = await UserHasDoc.query()
@@ -1349,7 +1398,7 @@ export default class UsersController {
       }
       // console.log(steps)
       console.log(currentSteps)
-      // console.log(currentSteps.file.row)
+      console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
       // console.log(nextStep)
@@ -1505,8 +1554,10 @@ export default class UsersController {
       if (status && step) {
         body['status'] = status
         body['step'] = step
-        body['is_adv_react'] = auth.user?.role === 'advisor' ? true : false
-        body['is_signed'] = auth.user?.role === 'advisor' ? isSigned : false
+        body['is_adv_react'] =
+          auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? true : false
+        body['is_signed'] =
+          auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? isSigned : false
         body['no_approve_reason'] =
           reason && reason !== null && status === 'Disapproved' ? reason : null
       }
