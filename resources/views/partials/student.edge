@@ -459,6 +459,17 @@
                   @end
                 </tbody>
               </table>
+              <div class="flex mt-5">
+                @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
+                <div class="flex space-x-2">
+                  <input type="checkbox" class="checkbox" id="isCompleteDoc" onchange="checkCompleteDoc()"/>
+                  <p>All documents complete</p>
+                </div>
+                @end
+                @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
+                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+                @end
+              </div>
               {{--  <div class="flex mt-5">
                 @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
                 <div class="flex space-x-2">
@@ -737,6 +748,7 @@ const checkStartDateMax = () => {
         )
         
   }
+
   let file
   let inputFeedback = ''
   const removeCurrentFile = (text,input) =>{
