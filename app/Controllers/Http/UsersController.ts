@@ -409,7 +409,7 @@ export default class UsersController {
             }
           }
         }
-        console.log(studentUsers)
+        // console.log(studentUsers)
 
         allAmoutSt = studentUsers.length
 
@@ -909,7 +909,7 @@ export default class UsersController {
           .where('user_id', studentUsersRole[0].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
           .preload('student')
-        console.log(usersInAcademicYear)
+        // console.log(usersInAcademicYear)
 
         if (usersInAcademicYear[0]) {
           const stSerialize = studentUsersRole[0].serialize()
@@ -1084,7 +1084,7 @@ export default class UsersController {
         if (request.qs().step && request.qs().status) {
           if (request.cookie('isChangeStepSame') === request.qs().step) {
             const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
-            console.log(stepIndex - (stepIndex % 4))
+            // console.log(stepIndex - (stepIndex % 4))
             return response.redirect(
               '/student-information/' +
                 studentUser.user_id +
@@ -1146,11 +1146,57 @@ export default class UsersController {
       // console.log(userHasDocResult[0])
       // userHasDocResult[0].related('')
       // console.log(userHasDoc[0])
+      // console.log(userHasDoc)
+
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
         // console.log(documentStatusesJsonCurrent.status)
         currentSteps['id'] = documentStatusesJsonCurrent.id
-        currentSteps['file'] = stepFile
+        currentSteps['file'] = {}
+        const templateFile = await File.query().where(
+          'template_step',
+          documentStatusesJsonCurrent.step
+        )
+        const advReact = await UserHasDoc.query()
+          .where('is_adv_react', true)
+          .andWhere('step', documentStatusesJsonCurrent.step)
+          .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          .andWhereNotNull('no_approve_reason')
+        const advReactSigned = await UserHasDoc.query()
+          .where('is_adv_react', true)
+          .andWhere('step', documentStatusesJsonCurrent.step)
+          .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          .andWhereNull('no_approve_reason')
+        const stReact = await UserHasDoc.query()
+          .where('is_adv_react', false)
+          .andWhere('step', documentStatusesJsonCurrent.step)
+          .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+        let feedbackFile: any = []
+        for (let i = 0; i < advReact.length; i++) {
+          const result = await File.query().where('user_has_doc_id', advReact[i].id)
+          if (result && result.length > 0) {
+            feedbackFile.push(result[0].serialize())
+          }
+        }
+        let signedFile: any = []
+        for (let i = 0; i < advReactSigned.length; i++) {
+          const result = await File.query().where('user_has_doc_id', advReactSigned[i].id)
+          if (result && result.length > 0) {
+            signedFile.push(result[0].serialize())
+          }
+        }
+        let studentFile: any = []
+        for (let i = 0; i < stReact.length; i++) {
+          const result = await File.query().where('user_has_doc_id', stReact[i].id)
+          if (result && result.length > 0) {
+            studentFile.push(result[0].serialize())
+          }
+        }
+        currentSteps['file'].templateFile = templateFile
+        currentSteps['file'].feedbackFile = feedbackFile
+        currentSteps['file'].signedFile = signedFile
+        currentSteps['file'].studentFile = studentFile
+
         currentSteps['name'] = documentStatusesJsonCurrent.step
         currentSteps['status'] = documentStatusesJsonCurrent.status
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
@@ -1163,13 +1209,13 @@ export default class UsersController {
           ? moment(documentStatusesJsonCurrent.advisor_date)
               .tz('Asia/Bangkok')
               .format('MMMM D, YYYY h:mm A')
-          : undefined
+          : null
 
         currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
           ? moment(documentStatusesJsonCurrent.student_date)
               .tz('Asia/Bangkok')
               .format('MMMM D, YYYY')
-          : undefined
+          : null
         currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
         currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
         currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
@@ -1229,11 +1275,19 @@ export default class UsersController {
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
+        const templateFile = await File.query().where('template_step', steps[0].name)
+        console.log(templateFile)
+        currentSteps['file'] = {}
+        if (templateFile && templateFile.length > 0) {
+          currentSteps['file']['templateFile'] = templateFile[0].serialize()
+        }
         nextStep = steps[0]
         // nextStep['status'] = 'Waiting'
       }
       console.log(steps)
       console.log(currentSteps)
+      console.log(currentSteps.file.signedFile)
+      console.log(currentSteps.file.studentFile[0])
       console.log(nextStep)
       let stepPaged = []
       if (qs.firstStepPaging) {
@@ -1326,7 +1380,7 @@ export default class UsersController {
           .andWhere('academic_year', years[0].academic_year)
           .preload('student')
         // console.log(usersInAcademicYear)
-        console.log(usersInAcademicYear[0].student)
+        // console.log(usersInAcademicYear[0].student)
 
         // if (usersInAcademicYear[0]) {
         //   const stSerialize = studentUsersRole[0].serialize()
@@ -1349,7 +1403,7 @@ export default class UsersController {
       // let docResult: Document
       if (study) {
         usersInAcademicYear[0].student.plan = study
-        console.log(usersInAcademicYear[0].student)
+        // console.log(usersInAcademicYear[0].student)
         await usersInAcademicYear[0].student.save()
 
         // await studentUser
@@ -1382,6 +1436,7 @@ export default class UsersController {
       if (status && step) {
         body['status'] = status
         body['step'] = step
+        body['is_adv_react'] = auth.user?.role === 'advisor' ? true : false
         body['no_approve_reason'] =
           reason && reason !== null && status === 'Disapproved' ? reason : null
       }
@@ -1790,13 +1845,13 @@ export default class UsersController {
           // await year.related('users').attach([user.user_id]))
         )
         await File.create({
-          file_id: 'TR-01DEF.pdf',
+          file_id: 'TR-01DEF',
           file_name: 'TR-01DEF.pdf',
           file_size: '200.06 KB',
         })
 
         await File.create({
-          file_id: 'TR-02DEF.pdf',
+          file_id: 'TR-02DEF',
           file_name: 'TR-02DEF.pdf',
           file_size: '200.06 KB',
         })

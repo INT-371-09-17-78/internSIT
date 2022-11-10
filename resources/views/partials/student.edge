@@ -507,14 +507,14 @@ const checkStartDateMax = () => {
     }
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-      status: reason ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending',
+      status:( reason ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending')||'Pending',
       reason : reason 
     }
     console.log(body)
     const formData = new FormData()
     formData.append('files', file)
     formData.append('step', '{{nextStep.name}}')
-    formData.append('status', status)
+    formData.append('status', ( reason ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending')||'Pending')
     formData.append('studentId', {{studentUser.user_id}})
     if(file){
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{

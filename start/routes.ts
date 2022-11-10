@@ -147,6 +147,6 @@ Route.group(() => {
     Route.get('/:fileId', 'FilesController.downloadFile')
     Route.delete('/:fileId', 'FilesController.deleteFileDirect')
   })
-    .middleware('login')
+    // .middleware('login')
     .prefix('/file')
 }).prefix('/api')

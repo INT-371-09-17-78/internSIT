@@ -46,6 +46,9 @@ export default class UserHasDoc extends BaseModel {
   @column()
   public date_confirm_status: string
 
+  @column()
+  public is_adv_react: boolean
+
   @belongsTo(() => usersInAcademicYear)
   public usersInAcademicYear: BelongsTo<typeof usersInAcademicYear>
 

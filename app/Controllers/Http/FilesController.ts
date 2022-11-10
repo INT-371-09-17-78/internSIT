@@ -61,7 +61,8 @@ export default class FilesController {
         if (post) {
           image.size = this.convertFileSize(image.size)
           await post.related('files').create({
-            file_id: newFileName + '.' + image.extname,
+            file_id: newFileName,
+            //  + '.' + image.extname,
             file_name: image.clientName,
             // user_id: post.user_id,
             file_size: image.size,
@@ -74,7 +75,12 @@ export default class FilesController {
 
   public async storeDirect({ request, response }: HttpContextContract) {
     try {
-      const { step, studentId, status } = request.only(['step', 'studentId', 'status'])
+      const { step, studentId, status, template } = request.only([
+        'step',
+        'studentId',
+        'status',
+        'template',
+      ])
       // console.log(docId)
       // console.log(statId)
       const files = request.files('files', {
@@ -90,85 +96,78 @@ export default class FilesController {
           err.push(file.errors)
         } else {
           const newFileName = uuidv4()
-          await file.move(Application.tmpPath('uploads/steps'), {
-            name: newFileName + '.' + file.extname,
-            overwrite: true, // overwrite in case of conflict
-          })
-          const user = await User.findOrFail(studentId)
-          // const doc = await Document.find(docId)
-          // doc?.related('')
-          // const stepStat = await StepStatusModel.query()
-          //   .where('step', step)
-          //   .andWhere('status', status)
-          // docStat[0].related('usersInAcademicYear').create({})
-          const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-          const usersInAcademicYear = await UsersInAcademicYearModel.query()
-            .where('user_id', user.user_id)
-            .andWhere('academic_year', AcademicYearCf[0].academic_year)
-          // console.log(docStat[0].id)
-          // console.log(usersInAcademicYear[0].id)
-          const userHasDocResult = await UserHasDoc.query()
-            .where('step', step)
-            .andWhere('status', status)
-            .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-            .orderBy('updated_at', 'desc')
-
-          // console.log(UserHasDocResult[0])
-          // console.log(UserHasDocResult[0].id)
-
-          if (userHasDocResult) {
-            const fileSize = this.convertFileSize(file.size)
-            // await File.create({
-            //   file_id: newFileName + '.' + file.extname,
-            //   file_name: file.clientName,
-            //   user_id: user.user_id,
-            //   file_size: fileSize,
-            // })
-            // let userIdCache: any
-            const result = await File.query().where('user_has_doc_id', userHasDocResult[0].id)
-            // .andWhere('doc_id', doc.doc_name)
-            if (result && result.length > 0) {
-              // userIdCache = result[0].user_id
-              this.deleteFile(result, 'steps/')
+          await file.move(
+            Application.tmpPath(template === 'true' ? 'uploads/template' : 'uploads/steps'),
+            {
+              name: newFileName + '.' + file.extname,
+              overwrite: true, // overwrite in case of conflict
             }
-            // if (user.role === 'staff' || user.role === 'advisor') {
-            //   await File.create({
-            //     file_id: newFileName + '.' + file.extname,
-            //     file_name: file.clientName,
-            //     user_id: userIdCache,
-            //     file_size: fileSize,
-            //     doc_id: doc.doc_name,
-            //   })
-            // } else {
-            // docStat[0].related('usersInAcademicYear').create({})
-            // userHasDoc[0].related('')
-            // await File.create({
-            //   file_id: newFileName + '.' + file.extname,
-            //   file_name: file.clientName,
-            //   // user_id: user.user_id,
-            //   file_size: fileSize,
-            //   // doc_id: doc.doc_name,
-            //   user_has_doc_id: userHasDoc[0].id,
-            // })
-            await File.create({
-              file_id: newFileName + '.' + file.extname,
-              file_name: file.clientName,
-              // user_id: user.user_id,
-              file_size: fileSize,
-              // doc_id: doc.doc_name,
-              user_has_doc_id: userHasDocResult[0].id,
-            })
-            // userHasDoc[0].related('f')
-            // newFile.related('userHasDoc')
-            // }
-
-            return response.status(200).json({ message: 'success' })
+          )
+          let user
+          let usersInAcademicYear
+          let userHasDocResult
+          if (studentId) {
+            user = await User.find(studentId)
           }
+
+          const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          if (user) {
+            usersInAcademicYear = await UsersInAcademicYearModel.query()
+              .where('user_id', user.user_id)
+              .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            // console.log(docStat[0].id)
+            console.log(usersInAcademicYear[0].id)
+            console.log(step)
+            console.log(status)
+
+            userHasDocResult = await UserHasDoc.query()
+              .where('step', step)
+              .andWhere('status', status)
+              .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+              .orderBy('updated_at', 'desc')
+          }
+          // console.log(userHasDocResult[0])
+          // console.log(UserHasDocResult[0].id)
+          const fileSize = this.convertFileSize(file.size)
+          // if (userHasDocResult) {
+          //   const result = await File.query().where('user_has_doc_id', userHasDocResult[0].id)
+
+          //   if (result && result.length > 0) {
+          //     this.deleteFile(result, 'steps/')
+          //   }
+          // } else
+          if (template === 'true') {
+            const result = await File.query().where('template_step', step)
+            // console.log(result)
+
+            if (result && result.length > 0) {
+              this.deleteFile(result, 'template/')
+            }
+          }
+
+          // console.log(userHasDocResult)
+
+          await File.create({
+            file_id: newFileName,
+            // + '.' + file.extname,
+            file_name: file.clientName,
+            // user_id: user.user_id,
+            file_size: fileSize,
+            // doc_id: doc.doc_name,
+            user_has_doc_id:
+              userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
+            template_step: template === 'true' ? step : null,
+          })
+          // userHasDoc[0].related('f')
+          // newFile.related('userHasDoc')
+          // }
+
+          return response.status(200).json({ message: 'success' })
         }
       }
       return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
-      // console.log(error)
+      console.log(error)
       return response.status(400).json({ message: error.messages })
     }
   }
@@ -253,7 +252,7 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const { userId, step, prev, status } = request.qs()
+      const { userId, step, prev, status, template } = request.qs()
       let file: any
       let path = ''
       let preview: any = prev === 'prev' ? 'inline' : undefined
@@ -296,11 +295,16 @@ export default class FilesController {
         }
       } else {
         file = await File.find(request.param('fileId'))
+        path = template === 'true' ? 'template/' : ''
       }
 
       let filePath = ''
       if (file) {
-        filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
+        const ext = file.file_name.split('.')
+        filePath = Application.tmpPath(
+          'uploads/' + path + decodeURIComponent(file.file_id) + '.' + ext[1]
+        )
+        // console.log(filePath)
 
         response.attachment(filePath, file.file_name, preview, undefined, (error) => {
           if (error.code === 'ENOENT') {
@@ -322,7 +326,8 @@ export default class FilesController {
       const file = await File.find(request.param('fileId'))
       let filePath = ''
       if (file) {
-        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_id))
+        const ext = file.file_name.split('.')
+        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_id) + '.' + ext[1])
         fs.unlink(filePath, (error) => {
           if (error) {
             throw new Error(error.message)
@@ -342,7 +347,10 @@ export default class FilesController {
       }
       let filePath = ''
       for (const file of files) {
-        filePath = Application.tmpPath('uploads/' + path + decodeURIComponent(file.file_id))
+        const ext = file.file_name.split('.')
+        filePath = Application.tmpPath(
+          'uploads/' + path + decodeURIComponent(file.file_id) + '.' + ext[1]
+        )
         fs.unlink(filePath, (error) => {
           if (error) {
             throw new Error(error.message)
