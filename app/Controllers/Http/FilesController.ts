@@ -116,9 +116,9 @@ export default class FilesController {
               .where('user_id', user.user_id)
               .andWhere('academic_year', AcademicYearCf[0].academic_year)
             // console.log(docStat[0].id)
-            console.log(usersInAcademicYear[0].id)
-            console.log(step)
-            console.log(status)
+            // console.log(usersInAcademicYear[0].id)
+            // console.log(step)
+            // console.log(status)
 
             userHasDocResult = await UserHasDoc.query()
               .where('step', step)

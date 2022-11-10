@@ -1161,12 +1161,13 @@ export default class UsersController {
           .where('is_adv_react', true)
           .andWhere('step', documentStatusesJsonCurrent.step)
           .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .andWhereNotNull('no_approve_reason')
+          .andWhere('is_signed', false)
         const advReactSigned = await UserHasDoc.query()
           .where('is_adv_react', true)
           .andWhere('step', documentStatusesJsonCurrent.step)
           .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
           .andWhereNull('no_approve_reason')
+          .andWhere('is_signed', true)
         const stReact = await UserHasDoc.query()
           .where('is_adv_react', false)
           .andWhere('step', documentStatusesJsonCurrent.step)
@@ -1276,7 +1277,7 @@ export default class UsersController {
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
         const templateFile = await File.query().where('template_step', steps[0].name)
-        console.log(templateFile)
+        // console.log(templateFile)
         currentSteps['file'] = {}
         if (templateFile && templateFile.length > 0) {
           currentSteps['file']['templateFile'] = templateFile[0].serialize()
@@ -1284,11 +1285,11 @@ export default class UsersController {
         nextStep = steps[0]
         // nextStep['status'] = 'Waiting'
       }
-      console.log(steps)
+      // console.log(steps)
       console.log(currentSteps)
-      console.log(currentSteps.file.signedFile)
-      console.log(currentSteps.file.studentFile[0])
-      console.log(nextStep)
+      // console.log(currentSteps.file.signedFile)
+      // console.log(currentSteps.file.studentFile[0])
+      // console.log(nextStep)
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
@@ -1351,6 +1352,7 @@ export default class UsersController {
         meetingLink,
         advisorComment,
         dateConfirmStatus,
+        isSigned,
       } = request.only([
         'study',
         'status',
@@ -1362,8 +1364,12 @@ export default class UsersController {
         'meetingLink',
         'advisorComment',
         'dateConfirmStatus',
+        'isSigned',
       ])
+      // console.log('เข้า')
 
+      // console.log(status)
+      // console.log(step)
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUser: any
@@ -1373,7 +1379,7 @@ export default class UsersController {
         .andWhere('user_id', request.param('id'))
       // .preload('student')
       // const studentUser = studentUsers[0]
-
+      // console.log('เข้า')
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
@@ -1437,9 +1443,11 @@ export default class UsersController {
         body['status'] = status
         body['step'] = step
         body['is_adv_react'] = auth.user?.role === 'advisor' ? true : false
+        body['is_signed'] = auth.user?.role === 'advisor' ? isSigned : false
         body['no_approve_reason'] =
           reason && reason !== null && status === 'Disapproved' ? reason : null
       }
+      // console.log(body)
 
       if (date) {
         if (user[0].role === 'advisor') {

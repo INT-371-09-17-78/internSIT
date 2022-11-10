@@ -266,7 +266,7 @@
                 @if(auth.user.role === 'advisor')
                 <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="">
                   <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">1</td>
-                  <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">62130...TR-01.pdf</td>
+                  <td class="align-top border-2 border-[#F6F7F9] text-sm cursor-default">-</td>
                   <td class="align-top border-2 border-[#F6F7F9] cursor-default">
                     <div class="w-44">
                       <textarea id="feedback" class="p-3 w-56 h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
@@ -621,6 +621,7 @@ const checkStartDateMax = () => {
       document.getElementById('labelSignedFile').classList.remove('btn-disabled')
     }
   }
+  let fileType = ''
   const getFile =(event, showInput)=>{
     file = event.target.files[0]
     if(file) {
@@ -633,27 +634,31 @@ const checkStartDateMax = () => {
         document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
       }
       document.getElementById(showInput).innerHTML = middleEllipsis(file.name) + `<div class="cursor-pointer ml-2" onclick="removeCurrentFile(${showInput + ',' + event.target.id})"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.17474 4.99929L9.75513 1.42723C9.91191 1.27044 10 1.05779 10 0.836054C10 0.614319 9.91191 0.401665 9.75513 0.244875C9.59833 0.0880841 9.38568 0 9.16395 0C8.94221 0 8.72956 0.0880841 8.57277 0.244875L5.00071 3.82526L1.42865 0.244875C1.27186 0.0880841 1.05921 -1.65206e-09 0.837475 0C0.61574 1.65206e-09 0.403086 0.0880841 0.246296 0.244875C0.0895051 0.401665 0.001421 0.614319 0.001421 0.836054C0.00142099 1.05779 0.0895051 1.27044 0.246296 1.42723L3.82668 4.99929L0.246296 8.57135C0.168253 8.64875 0.106309 8.74084 0.0640365 8.84231C0.0217641 8.94377 0 9.05261 0 9.16253C0 9.27244 0.0217641 9.38128 0.0640365 9.48274C0.106309 9.58421 0.168253 9.6763 0.246296 9.7537C0.323701 9.83175 0.415793 9.89369 0.517258 9.93596C0.618724 9.97824 0.727556 10 0.837475 10C0.947394 10 1.05623 9.97824 1.15769 9.93596C1.25916 9.89369 1.35125 9.83175 1.42865 9.7537L5.00071 6.17332L8.57277 9.7537C8.65017 9.83175 8.74226 9.89369 8.84373 9.93596C8.9452 9.97824 9.05403 10 9.16395 10C9.27386 10 9.3827 9.97824 9.48416 9.93596C9.58563 9.89369 9.67772 9.83175 9.75513 9.7537C9.83317 9.6763 9.89511 9.58421 9.93739 9.48274C9.97966 9.38128 10.0014 9.27244 10.0014 9.16253C10.0014 9.05261 9.97966 8.94377 9.93739 8.84231C9.89511 8.74084 9.83317 8.64875 9.75513 8.57135L6.17474 4.99929Z" fill="#495057"/></svg></div>`
+      fileType = event.target.id
     }
   }
   
   const submitStepForm = async (event) => {
     event.preventDefault() 
     let reason = ''
-    if(document.getElementById('advisorReasons')){
-      reason = document.getElementById('advisorReasons').value
+    if(document.getElementById('feedback')){
+      reason = document.getElementById('feedback').value
+      console.log(reason);
     }
+    let status = ( reason || (fileType === 'myFeedbackFile' && file) ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending')||'Pending'
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
-      status:( reason ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending')||'Pending',
-      reason : reason 
+      status: status,
+      reason : reason ,
+      isSigned : status == 'Approved',
     }
     console.log(body)
     const formData = new FormData()
     formData.append('files', file)
     formData.append('step', '{{nextStep.name}}')
-    formData.append('status', ( reason ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending')||'Pending')
+    formData.append('status', status)
     formData.append('studentId', {{studentUser.user_id}})
-    if(file){
+    
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -662,6 +667,7 @@ const checkStartDateMax = () => {
       },
       body: JSON.stringify(body),
       })
+      if(file){
       await fetch('/api/file/steps?_method=POST', {
         method: 'POST',
         body: formData,

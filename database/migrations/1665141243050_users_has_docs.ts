@@ -33,6 +33,7 @@ export default class UserHasDocs extends BaseSchema {
         existingType: false,
       })
       table.boolean('is_adv_react').notNullable().defaultTo(0)
+      table.boolean('is_signed').notNullable().defaultTo(0)
       // table.unique(['doc_stat_id', 'user_in_academic_year_id'])
       // table.unique(['student_id', 'doc_stat_id'])
       /**
