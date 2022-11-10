@@ -230,10 +230,10 @@
             <table class="table w-full mt-2">
               <thead>
                 <tr class="border-2 border-[#E6E7EA] rounded-none">
-                  <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"></th>
+                  <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"><p class="text-base">No.</p></th>
                   <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
                     <div class="flex items-center space-x-2">
-                      <p class="text-base">Student file</p>
+                      <p class="text-base">TR-01</p>
                       <div class="tooltip z-20 font-normal normal-case" data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
                         <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z" fill="#495057"/>
@@ -317,7 +317,7 @@
                       </div>
                     </td>
                   </tr>
-                  @elseif(auth.user.role === 'student' && nextStep.name !== 'TR-02')
+                  @elseif(auth.user.role === 'student' && request.qs().status !== 'Approved')
                   <tr class="font-medium border-2 border-[#F6F7F9]">
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -330,28 +330,15 @@
                     <td class="align-top border-2 border-[#F6F7F9]">-</td>
                     <td class="align-top border-2 border-[#F6F7F9]">-</td>
                   </tr>
-                  {{--  @elseif(auth.user.role === 'staff')
-                  <tr class="font-medium border-2 border-[#F6F7F9]">
-                    <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
-                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                      <div class="flex items-center space-x-2 w-44">
-                        <label for="myStudentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                        <input type="file" id="myStudentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
-                        <div id="showStudentFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
-                      </div>
-                    </td>
-                    <td class="align-top border-2 border-[#F6F7F9]">-</td>
-                    <td class="align-top border-2 border-[#F6F7F9]">-</td>
-                  </tr>  --}}
                   @end
                 @end
               </tbody>
             </table>
-            @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved' || currentSteps.name === 'TR-02' && nextStep.name !== 'TR-03')
+            @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved' || currentSteps.name === 'TR-02' && !nextStep.name.includes('TR-03'))
               <table class="table w-full mt-2">    
               <thead>
                   <tr class="border-2 border-[#E6E7EA] rounded-none">
-                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"></th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"><p class="text-base">No.</p></th>
                     <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
                       <div class="flex items-center space-x-2">
                         <p class="text-base">TR-02</p>
@@ -359,7 +346,18 @@
                     </th>
                   </tr>
                 </thead>
-                @if(auth.user.role === 'staff')
+                @each((row,index) in currentSteps.file.row)
+                <tr class="font-medium border-2 border-[#F6F7F9]">
+                  <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
+                  <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                    <div class="space-y-2 whitespace-normal">
+                      <p class="link link-primary w-fit">{{row.file_name || ''}}</p>
+                      <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
+                    </div>
+                  </td>
+                </tr>
+                @end
+                @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
                 <tr class="font-medium border-2 border-[#F6F7F9]">
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">{{(!(currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1')}}</td>
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -375,7 +373,106 @@
               @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
               <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
               @end
-            @end
+              @elseif(request.qs().step.includes('TR-03') || currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved' || currentSteps.name.includes('TR-03') && !nextStep.name.includes('Informed supervision'))
+              <table class="table w-full mt-2">
+                <thead>
+                  <tr class="border-2 border-[#E6E7EA] rounded-none">
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"><p class="text-base">No.</p></th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      <div class="flex items-center space-x-2">
+                        <p class="text-base normal-case">TR-03 and TR-05</p>
+                        <div class="tooltip z-20 font-normal normal-case" data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
+                          <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z" fill="#495057"/>
+                          </svg>  
+                        </div>
+                      </div>
+                    </th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      <div class="flex items-center space-x-2">
+                        <p class="text-base">Feedback</p>
+                        <div class="tooltip z-20 font-normal normal-case" data-tip="Feedback from advisor to student &#10; for improve the document">
+                          <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z" fill="#495057"/>
+                          </svg>  
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {{--  @each((row,index) in currentSteps.file.row)
+                      <tr class="font-medium border-2 border-[#F6F7F9]">
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                          <div class="space-y-2 w-44 whitespace-normal">
+                            <p class="link link-primary w-fit">{{row.studentFile.file_name || ''}}</p>
+                            <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
+                          </div>
+                        </td>
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                          @if(row.feedbackFile && Object.keys(row.feedbackFile).length === 0 && Object.getPrototypeOf(row.feedbackFile) === Object.prototype)
+                          <p>-</p>
+                          @else
+                          <div class="space-y-2 w-44 whitespace-normal">
+                            <p>{{row.reason}}</p>
+                            <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">{{row.feedbackFile.file_name || '-'}}</p>
+                            <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
+                          </div>
+                          @end
+                        </td>
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                          @if(row.signedFile && Object.keys(row.signedFile).length === 0 && Object.getPrototypeOf(row.signedFile) === Object.prototype)
+                          <p>-</p>
+                          @else
+                          <div class="space-y-2 w-44 whitespace-normal">
+                            <p class="{{row.signedFile.file_name && 'link link-primary' }}">{{row.signedFile.file_name || '-'}}</p>
+                            <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
+                          </div>
+                            @end
+                        </td>
+                      </tr>
+                @end  --}}
+                  @if(auth.user.role === 'staff')
+                    <tr class="font-medium border-2 border-[#F6F7F9]">
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">-</td>
+                      <td class="align-top border-2 border-[#F6F7F9]">
+                          <textarea id="feedback" class="p-3 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
+                          <div class="flex items-center space-x-2 w-44">
+                            <label for="myFeedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                            <input type="file" id="myFeedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
+                            <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                          </div>
+                      </td>
+                    </tr>
+                    @elseif(auth.user.role === 'student' && request.qs().status !== 'Approved')
+                    <tr class="font-medium border-2 border-[#F6F7F9]">
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
+                        <div class="flex items-center space-x-2 w-36">
+                          <label for="myStudentFile1" id="labelStudentFile1" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                          <input type="file" id="myStudentFile1" class="input hidden" onchange="getFile(event,'showStudentFile1')"/>
+                          <div id="showStudentFile1" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                        </div>
+                      </td>
+                      <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                    </tr>
+                    @end
+                  @end
+                </tbody>
+              </table>
+              <div class="flex mt-5">
+                @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
+                <div class="flex space-x-2">
+                  <input type="checkbox" class="checkbox" id="isCompleteDoc" onchange="checkCompleteDoc()"/>
+                  <p>All documents complete</p>
+                </div>
+                @end
+                @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
+                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+                @end
+              </div>
             {{--  <div class="bg-[#F4F4F4] w-full rounded-md p-5 mt-3">
               <div class="space-y-2 flex flex-col">
                 <p class="font-medium text-lg">Submission</p>
@@ -647,7 +744,7 @@ const checkStartDateMax = () => {
   let inputFeedback = ''
   const removeCurrentFile = (text,input) =>{
     if(file){
-      if(text.id === "showFeedbackFile"){ 
+      if(text.id === "showFeedbackFile" && document.getElementById('labelSignedFile')){ 
         document.getElementById('labelSignedFile').classList.remove('btn-disabled')
       }else if(text.id  === 'showSignedFile'){
         document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
@@ -658,6 +755,7 @@ const checkStartDateMax = () => {
       document.getElementById(input.id).value = ""
       file = null
       if(!inputFeedback){
+        document.getElementById('isCompleteDoc').disabled = false
         document.getElementById('submitStepButton').disabled = true
       }
     }
@@ -667,9 +765,11 @@ const checkStartDateMax = () => {
     inputFeedback = document.getElementById('feedback').value
     if(inputFeedback) {
       document.getElementById('submitStepButton').disabled = false
+      document.getElementById('isCompleteDoc').disabled = true
       document.getElementById('labelSignedFile').classList.add('btn-disabled')
     }else if(!inputFeedback && !file){
       document.getElementById('submitStepButton').disabled = true
+      document.getElementById('isCompleteDoc').disabled = false
       document.getElementById('labelSignedFile').classList.remove('btn-disabled')
     }
   }
@@ -677,10 +777,13 @@ const checkStartDateMax = () => {
   const getFile =(event, showInput)=>{
     file = event.target.files[0]
     if(file) {
+      if(document.getElementById('isCompleteDoc')){
+        document.getElementById('isCompleteDoc').disabled = true
+      }
       document.getElementById('submitStepButton').disabled = false
-      if(event.target.id === 'myFeedbackFile' && file) {
+      if(event.target.id === 'myFeedbackFile' && document.getElementById('labelSignedFile')) {
         document.getElementById('labelSignedFile').classList.add('btn-disabled')
-      }else if(event.target.id === 'mySignedFile' && file){
+      }else if(event.target.id === 'mySignedFile'){
         document.getElementById('feedback').disabled = true
         document.getElementById('feedback').placeholder = "Can’t write feedback while you choose sign file."
         document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
@@ -689,7 +792,18 @@ const checkStartDateMax = () => {
       fileType = event.target.id
     }
   }
-  
+  const checkCompleteDoc = () =>{
+    if(document.getElementById('isCompleteDoc').checked) {
+      document.getElementById('submitStepButton').disabled = false
+      document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
+      document.getElementById('feedback').placeholder = "Can’t write feedback while you choose sign file."
+      document.getElementById('feedback').disabled = true 
+    }else {
+      document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
+      document.getElementById('feedback').placeholder = "Add your feedback"
+      document.getElementById('feedback').disabled = false 
+    }
+  }
   const submitStepForm = async (event) => {
     event.preventDefault() 
     let reason = ''
@@ -697,7 +811,7 @@ const checkStartDateMax = () => {
       reason = document.getElementById('feedback').value
       console.log(reason);
     }
-    let status = ( reason || (fileType === 'myFeedbackFile' && file) ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) ? 'Approved' : 'Pending')||'Pending'
+    let status = ( reason || (fileType === 'myFeedbackFile' && file) ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) || document.getElementById('isCompleteDoc') && document.getElementById('isCompleteDoc').checked ? 'Approved' : 'Pending')||'Pending'
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
       status: status,
