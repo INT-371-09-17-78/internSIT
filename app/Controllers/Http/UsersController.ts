@@ -1225,7 +1225,7 @@ export default class UsersController {
               documentStatusesJsonCurrent.step.includes('TR-03')
             ) {
               const obj = {}
-              obj['TR-03-TR-05File'] = {}
+              obj['TR_03_TR_05File'] = {}
               obj['feedbackFile'] = {}
               obj['reason'] = ''
               if (allUserHasDoc[i].is_adv_react) {
