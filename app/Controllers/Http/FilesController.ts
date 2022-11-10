@@ -253,7 +253,7 @@ export default class FilesController {
 
   public async downloadFile({ request, response }: HttpContextContract) {
     try {
-      const { userId, step, prev, status, template } = request.qs()
+      const { userId, step, prev, status, isTemplate, isStep } = request.qs()
       let file: any
       let path = ''
       let preview: any = prev === 'prev' ? 'inline' : undefined
@@ -296,7 +296,7 @@ export default class FilesController {
         }
       } else {
         file = await File.find(request.param('fileId'))
-        path = template === 'true' ? 'template/' : ''
+        path = isTemplate === 'true' ? 'template/' : isStep ? 'steps/' : ''
       }
 
       let filePath = ''

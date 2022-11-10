@@ -278,7 +278,7 @@
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <div class="space-y-2 w-44 whitespace-normal">
-                          <a class="link link-primary w-fit" href="#" target="_blank">
+                          <a class="link link-primary w-fit" href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
                             {{row.studentFile.file_name || ''}}
                           </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
@@ -290,7 +290,7 @@
                         @else
                         <div class="space-y-2 w-44 whitespace-normal">
                           <p>{{row.reason}}</p>
-                          <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="#" target="_blank">
+                          <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="/api/file/{{row.feedbackFile.file_id}}?prev=prev&&isStep=true" target="_blank">
                             {{row.feedbackFile.file_name || '-'}}
                           </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
@@ -302,7 +302,7 @@
                         <p>-</p>
                         @else
                         <div class="space-y-2 w-44 whitespace-normal">
-                          <a class="{{row.signedFile.file_name && 'link link-primary' }}" href="#" target="_blank">
+                          <a class="{{row.signedFile.file_name && 'link link-primary' }}" href="/api/file/{{row.signedFile.file_id}}?prev=prev&&isStep=true" target="_blank">
                             {{row.signedFile.file_name || '-'}}
                           </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
@@ -370,7 +370,7 @@
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">
                     <div class="space-y-2 whitespace-normal">
-                      <a class="link link-primary w-fit" href="#" target="_blank">
+                      <a class="link link-primary w-fit" href="/api/file/{{row.file_id}}?prev=prev&&isStep=true" target="_blank">
                         {{row.file_name || ''}}
                       </a>
                       <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
@@ -428,7 +428,7 @@
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">
                           <div class="space-y-2 w-44 whitespace-normal">
-                            <a class="link link-primary w-fit" href="#" target="_blank">
+                            <a class="link link-primary w-fit" href="/api/file/{{row.TR_03_TR_05File && row.TR_03_TR_05File.file_id || ''}}?prev=prev&&isStep=true" target="_blank">
                               {{row.TR_03_TR_05File && row.TR_03_TR_05File.file_name || ''}}
                             </a>
                             <p class="text-[#858D95]">Submitted: <span>{{row.TR_03_TR_05File && row.TR_03_TR_05File.created_at}}</span></p>
@@ -440,7 +440,7 @@
                           @else
                           <div class="space-y-2 w-44 whitespace-normal">
                             <p>{{row.reason}}</p>
-                            <a class="{{row.feedbackFile && row.feedbackFile.file_name && 'link link-primary' }}" href="#" target="_blank">
+                            <a class="{{row.feedbackFile && row.feedbackFile.file_name && 'link link-primary' }}" href="/api/file/{{row.feedbackFile.file_id}}?prev=prev&&isStep=true" target="_blank">
                               {{row.feedbackFile && row.feedbackFile.file_name || '-'}}
                             </a>
                             <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile && row.feedbackFile.created_at}}</span></p>

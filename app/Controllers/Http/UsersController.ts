@@ -1164,6 +1164,18 @@ export default class UsersController {
           usersInAcademicYear[0].id
         )
 
+        if (documentStatusesJsonCurrent.step === 'TR-02') {
+          const currentStepFile = await File.query().where(
+            'user_has_doc_id',
+            documentStatusesJsonCurrent.id
+          )
+          // {
+          console.log('เข้า')
+          if (currentStepFile[0]) {
+            currentSteps['file'].row.push(currentStepFile[0].serialize())
+          }
+        }
+
         // }
         // const stFile = await UserHasDoc.query()
         //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
@@ -1249,22 +1261,23 @@ export default class UsersController {
               ) {
                 currentSteps['file'].row.push(obj)
               }
-
-              // obj['TR-05File'] = {}
-              // obj['feedbackFile'] = {}
-              // const result03 = await File.query()
-              //   .where('user_has_doc_id', allUserHasDoc[i].id)
-              //   .andWhere('step_sep', 'TR-03')
-              // obj['TR-03File'] = result03[0].serialize()
-              // const result05 = await File.query()
-              //   .where('user_has_doc_id', allUserHasDoc[i].id)
-              //   .andWhere('step_sep', 'TR-05')
-              // obj['TR-05File'] = result05[0].serialize()
-              // if (allUserHasDoc[i].is_adv_react) {
-              //   const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
-              //   obj['feedbackFile'] = result[0].serialize()
-              // }
             }
+
+            // obj['TR-05File'] = {}
+            // obj['feedbackFile'] = {}
+            // const result03 = await File.query()
+            //   .where('user_has_doc_id', allUserHasDoc[i].id)
+            //   .andWhere('step_sep', 'TR-03')
+            // obj['TR-03File'] = result03[0].serialize()
+            // const result05 = await File.query()
+            //   .where('user_has_doc_id', allUserHasDoc[i].id)
+            //   .andWhere('step_sep', 'TR-05')
+            // obj['TR-05File'] = result05[0].serialize()
+            // if (allUserHasDoc[i].is_adv_react) {
+            //   const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
+            //   obj['feedbackFile'] = result[0].serialize()
+            // }
+            // }
           }
         }
         // const advReact = await UserHasDoc.query()
@@ -1341,24 +1354,6 @@ export default class UsersController {
             // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
-          }
-        }
-
-        if (
-          (request.qs().step && request.qs().step.includes('TR-03')) ||
-          (documentStatusesJsonCurrent.step === 'TR-02' &&
-            documentStatusesJsonCurrent.status === 'Approved') ||
-          (documentStatusesJsonCurrent.step.includes('TR-03') &&
-            !nextStep.name.includes('Informed supervision'))
-        ) {
-          const currentStepFile = await File.query().where(
-            'user_has_doc_id',
-            documentStatusesJsonCurrent.id
-          )
-          // {
-          // console.log(result)
-          if (currentStepFile[0]) {
-            currentSteps['file'].row.push(currentStepFile[0].serialize())
           }
         }
         // let index: any
@@ -1709,7 +1704,7 @@ export default class UsersController {
           .where('user_id', studentUsersRole[0].user_id)
           .andWhere('academic_year', years[0].academic_year)
           .preload('student')
-        // console.log(usersInAcademicYear)
+        console.log(usersInAcademicYear[0])
 
         if (usersInAcademicYear[0]) {
           // const stSerialize = studentUsersRole[0].serialize()
@@ -1717,6 +1712,8 @@ export default class UsersController {
           studentUser = usersInAcademicYear[0].student
         }
       }
+      console.log(studentUser);
+      
       // const studentUsers = await User.query()
       //   .where('user_id', request.param('id'))
       //   .preload('student')
@@ -1767,7 +1764,7 @@ export default class UsersController {
       // if (approve) {
       //   response.redirect(`/register-request`)
       // } else {
-      response.redirect(`/student/${studentUser.user_id}/information`)
+      response.redirect(`/student-information/${usersInAcademicYear[0].user_id}`)
       // }
       // response.redirect(`/student/${studentUser.user_id}/information`)
     } catch (error) {
