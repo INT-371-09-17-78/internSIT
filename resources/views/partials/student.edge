@@ -3,17 +3,19 @@
 @set('firstStep', '')
 @set('lastStep', '')
 @section('student-information')
-<section class="h-full w-full z-[5] relative flex flex-col pt-5 overflow-auto">
-  <div class="flex items-center px-10">
-    <div class="flex flex-col z-10 flex-shrink-0">
-      @if(auth.user.role !== "student")
-      <a href="{{ route('/student-information') }}">
-        <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
+<section class="h-full w-full z-[5] relative flex flex-col overflow-auto">
+  @if(auth.user.role !== "student")
+      <a href="{{ route('/student-information') }}" class="w-fit mx-10 mt-5">
+        <div class="my-3 flex items-center space-x-2 cursor-pointer">
           <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
           <p class="font-semibold">Back</p>
         </div>
       </a>
-      @end
+  @else
+  <div class="mt-12"></div>
+  @end
+  <div class="flex px-10 mt-2">
+    <div class="flex flex-col z-10 flex-shrink-0">
       <p class="text-2xl font-bold">{{studentUser.firstname + " " + studentUser.lastname}}</p>
       <div class="flex space-x-2">
         <p>{{studentUser.user_id}}</p>
@@ -26,7 +28,7 @@
       {{--  <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="link link-primary">Student information</a>  --}}
     </div>
     @if(studentUser.student.plan)
-    <div class="w-full flex h-fit ml-44">
+    <div class="w-full flex h-fit ml-72">
       <ul class="steps">
         @each((step,index) in stepPaged)
           @if(index === 0)
@@ -334,6 +336,9 @@
                 @end
               </tbody>
             </table>
+            @if(auth.user.role !== 'staff' && request.qs().status !== 'Approved')
+              <button type="submit" id="submitStepButton" class="mt-5 btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+            @end
             @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved' || currentSteps.name === 'TR-02' && !nextStep.name.includes('TR-03'))
               <table class="table w-full mt-2">    
               <thead>
@@ -347,6 +352,7 @@
                   </tr>
                 </thead>
                 @each((row,index) in currentSteps.file.row)
+                {{--  @if(row && Object.keys(row).length === 0 && Object.getPrototypeOf(row) === Object.prototype)  --}}
                 <tr class="font-medium border-2 border-[#F6F7F9]">
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -356,6 +362,7 @@
                     </div>
                   </td>
                 </tr>
+                {{--  @end  --}}
                 @end
                 @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
                 <tr class="font-medium border-2 border-[#F6F7F9]">
@@ -401,13 +408,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                {{--  @each((row,index) in currentSteps.file.row)
+                @each((row,index) in currentSteps.file.row)
                       <tr class="font-medium border-2 border-[#F6F7F9]">
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">
                           <div class="space-y-2 w-44 whitespace-normal">
-                            <p class="link link-primary w-fit">{{row.studentFile.file_name || ''}}</p>
-                            <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
+                            <p class="link link-primary w-fit">{{row.TR_03_TR_05File && row.TR_03_TR_05File.file_name || ''}}</p>
+                            <p class="text-[#858D95]">Submitted: <span>{{row.TR_03_TR_05File && row.TR_03_TR_05File.created_at}}</span></p>
                           </div>
                         </td>
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -416,23 +423,13 @@
                           @else
                           <div class="space-y-2 w-44 whitespace-normal">
                             <p>{{row.reason}}</p>
-                            <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">{{row.feedbackFile.file_name || '-'}}</p>
-                            <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
+                            <p class="{{row.feedbackFile && row.feedbackFile.file_name && 'link link-primary' }}">{{row.feedbackFile && row.feedbackFile.file_name || '-'}}</p>
+                            <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile && row.feedbackFile.created_at}}</span></p>
                           </div>
                           @end
                         </td>
-                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                          @if(row.signedFile && Object.keys(row.signedFile).length === 0 && Object.getPrototypeOf(row.signedFile) === Object.prototype)
-                          <p>-</p>
-                          @else
-                          <div class="space-y-2 w-44 whitespace-normal">
-                            <p class="{{row.signedFile.file_name && 'link link-primary' }}">{{row.signedFile.file_name || '-'}}</p>
-                            <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
-                          </div>
-                            @end
-                        </td>
                       </tr>
-                @end  --}}
+                @end
                   @if(auth.user.role === 'staff')
                     <tr class="font-medium border-2 border-[#F6F7F9]">
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
@@ -462,7 +459,7 @@
                   @end
                 </tbody>
               </table>
-              <div class="flex mt-5">
+              {{--  <div class="flex mt-5">
                 @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
                 <div class="flex space-x-2">
                   <input type="checkbox" class="checkbox" id="isCompleteDoc" onchange="checkCompleteDoc()"/>
@@ -472,7 +469,7 @@
                 @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
                 <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
                 @end
-              </div>
+              </div>  --}}
             {{--  <div class="bg-[#F4F4F4] w-full rounded-md p-5 mt-3">
               <div class="space-y-2 flex flex-col">
                 <p class="font-medium text-lg">Submission</p>
