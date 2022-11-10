@@ -1164,14 +1164,16 @@ export default class UsersController {
           usersInAcademicYear[0].id
         )
 
-        const currentStepFile = await File.query().where(
-          'user_has_doc_id',
-          documentStatusesJsonCurrent.id
-        )
-        // {
-        // console.log(result)
-        if (currentStepFile[0]) {
-          currentSteps['file'].row.push(currentStepFile[0].serialize())
+        if (documentStatusesJsonCurrent.step === 'TR-02') {
+          const currentStepFile = await File.query().where(
+            'user_has_doc_id',
+            documentStatusesJsonCurrent.id
+          )
+          // {
+          // console.log(result)
+          if (currentStepFile[0]) {
+            currentSteps['file'].row.push(currentStepFile[0].serialize())
+          }
         }
 
         // }
