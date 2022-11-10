@@ -23,7 +23,7 @@
         </form>  --}}
         
         <div class="px-16 py-5">
-          <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}">
+          <a href="{{ route('/student-information/:id', { id: studentUser.user_id }) }}">
             <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
               <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
               <p class="font-semibold">Back</p>
@@ -40,11 +40,9 @@
               @end
               @end
             </div>
-            @if(auth.user.role === "staff")
-            <a href="{{ route('/student/:id/information', { id: studentUser.user_id }) }}" class="self-center mt-2">
+            <a href="{{ route('/student-information/:id', { id: studentUser.user_id }) }}" class="self-center mt-2">
             <button type="submit" class="w-20 btn btn-sm btn-primary rounded-3xl text-white capitalize">submit</button>
-             </a>
-            @end
+            </a>
           </form>
         </div>
   </section>
