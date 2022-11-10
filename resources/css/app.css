@@ -12,7 +12,7 @@
 }
 
 .steps .step {
-    min-width: 10rem;
+    width: 10rem;
     grid-template-rows: 50px 1fr;
 }
 
@@ -21,4 +21,9 @@
     width: 3rem;
     height: 3rem;
     display: none;
+}
+
+.tooltip:before{
+    max-width: none;
+    white-space: pre;
 }
