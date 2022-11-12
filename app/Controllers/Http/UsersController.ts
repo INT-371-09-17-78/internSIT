@@ -3,7 +3,7 @@ import User from 'App/Models/User'
 import Student from 'App/Models/Student'
 // import Status from 'App/Models/Status'
 import File from 'App/Models/File'
-import { StepStatus, Steps } from 'Contracts/enum'
+import { StepStatus, Steps4Month, Steps2Month, Steps6Month } from 'Contracts/enum'
 // import Document from 'App/Models/Document'
 // import StepStatusModel from 'App/Models/StepStatus'
 import AcademicYear from 'App/Models/AcademicYear'
@@ -951,97 +951,97 @@ export default class UsersController {
         studentUser.student.plan === 6
           ? [
               {
-                name: Steps.TR01,
+                name: Steps6Month.TR01,
                 // defaultFile:
               },
               {
-                name: Steps.TR02,
+                name: Steps6Month.TR02,
               },
               {
-                name: Steps.TR03_AND_TR05_1_6,
+                name: Steps6Month.TR03_AND_TR05_1_6,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_1_6,
+                name: Steps6Month.INFORMED_SUPERVISION_1_6,
               },
               {
-                name: Steps.TR03_AND_TR05_2_6,
+                name: Steps6Month.TR03_AND_TR05_2_6,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_2_6,
+                name: Steps6Month.INFORMED_SUPERVISION_2_6,
               },
               {
-                name: Steps.TR03_AND_TR05_3_6,
+                name: Steps6Month.TR03_AND_TR05_3_6,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_3_6,
+                name: Steps6Month.INFORMED_SUPERVISION_3_6,
               },
               {
-                name: Steps.TR03_AND_TR05_4_6,
+                name: Steps6Month.TR03_AND_TR05_4_6,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_4_6,
+                name: Steps6Month.INFORMED_SUPERVISION_4_6,
               },
               {
-                name: Steps.TR03_AND_TR05_5_6,
+                name: Steps6Month.TR03_AND_TR05_5_6,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_5_6,
+                name: Steps6Month.INFORMED_SUPERVISION_5_6,
               },
               {
-                name: Steps.SENT_PRESENTATION,
+                name: Steps6Month.SENT_PRESENTATION,
               },
               {
-                name: Steps.TR03_AND_TR05_6_6,
+                name: Steps6Month.TR03_AND_TR05_6_6,
               },
             ]
           : studentUser.student.plan === 4
           ? [
               {
-                name: Steps.TR01,
+                name: Steps4Month.TR01,
               },
               {
-                name: Steps.TR02,
+                name: Steps4Month.TR02,
               },
               {
-                name: Steps.TR03_AND_TR05_1_4,
+                name: Steps4Month.TR03_AND_TR05_1_4,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_1_4,
+                name: Steps4Month.INFORMED_SUPERVISION_1_4,
               },
               {
-                name: Steps.TR03_AND_TR05_2_4,
+                name: Steps4Month.TR03_AND_TR05_2_4,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_2_4,
+                name: Steps4Month.INFORMED_SUPERVISION_2_4,
               },
               {
-                name: Steps.TR03_AND_TR05_3_4,
+                name: Steps4Month.TR03_AND_TR05_3_4,
               },
               {
-                name: Steps.INFORMED_SUPERVISION_3_4,
+                name: Steps4Month.INFORMED_SUPERVISION_3_4,
               },
               {
-                name: Steps.SENT_PRESENTATION,
+                name: Steps4Month.SENT_PRESENTATION,
               },
               {
-                name: Steps.TR03_AND_TR05_4_6,
+                name: Steps4Month.TR03_AND_TR05_4_4,
               },
             ]
           : [
               {
-                name: Steps.TR01,
+                name: Steps2Month.TR01,
               },
               {
-                name: Steps.TR02,
+                name: Steps2Month.TR02,
               },
               {
-                name: Steps.INFORMED_SUPERVISION,
+                name: Steps2Month.INFORMED_SUPERVISION,
               },
               {
-                name: Steps.SENT_PRESENTATION,
+                name: Steps2Month.SENT_PRESENTATION,
               },
               {
-                name: Steps.TR03_AND_TR08,
+                name: Steps2Month.TR03_AND_TR08,
               },
             ]
       let nextStep: any
@@ -1075,7 +1075,6 @@ export default class UsersController {
       //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
       //   .orderBy('updated_at', 'asc')
       let submission: any = []
-
       let stepFile: any
       let userHasDoc: any = []
       let isChangeStep: any = false
@@ -1105,6 +1104,7 @@ export default class UsersController {
             userHasDoc = await UserHasDoc.query()
               .where('step', request.qs().step)
               .andWhere('status', request.qs().status)
+              .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
             isChangeStep = true
           }
           response.cookie('isChangeStepSame', request.qs().step)
@@ -1115,6 +1115,7 @@ export default class UsersController {
             qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
             qs.gnext = 'true'
           }
+
           response.cookie('isChangeStepSame', '')
           userHasDoc.push(userHasDocResult[0])
         }
@@ -1150,7 +1151,6 @@ export default class UsersController {
 
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
-        // console.log(documentStatusesJsonCurrent.status)
         currentSteps['id'] = documentStatusesJsonCurrent.id
         currentSteps['file'] = {}
         currentSteps['file'].row = []
@@ -1164,28 +1164,43 @@ export default class UsersController {
           usersInAcademicYear[0].id
         )
 
-        if (documentStatusesJsonCurrent.step === 'TR-02') {
+        if (
+          documentStatusesJsonCurrent.step === 'TR-02' &&
+          request.qs().step &&
+          !request.qs().step.includes('TR-03')
+        ) {
           const currentStepFile = await File.query().where(
             'user_has_doc_id',
             documentStatusesJsonCurrent.id
           )
           // {
-          console.log('เข้า')
+          // console.log('เข้า')
+          // console.log(currentStepFile)
+
           if (currentStepFile[0]) {
             currentSteps['file'].row.push(currentStepFile[0].serialize())
           }
         }
 
-        // }
-        // const stFile = await UserHasDoc.query()
+        // const checkForStepHasPassed = await UserHasDoc.query()
         //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhere('status', 'Pending')
-        //   .orderBy('updated_at', 'desc')
-        // const resultStFile = await File.query().where('user_has_doc_id', stFile[0].id)
+        //   .andWhere('step', 'TR-02')
+
         if (documentStatusesJsonCurrent.step !== 'TR-02') {
           currentSteps['file'].row = []
           for (let i = 0; i < allUserHasDoc.length; i++) {
-            if (allUserHasDoc[i].step === 'TR-01' && documentStatusesJsonCurrent.step === 'TR-01') {
+            if (
+              allUserHasDoc[i].step === 'TR-01' &&
+              documentStatusesJsonCurrent.step === 'TR-01'
+              // &&
+              // (!checkForStepHasPassed || checkForStepHasPassed.length <= 0) &&
+              // documentStatusesJsonCurrent.step !== 'TR-01' &&
+              // documentStatusesJsonCurrent.status !== 'Approved'
+
+              // &&
+              // request.qs().step &&
+              // !request.qs().step.includes('TR-02')
+            ) {
               const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
               const obj = {}
               obj['feedbackFile'] = {}
@@ -1280,42 +1295,7 @@ export default class UsersController {
             // }
           }
         }
-        // const advReact = await UserHasDoc.query()
-        //   .where('is_adv_react', true)
-        //   .andWhere('step', documentStatusesJsonCurrent.step)
-        //   .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhere('is_signed', false)
-        // const advReactSigned = await UserHasDoc.query()
-        //   .where('is_adv_react', true)
-        //   .andWhere('step', documentStatusesJsonCurrent.step)
-        //   .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhereNull('no_approve_reason')
-        //   .andWhere('is_signed', true)
-        // const stReact = await UserHasDoc.query()
-        //   .where('is_adv_react', false)
-        //   .andWhere('step', documentStatusesJsonCurrent.step)
-        //   .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-        // let feedbackFile: any = []
-        // for (let i = 0; i < advReact.length; i++) {
-        //   const result = await File.query().where('user_has_doc_id', advReact[i].id)
-        //   if (result && result.length > 0) {
-        //     feedbackFile.push(result[0].serialize())
-        //   }
-        // }
-        // let signedFile: any = []
-        // for (let i = 0; i < advReactSigned.length; i++) {
-        //   const result = await File.query().where('user_has_doc_id', advReactSigned[i].id)
-        //   if (result && result.length > 0) {
-        //     signedFile.push(result[0].serialize())
-        //   }
-        // }
-        // let studentFile: any = []
-        // for (let i = 0; i < stReact.length; i++) {
-        //   const result = await File.query().where('user_has_doc_id', stReact[i].id)
-        //   if (result && result.length > 0) {
-        //     studentFile.push(result[0].serialize())
-        //   }
-        // }
+
         currentSteps['file'].templateFile = templateFile
         // currentSteps['file'].feedbackFile = feedbackFile
         // currentSteps['file'].signedFile = signedFile
@@ -1344,43 +1324,26 @@ export default class UsersController {
         currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
         currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
         currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
-
+        // console.log(Steps[Steps.])
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
         // console.log(stepIndex)
         if (stepIndex >= 0) {
           steps[stepIndex]['status'] = userHasDoc[0].status
           if (userHasDoc[0].status === 'Approved') {
+            // console.log(steps[stepIndex + 1])
+
+            // const body = {}
+            // body['step'] = steps[stepIndex + 1] ? steps[stepIndex + 1].name : steps[stepIndex].name
+            // body['status'] = 'Waiting'
+            // await usersInAcademicYear[0].related('userHasDoc').create(body)
             nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
+            nextStep['isPassed'] = false
             // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
+            nextStep['isPassed'] = true
           }
         }
-        // let index: any
-        // for (let i = 0; i < steps.length; i++) {
-        //   for (let j = 0; j < userHasDoc.length; j++) {
-        //     if (steps[i].name === userHasDoc[j].document_id) {
-        //       // steps[0]['status'] = 'Approved'
-        //       index = i
-        //       steps[i]['status'] = userHasDoc[j].status_id
-        //       break
-        //     }
-        //     // else {
-        //     //   steps[i]['status'] = ''
-        //     // }
-
-        //     // }
-        //     // console.log(steps[i].name)
-
-        //     // const index = userHasDoc.findIndex(
-        //     //   (usr) => console.log(usr.document_id.toLowerCase());
-
-        //     // )
-        //     // console.log(index)
-        //   }
-        // }
-        // const CurrentStepIndex = steps.findIndex((step) => step.name === userHasDoc[0].document_id)
-        // steps[CurrentStepIndex]['status'] = userHasDoc[0].status_id
         const userHasDocForRC = await UserHasDoc.query()
           .where('user_in_academic_year_id', usersInAcademicYear[0].id)
           .orderBy('updated_at', 'desc')
@@ -1410,10 +1373,10 @@ export default class UsersController {
       }
       // console.log(steps)
       console.log(currentSteps)
-      console.log(currentSteps.file.row)
+      // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
-      // console.log(nextStep)
+      console.log(nextStep)
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
@@ -1598,7 +1561,34 @@ export default class UsersController {
       if (dateConfirmStatus) {
         body['date_confirm_status'] = dateConfirmStatus
       }
-      await usersInAcademicYear[0].related('userHasDoc').create(body)
+      await usersInAcademicYear[0]
+        .related('userHasDoc')
+        .create(body)
+        .then(async () => {
+          if (step && status) {
+            if (status === StepStatus.APPROVED) {
+              const object =
+                usersInAcademicYear[0].student.plan === 6
+                  ? Steps6Month
+                  : usersInAcademicYear[0].student.plan === 4
+                  ? Steps4Month
+                  : Steps2Month
+              const test = Object.keys(object).find((key) => object[key] === step)
+              // console.log(test)
+              // if(test){
+
+              // }
+              const indexOfS = Object.keys(object).indexOf(test ? test : '')
+              // console.log(indexOfS);
+
+              const s = Object.values(object)[indexOfS + 1]
+              // console.log(s);
+              body['step'] = s
+              body['status'] = 'Waiting'
+              await usersInAcademicYear[0].related('userHasDoc').create(body)
+            }
+          }
+        })
 
       return response.status(200).json('success')
     } catch (error) {
@@ -1712,8 +1702,8 @@ export default class UsersController {
           studentUser = usersInAcademicYear[0].student
         }
       }
-      console.log(studentUser);
-      
+      console.log(studentUser)
+
       // const studentUsers = await User.query()
       //   .where('user_id', request.param('id'))
       //   .preload('student')
