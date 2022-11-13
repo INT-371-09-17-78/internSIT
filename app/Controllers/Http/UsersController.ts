@@ -1230,7 +1230,16 @@ export default class UsersController {
               }
 
               if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
-                const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
+                const lastestStSendingFile = await UserHasDoc.query()
+                  .where('user_in_academic_year_id', allUserHasDoc[i].user_in_academic_year_id)
+                  .andWhere('step', 'TR-01')
+                  .andWhere('status', StepStatus.PENDING)
+                  // .orWhere('status', StepStatus.APPROVED)
+                  .orderBy('updated_at', 'desc')
+                const result = await File.query().where(
+                  'user_has_doc_id',
+                  lastestStSendingFile[0].id
+                )
                 obj['studentFile'] = result[0].serialize()
               }
               if (allUserHasDoc[i].no_approve_reason) {
