@@ -184,8 +184,8 @@
                         <div class="invisible" id="signedForm">
                           <p>Signed file</p>
                           <div class="flex items-center space-x-2 w-44 mt-2">
-                            <label for="mySignedFile" id="labelSignedFile" class="btn btn-outline btn-xs h-7 w-fit bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                            <input type="file" id="mySignedFile" class="input hidden" onchange="getFile(event,'showSignedFile')"/>
+                            <label for="signedFile" id="labelSignedFile" class="btn btn-outline btn-xs h-7 w-fit bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                            <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showSignedFile')"/>
                             <div id="showSignedFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                           </div>
                         </div>
@@ -198,8 +198,8 @@
                         <div class="invisible" id="feedbackForm">
                           <p>Feedback file</p>
                           <div class="flex items-center space-x-2 w-44 mt-2">
-                            <label for="myFeedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                            <input type="file" id="myFeedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
+                            <label for="feedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                            <input type="file" id="feedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
                             <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                           </div>
                           <textarea id="feedback" class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
@@ -223,21 +223,21 @@
                       </td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <p class="text-red-500">Improve</p>
-                        @if(row.reason.body && row.feedbackFile.file_name)
-                          @if(row.reason.body)
-                          <p>{{row.reason.body}}</p>
-                            @if(!row.reason.body || !row.feedbackFile.file_name)
-                            <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
-                            @end
-                          @end
-                          @if(row.feedbackFile.file_name)
-                          <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true" target="_blank">
-                            {{row.feedbackFile.file_name}}
-                          </a>
-                          <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
-                          @end
-                        @else
+                        @if(!row.reason.body && !row.feedbackFile.file_name)
                         <p>-</p>
+                        @else
+                        <div class="space-y-2 w-44 whitespace-normal">
+                        @if(row.reason.body)
+                        <p>{{row.reason.body}}</p>
+                        <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
+                        @end
+                        @if(row.feedbackFile.file_name)
+                        <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true" target="_blank">
+                          {{row.feedbackFile.file_name}}
+                        </a>
+                        <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
+                        @end
+                        </div>
                         @end
                       </td>
                       @end
@@ -249,8 +249,8 @@
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">
                       <div class="flex items-center space-x-2 w-44">
-                        <label for="myStudentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                        <input type="file" id="myStudentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
+                        <label for="studentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                        <input type="file" id="studentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
                         <div id="showStudentFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                       </div>
                     </td>
@@ -338,57 +338,113 @@
                         </div>
                       </div>
                     </th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                @each((row,index) in currentSteps.file.row)
-                      <tr class="font-medium border-2 border-[#F6F7F9]">
-                        <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
-                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                          <div class="space-y-2 whitespace-normal">
-                            <a class="link link-primary w-fit" href="/api/file/{{row.TR_03_TR_05File.file_id}}?prev=prev&&isStep=true" target="_blank">
-                              {{row.TR_03_TR_05File.file_name || ''}}
-                            </a>
-                            <p class="text-[#858D95]">Submitted: <span>{{row.TR_03_TR_05File.created_at}}</span></p>
-                          </div>
-                        </td>
-                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                          {{--  @if(row.feedbackFile && Object.keys(row.feedbackFile).length === 0 && Object.getPrototypeOf(row.feedbackFile) === Object.prototype)
-                          <p>-</p>
-                          @else  --}}
-                          <div class="space-y-2 w-44 whitespace-normal">
-                            <p>{{row.reason.body || ''}}</p>
-                            <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
-                            <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="/api/file/{{row.feedbackFile.file_id}}?prev=prev&&isStep=true" target="_blank">
-                              {{row.feedbackFile.file_name || ''}}
-                            </a>
-                            <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
-                          </div>
-                          {{--  @end  --}}
-                        </td>
-                      </tr>
-                @end
-                  @if(auth.user.role === 'staff' && currentSteps.file.row.length > 0 && request.qs().status !== 'Approved')
+                  @each((row,index) in currentSteps.file.row)
+                  <tr class="font-medium border-2 border-[#F6F7F9]">
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <div class="space-y-2 w-44 whitespace-normal">
+                        <a class="link link-primary w-fit" href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
+                          {{row.studentFile.file_name}}
+                        </a>
+                        <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
+                      </div>
+                    </td>
+                    @if(auth.user.role === 'staff' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && (!row.reason.body && !row.feedbackFile.file_name))
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <div class="flex space-x-2 items-center mb-5">
+                        <input type="radio" name="radio-1" class="radio radio-primary" id="isComplete" checked onchange="isShowComplete()" />
+                        <p>Complete</p>
+                      </div>
+                      {{--  <div class="invisible" id="signedForm">
+                        <p>Signed file</p>
+                        <div class="flex items-center space-x-2 w-44 mt-2">
+                          <label for="signedFile" id="labelSignedFile" class="btn btn-outline btn-xs h-7 w-fit bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                          <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showSignedFile')"/>
+                          <div id="showSignedFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                        </div>
+                      </div>  --}}
+                    </td>
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <div class="flex space-x-2 items-center mb-5">
+                        <input type="radio" name="radio-1" class="radio radio-primary" id="hasFeedback" onchange="isShowFeedback()"/>
+                        <p class="text-red-500">Improve</p>
+                      </div>
+                      <div class="invisible" id="feedbackForm">
+                        <p>Feedback file</p>
+                        <div class="flex items-center space-x-2 w-44 mt-2">
+                          <label for="feedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                          <input type="file" id="feedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
+                          <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                        </div>
+                        <textarea id="feedback" class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
+                      </div>
+                    </td>
+                    @else
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <div class="space-y-2 w-44 whitespace-normal">
+                        <p>Complete</p>
+                        <p>-</p>
+                        {{--  @if(!row.signedFile.file_name)
+                        <p>Complete</p>
+                        <p>-</p>
+                        @else
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <a class="{{row.signedFile.file_name && 'link link-primary' }}" href="/api/file/{{row.signedFile.file_id}}?prev=prev&&isStep=true" target="_blank">
+                            {{row.signedFile.file_name || '-'}}
+                          </a>
+                          <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
+                        </div>
+                        @end  --}}
+                      </div>
+                    </td>
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                      <p class="text-red-500">Improve</p>
+                      @if(!row.reason.body && !row.feedbackFile.file_name)
+                      <p>-</p>
+                      @else
+                      <div class="space-y-2 w-44 whitespace-normal">
+                      @if(row.reason.body)
+                      <p>{{row.reason.body}}</p>
+                      <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
+                      @end
+                      @if(row.feedbackFile.file_name)
+                      <a class="{{row.feedbackFile.file_name && 'link link-primary' }}" href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true" target="_blank">
+                        {{row.feedbackFile.file_name}}
+                      </a>
+                      <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
+                      @end
+                      </div>
+                      @end
+                    </td>
+                    @end
+                  </tr>
+            @end
+                  {{--  @if(auth.user.role === 'staff' && currentSteps.file.row.length > 0 && request.qs().status !== 'Approved')
                     <tr class="font-medium border-2 border-[#F6F7F9]">
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">-</td>
                       <td class="align-top border-2 border-[#F6F7F9]">
                           <textarea id="feedback" class="p-3 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
                           <div class="flex items-center space-x-2 w-44">
-                            <label for="myFeedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                            <input type="file" id="myFeedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
+                            <label for="feedbackFile" id="labelFeedbackFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                            <input type="file" id="feedbackFile" class="input hidden" onchange="getFile(event,'showFeedbackFile')"/>
                             <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                           </div>
                       </td>
-                    </tr>
-                    @elseif(auth.user.role === 'student' && request.qs().status !== 'Approved')
+                    </tr>  --}}
+                    @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
                     <tr class="font-medium border-2 border-[#F6F7F9]">
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
                         <div class="flex items-center space-x-2 w-36">
-                          <label for="myStudentFile1" id="labelStudentFile1" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                          <input type="file" id="myStudentFile1" class="input hidden" onchange="getFile(event,'showStudentFile1')"/>
-                          <div id="showStudentFile1" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                          <label for="studentFile" id="labelStudentFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                          <input type="file" id="studentFile" class="input hidden" onchange="getFile(event,'showStudentFile')"/>
+                          <div id="showStudentFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                         </div>
                       </td>
                       <td class="align-top border-2 border-[#F6F7F9]">-</td>
@@ -396,17 +452,9 @@
                     @end
                 </tbody>
               </table>
-              <div class="flex mt-5">
-                @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
-                <div class="flex space-x-2">
-                  <input type="checkbox" class="checkbox" id="isCompleteDoc" onchange="checkCompleteDoc()"/>
-                  <p>All documents complete</p>
-                </div>
-                @end
                 @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
-                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+                <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
                 @end
-              </div>
               @end
   @else
     @if(auth.user.role === 'student')
@@ -425,13 +473,28 @@
 </section>
 <script>  
 const isShowComplete = () =>{
-  document.getElementById('signedForm').classList.remove('invisible')
+  if(document.getElementById('signedForm')){
+    document.getElementById('signedForm').classList.remove('invisible')
+  }
   document.getElementById('feedbackForm').classList.add('invisible')
 }
 
 const isShowFeedback = () =>{
-  document.getElementById('signedForm').classList.add('invisible')
+  if(document.getElementById('signedForm')){
+    document.getElementById('signedForm').classList.add('invisible')
+  }
+  if(inputFeedback && file){
+    document.getElementById('submitStepButton').disabled = false
+  }else{
+    document.getElementById('submitStepButton').disabled = true
+  }
   document.getElementById('feedbackForm').classList.remove('invisible')
+}
+
+// document.getElementById('isComplete').checked = true
+// console.log(document.getElementById('isComplete'))
+if(document.getElementById('isComplete') && document.getElementById('isComplete').checked){
+  document.getElementById('submitStepButton').disabled = false
 }
 
 if(document.getElementById('hasSignedFile') && document.getElementById('hasSignedFile').checked){
@@ -527,9 +590,6 @@ const checkStartDateMax = () => {
       document.getElementById(input.id).value = ""
       file = null
       if(!inputFeedback){
-        if(document.getElementById('isCompleteDoc')){
-          document.getElementById('isCompleteDoc').disabled = false
-        }
         document.getElementById('submitStepButton').disabled = true
       }
     }
@@ -539,12 +599,9 @@ const checkStartDateMax = () => {
     inputFeedback = document.getElementById('feedback').value
     if(inputFeedback) {
       document.getElementById('submitStepButton').disabled = false
-      if(document.getElementById('isCompleteDoc'))
-      document.getElementById('isCompleteDoc').disabled = true
       document.getElementById('labelSignedFile').classList.add('btn-disabled')
     }else if(!inputFeedback && !file){
       document.getElementById('submitStepButton').disabled = true
-      document.getElementById('isCompleteDoc').disabled = false
       document.getElementById('labelSignedFile').classList.remove('btn-disabled')
     }
   }
@@ -552,13 +609,10 @@ const checkStartDateMax = () => {
   const getFile = (event, showInput) =>{
     file = event.target.files[0]
     if(file) {
-      if(document.getElementById('isCompleteDoc')){
-        document.getElementById('isCompleteDoc').disabled = true
-      }
       document.getElementById('submitStepButton').disabled = false
-      if(event.target.id === 'myFeedbackFile' && document.getElementById('labelSignedFile')) {
+      if(event.target.id === 'feedbackFile' && document.getElementById('labelSignedFile')) {
         document.getElementById('labelSignedFile').classList.add('btn-disabled')
-      }else if(event.target.id === 'mySignedFile'){
+      }else if(event.target.id === 'signedFile'){
         document.getElementById('feedback').disabled = true
         document.getElementById('feedback').placeholder = "Can’t write feedback while you choose sign file."
         document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
@@ -568,16 +622,9 @@ const checkStartDateMax = () => {
     }
   }
   const checkCompleteDoc = () =>{
-    if(document.getElementById('isCompleteDoc').checked) {
-      document.getElementById('submitStepButton').disabled = false
-      document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
-      document.getElementById('feedback').placeholder = "Can’t write feedback while you choose sign file."
-      document.getElementById('feedback').disabled = true 
-    }else {
       document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
       document.getElementById('feedback').placeholder = "Add your feedback"
       document.getElementById('feedback').disabled = false 
-    }
   }
   const submitStepForm = async (event) => {
     event.preventDefault() 
@@ -586,7 +633,7 @@ const checkStartDateMax = () => {
       reason = document.getElementById('feedback').value
       console.log(reason);
     }
-    let status = ( reason || (fileType === 'myFeedbackFile' && file) ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) || document.getElementById('isCompleteDoc') && document.getElementById('isCompleteDoc').checked ? 'Approved' : 'Pending')||'Pending'
+    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
       status: status,
@@ -599,6 +646,7 @@ const checkStartDateMax = () => {
     formData.append('step', '{{nextStep.name}}')
     formData.append('status', status)
     formData.append('studentId', {{studentUser.user_id}})
+    formData.append('stepFileType', fileType)
     // formData.append('studentId', {{studentUser.user_id}})
     
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{

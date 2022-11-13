@@ -98,7 +98,7 @@ export default class FilesController {
           const newFileName = uuidv4()
           await file.move(
             Application.tmpPath(
-              stepFileType.inludes('template') ? 'uploads/template' : 'uploads/steps'
+              stepFileType.includes('template') ? 'uploads/template' : 'uploads/steps'
             ),
             {
               name: newFileName + '.' + file.extname,
@@ -138,7 +138,7 @@ export default class FilesController {
           //     this.deleteFile(result, 'steps/')
           //   }
           // } else
-          if (stepFileType.inludes('template')) {
+          if (stepFileType.includes('template')) {
             const result = await File.query().where('step_file_type', stepFileType)
             // console.log(result)
 
