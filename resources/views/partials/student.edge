@@ -599,6 +599,7 @@ const checkStartDateMax = () => {
     formData.append('step', '{{nextStep.name}}')
     formData.append('status', status)
     formData.append('studentId', {{studentUser.user_id}})
+    // formData.append('studentId', {{studentUser.user_id}})
     
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',

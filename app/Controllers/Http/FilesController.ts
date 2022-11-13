@@ -75,11 +75,11 @@ export default class FilesController {
 
   public async storeDirect({ request, response }: HttpContextContract) {
     try {
-      const { step, studentId, status, template } = request.only([
+      const { step, studentId, status, stepFileType } = request.only([
         'step',
         'studentId',
         'status',
-        'template',
+        'stepFileType',
       ])
       // console.log(docId)
       // console.log(statId)
@@ -97,7 +97,9 @@ export default class FilesController {
         } else {
           const newFileName = uuidv4()
           await file.move(
-            Application.tmpPath(template === 'true' ? 'uploads/template' : 'uploads/steps'),
+            Application.tmpPath(
+              stepFileType.inludes('template') ? 'uploads/template' : 'uploads/steps'
+            ),
             {
               name: newFileName + '.' + file.extname,
               overwrite: true, // overwrite in case of conflict
@@ -136,8 +138,8 @@ export default class FilesController {
           //     this.deleteFile(result, 'steps/')
           //   }
           // } else
-          if (template === 'true') {
-            const result = await File.query().where('template_step', step)
+          if (stepFileType.inludes('template')) {
+            const result = await File.query().where('step_file_type', stepFileType)
             // console.log(result)
 
             if (result && result.length > 0) {
@@ -156,7 +158,8 @@ export default class FilesController {
             // doc_id: doc.doc_name,
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
-            template_step: template === 'true' ? step : null,
+            // step_file_type: template === 'true' ? step : null,
+            step_file_type: stepFileType,
             // step_sep: stepSep && stepSep !== '' ? stepSep : null,
           })
           // userHasDoc[0].related('f')
