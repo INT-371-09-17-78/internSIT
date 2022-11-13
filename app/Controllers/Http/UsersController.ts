@@ -3,7 +3,7 @@ import User from 'App/Models/User'
 import Student from 'App/Models/Student'
 // import Status from 'App/Models/Status'
 import File from 'App/Models/File'
-import { StepStatus, Steps4Month, Steps2Month, Steps6Month } from 'Contracts/enum'
+import { StepStatus, Steps4Month, Steps2Month, Steps6Month, AllSteps } from 'Contracts/enum'
 // import Document from 'App/Models/Document'
 // import StepStatusModel from 'App/Models/StepStatus'
 import AcademicYear from 'App/Models/AcademicYear'
@@ -1074,6 +1074,8 @@ export default class UsersController {
       // const userHasDocResultForTime = await UserHasDoc.query()
       //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
       //   .orderBy('updated_at', 'asc')
+      // console.log(userHasDocResult[0])
+
       let submission: any = []
       let stepFile: any
       let userHasDoc: any = []
@@ -1124,23 +1126,24 @@ export default class UsersController {
         // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
         // const file = await File.query().where('doc_name', userHasDoc[0].document_id)
         // stepFile = file[0].file_id
-        const stepStatToSubmission = await UserHasDoc.query()
-          .where('step', userHasDoc[0].step)
-          .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .andWhere('status', 'Pending')
-          .orderBy('updated_at', 'asc')
-        // const userHasDocResultForTime = await UserHasDoc.query()
-        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhere('step_stat_id', stepStatToSubmission[0].id)
-        //   .orderBy('updated_at', 'asc')
 
-        for (let i = 0; i < stepStatToSubmission.length; i++) {
-          let docWStatSe: any
-          docWStatSe = moment(stepStatToSubmission[i].createdAt.toString())
-            .tz('Asia/Bangkok')
-            .format('MMMM D, YYYY h:mm A')
-          submission.push({ created_at: docWStatSe })
-        }
+        // const stepStatToSubmission = await UserHasDoc.query()
+        //   .where('step', userHasDoc[0].step)
+        //   .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+        //   .andWhere('status', 'Pending')
+        //   .orderBy('updated_at', 'asc')
+        // // const userHasDocResultForTime = await UserHasDoc.query()
+        // //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        // //   .andWhere('step_stat_id', stepStatToSubmission[0].id)
+        // //   .orderBy('updated_at', 'asc')
+
+        // for (let i = 0; i < stepStatToSubmission.length; i++) {
+        //   let docWStatSe: any
+        //   docWStatSe = moment(stepStatToSubmission[i].createdAt.toString())
+        //     .tz('Asia/Bangkok')
+        //     .format('MMMM D, YYYY h:mm A')
+        //   submission.push({ created_at: docWStatSe })
+        // }
       }
 
       // console.log(submission)
@@ -1193,7 +1196,7 @@ export default class UsersController {
         // if (documentStatusesJsonCurrent.step !== 'TR-02') {
         currentSteps['file'].row = []
         for (let i = 0; i < allUserHasDoc.length; i++) {
-          console.log(allUserHasDoc[i].step)
+          // console.log(documentStatusesJsonCurrent)
 
           if (
             (documentStatusesJsonCurrent.step === 'TR-01' &&
@@ -1390,6 +1393,8 @@ export default class UsersController {
         const userHasDocForRC = await UserHasDoc.query()
           .where('user_in_academic_year_id', usersInAcademicYear[0].id)
           .orderBy('updated_at', 'desc')
+        // console.log(userHasDocForRC[0])
+
         realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
         // console.log(userHasDocForRC)
 
@@ -1401,6 +1406,7 @@ export default class UsersController {
           steps[i]['status'] = 'Approved'
         }
       } else {
+        // console.log("เข้ามัเยนิ");
         currentSteps['name'] = steps[0].name
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
@@ -1416,10 +1422,10 @@ export default class UsersController {
       }
       // console.log(steps)
       console.log(currentSteps)
-      console.log(currentSteps.file.row)
+      // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
-      console.log(nextStep)
+      // console.log(nextStep)
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
@@ -1465,6 +1471,8 @@ export default class UsersController {
       })
       // return response.redirect('/announcement')
     } catch (error) {
+      console.log(error)
+
       return response.status(400).json({ message: error.message })
     }
   }
@@ -1605,7 +1613,7 @@ export default class UsersController {
         body['date_confirm_status'] = dateConfirmStatus
       }
 
-      if (status && status !== StepStatus.PENDING) {
+      if (status && status !== StepStatus.PENDING && step && step !== AllSteps.TR02) {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
