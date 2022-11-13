@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany, HasMany, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import File from 'App/Models/File'
 import usersInAcademicYear from 'App/Models/UsersInAcademicYear'
-import { StepStatus, Steps } from 'Contracts/enum'
+import { StepStatus, AllSteps } from 'Contracts/enum'
 
 export default class UserHasDoc extends BaseModel {
   public static table = 'users_has_docs'
@@ -14,7 +14,7 @@ export default class UserHasDoc extends BaseModel {
   // public step_status_id: number
 
   @column()
-  public step: Steps
+  public step: AllSteps
 
   @column()
   public status: StepStatus
