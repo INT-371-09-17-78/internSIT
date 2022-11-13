@@ -5,7 +5,7 @@ export enum StepStatus {
   WAITING = 'Waiting',
 }
 
-export enum Steps2Month {
+export enum AllSteps {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
   INFORMED_SUPERVISION = 'Informed supervision',
@@ -33,10 +33,17 @@ export enum Steps2Month {
   INFORMED_SUPERVISION_4_4 = 'Informed supervision (4/4)',
 }
 
+export enum Steps2Month {
+  TR01 = 'TR-01',
+  TR02 = 'TR-02',
+  INFORMED_SUPERVISION = 'Informed supervision',
+  SENT_PRESENTATION = 'Sent Presentation',
+  TR03_AND_TR08 = 'TR-03 and TR-08',
+}
+
 export enum Steps4Month {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
-
   TR03_AND_TR05_1_4 = 'TR-03 and TR-05 (1/4)',
   INFORMED_SUPERVISION_1_4 = 'Informed supervision (1/4)',
   TR03_AND_TR05_2_4 = 'TR-03 and TR-05 (2/4)',
