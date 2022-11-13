@@ -1206,27 +1206,41 @@ export default class UsersController {
               obj['feedbackFile'] = {}
               obj['signedFile'] = {}
               obj['studentFile'] = {}
-              obj['reason'] = ''
+              obj['reason'] = {}
               if (result && result.length > 0) {
                 if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
+                  const lastestStSendingFile = await UserHasDoc.query()
+                    .where('user_in_academic_year_id', allUserHasDoc[i].user_in_academic_year_id)
+                    .andWhere('step', 'TR-01')
+                    .andWhere('status', StepStatus.PENDING)
+                    // .orWhere('status', StepStatus.APPROVED)
+                    .orderBy('updated_at', 'desc')
                   const result = await File.query().where(
                     'user_has_doc_id',
-                    allUserHasDoc[i - 1].id
+                    lastestStSendingFile[0].id
                   )
                   obj['studentFile'] = result[0].serialize()
-                }
-                if (allUserHasDoc[i].is_adv_react) {
                   if (!allUserHasDoc[i].is_signed) {
                     obj['feedbackFile'] = result[0].serialize()
                   }
                   if (allUserHasDoc[i].is_signed) {
                     obj['signedFile'] = result[0].serialize()
                   }
-                }
-
-                if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
+                } else if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
                   obj['studentFile'] = result[0].serialize()
                 }
+                // if (allUserHasDoc[i].is_adv_react) {
+                //   if (!allUserHasDoc[i].is_signed) {
+                //     obj['feedbackFile'] = result[0].serialize()
+                //   }
+                //   if (allUserHasDoc[i].is_signed) {
+                //     obj['signedFile'] = result[0].serialize()
+                //   }
+                // }
+
+                // if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
+                //   obj['studentFile'] = result[0].serialize()
+                // }
               }
 
               if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
@@ -1243,7 +1257,10 @@ export default class UsersController {
                 obj['studentFile'] = result[0].serialize()
               }
               if (allUserHasDoc[i].no_approve_reason) {
-                obj['reason'] = allUserHasDoc[i].no_approve_reason
+                obj['reason'] = {
+                  body: allUserHasDoc[i].no_approve_reason,
+                  date: allUserHasDoc[i].updatedAt,
+                }
               }
               currentSteps['file'].row.push(obj)
             } else if (
