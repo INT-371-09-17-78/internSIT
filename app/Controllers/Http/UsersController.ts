@@ -1157,6 +1157,7 @@ export default class UsersController {
         currentSteps['id'] = documentStatusesJsonCurrent.id
         currentSteps['file'] = {}
         currentSteps['file'].row = []
+        currentSteps['supervision'] = []
         // currentSteps['file'].stepFile = []
         // const templateFile = await File.query().where(
         //   'template_step',
@@ -1197,6 +1198,7 @@ export default class UsersController {
         currentSteps['file'].row = []
         for (let i = 0; i < allUserHasDoc.length; i++) {
           // console.log(documentStatusesJsonCurrent)
+          // console.log(userHasDoc[i], 'test')
 
           if (
             (documentStatusesJsonCurrent.step === 'TR-01' &&
@@ -1256,7 +1258,7 @@ export default class UsersController {
             //   lastestStSendingFile[0].id
             // )
             if (result && result.length > 0) {
-              if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
+              if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
                 obj['studentFile'] =
                   StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
                 if (!allUserHasDoc[i].is_signed) {
@@ -1271,13 +1273,13 @@ export default class UsersController {
                       ? signedFileResult[0].serialize()
                       : {}
                 }
-              } else if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
+              } else if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_react) {
                 obj['studentFile'] =
                   StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
               }
             }
 
-            if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
+            if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
               obj['studentFile'] =
                 StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
             }
@@ -1288,6 +1290,43 @@ export default class UsersController {
               }
             }
             currentSteps['file'].row.push(obj)
+          } else if (
+            (documentStatusesJsonCurrent.step.includes('TR-03') &&
+              documentStatusesJsonCurrent.status === 'Approved' &&
+              !request.qs().step) ||
+            (request.qs().step && request.qs().step.includes('Informed')) ||
+            (documentStatusesJsonCurrent.step &&
+              documentStatusesJsonCurrent.step.includes('Informed') &&
+              documentStatusesJsonCurrent.status !== 'Approved')
+          ) {
+            // console.log(เข้า)
+            const obj = {}
+            if (
+              allUserHasDoc[i] &&
+              allUserHasDoc[i].step &&
+              allUserHasDoc[i].step.includes('Informed')
+            ) {
+              obj['advisorDate'] = allUserHasDoc[i].advisor_date
+              obj['studentDate'] = allUserHasDoc[i].student_date
+              obj['meetingLink'] = allUserHasDoc[i].meeting_link
+              obj['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              obj['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              if (
+                !(
+                  obj && // 👈 null and undefined check
+                  Object.keys(obj).length === 0 &&
+                  Object.getPrototypeOf(obj) === Object.prototype
+                )
+              ) {
+                // console.log(obj, 'test')
+
+                currentSteps['supervision'].push(obj)
+              }
+            }
+
+            // console.log(obj)
+
+            // currentSteps['supervision'].push(obj)
           } else if (
             allUserHasDoc[i].step.includes('TR-03') &&
             documentStatusesJsonCurrent.step.includes('TR-03')
@@ -1305,7 +1344,7 @@ export default class UsersController {
             // const signedFileResult = await File.query()
             //   .where('user_has_doc_id', allUserHasDoc[i].id)
             //   .andWhere('step_file_type', 'signedFile')
-            if (allUserHasDoc[i].is_adv_react) {
+            if (allUserHasDoc[i].is_react) {
               // const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
               if (feedbackFileResult[0]) {
                 obj['feedbackFile'] = feedbackFileResult[0].serialize()
@@ -1354,22 +1393,22 @@ export default class UsersController {
           .format('MMMM D, YYYY h:mm A')
         // console.log(new Date(documentStatusesJsonCurrent.student_date));
 
-        currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
-        currentSteps['advisorDate'] = documentStatusesJsonCurrent.advisor_date
-          ? moment(documentStatusesJsonCurrent.advisor_date)
-              .tz('Asia/Bangkok')
-              .format('MMMM D, YYYY h:mm A')
-          : null
+        // currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
+        // currentSteps['advisorDate'] = documentStatusesJsonCurrent.advisor_date
+        // // ? moment(documentStatusesJsonCurrent.advisor_date)
+        // //     .tz('Asia/Bangkok')
+        // //     .format('MMMM D, YYYY h:mm A')
+        // // : null
 
-        currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
-          ? moment(documentStatusesJsonCurrent.student_date)
-              .tz('Asia/Bangkok')
-              .format('MMMM D, YYYY')
-          : null
-        currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
-        currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
-        currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
-        currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
+        // currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
+        // // ? moment(documentStatusesJsonCurrent.student_date)
+        // //     .tz('Asia/Bangkok')
+        // //     .format('MMMM D, YYYY')
+        // // : null
+        // currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
+        // currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
+        // // currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
+        // currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
         // console.log(Steps[Steps.])
         const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
         // console.log(stepIndex)
@@ -1383,11 +1422,11 @@ export default class UsersController {
             // body['status'] = 'Waiting'
             // await usersInAcademicYear[0].related('userHasDoc').create(body)
             nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
-            nextStep['isPassed'] = false
+            // nextStep['isPassed'] = false
             // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
-            nextStep['isPassed'] = true
+            // nextStep['isPassed'] = true
           }
         }
         const userHasDocForRC = await UserHasDoc.query()
@@ -1408,12 +1447,12 @@ export default class UsersController {
       } else {
         // console.log("เข้ามัเยนิ");
         currentSteps['name'] = steps[0].name
-        currentSteps['status'] = ''
-        currentSteps['createAt'] = ''
-        currentSteps['reason'] = ''
+        // currentSteps['status'] = ''
+        // currentSteps['createAt'] = ''
+        // currentSteps['reason'] = ''
         // const templateFile = await File.query().where('template_step', steps[0].name)
         // console.log(templateFile)
-        currentSteps['file'] = {}
+        // currentSteps['file'] = {}
         // if (templateFile && templateFile.length > 0) {
         //   currentSteps['file']['templateFile'] = templateFile[0].serialize()
         // }
@@ -1425,7 +1464,7 @@ export default class UsersController {
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
-      // console.log(nextStep)
+      console.log(nextStep)
       let stepPaged = []
       if (qs.firstStepPaging) {
         const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
@@ -1580,7 +1619,7 @@ export default class UsersController {
       if (status && step) {
         body['status'] = status
         body['step'] = step
-        body['is_adv_react'] =
+        body['is_react'] =
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? true : false
         body['is_signed'] =
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? isSigned : false
@@ -1594,6 +1633,8 @@ export default class UsersController {
           body['advisor_date'] = date
         } else {
           body['student_date'] = date
+          body['is_react'] = true
+          body['is_signed'] = isSigned
         }
       }
 
@@ -1605,9 +1646,9 @@ export default class UsersController {
         body['meeting_link'] = meetingLink
       }
 
-      if (advisorComment) {
-        body['advisor_comment'] = advisorComment
-      }
+      // if (advisorComment) {
+      //   body['advisor_comment'] = advisorComment
+      // }
 
       if (dateConfirmStatus) {
         body['date_confirm_status'] = dateConfirmStatus

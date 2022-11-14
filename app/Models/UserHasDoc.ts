@@ -26,10 +26,10 @@ export default class UserHasDoc extends BaseModel {
   public files: HasMany<typeof File>
 
   @column()
-  public advisor_date: Date
+  public advisor_date: string
 
   @column()
-  public student_date: Date
+  public student_date: string
 
   @column()
   public meeting_link: string
@@ -37,8 +37,8 @@ export default class UserHasDoc extends BaseModel {
   @column()
   public supervision_status: string
 
-  @column()
-  public advisor_comment: string
+  // @column()
+  // public advisor_comment: string
 
   @column()
   public no_approve_reason: string
@@ -47,7 +47,7 @@ export default class UserHasDoc extends BaseModel {
   public date_confirm_status: string
 
   @column()
-  public is_adv_react: boolean
+  public is_react: boolean
 
   @column()
   public is_signed: boolean

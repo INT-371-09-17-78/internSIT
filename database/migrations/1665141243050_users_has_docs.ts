@@ -16,11 +16,11 @@ export default class UserHasDocs extends BaseSchema {
         .references('users_in_academic_years.id')
         .onDelete('CASCADE')
       table.string('no_approve_reason', 500).nullable()
-      table.date('advisor_date').nullable()
-      table.date('student_date').nullable()
+      table.string('advisor_date').nullable()
+      table.string('student_date').nullable()
       table.string('meeting_link').nullable()
       table.string('supervision_status').nullable()
-      table.string('advisor_comment').nullable()
+      // table.string('advisor_comment').nullable()
       table.string('date_confirm_status').nullable()
       table.enu('step', Object.values(AllSteps), {
         useNative: true,
@@ -32,7 +32,7 @@ export default class UserHasDocs extends BaseSchema {
         enumName: 'statuses',
         existingType: false,
       })
-      table.boolean('is_adv_react').notNullable().defaultTo(0)
+      table.boolean('is_react').notNullable().defaultTo(0)
       table.boolean('is_signed').notNullable().defaultTo(0)
       // table.unique(['doc_stat_id', 'user_in_academic_year_id'])
       // table.unique(['student_id', 'doc_stat_id'])
