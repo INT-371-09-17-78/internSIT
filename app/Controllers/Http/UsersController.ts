@@ -1447,12 +1447,12 @@ export default class UsersController {
       } else {
         // console.log("เข้ามัเยนิ");
         currentSteps['name'] = steps[0].name
-        // currentSteps['status'] = ''
-        // currentSteps['createAt'] = ''
-        // currentSteps['reason'] = ''
+        currentSteps['status'] = ''
+        currentSteps['createAt'] = ''
+        currentSteps['reason'] = ''
         // const templateFile = await File.query().where('template_step', steps[0].name)
         // console.log(templateFile)
-        // currentSteps['file'] = {}
+        currentSteps['file'] = {}
         // if (templateFile && templateFile.length > 0) {
         //   currentSteps['file']['templateFile'] = templateFile[0].serialize()
         // }
