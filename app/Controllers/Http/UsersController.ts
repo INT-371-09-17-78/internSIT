@@ -1208,7 +1208,7 @@ export default class UsersController {
           ) {
             if (allUserHasDoc[i].step === 'TR-02') {
               const currentStepFile = await File.query()
-                .where('user_has_doc_id', documentStatusesJsonCurrent.id)
+                .where('user_has_doc_id', allUserHasDoc[i].id)
                 .where('step_file_type', 'signedFile')
               // {
               // console.log('เข้า')
