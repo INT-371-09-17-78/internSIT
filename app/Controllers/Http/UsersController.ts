@@ -1530,6 +1530,7 @@ export default class UsersController {
         // nextStep['status'] = 'Waiting'
       }
       // console.log(steps)
+      currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
       console.log(currentSteps.supervision)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
