@@ -1336,6 +1336,7 @@ export default class UsersController {
             ) {
               objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
               objSupervision['studentDate'] = allUserHasDoc[i].student_date
+              objSupervision['completeDate'] = allUserHasDoc[i].complete_date
               objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
               objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
               objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
@@ -1593,6 +1594,7 @@ export default class UsersController {
         step,
         reason,
         date,
+        completeDate,
         // stepStatId,
         supervisionStatus,
         meetingLink,
@@ -1611,6 +1613,7 @@ export default class UsersController {
         'advisorComment',
         'dateConfirmStatus',
         'isSigned',
+        'completeDate',
       ])
       // console.log('เข้า')
 
@@ -1698,6 +1701,10 @@ export default class UsersController {
           body['is_react'] = true
           body['is_signed'] = isSigned
         }
+      }
+
+      if (completeDate) {
+        body['complete_date'] = completeDate
       }
 
       if (supervisionStatus) {

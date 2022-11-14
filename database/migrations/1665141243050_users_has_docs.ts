@@ -18,6 +18,7 @@ export default class UserHasDocs extends BaseSchema {
       table.string('no_approve_reason', 500).nullable()
       table.string('advisor_date').nullable()
       table.string('student_date').nullable()
+      table.string('complete_date').nullable()
       table.string('meeting_link').nullable()
       table.string('supervision_status').nullable()
       // table.string('advisor_comment').nullable()

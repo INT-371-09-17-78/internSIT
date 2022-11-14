@@ -32,6 +32,9 @@ export default class UserHasDoc extends BaseModel {
   public student_date: string
 
   @column()
+  public complete_date: string
+
+  @column()
   public meeting_link: string
 
   @column()
