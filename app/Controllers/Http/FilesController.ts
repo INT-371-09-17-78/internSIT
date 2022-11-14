@@ -75,11 +75,12 @@ export default class FilesController {
 
   public async storeDirect({ request, response }: HttpContextContract) {
     try {
-      const { step, studentId, status, stepFileType } = request.only([
+      const { step, studentId, status, stepFileType, stepFileTypePlan } = request.only([
         'step',
         'studentId',
         'status',
         'stepFileType',
+        'stepFileTypePlan',
       ])
       // console.log(docId)
       // console.log(statId)
@@ -139,7 +140,14 @@ export default class FilesController {
           //   }
           // } else
           if (stepFileType.includes('template')) {
-            const result = await File.query().where('step_file_type', stepFileType)
+            // if (auth.user) {
+            //   auth
+            const result = await File.query().where(
+              'step_file_type',
+              stepFileType + stepFileTypePlan
+            )
+            // }
+
             // console.log(result)
 
             if (result && result.length > 0) {
@@ -159,7 +167,7 @@ export default class FilesController {
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
             // step_file_type: template === 'true' ? step : null,
-            step_file_type: stepFileType,
+            step_file_type: stepFileTypePlan ? stepFileType + stepFileTypePlan : stepFileType,
             // step_sep: stepSep && stepSep !== '' ? stepSep : null,
           })
           // userHasDoc[0].related('f')

@@ -456,7 +456,7 @@ export default class UsersController {
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           const userHasDoc = await UserHasDoc.query()
             .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-            .orderBy('updated_at', 'desc')
+            .orderBy('created_at', 'desc')
           // console.log(userHasDoc)
           if (userHasDoc && userHasDoc.length > 0) {
             // studentUsers[i].serialize()
@@ -481,6 +481,15 @@ export default class UsersController {
           result = this.queryStringFilter(studentUsers, request.qs().step)
         }
       }
+      const AllStepByMonth = {}
+      // const body = {}
+      AllStepByMonth['2'] = Steps2Month
+      AllStepByMonth['4'] = Steps4Month
+      AllStepByMonth['6'] = Steps6Month
+      console.log(AllStepByMonth)
+      // console.log(auth.user);
+
+      // AllStepByMonth.push(body)
       // response.cookie('year', year)
       return view.render('student-information', {
         studentUsers:
@@ -1196,6 +1205,11 @@ export default class UsersController {
 
         // if (documentStatusesJsonCurrent.step !== 'TR-02') {
         currentSteps['file'].row = []
+        // const objArr: any = []
+        currentSteps['supervision']['m1'] = []
+        currentSteps['supervision']['m2'] = []
+        currentSteps['supervision']['m3'] = []
+        const objSupervision = {}
         for (let i = 0; i < allUserHasDoc.length; i++) {
           // console.log(documentStatusesJsonCurrent)
           // console.log(userHasDoc[i], 'test')
@@ -1300,27 +1314,56 @@ export default class UsersController {
               documentStatusesJsonCurrent.status !== 'Approved')
           ) {
             // console.log(เข้า)
-            const obj = {}
             if (
               allUserHasDoc[i] &&
               allUserHasDoc[i].step &&
               allUserHasDoc[i].step.includes('Informed')
             ) {
-              obj['advisorDate'] = allUserHasDoc[i].advisor_date
-              obj['studentDate'] = allUserHasDoc[i].student_date
-              obj['meetingLink'] = allUserHasDoc[i].meeting_link
-              obj['supervisionStatus'] = allUserHasDoc[i].supervision_status
-              obj['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+              objSupervision['studentDate'] = allUserHasDoc[i].student_date
+              objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+              objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
               if (
                 !(
-                  obj && // 👈 null and undefined check
-                  Object.keys(obj).length === 0 &&
-                  Object.getPrototypeOf(obj) === Object.prototype
+                  objSupervision && // 👈 null and undefined check
+                  Object.keys(objSupervision).length === 0 &&
+                  Object.getPrototypeOf(objSupervision) === Object.prototype
                 )
               ) {
                 // console.log(obj, 'test')
+                if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
+                  currentSteps['supervision']['m1'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (2/6)') {
+                  currentSteps['supervision']['m2'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+                  currentSteps['supervision']['m3'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+                  currentSteps['supervision']['m4'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+                  currentSteps['supervision']['m5'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+                  currentSteps['supervision']['m6'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+                  currentSteps['supervision']['m1'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+                  currentSteps['supervision']['m2'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+                  currentSteps['supervision']['m3'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+                  currentSteps['supervision']['m4'].push(objSupervision)
+                } else if (allUserHasDoc[i].step === 'Informed supervision') {
+                  currentSteps['supervision']['m1'].push(objSupervision)
+                }
 
-                currentSteps['supervision'].push(obj)
+                // if (i === allUserHasDoc.length - 1) {
+                //   // else if (allUserHasDoc[i].step.includes('Informed supervision (2/6)')) {
+                //   //   objArr.push(obj)
+                //   // console.log(objArr)
+                //   // console.log("เข้า");
+                //   currentSteps['supervision'].push(objArr)
+                //   // }
+                // }
               }
             }
 
@@ -1431,7 +1474,7 @@ export default class UsersController {
         }
         const userHasDocForRC = await UserHasDoc.query()
           .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .orderBy('updated_at', 'desc')
+          .orderBy('created_at', 'desc')
         // console.log(userHasDocForRC[0])
 
         realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
@@ -1460,7 +1503,7 @@ export default class UsersController {
         // nextStep['status'] = 'Waiting'
       }
       // console.log(steps)
-      console.log(currentSteps)
+      console.log(currentSteps.supervision)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
@@ -1547,6 +1590,7 @@ export default class UsersController {
 
       // console.log(status)
       // console.log(step)
+      console.log('เข้า')
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUser: any
@@ -1562,14 +1606,6 @@ export default class UsersController {
           .where('user_id', studentUsersRole[0].user_id)
           .andWhere('academic_year', years[0].academic_year)
           .preload('student')
-        // console.log(usersInAcademicYear)
-        // console.log(usersInAcademicYear[0].student)
-
-        // if (usersInAcademicYear[0]) {
-        //   const stSerialize = studentUsersRole[0].serialize()
-        //   stSerialize['student'] = usersInAcademicYear[0].student
-        //   studentUser = stSerialize
-        // }
       }
       let user: any
       if (auth.user) {
@@ -1658,42 +1694,77 @@ export default class UsersController {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
-          .orderBy('updated_at', 'desc')
+          .orderBy('created_at', 'desc')
         // stepTracking[0].status = body['status']
         for (let i = 0; i < Object.keys(body).length; i++) {
           stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
         }
         await stepTracking[0].save()
+        if (step.includes('TR-03 and TR-05') && status === StepStatus.APPROVED) {
+          const body = {}
+          const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
+          const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
+          const s = Object.values(AllSteps)[indexOfS + 1]
+          // console.log(s)
+          body['step'] = s
+          // if(!s.includes('3/4') || !s.includes('3') )
+          await usersInAcademicYear[0].related('userHasDoc').create(body)
+        }
         // console.log(test)
       } else {
         await usersInAcademicYear[0].related('userHasDoc').create(body)
       }
+      return response.status(200).json('success')
+    } catch (error) {
+      console.log(error)
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
-      // .then(async () => {
-      //   if (step && status) {
-      //     if (status === StepStatus.APPROVED) {
-      //       const object =
-      //         usersInAcademicYear[0].student.plan === 6
-      //           ? Steps6Month
-      //           : usersInAcademicYear[0].student.plan === 4
-      //           ? Steps4Month
-      //           : Steps2Month
-      //       const test = Object.keys(object).find((key) => object[key] === step)
-      //       // console.log(test)
-      //       // if(test){
+  public async updateSupervisionStatus({ request, response }: HttpContextContract) {
+    try {
+      const { step, supervisionStatus, dateConfirmStatus } = request.only([
+        'step',
+        'supervisionStatus',
+        'dateConfirmStatus',
+      ])
+      let supervision
+      let usersInAcademicYear: any
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const studentUsersRole = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+      // console.log('เข้า')
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+      }
+      if (step && step.includes('TR-03 and TR-05')) {
+        const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
+        const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
+        const s = Object.values(AllSteps)[indexOfS + 1]
+        supervision = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', s)
+          .orderBy('created_at', 'desc')
+      } else {
+        supervision = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', step)
+          .orderBy('created_at', 'desc')
+      }
 
-      //       // }
-      //       const indexOfS = Object.keys(object).indexOf(test ? test : '')
-      //       // console.log(indexOfS);
-
-      //       const s = Object.values(object)[indexOfS + 1]
-      //       // console.log(s);
-      //       body['step'] = s
-      //       body['status'] = 'Waiting'
-      //       await usersInAcademicYear[0].related('userHasDoc').create(body)
-      //     }
-      //   }
-      // })
+      if (supervision[0]) {
+        dateConfirmStatus ? (supervision[0].date_confirm_status = dateConfirmStatus) : null
+        supervisionStatus ? (supervision[0].supervision_status = supervisionStatus) : null
+        await supervision[0].save()
+      }
 
       return response.status(200).json('success')
     } catch (error) {
