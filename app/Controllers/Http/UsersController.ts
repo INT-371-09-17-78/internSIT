@@ -1206,9 +1206,24 @@ export default class UsersController {
         // if (documentStatusesJsonCurrent.step !== 'TR-02') {
         currentSteps['file'].row = []
         // const objArr: any = []
-        currentSteps['supervision']['m1'] = []
-        currentSteps['supervision']['m2'] = []
-        currentSteps['supervision']['m3'] = []
+        // currentSteps['supervision']['m1'] = []
+        currentSteps.supervision.push([])
+        // currentSteps['supervision']['m2'] = []
+        currentSteps.supervision.push([])
+        currentSteps.supervision.push([])
+        currentSteps.supervision.push([])
+        currentSteps.supervision.push([])
+        currentSteps.supervision.push([])
+        // console.log(currentSteps.supervision[0]);
+
+        // currentSteps.supervision.push({ m3: [] })
+        // currentSteps.supervision.push({ m4: [] })
+        // currentSteps.supervision.push({ m5: [] })
+        // currentSteps.supervision.push({ m6: [] })
+        // currentSteps['supervision']['m3'] = []
+        // currentSteps['supervision']['m4'] = []
+        // currentSteps['supervision']['m5'] = []
+        // currentSteps['supervision']['m6'] = []
         const objSupervision = {}
         for (let i = 0; i < allUserHasDoc.length; i++) {
           // console.log(documentStatusesJsonCurrent)
@@ -1333,27 +1348,38 @@ export default class UsersController {
               ) {
                 // console.log(obj, 'test')
                 if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
-                  currentSteps['supervision']['m1'].push(objSupervision)
+                  // currentSteps['supervision'][0].['m1'].push(objSupervision)
+                  currentSteps.supervision[0].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (2/6)') {
-                  currentSteps['supervision']['m2'].push(objSupervision)
+                  // currentSteps['supervision']['m2'].push(objSupervision)
+                  currentSteps.supervision[1].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
-                  currentSteps['supervision']['m3'].push(objSupervision)
+                  // currentSteps['supervision']['m3'].push(objSupervision)
+                  currentSteps.supervision[2].m3.push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
-                  currentSteps['supervision']['m4'].push(objSupervision)
+                  currentSteps.supervision[3].m3.push(objSupervision)
+                  // currentSteps['supervision']['m4'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
-                  currentSteps['supervision']['m5'].push(objSupervision)
+                  currentSteps.supervision[4].m3.push(objSupervision)
+                  // currentSteps['supervision']['m5'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
-                  currentSteps['supervision']['m6'].push(objSupervision)
+                  currentSteps.supervision[5].m3.push(objSupervision)
+                  // currentSteps['supervision']['m6'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
-                  currentSteps['supervision']['m1'].push(objSupervision)
+                  currentSteps.supervision[0].m3.push(objSupervision)
+                  // currentSteps['supervision']['m1'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
-                  currentSteps['supervision']['m2'].push(objSupervision)
+                  currentSteps.supervision[1].m3.push(objSupervision)
+                  // currentSteps['supervision']['m2'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
-                  currentSteps['supervision']['m3'].push(objSupervision)
+                  currentSteps.supervision[2].m3.push(objSupervision)
+                  // currentSteps['supervision']['m3'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
-                  currentSteps['supervision']['m4'].push(objSupervision)
+                  currentSteps.supervision[3].m3.push(objSupervision)
+                  // currentSteps['supervision']['m4'].push(objSupervision)
                 } else if (allUserHasDoc[i].step === 'Informed supervision') {
-                  currentSteps['supervision']['m1'].push(objSupervision)
+                  currentSteps.supervision[0].m3.push(objSupervision)
+                  // currentSteps['supervision']['m1'].push(objSupervision)
                 }
 
                 // if (i === allUserHasDoc.length - 1) {
@@ -1700,16 +1726,16 @@ export default class UsersController {
           stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
         }
         await stepTracking[0].save()
-        if (step.includes('TR-03 and TR-05') && status === StepStatus.APPROVED) {
-          const body = {}
-          const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
-          const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
-          const s = Object.values(AllSteps)[indexOfS + 1]
-          // console.log(s)
-          body['step'] = s
-          // if(!s.includes('3/4') || !s.includes('3') )
-          await usersInAcademicYear[0].related('userHasDoc').create(body)
-        }
+        // if (step.includes('TR-03 and TR-05') && status === StepStatus.APPROVED) {
+        //   const body = {}
+        //   const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
+        //   const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
+        //   const s = Object.values(AllSteps)[indexOfS + 1]
+        //   // console.log(s)
+        //   body['step'] = s
+        //   // if(!s.includes('3/4') || !s.includes('3') )
+        //   await usersInAcademicYear[0].related('userHasDoc').create(body)
+        // }
         // console.log(test)
       } else {
         await usersInAcademicYear[0].related('userHasDoc').create(body)
