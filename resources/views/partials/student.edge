@@ -175,7 +175,7 @@
                           <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
                         </div>
                       </td>
-                      @if(auth.user.role === 'advisor' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && (!row.signedFile.file_name && !row.reason.body && !row.feedbackFile.file_name))
+                      @if(auth.user.role === 'advisor' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && index === currentSteps.file.row.length - 1 )
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <div class="flex space-x-2 items-center mb-5">
                           <input type="radio" name="radio-1" class="radio radio-primary" id="hasSignedFile" checked onchange="isShowComplete()" />
@@ -302,8 +302,8 @@
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">{{(!(currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1')}}</td>
                   <td class="align-top border-2 border-[#F6F7F9] text-sm">
                     <div class="flex items-center space-x-2 w-44">
-                      <label for="myStaffFile" id="labelStaffFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                      <input type="file" id="myStaffFile" class="input hidden" onchange="getFile(event,'showStaffFile')"/>
+                      <label for="signedFile" id="labelStaffFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                      <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showStaffFile')"/>
                       <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                     </div>
                   </td>
@@ -354,7 +354,7 @@
                         <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
                       </div>
                     </td>
-                    @if(auth.user.role === 'staff' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && (!row.reason.body && !row.feedbackFile.file_name))
+                    @if(auth.user.role === 'staff' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && index === currentSteps.file.row.length -1)
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">
                       <div class="flex space-x-2 items-center mb-5">
                         <input type="radio" name="radio-1" class="radio radio-primary" id="isComplete" checked onchange="isShowComplete()" />
@@ -380,7 +380,11 @@
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                       <div class="space-y-2 w-44 whitespace-normal">
                         <p>Complete</p>
+                        @if(currentSteps.status === 'Approved' && index === currentSteps.file.row.length - 1)
+                        <p class="text-green-600">yes</p>
+                        @else
                         <p>-</p>
+                        @end
                       </div>
                     </td>
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -455,8 +459,8 @@
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">{{(!(currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1')}}</td>
                     <td class="align-top border-2 border-[#F6F7F9] text-sm">
                       <div class="flex items-center space-x-2 w-44">
-                        <label for="myStaffFile" id="labelStaffFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
-                        <input type="file" id="myStaffFile" class="input hidden" onchange="getFile(event,'showStaffFile')"/>
+                        <label for="signedFile" id="labelStaffFile" class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose file</label>
+                        <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showStaffFile')"/>
                         <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                       </div>
                     </td>
@@ -467,10 +471,29 @@
                 <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
                 @end
                 @elseif(request.qs().step && request.qs().step.includes('Informed supervision') || currentSteps.name.includes('TR-03') &&  currentSteps.status === 'Approved' || currentSteps.name.includes('Informed supervision') && !nextStep.name.includes('TR-03'))
+                @if(currentSteps.supervision.length > 0)
+                @each(month in currentSteps.supervision)
+                @if(auth.user.role !== 'staff')
                 <div class="flex space-x-2">
-                  <p>Appointment</p>
+                  <p>Appointment status</p>
+                  <p class="text-yellow-500">Pending</p>
+                  <p>Supervision status</p>
                   <p class="text-yellow-500">Pending</p>
                 </div>
+                @else
+                <div class="flex space-x-2 items-center">
+                  <p>Appointment status</p>
+                  <select class="select select-sm w-fit bg-[#F6F7F9]" id="appointmentStatus">
+                    <option class="text-black" value="Pending">Pending</option>
+                    <option class="text-black" value="Done" >Done</option>
+                  </select>
+                  <p>Supervision status</p>
+                  <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
+                    <option class="text-black" value="Pending">Pending</option>
+                    <option class="text-black" value="Done">Done</option>
+                  </select>
+                </div>
+                @end
                 <table class="table w-full mt-2">
                   <thead>
                     <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -500,18 +523,62 @@
                     </tr>
                   </thead>
                   <tbody>
-                    @each((row,index) in currentSteps.file.row)
+                    @each((row,index) in month)
                     <tr class="font-medium border-2 border-[#F6F7F9]">
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
+                        <p>{{row.advisorDate}}</p>
+                      </td>
+                      @if(auth.user.role === 'student' && currentSteps.status !== 'Disapproved' && month.length-1 === index)
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        <div class="flex space-x-2 items-center mb-5">
+                          <input type="radio" name="radio-1" class="radio radio-primary" id="hasSignedFile" checked onchange="isShowComplete()" />
+                          <p>Complete</p>
+                        </div>
+                        <div class="invisible" id="signedForm">
+                          <p>Date Confirm</p>
+                          <textarea id="dateConfirm" class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="วันอังคาร 14/6/65 เวลา 10.00น. - 11.00น." oninput="checkRequiredData()"></textarea>
+                          <p>Meet link</p>
+                          <textarea id="meetlink" class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="https://google.com/meet123" oninput="checkRequiredData()"></textarea>
+                        </div>
+                      </td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        <div class="flex space-x-2 items-center mb-5">
+                          <input type="radio" name="radio-1" class="radio radio-primary" id="hasFeedback" onchange="isShowFeedback()"/>
+                          <p class="text-red-500">Improve</p>
+                        </div>
+                        <div class="invisible" id="feedbackForm">
+                          <p>Date Confirm</p>
+                          <textarea id="feedback" class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="วันอังคาร 14/6/65 เวลา 10.00น. - 11.00น." oninput="checkFeedback()"></textarea>
+                        </div>
+                      </td>
+                      @else
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <p>Complete</p>
+                          <p>{{row.completeDate || '-'}}</p>
+                        </div>
+                      </td>
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <p class="text-red-500">Improve</p>
+                          <p>Date Confirm</p>
+                          <p>{{row.studentDate || '-'}}</p>
+                        </div>
+                      </td>
+                      @end
+                    </tr>
+                    {{--  <tr class="font-medium border-2 border-[#F6F7F9]">
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <div class="space-y-2 w-44 whitespace-normal">
                           <a class="link link-primary w-fit" href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
-                            {{row.studentFile.file_name}}
+                            {{row.advisorDate}}
                           </a>
                           <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
                         </div>
                       </td>
-                      @if(auth.user.role === 'staff' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && (!row.reason.body && !row.feedbackFile.file_name))
+                      @if(auth.user.role === 'student' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && (!row.reason.body && !row.feedbackFile.file_name))
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <div class="flex space-x-2 items-center mb-5">
                           <input type="radio" name="radio-1" class="radio radio-primary" id="isComplete" checked onchange="isShowComplete()" />
@@ -559,14 +626,14 @@
                         </div>
                         @end
                       </td>
-                      @end
+                      @end  --}}
                     </tr>
-              @end
+                    @end
                       @if(auth.user.role === 'advisor' && request.qs().status !== 'Approved')
                       <tr class="font-medium border-2 border-[#F6F7F9]">
-                        <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1'}}</td>
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved') && month.length+1 || '1'}}</td>
                         <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
-                          <textarea id="advisorDate" class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น." oninput="checkFeedback()"></textarea>
+                          <textarea id="advisorDate" class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น." oninput="checkAdvisorDate()"></textarea>
                         </td>
                         <td class="align-top border-2 border-[#F6F7F9]">-</td>
                         <td class="align-top border-2 border-[#F6F7F9]">-</td>
@@ -574,8 +641,73 @@
                       @end
                   </tbody>
                 </table>
+                @end
+                @else
+                @if(auth.user.role !== 'staff')
+                <div class="flex space-x-2">
+                  <p>Appointment status</p>
+                  <p class="text-yellow-500">Pending</p>
+                  <p>Supervision status</p>
+                  <p class="text-yellow-500">Pending</p>
+                </div>
+                @else
+                <div class="flex space-x-2 items-center">
+                  <p>Appointment status</p>
+                  <select class="select select-sm w-fit bg-[#F6F7F9]" id="appointmentStatus">
+                    <option class="text-black" value="Pending">Pending</option>
+                    <option class="text-black" value="Done" >Done</option>
+                  </select>
+                  <p>Supervision status</p>
+                  <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
+                    <option class="text-black" value="Pending">Pending</option>
+                    <option class="text-black" value="Done">Done</option>
+                  </select>
+                </div>
+                @end
+                <table class="table w-full mt-2">
+                  <thead>
+                    <tr class="border-2 border-[#E6E7EA] rounded-none">
+                      <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium"><p class="text-base">No.</p></th>
+                      <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                        <div class="flex items-center space-x-2">
+                          <p class="text-base normal-case">Advisor available date</p>
+                          <div class="tooltip z-20 font-normal normal-case" data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
+                            <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z" fill="#495057"/>
+                            </svg>  
+                          </div>
+                        </div>
+                      </th>
+                      <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                        <div class="flex items-center space-x-2">
+                          <p class="text-base">Feedback</p>
+                          <div class="tooltip z-20 font-normal normal-case" data-tip="Feedback from advisor to student &#10; for improve the document">
+                            <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z" fill="#495057"/>
+                            </svg>  
+                          </div>
+                        </div>
+                      </th>
+                      <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      @if(auth.user.role === 'advisor' && request.qs().status !== 'Approved')
+                      <tr class="font-medium border-2 border-[#F6F7F9]">
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">1</td>
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
+                          <textarea id="advisorDate" class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]" placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น." oninput="checkAdvisorDate()"></textarea>
+                        </td>
+                        <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                        <td class="align-top border-2 border-[#F6F7F9]">-</td>
+                      </tr>
+                      @end
+                  </tbody>
+                </table>
+                @end
                   @if(request.qs().status !== 'Approved')
-                  <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
+                  <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" {{auth.user.role !== 'staff' && 'disabled'}}>Confirm</button>
                   @end
               @end
   @else
@@ -595,6 +727,12 @@
 </section>
 <script>  
 const isShowComplete = () =>{
+  if(dateConfirm && meetlink){
+    document.getElementById('submitStepButton').disabled = false
+  }
+  if(document.getElementById('isComplete') && document.getElementById('isComplete').checked){
+  document.getElementById('submitStepButton').disabled = false
+  }
   if(document.getElementById('signedForm')){
     document.getElementById('signedForm').classList.remove('invisible')
   }
@@ -619,7 +757,7 @@ if(document.getElementById('isComplete') && document.getElementById('isComplete'
   document.getElementById('submitStepButton').disabled = false
 }
 
-if(document.getElementById('hasSignedFile') && document.getElementById('hasSignedFile').checked){
+if(document.getElementById('hasSignedFile') && document.getElementById('hasSignedFile').checked &&  document.getElementById('signedForm')){
   document.getElementById('signedForm').classList.remove('invisible')
 }
 
@@ -670,35 +808,37 @@ const checkStartDateMax = () => {
   }
 
 
-  const updateSupervision = document.getElementById('updateSupervision')
-  if(updateSupervision)
-  updateSupervision.onsubmit = async (event) => {
-    event.preventDefault() 
-    let studentDate, advisorDate, meetLink, isSameDate, supervisionStatus, dateStatus, advisorComment
-    if(document.getElementById('studentDate')){studentDate = document.getElementById('studentDate').value}
-    if(document.getElementById('advisorDate')){advisorDate = document.getElementById('advisorDate').value}
-    if(document.getElementById('meetLink')){meetLink  = document.getElementById('meetLink').value}
-    // if(document.getElementById('isSameDate')){isSameDate = document.getElementById('isSameDate').value}
-    if(document.getElementById('supervisionStatus')){supervisionStatus = document.getElementById('supervisionStatus').value}
-    if(document.getElementById('dateStatus')){dateStatus = document.getElementById('dateStatus').value}
-    if(document.getElementById('advisorComment')){advisorComment = document.getElementById('advisorComment').value}
+  // const updateSupervision = document.getElementById('updateSupervision')
+  // if(updateSupervision)
+  // updateSupervision.onsubmit = async (event) => {
+  //   event.preventDefault() 
+  //   let studentDate, advisorDate, meetLink, isSameDate, supervisionStatus, dateStatus, advisorComment
+  //   if(document.getElementById('studentDate')){studentDate = document.getElementById('studentDate').value}
+  //   if(document.getElementById('advisorDate')){advisorDate = document.getElementById('advisorDate').value}
+  //   if(document.getElementById('meetLink')){meetLink  = document.getElementById('meetLink').value}
+  //   // if(document.getElementById('isSameDate')){isSameDate = document.getElementById('isSameDate').value}
+  //   if(document.getElementById('supervisionStatus')){supervisionStatus = document.getElementById('supervisionStatus').value}
+  //   if(document.getElementById('dateStatus')){dateStatus = document.getElementById('dateStatus').value}
+  //   if(document.getElementById('advisorComment')){advisorComment = document.getElementById('advisorComment').value}
 
-    const body = {status : 'Approved',step: '{{nextStep.name}}',date : studentDate || advisorDate, stepStatId: {{currentSteps.id}} , meetingLink: meetLink , supervisionStatus : supervisionStatus , dateStatus:dateStatus , advisorComment:advisorComment}
-        fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body),
-        }).then(() => {window.location.href = `/student-information/{{studentUser.user_id}}?${window.location.search}`}).then(
-          () => {window.location.reload()} 
-        )
+  //   const body = {status : 'Approved',step: '{{nextStep.name}}',date : studentDate || advisorDate, stepStatId: {{currentSteps.id}} , meetingLink: meetLink , supervisionStatus : supervisionStatus , dateStatus:dateStatus , advisorComment:advisorComment}
+  //       fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(body),
+  //       }).then(() => {window.location.href = `/student-information/{{studentUser.user_id}}?${window.location.search}`}).then(
+  //         () => {window.location.reload()} 
+  //       )
         
-  }
+  // }
 
   let file
   let inputFeedback = ''
+  let meetlink = ''
+  let dateConfirm = ''
   const removeCurrentFile = (text,input) =>{
     if(file){
       if(text.id === "showFeedbackFile" && document.getElementById('labelSignedFile')){ 
@@ -716,7 +856,13 @@ const checkStartDateMax = () => {
       }
     }
   }
-  
+  let advisorDateValue = ""
+  const checkAdvisorDate = () =>{
+    advisorDateValue = document.getElementById('advisorDate').value
+    if(advisorDateValue) {
+      document.getElementById('submitStepButton').disabled = false
+    }
+  }
   const checkFeedback = () =>{
     inputFeedback = document.getElementById('feedback').value
     if(inputFeedback) {
@@ -727,6 +873,16 @@ const checkStartDateMax = () => {
       document.getElementById('labelSignedFile').classList.remove('btn-disabled')
     }
   }
+
+  const checkRequiredData = () =>{
+    meetlink = document.getElementById('meetlink').value
+    dateConfirm = document.getElementById('dateConfirm').value
+    if(meetlink && dateConfirm){
+      document.getElementById('submitStepButton').disabled = false
+    }else{
+      document.getElementById('submitStepButton').disabled = true
+    }
+  }
   let fileType = ''
   const getFile = (event, showInput) =>{
     file = event.target.files[0]
@@ -735,9 +891,13 @@ const checkStartDateMax = () => {
       if(event.target.id === 'feedbackFile' && document.getElementById('labelSignedFile')) {
         document.getElementById('labelSignedFile').classList.add('btn-disabled')
       }else if(event.target.id === 'signedFile'){
-        document.getElementById('feedback').disabled = true
-        document.getElementById('feedback').placeholder = "Can’t write feedback while you choose sign file."
-        document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
+        if(document.getElementById('feedback')){
+          document.getElementById('feedback').disabled = true
+          document.getElementById('feedback').placeholder = "Can’t write feedback while you choose sign file."
+        }
+        if(document.getElementById('labelFeedbackFile')){
+          document.getElementById('labelFeedbackFile').classList.add('btn-disabled')
+        }
       }
       document.getElementById(showInput).innerHTML = middleEllipsis(file.name) + `<div class="cursor-pointer ml-2" onclick="removeCurrentFile(${showInput + ',' + event.target.id})"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.17474 4.99929L9.75513 1.42723C9.91191 1.27044 10 1.05779 10 0.836054C10 0.614319 9.91191 0.401665 9.75513 0.244875C9.59833 0.0880841 9.38568 0 9.16395 0C8.94221 0 8.72956 0.0880841 8.57277 0.244875L5.00071 3.82526L1.42865 0.244875C1.27186 0.0880841 1.05921 -1.65206e-09 0.837475 0C0.61574 1.65206e-09 0.403086 0.0880841 0.246296 0.244875C0.0895051 0.401665 0.001421 0.614319 0.001421 0.836054C0.00142099 1.05779 0.0895051 1.27044 0.246296 1.42723L3.82668 4.99929L0.246296 8.57135C0.168253 8.64875 0.106309 8.74084 0.0640365 8.84231C0.0217641 8.94377 0 9.05261 0 9.16253C0 9.27244 0.0217641 9.38128 0.0640365 9.48274C0.106309 9.58421 0.168253 9.6763 0.246296 9.7537C0.323701 9.83175 0.415793 9.89369 0.517258 9.93596C0.618724 9.97824 0.727556 10 0.837475 10C0.947394 10 1.05623 9.97824 1.15769 9.93596C1.25916 9.89369 1.35125 9.83175 1.42865 9.7537L5.00071 6.17332L8.57277 9.7537C8.65017 9.83175 8.74226 9.89369 8.84373 9.93596C8.9452 9.97824 9.05403 10 9.16395 10C9.27386 10 9.3827 9.97824 9.48416 9.93596C9.58563 9.89369 9.67772 9.83175 9.75513 9.7537C9.83317 9.6763 9.89511 9.58421 9.93739 9.48274C9.97966 9.38128 10.0014 9.27244 10.0014 9.16253C10.0014 9.05261 9.97966 8.94377 9.93739 8.84231C9.89511 8.74084 9.83317 8.64875 9.75513 8.57135L6.17474 4.99929Z" fill="#495057"/></svg></div>`
       fileType = event.target.id
@@ -750,19 +910,37 @@ const checkStartDateMax = () => {
   }
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason = ''
+    let reason, supervisionStatus, appointmentStatus = ''
+    if(document.getElementById('supervisionStatus')){
+      document.getElementById('supervisionStatus').value
+    }
+    if(document.getElementById('appointmentStatus')){
+      document.getElementById('appointmentStatus').value
+    }
     if(document.getElementById('feedback')){
       reason = document.getElementById('feedback').value
-      console.log(reason);
     }
-    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (!reason && {{auth.user.role === 'advisor'}}) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
+    if(document.getElementById('advisorDate')){
+      advisorDateValue = document.getElementById('advisorDate').value
+    }
+
+    if(document.getElementById('dateConfirm')){
+      dateConfirm = document.getElementById('dateConfirm').value
+    }
+    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
       status: status,
       reason : reason ,
       isSigned : status == 'Approved',
+      date: advisorDateValue || reason,
+      completeDate: dateConfirm 
     }
-    console.log(body)
+    const bodyNotUpdateStatus = {
+      step: '{{currentSteps.name}}',
+      supervisionStatus : supervisionStatus,
+      dateConfirmStatus :  appointmentStatus
+    }
     const formData = new FormData()
     formData.append('files', file)
     formData.append('step', '{{nextStep.name}}')
@@ -770,7 +948,16 @@ const checkStartDateMax = () => {
     formData.append('studentId', {{studentUser.user_id}})
     formData.append('stepFileType', fileType)
     // formData.append('studentId', {{studentUser.user_id}})
-    
+      if(supervisionStatus || appointmentStatus)
+      await fetch('/api/user/student/super/{{studentUser.user_id}}?_method=PATCH',{
+      method: 'PATCH',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bodyNotUpdateStatus),
+      })
+
       await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -779,6 +966,7 @@ const checkStartDateMax = () => {
       },
       body: JSON.stringify(body),
       })
+
       if(file){
       await fetch('/api/file/steps?_method=POST', {
         method: 'POST',

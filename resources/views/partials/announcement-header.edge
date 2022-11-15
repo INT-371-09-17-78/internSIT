@@ -2,19 +2,18 @@
 @if(request.matchesRoute(['/announcement/create', '/announcement/edit/:id']))
     @set('hidePostButton', 'hidden')
 @end
-<div class="header-element flex flex-col mt-12 px-5">
+<div class="header-element flex flex-col mt-12">
         <div class="header text-black flex font-bold text-4xl flex-shrink-0 lg:items-start items-center mt-5 lg:mt-0">
           <p class="text-base lg:text-3xl text-base-content">Announcement</p>
-          @if(auth.user.role!=="student" && posts.length > 0)
-          <a class="ml-auto flex-shrink-0 {{hidePostButton}}" href="{{ route('/announcement/create')}}">
-            @component('components/common/button',{
-              text: 'Post',
-              type: 'text',
-              classProps: 'bg-white rounded-3xl text-base-content gap-2 btn-sm text-base lg:text-lg h-10 lg:px-4 lg:h-12 w-full border-0 hover:bg-secondary hover:text-white group',
-            })
-            <svg class="fill-[#A8B0B8] group-hover:fill-white w-7 h-7 lg:w-8 lg:h-8" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-            @end
-            </a>
-          @end
         </div>  
+        @if(auth.user.role!=="student" && posts && posts.length > 0)
+        <a class="ml-auto flex-shrink-0 {{hidePostButton}} absolute right-52" href="{{ route('/announcement/create')}}">
+          @component('components/common/button',{
+            text: 'Create new post',
+            type: 'text',
+            classProps: 'btn btn-sm btn-primary border-none rounded-full h-10 font-medium',
+          })
+          @end
+          </a>
+        @end
 </div>
