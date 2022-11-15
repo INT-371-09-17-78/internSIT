@@ -1225,6 +1225,11 @@ export default class UsersController {
         // currentSteps['supervision']['m5'] = []
         // currentSteps['supervision']['m6'] = []
         const objSupervision = {}
+        const objSupervision1 = {}
+        const objSupervision2 = {}
+        const objSupervision3 = {}
+        const objSupervision4 = {}
+        const objSupervision5 = {}
         for (let i = 0; i < allUserHasDoc.length; i++) {
           // console.log(documentStatusesJsonCurrent)
           // console.log(userHasDoc[i], 'test')
@@ -1334,64 +1339,123 @@ export default class UsersController {
               allUserHasDoc[i].step &&
               allUserHasDoc[i].step.includes('Informed')
             ) {
-              objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
-              objSupervision['studentDate'] = allUserHasDoc[i].student_date
-              objSupervision['completeDate'] = allUserHasDoc[i].complete_date
-              objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
-              objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
-              objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
-              if (
-                !(
-                  objSupervision && // 👈 null and undefined check
-                  Object.keys(objSupervision).length === 0 &&
-                  Object.getPrototypeOf(objSupervision) === Object.prototype
-                )
-              ) {
-                // console.log(obj, 'test')
-                if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
-                  // currentSteps['supervision'][0].['m1'].push(objSupervision)
-                  currentSteps.supervision[0].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (2/6)') {
-                  // currentSteps['supervision']['m2'].push(objSupervision)
-                  currentSteps.supervision[1].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
-                  // currentSteps['supervision']['m3'].push(objSupervision)
-                  currentSteps.supervision[2].m3.push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
-                  currentSteps.supervision[3].m3.push(objSupervision)
-                  // currentSteps['supervision']['m4'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
-                  currentSteps.supervision[4].m3.push(objSupervision)
-                  // currentSteps['supervision']['m5'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
-                  currentSteps.supervision[5].m3.push(objSupervision)
-                  // currentSteps['supervision']['m6'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
-                  currentSteps.supervision[0].m3.push(objSupervision)
-                  // currentSteps['supervision']['m1'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
-                  currentSteps.supervision[1].m3.push(objSupervision)
-                  // currentSteps['supervision']['m2'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
-                  currentSteps.supervision[2].m3.push(objSupervision)
-                  // currentSteps['supervision']['m3'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
-                  currentSteps.supervision[3].m3.push(objSupervision)
-                  // currentSteps['supervision']['m4'].push(objSupervision)
-                } else if (allUserHasDoc[i].step === 'Informed supervision') {
-                  currentSteps.supervision[0].m3.push(objSupervision)
-                  // currentSteps['supervision']['m1'].push(objSupervision)
-                }
+              // console.log(allUserHasDoc[i])
 
-                // if (i === allUserHasDoc.length - 1) {
-                //   // else if (allUserHasDoc[i].step.includes('Informed supervision (2/6)')) {
-                //   //   objArr.push(obj)
-                //   // console.log(objArr)
-                //   // console.log("เข้า");
-                //   currentSteps['supervision'].push(objArr)
-                //   // }
-                // }
+              // if (
+              //   !(
+              //     objSupervision && // 👈 null and undefined check
+              //     Object.keys(objSupervision).length === 0 &&
+              //     Object.getPrototypeOf(objSupervision) === Object.prototype
+              //   )
+              // ) {
+              // console.log(obj, 'test')
+              if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
+                objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[0].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (2/6)') {
+                objSupervision1['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision1['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision1['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision1['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision1['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision1['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[1].push(objSupervision1)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+                objSupervision2['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision2['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision2['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision2['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision2['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision2['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[2].push(objSupervision2)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+                objSupervision3['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision3['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision3['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision3['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision3['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision3['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[3].push(objSupervision3)
+                // currentSteps['supervision']['m4'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+                objSupervision4['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision4['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision4['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision4['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision4['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision4['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[4].push(objSupervision4)
+                // currentSteps['supervision']['m5'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+                objSupervision5['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision5['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision5['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision5['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision5['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision5['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[5].push(objSupervision5)
+                // currentSteps['supervision']['m6'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+                objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[0].push(objSupervision)
+                // currentSteps['supervision']['m1'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+                objSupervision1['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision1['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision1['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision1['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision1['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision1['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[1].push(objSupervision1)
+                // currentSteps['supervision']['m2'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+                objSupervision2['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision2['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision2['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision2['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision2['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision2['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[2].push(objSupervision2)
+                // currentSteps['supervision']['m3'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+                objSupervision3['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision3['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision3['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision3['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision3['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision3['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[3].push(objSupervision3)
+                // currentSteps['supervision']['m4'].push(objSupervision)
+              } else if (allUserHasDoc[i].step === 'Informed supervision') {
+                objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                currentSteps.supervision[0].push(objSupervision)
+                // currentSteps['supervision']['m1'].push(objSupervision)
               }
+
+              // if (i === allUserHasDoc.length - 1) {
+              //   // else if (allUserHasDoc[i].step.includes('Informed supervision (2/6)')) {
+              //   //   objArr.push(obj)
+              //   // console.log(objArr)
+              //   // console.log("เข้า");
+              //   currentSteps['supervision'].push(objArr)
+              //   // }
+              // }
+              // }
             }
 
             // console.log(obj)
