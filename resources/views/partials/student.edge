@@ -558,6 +558,10 @@
                           <p>Complete</p>
                           <p>{{row.completeDate || '-'}}</p>
                         </div>
+                        <div class="space-y-2 w-44 whitespace-normal">
+                          <p>Complete</p>
+                          <p>{{row.meetingLink || '-'}}</p>
+                        </div>
                       </td>
                       <td class="align-top border-2 border-[#F6F7F9] text-sm">
                         <div class="space-y-2 w-44 whitespace-normal">
@@ -927,6 +931,11 @@ const checkStartDateMax = () => {
     if(document.getElementById('dateConfirm')){
       dateConfirm = document.getElementById('dateConfirm').value
     }
+
+    if(document.getElementById('meetlink')){
+      meetlink = document.getElementById('meetlink').value
+    }
+    
     let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     const body = {
       step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
@@ -934,7 +943,8 @@ const checkStartDateMax = () => {
       reason : reason ,
       isSigned : status == 'Approved',
       date: advisorDateValue || reason,
-      completeDate: dateConfirm 
+      completeDate: dateConfirm,
+      meetingLink: meetlink
     }
     const bodyNotUpdateStatus = {
       step: '{{currentSteps.name}}',
