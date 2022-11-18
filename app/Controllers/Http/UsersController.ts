@@ -1718,6 +1718,7 @@ export default class UsersController {
         nextStep,
         currentSteps,
         // stepPaged,
+        stepsRender,
         firstOfAllStep,
         lastOfAllStep,
         submission: submission,
