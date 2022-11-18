@@ -44,6 +44,12 @@ export enum Steps2Month {
 export enum Steps4Month {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
+  TR03_TR05_AND_SUPERVISION = 'TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION1 = '(1/4) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION2 = '(2/4) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION3 = '(3/4) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION4 = '(4/4) TR-03, TR-05 and Supervision',
+  TR03_TR06 = 'TR-03 and TR-06',
   TR03_AND_TR05_1_4 = 'TR-03 and TR-05 (1/4)',
   INFORMED_SUPERVISION_1_4 = 'Informed supervision (1/4)',
   TR03_AND_TR05_2_4 = 'TR-03 and TR-05 (2/4)',
@@ -52,13 +58,21 @@ export enum Steps4Month {
   INFORMED_SUPERVISION_3_4 = 'Informed supervision (3/4)',
   // INFORMED_SUPERVISION_4_4 = 'Informed supervision (4/4)',
 
-  SENT_PRESENTATION = 'Sent Presentation',
+  PRESENTATION = 'Presentation',
   TR03_AND_TR05_4_4 = 'TR-03 and TR-05 (4/4)',
 }
 
 export enum Steps6Month {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
+  TR03_TR05_AND_SUPERVISION = 'TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION1 = '(1/6) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION2 = '(2/6) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION3 = '(3/6) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION4 = '(4/6) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION5 = '(5/6) TR-03, TR-05 and Supervision',
+  TR03_TR05_AND_SUPERVISION6 = '(6/6) TR-03, TR-05 and Supervision',
+  TR03_TR06 = 'TR-03 and TR-06',
   TR03_AND_TR05_1_6 = 'TR-03 and TR-05 (1/6)',
   INFORMED_SUPERVISION_1_6 = 'Informed supervision (1/6)',
   TR03_AND_TR05_2_6 = 'TR-03 and TR-05 (2/6)',
@@ -69,7 +83,7 @@ export enum Steps6Month {
   INFORMED_SUPERVISION_4_6 = 'Informed supervision (4/6)',
   TR03_AND_TR05_5_6 = 'TR-03 and TR-05 (5/6)',
   INFORMED_SUPERVISION_5_6 = 'Informed supervision (5/6)',
-  SENT_PRESENTATION = 'Sent Presentation',
+  PRESENTATION = 'Presentation',
   // INFORMED_SUPERVISION_6_6 = 'Informed supervision (6/6)',
   TR03_AND_TR05_6_6 = 'TR-03 and TR-05 (6/6)',
 }
