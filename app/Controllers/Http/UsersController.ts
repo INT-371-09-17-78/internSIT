@@ -889,12 +889,854 @@ export default class UsersController {
     return result
   }
 
+  // public async showStudentUserById({ auth, request, response, view }: HttpContextContract) {
+  //   try {
+  //     // const role = request.param('role')
+  //     // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+  //     // const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+  //     // console.log(auth.user)
+  //     let AcademicYearCf: any
+  //     if (auth.user?.role === 'student') {
+  //       AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+  //     } else {
+  //       if (request.cookie('year')) {
+  //         AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+  //       } else {
+  //         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+  //       }
+  //     }
+  //     let studentUser: any
+  //     let usersInAcademicYear: any
+  //     const studentUsersRole = await User.query()
+  //       .where('role', 'student')
+  //       .andWhere('user_id', request.param('id'))
+  //     // .preload('student')
+  //     // const studentUser = studentUsers[0]
+
+  //     if (studentUsersRole[0]) {
+  //       usersInAcademicYear = await UsersInAcademicYearModel.query()
+  //         .where('user_id', studentUsersRole[0].user_id)
+  //         .andWhere('academic_year', AcademicYearCf[0].academic_year)
+  //         .preload('student')
+  //       // console.log(usersInAcademicYear)
+
+  //       if (usersInAcademicYear[0]) {
+  //         const stSerialize = studentUsersRole[0].serialize()
+  //         stSerialize['student'] = usersInAcademicYear[0].student
+  //         studentUser = stSerialize
+  //       }
+  //     }
+
+  //     // if (studentUser.student.advisor_id) {
+  //     //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
+  //     //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
+  //     // }
+  //     const studentInfo = [
+  //       { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
+  //       { title: 'Email', value: studentUser.email, key: 'email' },
+  //       { title: 'Tel.', value: studentUser.student.tel, key: 'tel' },
+  //       { title: 'Department', value: studentUser.student.department, key: 'department' },
+  //       { title: 'Position', value: studentUser.student.position, key: 'position' },
+  //       { title: 'Internship duration', value: studentUser.student.plan, key: 'duration' },
+  //       { title: 'Mentor', value: studentUser.student.mentor_name, key: 'mentor' },
+  //       {
+  //         title: 'Mentor’s Position',
+  //         value: studentUser.student.mentor_position,
+  //         key: 'mentorPosition',
+  //       },
+  //       { title: 'Mentor’s Email', value: studentUser.student.mentor_email, key: 'mentorEmail' },
+  //       { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
+  //       {
+  //         title: 'Advisor',
+  //         value: studentUser.student['advisorFullName']
+  //           ? studentUser.student['advisorFullName']
+  //           : '',
+  //         key: 'advisorFullName',
+  //       },
+  //     ]
+  //     const qs = request.qs()
+  //     const plans = [2, 4, 6]
+  //     let steps: any =
+  //       studentUser.student.plan === 6
+  //         ? [
+  //             {
+  //               name: Steps6Month.TR01,
+  //               // defaultFile:
+  //             },
+  //             {
+  //               name: Steps6Month.TR02,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_AND_TR05_1_6,
+  //             },
+  //             {
+  //               name: Steps6Month.INFORMED_SUPERVISION_1_6,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_AND_TR05_2_6,
+  //             },
+  //             {
+  //               name: Steps6Month.INFORMED_SUPERVISION_2_6,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_AND_TR05_3_6,
+  //             },
+  //             {
+  //               name: Steps6Month.INFORMED_SUPERVISION_3_6,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_AND_TR05_4_6,
+  //             },
+  //             {
+  //               name: Steps6Month.INFORMED_SUPERVISION_4_6,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_AND_TR05_5_6,
+  //             },
+  //             {
+  //               name: Steps6Month.INFORMED_SUPERVISION_5_6,
+  //             },
+  //             {
+  //               name: Steps6Month.PRESENTATION,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_AND_TR05_6_6,
+  //             },
+  //           ]
+  //         : studentUser.student.plan === 4
+  //         ? [
+  //             {
+  //               name: Steps4Month.TR01,
+  //             },
+  //             {
+  //               name: Steps4Month.TR02,
+  //             },
+  //             {
+  //               name: Steps4Month.TR03_AND_TR05_1_4,
+  //             },
+  //             {
+  //               name: Steps4Month.INFORMED_SUPERVISION_1_4,
+  //             },
+  //             {
+  //               name: Steps4Month.TR03_AND_TR05_2_4,
+  //             },
+  //             {
+  //               name: Steps4Month.INFORMED_SUPERVISION_2_4,
+  //             },
+  //             {
+  //               name: Steps4Month.TR03_AND_TR05_3_4,
+  //             },
+  //             {
+  //               name: Steps4Month.INFORMED_SUPERVISION_3_4,
+  //             },
+  //             {
+  //               name: Steps4Month.PRESENTATION,
+  //             },
+  //             {
+  //               name: Steps4Month.TR03_AND_TR05_4_4,
+  //             },
+  //           ]
+  //         : [
+  //             {
+  //               name: Steps2Month.TR01,
+  //             },
+  //             {
+  //               name: Steps2Month.TR02,
+  //             },
+  //             {
+  //               name: Steps2Month.INFORMED_SUPERVISION,
+  //             },
+  //             {
+  //               name: Steps2Month.SENT_PRESENTATION,
+  //             },
+  //             {
+  //               name: Steps2Month.TR03_AND_TR08,
+  //             },
+  //           ]
+  //     let stepsRender: any =
+  //       studentUser.student.plan === 6
+  //         ? [
+  //             {
+  //               name: Steps6Month.TR01,
+  //               // defaultFile:
+  //             },
+  //             {
+  //               name: Steps6Month.TR02,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_TR05_AND_SUPERVISION,
+  //               month: [
+  //                 {
+  //                   num: 1,
+  //                   name: Steps6Month.TR03_TR05_AND_SUPERVISION1,
+  //                 },
+  //                 {
+  //                   name: Steps6Month.TR03_TR05_AND_SUPERVISION2,
+  //                 },
+  //                 {
+  //                   name: Steps6Month.TR03_TR05_AND_SUPERVISION3,
+  //                 },
+  //                 {
+  //                   name: Steps6Month.TR03_TR05_AND_SUPERVISION4,
+  //                 },
+  //                 {
+  //                   name: Steps6Month.TR03_TR05_AND_SUPERVISION5,
+  //                 },
+  //                 {
+  //                   name: Steps6Month.TR03_TR05_AND_SUPERVISION6,
+  //                 },
+  //               ],
+  //             },
+  //             {
+  //               name: Steps6Month.PRESENTATION,
+  //             },
+  //             {
+  //               name: Steps6Month.TR03_TR06,
+  //             },
+  //           ]
+  //         : studentUser.student.plan === 4
+  //         ? [
+  //             {
+  //               name: Steps4Month.TR01,
+  //             },
+  //             {
+  //               name: Steps4Month.TR02,
+  //             },
+  //             {
+  //               name: Steps4Month.TR03_TR05_AND_SUPERVISION,
+  //               sub: [
+  //                 {
+  //                   name: Steps4Month.TR03_TR05_AND_SUPERVISION1,
+  //                 },
+  //                 {
+  //                   name: Steps4Month.TR03_TR05_AND_SUPERVISION2,
+  //                 },
+  //                 {
+  //                   name: Steps4Month.TR03_TR05_AND_SUPERVISION3,
+  //                 },
+  //                 {
+  //                   name: Steps4Month.TR03_TR05_AND_SUPERVISION4,
+  //                 },
+  //               ],
+  //             },
+  //             {
+  //               name: Steps4Month.PRESENTATION,
+  //             },
+  //             {
+  //               name: Steps4Month.TR03_AND_TR05_4_4,
+  //             },
+  //           ]
+  //         : [
+  //             {
+  //               name: Steps2Month.TR01,
+  //             },
+  //             {
+  //               name: Steps2Month.TR02,
+  //             },
+  //             {
+  //               name: Steps2Month.INFORMED_SUPERVISION,
+  //             },
+  //             {
+  //               name: Steps2Month.SENT_PRESENTATION,
+  //             },
+  //             {
+  //               name: Steps2Month.TR03_AND_TR08,
+  //             },
+  //           ]
+  //     let nextStep: any
+  //     let currentSteps: any = {}
+  //     const disabled =
+  //       studentUser.student.plan === null || studentUser.student.plan === 0 ? '' : 'disabled'
+
+  //     let userHasDocResult: any
+
+  //     userHasDocResult = await UserHasDoc.query()
+  //       .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+  //       .orderBy('created_at', 'desc')
+  //     // }
+
+  //     let submission: any = []
+  //     let stepFile: any
+  //     let userHasDoc: any = []
+  //     let isChangeStep: any = false
+  //     let realCurrentStep: any
+  //     if (userHasDocResult[0]) {
+  //       if (request.qs().step && request.qs().status) {
+  //         // if (request.cookie('isChangeStepSame') === request.qs().step) {
+  //         //   const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
+  //         //   // console.log(stepIndex - (stepIndex % 4))
+  //         //   return response.redirect(
+  //         //     '/student-information/' +
+  //         //       studentUser.user_id +
+  //         //       '?firstStepPaging=' +
+  //         //       (stepIndex > 3
+  //         //         ? steps[stepIndex - (4 + (stepIndex % 4))].name + '&gnext=true'
+  //         //         : steps[4].name) +
+  //         //       '&gnext=false'
+  //         //   )
+  //         // } else {
+  //         //   const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
+  //         //   // console.log(stepIndex)
+  //         //   if (stepIndex > 3) {
+  //         //     qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
+  //         //     qs.gnext = 'true'
+  //         //     // console.log(qs)
+  //         //   }
+  //         userHasDoc = await UserHasDoc.query()
+  //           .where('step', request.qs().step)
+  //           .andWhere('status', request.qs().status)
+  //           .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+  //         isChangeStep = true
+  //         // }
+  //         // response.cookie('isChangeStepSame', request.qs().step)
+  //       } else {
+  //         // const stepIndex = steps.findIndex((step) => step.name === userHasDocResult[0].step)
+  //         // // let zero: any
+  //         // if (Object.keys(request.qs()).length === 0 && stepIndex > 3) {
+  //         //   qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
+  //         //   qs.gnext = 'true'
+  //         // }
+
+  //         // response.cookie('isChangeStepSame', '')
+  //         userHasDoc.push(userHasDocResult[0])
+  //       }
+  //     }
+
+  //     // console.log(submission)
+  //     // console.log(userHasDocResult[0])
+  //     // userHasDocResult[0].related('')
+  //     // console.log(userHasDoc[0])
+  //     // console.log(userHasDoc)
+
+  //     if (userHasDoc && userHasDoc.length > 0) {
+  //       const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+  //       currentSteps['id'] = documentStatusesJsonCurrent.id
+  //       currentSteps['file'] = {}
+  //       currentSteps['file'].row = []
+  //       currentSteps['supervision'] = []
+  //       // currentSteps['file'].stepFile = []
+  //       // const templateFile = await File.query().where(
+  //       //   'template_step',
+  //       //   documentStatusesJsonCurrent.step
+  //       // )
+  //       const allUserHasDoc = await UserHasDoc.query().where(
+  //         'user_in_academic_year_id',
+  //         usersInAcademicYear[0].id
+  //       )
+
+  //       // console.log(usersInAcademicYear[0].id);
+
+  //       // if (
+  //       //   documentStatusesJsonCurrent.step === 'TR-02' &&
+  //       //   request.qs().step &&
+  //       //   !request.qs().step.includes('TR-03')
+  //       // ) {
+  //       //   const currentStepFile = await File.query().where(
+  //       //     'user_has_doc_id',
+  //       //     documentStatusesJsonCurrent.id
+  //       //   )
+  //       //   // {
+  //       //   // console.log('เข้า')
+  //       //   // console.log(currentStepFile)
+
+  //       //   if (currentStepFile[0]) {
+  //       //     currentSteps['file'].row.push(currentStepFile[0].serialize())
+  //       //   }
+  //       // }
+  //       // const checkForStepHasPassedIndex = steps.findIndex(
+  //       //   (word) => word.name === documentStatusesJsonCurrent.step
+  //       // )
+  //       // const checkForStepHasPassed = await UserHasDoc.query()
+  //       //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+  //       //   .andWhere('step', steps[checkForStepHasPassedIndex + 1].name)
+
+  //       // if (documentStatusesJsonCurrent.step !== 'TR-02') {
+  //       currentSteps['file'].row = []
+  //       // currentSteps['file'].row.push([])
+  //       // currentSteps['file'].row.push([])
+  //       // const objArr: any = []
+  //       // currentSteps['supervision']['m1'] = []
+  //       currentSteps.supervision.push([])
+  //       // currentSteps['supervision']['m2'] = []
+  //       currentSteps.supervision.push([])
+  //       currentSteps.supervision.push([])
+  //       currentSteps.supervision.push([])
+  //       currentSteps.supervision.push([])
+  //       currentSteps.supervision.push([])
+  //       // console.log(currentSteps.supervision[0]);
+
+  //       // currentSteps.supervision.push({ m3: [] })
+  //       // currentSteps.supervision.push({ m4: [] })
+  //       // currentSteps.supervision.push({ m5: [] })
+  //       // currentSteps.supervision.push({ m6: [] })
+  //       // currentSteps['supervision']['m3'] = []
+  //       // currentSteps['supervision']['m4'] = []
+  //       // currentSteps['supervision']['m5'] = []
+  //       // currentSteps['supervision']['m6'] = []
+  //       const objSupervision = {}
+  //       const objSupervision1 = {}
+  //       const objSupervision2 = {}
+  //       const objSupervision3 = {}
+  //       const objSupervision4 = {}
+  //       const objSupervision5 = {}
+  //       for (let i = 0; i < allUserHasDoc.length; i++) {
+  //         // console.log(documentStatusesJsonCurrent)
+  //         // console.log(userHasDoc[i], 'test')
+
+  //         if (
+  //           (documentStatusesJsonCurrent.step === 'TR-01' &&
+  //             documentStatusesJsonCurrent.status === 'Approved' &&
+  //             !request.qs().step) ||
+  //           request.qs().step === 'TR-02'
+  //         ) {
+  //           if (allUserHasDoc[i].step === 'TR-02') {
+  //             const currentStepFile = await File.query()
+  //               .where('user_has_doc_id', allUserHasDoc[i].id)
+  //               .where('step_file_type', 'signedFile')
+  //             // {
+  //             // console.log('เข้า')
+  //             // console.log(currentStepFile)
+
+  //             if (currentStepFile[0]) {
+  //               currentSteps['file'].row.push(currentStepFile[0].serialize())
+  //             }
+  //           }
+  //         } else if (
+  //           allUserHasDoc[i].step === 'TR-01' &&
+  //           documentStatusesJsonCurrent.step === 'TR-01'
+  //           // &&
+  //           // (!checkForStepHasPassed || checkForStepHasPassed.length <= 0) &&
+  //           // documentStatusesJsonCurrent.step !== 'TR-01' &&
+  //           // documentStatusesJsonCurrent.status !== 'Approved'
+
+  //           // &&
+  //           // request.qs().step &&
+  //           // !request.qs().step.includes('TR-02')
+  //         ) {
+  //           const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+  //           const StFileResult = await File.query()
+  //             .where('user_has_doc_id', allUserHasDoc[i].id)
+  //             .andWhere('step_file_type', 'studentFile')
+  //           const feedbackFileResult = await File.query()
+  //             .where('user_has_doc_id', allUserHasDoc[i].id)
+  //             .andWhere('step_file_type', 'feedbackFile')
+  //           const signedFileResult = await File.query()
+  //             .where('user_has_doc_id', allUserHasDoc[i].id)
+  //             .andWhere('step_file_type', 'signedFile')
+  //           // console.log(feedbackFileResult,'asdasd')
+
+  //           const obj = {}
+  //           obj['feedbackFile'] = {}
+  //           obj['signedFile'] = {}
+  //           obj['studentFile'] = {}
+  //           obj['reason'] = {}
+  //           // const lastestStSendingFile = await UserHasDoc.query()
+  //           //   .where('user_in_academic_year_id', allUserHasDoc[i].user_in_academic_year_id)
+  //           //   .andWhere('step', 'TR-01')
+  //           //   // .andWhere('status', StepStatus.PENDING)
+  //           //   // .orWhere('status', StepStatus.APPROVED)
+  //           //   .orderBy('updated_at', 'desc')
+  //           // const lastestStSendingFileResult = await File.query().where(
+  //           //   'user_has_doc_id',
+  //           //   lastestStSendingFile[0].id
+  //           // )
+  //           if (result && result.length > 0) {
+  //             if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
+  //               obj['studentFile'] =
+  //                 StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
+  //               if (!allUserHasDoc[i].is_signed) {
+  //                 obj['feedbackFile'] =
+  //                   feedbackFileResult && feedbackFileResult.length > 0
+  //                     ? feedbackFileResult[0].serialize()
+  //                     : {}
+  //               }
+  //               if (allUserHasDoc[i].is_signed) {
+  //                 obj['signedFile'] =
+  //                   signedFileResult && signedFileResult.length > 0
+  //                     ? signedFileResult[0].serialize()
+  //                     : {}
+  //               }
+  //             } else if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_react) {
+  //               obj['studentFile'] =
+  //                 StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
+  //             }
+  //           }
+
+  //           if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
+  //             obj['studentFile'] =
+  //               StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
+  //           }
+  //           if (allUserHasDoc[i].no_approve_reason) {
+  //             obj['reason'] = {
+  //               body: allUserHasDoc[i].no_approve_reason,
+  //               date: allUserHasDoc[i].updatedAt,
+  //             }
+  //           }
+  //           currentSteps['file'].row.push(obj)
+  //         } else if (
+  //           (documentStatusesJsonCurrent.step.includes('TR-03') &&
+  //             documentStatusesJsonCurrent.status === 'Approved' &&
+  //             !request.qs().step) ||
+  //           (request.qs().step && request.qs().step.includes('Informed')) ||
+  //           (documentStatusesJsonCurrent.step &&
+  //             documentStatusesJsonCurrent.step.includes('Informed') &&
+  //             documentStatusesJsonCurrent.status !== 'Approved')
+  //         ) {
+  //           // console.log(เข้า)
+  //           if (
+  //             allUserHasDoc[i] &&
+  //             allUserHasDoc[i].step &&
+  //             allUserHasDoc[i].step.includes('Informed')
+  //           ) {
+  //             // console.log(allUserHasDoc[i])
+
+  //             // if (
+  //             //   !(
+  //             //     objSupervision && // 👈 null and undefined check
+  //             //     Object.keys(objSupervision).length === 0 &&
+  //             //     Object.getPrototypeOf(objSupervision) === Object.prototype
+  //             //   )
+  //             // ) {
+  //             // console.log(obj, 'test')
+  //             if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
+  //               objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[0].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (2/6)') {
+  //               objSupervision1['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision1['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision1['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision1['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision1['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision1['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[1].push(objSupervision1)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+  //               objSupervision2['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision2['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision2['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision2['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision2['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision2['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[2].push(objSupervision2)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+  //               objSupervision3['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision3['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision3['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision3['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision3['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision3['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[3].push(objSupervision3)
+  //               // currentSteps['supervision']['m4'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+  //               objSupervision4['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision4['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision4['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision4['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision4['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision4['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[4].push(objSupervision4)
+  //               // currentSteps['supervision']['m5'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+  //               objSupervision5['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision5['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision5['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision5['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision5['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision5['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[5].push(objSupervision5)
+  //               // currentSteps['supervision']['m6'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+  //               objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[0].push(objSupervision)
+  //               // currentSteps['supervision']['m1'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+  //               objSupervision1['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision1['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision1['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision1['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision1['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision1['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[1].push(objSupervision1)
+  //               // currentSteps['supervision']['m2'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+  //               objSupervision2['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision2['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision2['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision2['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision2['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision2['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[2].push(objSupervision2)
+  //               // currentSteps['supervision']['m3'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+  //               objSupervision3['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision3['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision3['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision3['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision3['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision3['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[3].push(objSupervision3)
+  //               // currentSteps['supervision']['m4'].push(objSupervision)
+  //             } else if (allUserHasDoc[i].step === 'Informed supervision') {
+  //               objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+  //               objSupervision['studentDate'] = allUserHasDoc[i].student_date
+  //               objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+  //               objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+  //               objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+  //               objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+  //               currentSteps.supervision[0].push(objSupervision)
+  //               // currentSteps['supervision']['m1'].push(objSupervision)
+  //             }
+
+  //             // if (i === allUserHasDoc.length - 1) {
+  //             //   // else if (allUserHasDoc[i].step.includes('Informed supervision (2/6)')) {
+  //             //   //   objArr.push(obj)
+  //             //   // console.log(objArr)
+  //             //   // console.log("เข้า");
+  //             //   currentSteps['supervision'].push(objArr)
+  //             //   // }
+  //             // }
+  //             // }
+  //           }
+
+  //           // console.log(obj)
+
+  //           // currentSteps['supervision'].push(obj)
+  //         } else if (
+  //           allUserHasDoc[i].step.includes('TR-03') &&
+  //           documentStatusesJsonCurrent.step.includes('TR-03')
+  //         ) {
+  //           const obj = {}
+  //           obj['studentFile'] = {}
+  //           obj['feedbackFile'] = {}
+  //           obj['reason'] = ''
+  //           const StFileResult = await File.query()
+  //             .where('user_has_doc_id', allUserHasDoc[i].id)
+  //             .andWhere('step_file_type', 'studentFile')
+  //           const feedbackFileResult = await File.query()
+  //             .where('user_has_doc_id', allUserHasDoc[i].id)
+  //             .andWhere('step_file_type', 'feedbackFile')
+  //           // const signedFileResult = await File.query()
+  //           //   .where('user_has_doc_id', allUserHasDoc[i].id)
+  //           //   .andWhere('step_file_type', 'signedFile')
+  //           if (allUserHasDoc[i].is_react) {
+  //             // const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+  //             if (feedbackFileResult[0]) {
+  //               obj['feedbackFile'] = feedbackFileResult[0].serialize()
+  //             }
+
+  //             // const resultFeedback = await File.query().where(
+  //             //   'user_has_doc_id',
+  //             //   allUserHasDoc[i - 1].id
+  //             // )
+  //             if (StFileResult[0]) {
+  //               obj['studentFile'] = StFileResult[0].serialize()
+  //             }
+  //           } else {
+  //             // const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+  //             if (StFileResult[0]) {
+  //               obj['studentFile'] = StFileResult[0].serialize()
+  //             }
+  //           }
+  //           if (allUserHasDoc[i].no_approve_reason) {
+  //             obj['reason'] = {
+  //               body: allUserHasDoc[i].no_approve_reason,
+  //               date: allUserHasDoc[i].updatedAt,
+  //             }
+  //           }
+  //           if (
+  //             !(
+  //               obj && // 👈 null and undefined check
+  //               Object.keys(obj).length === 0 &&
+  //               Object.getPrototypeOf(obj) === Object.prototype
+  //             )
+  //           ) {
+  //             // if (allUserHasDoc[i].step === 'TR-03 and TR-05 (1/6)') {
+  //             //   currentSteps['file'].row[0].push(obj)
+  //             // } else if (allUserHasDoc[i].step === 'TR-03 and TR-05 (2/6)') {
+  //             //   currentSteps['file'].row[1].push(obj)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+  //             //   currentSteps['file'].row[2].push(obj)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+  //             //   currentSteps['file'].row[3].push(obj)
+  //             //   // currentSteps['supervision']['m4'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+  //             //   currentSteps['file'].row[4].push(obj)
+  //             //   // currentSteps['supervision']['m5'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+  //             //   currentSteps['file'].row[5].push(obj)
+  //             //   // currentSteps['supervision']['m6'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+  //             //   currentSteps.supervision[0].push(objSupervision)
+  //             //   // currentSteps['supervision']['m1'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+  //             //   currentSteps.supervision[1].push(objSupervision1)
+  //             //   // currentSteps['supervision']['m2'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+  //             //   currentSteps.supervision[2].push(objSupervision2)
+  //             //   // currentSteps['supervision']['m3'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+  //             //   currentSteps.supervision[3].push(objSupervision3)
+  //             //   // currentSteps['supervision']['m4'].push(objSupervision)
+  //             // } else if (allUserHasDoc[i].step === 'Informed supervision') {
+  //             //   currentSteps.supervision[0].push(objSupervision)
+  //             //   // currentSteps['supervision']['m1'].push(objSupervision)
+  //             // }
+  //             currentSteps['file'].row.push(obj)
+  //           }
+  //         }
+  //       }
+
+  //       // currentSteps['file'].templateFile = templateFile
+  //       // currentSteps['file'].feedbackFile = feedbackFile
+  //       // currentSteps['file'].signedFile = signedFile
+  //       // currentSteps['file'].studentFile = studentFile
+
+  //       currentSteps['name'] = documentStatusesJsonCurrent.step
+  //       currentSteps['status'] = documentStatusesJsonCurrent.status
+  //       currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
+  //         .tz('Asia/Bangkok')
+  //         .format('MMMM D, YYYY h:mm A')
+  //       // console.log(new Date(documentStatusesJsonCurrent.student_date));
+
+  //       // currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
+  //       // currentSteps['advisorDate'] = documentStatusesJsonCurrent.advisor_date
+  //       // // ? moment(documentStatusesJsonCurrent.advisor_date)
+  //       // //     .tz('Asia/Bangkok')
+  //       // //     .format('MMMM D, YYYY h:mm A')
+  //       // // : null
+
+  //       // currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
+  //       // // ? moment(documentStatusesJsonCurrent.student_date)
+  //       // //     .tz('Asia/Bangkok')
+  //       // //     .format('MMMM D, YYYY')
+  //       // // : null
+  //       // currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
+  //       // currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
+  //       // // currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
+  //       // currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
+  //       // console.log(Steps[Steps.])
+  //       const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
+  //       // console.log(stepIndex)
+  //       if (stepIndex >= 0) {
+  //         steps[stepIndex]['status'] = userHasDoc[0].status
+  //         if (userHasDoc[0].status === 'Approved') {
+  //           // console.log(steps[stepIndex + 1])
+
+  //           // const body = {}
+  //           // body['step'] = steps[stepIndex + 1] ? steps[stepIndex + 1].name : steps[stepIndex].name
+  //           // body['status'] = 'Waiting'
+  //           // await usersInAcademicYear[0].related('userHasDoc').create(body)
+  //           nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
+  //           // nextStep['isPassed'] = false
+  //           // console.log(steps[stepIndex]);
+  //         } else {
+  //           nextStep = steps[stepIndex]
+  //           // nextStep['isPassed'] = true
+  //         }
+  //       }
+  //       const userHasDocForRC = await UserHasDoc.query()
+  //         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+  //         .orderBy('created_at', 'desc')
+  //       // console.log(userHasDocForRC[0])
+
+  //       realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
+  //       // console.log(userHasDocForRC)
+
+  //       for (
+  //         let i = 0;
+  //         i <= (userHasDocForRC[0].status === 'Approved' ? realCurrentStep : realCurrentStep - 1);
+  //         i++
+  //       ) {
+  //         steps[i]['status'] = 'Approved'
+  //       }
+  //     } else {
+  //       // console.log("เข้ามัเยนิ");
+  //       currentSteps['name'] = steps[0].name
+  //       currentSteps['status'] = ''
+  //       currentSteps['createAt'] = ''
+  //       currentSteps['reason'] = ''
+  //       // const templateFile = await File.query().where('template_step', steps[0].name)
+  //       // console.log(templateFile)
+  //       currentSteps['file'] = {}
+  //       // if (templateFile && templateFile.length > 0) {
+  //       //   currentSteps['file']['templateFile'] = templateFile[0].serialize()
+  //       // }
+  //       nextStep = steps[0]
+  //       // nextStep['status'] = 'Waiting'
+  //     }
+  //     // console.log(steps)
+  //     if (currentSteps.supervision) {
+  //       currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
+  //     }
+
+  //     console.log(currentSteps.file.row)
+  //     // console.log(currentSteps.file.row)
+  //     // console.log(currentSteps.file.signedFile)
+  //     // console.log(currentSteps.file.studentFile[0])
+  //     console.log(nextStep)
+  //     let stepPaged = []
+  //     if (qs.firstStepPaging) {
+  //       const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
+  //       stepPaged =
+  //         qs.gnext === 'true'
+  //           ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
+  //           : steps.slice(firstStepPagingIndex - 4, firstStepPagingIndex)
+  //     } else {
+  //       // if (nextStepIndex / 4 <= 1) {
+  //       //   console.log('1')
+  //       //   stepPaged = steps.slice(0, 4)
+  //       // } else if (nextStepIndex / 4 <= 2) {
+  //       //   console.log('2')
+  //       //   stepPaged = steps.slice(4, 8)
+  //       // } else if (nextStepIndex / 4 <= 3) {
+  //       //   console.log('3')
+  //       //   stepPaged = steps.slice(8, 12)
+  //       // } else {
+  //       //   console.log('4')
+  //       //   stepPaged = steps.slice(8, 10)
+  //       // }
+  //       stepPaged = steps.slice(0, 4)
+  //     }
+  //     const lastOfAllStep = steps[steps.length - 1].name
+  //     const firstOfAllStep = steps[0].name
+  //     // console.log(request.updateQs({}))
+  //     const academicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+  //     // return response.redirect('/student/' + studentUser.student.student_id)
+  //     return view.render('student-information', {
+  //       studentUser,
+  //       plans,
+  //       isChangeStep,
+  //       disabled,
+  //       nextStep,
+  //       currentSteps,
+  //       // stepPaged,
+  //       stepsRender,
+  //       firstOfAllStep,
+  //       lastOfAllStep,
+  //       submission: submission,
+  //       studentInfo: studentInfo,
+  //       academicYears: academicYearAll,
+  //       // userHasDoc: userHasDoc[0].id,
+  //     })
+  //     // return response.redirect('/announcement')
+  //   } catch (error) {
+  //     console.log(error)
+
+  //     return response.status(400).json({ message: error.message })
+  //   }
+  // }
+
   public async showStudentUserById({ auth, request, response, view }: HttpContextContract) {
     try {
-      // const role = request.param('role')
-      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      // const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
-      // console.log(auth.user)
       let AcademicYearCf: any
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -910,15 +1752,12 @@ export default class UsersController {
       const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
-      // .preload('student')
-      // const studentUser = studentUsers[0]
 
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
           .preload('student')
-        // console.log(usersInAcademicYear)
 
         if (usersInAcademicYear[0]) {
           const stSerialize = studentUsersRole[0].serialize()
@@ -927,10 +1766,6 @@ export default class UsersController {
         }
       }
 
-      // if (studentUser.student.advisor_id) {
-      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
-      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
-      // }
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
         { title: 'Email', value: studentUser.email, key: 'email' },
@@ -1065,24 +1900,30 @@ export default class UsersController {
               },
               {
                 name: Steps6Month.TR03_TR05_AND_SUPERVISION,
-                sub: [
+                month: [
                   {
-                    name: Steps6Month.TR03_TR05_AND_SUPERVISION1,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_1_6,
                   },
                   {
-                    name: Steps6Month.TR03_TR05_AND_SUPERVISION2,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_2_6,
                   },
                   {
-                    name: Steps6Month.TR03_TR05_AND_SUPERVISION3,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_3_6,
                   },
                   {
-                    name: Steps6Month.TR03_TR05_AND_SUPERVISION4,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_4_6,
                   },
                   {
-                    name: Steps6Month.TR03_TR05_AND_SUPERVISION5,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_5_6,
                   },
                   {
-                    name: Steps6Month.TR03_TR05_AND_SUPERVISION6,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_6_6,
                   },
                 ],
               },
@@ -1103,18 +1944,22 @@ export default class UsersController {
               },
               {
                 name: Steps4Month.TR03_TR05_AND_SUPERVISION,
-                sub: [
+                month: [
                   {
-                    name: Steps4Month.TR03_TR05_AND_SUPERVISION1,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_1_4,
                   },
                   {
-                    name: Steps4Month.TR03_TR05_AND_SUPERVISION2,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_2_4,
                   },
                   {
-                    name: Steps4Month.TR03_TR05_AND_SUPERVISION3,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_3_4,
                   },
                   {
-                    name: Steps4Month.TR03_TR05_AND_SUPERVISION4,
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_4_4,
                   },
                 ],
               },
@@ -1152,7 +1997,6 @@ export default class UsersController {
       userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('created_at', 'desc')
-      // }
 
       let submission: any = []
       let stepFile: any
@@ -1161,51 +2005,15 @@ export default class UsersController {
       let realCurrentStep: any
       if (userHasDocResult[0]) {
         if (request.qs().step && request.qs().status) {
-          // if (request.cookie('isChangeStepSame') === request.qs().step) {
-          //   const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
-          //   // console.log(stepIndex - (stepIndex % 4))
-          //   return response.redirect(
-          //     '/student-information/' +
-          //       studentUser.user_id +
-          //       '?firstStepPaging=' +
-          //       (stepIndex > 3
-          //         ? steps[stepIndex - (4 + (stepIndex % 4))].name + '&gnext=true'
-          //         : steps[4].name) +
-          //       '&gnext=false'
-          //   )
-          // } else {
-          //   const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
-          //   // console.log(stepIndex)
-          //   if (stepIndex > 3) {
-          //     qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
-          //     qs.gnext = 'true'
-          //     // console.log(qs)
-          //   }
           userHasDoc = await UserHasDoc.query()
             .where('step', request.qs().step)
             .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
           isChangeStep = true
-          // }
-          // response.cookie('isChangeStepSame', request.qs().step)
         } else {
-          // const stepIndex = steps.findIndex((step) => step.name === userHasDocResult[0].step)
-          // // let zero: any
-          // if (Object.keys(request.qs()).length === 0 && stepIndex > 3) {
-          //   qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
-          //   qs.gnext = 'true'
-          // }
-
-          // response.cookie('isChangeStepSame', '')
           userHasDoc.push(userHasDocResult[0])
         }
       }
-
-      // console.log(submission)
-      // console.log(userHasDocResult[0])
-      // userHasDocResult[0].related('')
-      // console.log(userHasDoc[0])
-      // console.log(userHasDoc)
 
       if (userHasDoc && userHasDoc.length > 0) {
         const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
@@ -1213,65 +2021,20 @@ export default class UsersController {
         currentSteps['file'] = {}
         currentSteps['file'].row = []
         currentSteps['supervision'] = []
-        // currentSteps['file'].stepFile = []
-        // const templateFile = await File.query().where(
-        //   'template_step',
-        //   documentStatusesJsonCurrent.step
-        // )
+
         const allUserHasDoc = await UserHasDoc.query().where(
           'user_in_academic_year_id',
           usersInAcademicYear[0].id
         )
 
-        // console.log(usersInAcademicYear[0].id);
-
-        // if (
-        //   documentStatusesJsonCurrent.step === 'TR-02' &&
-        //   request.qs().step &&
-        //   !request.qs().step.includes('TR-03')
-        // ) {
-        //   const currentStepFile = await File.query().where(
-        //     'user_has_doc_id',
-        //     documentStatusesJsonCurrent.id
-        //   )
-        //   // {
-        //   // console.log('เข้า')
-        //   // console.log(currentStepFile)
-
-        //   if (currentStepFile[0]) {
-        //     currentSteps['file'].row.push(currentStepFile[0].serialize())
-        //   }
-        // }
-        // const checkForStepHasPassedIndex = steps.findIndex(
-        //   (word) => word.name === documentStatusesJsonCurrent.step
-        // )
-        // const checkForStepHasPassed = await UserHasDoc.query()
-        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhere('step', steps[checkForStepHasPassedIndex + 1].name)
-
-        // if (documentStatusesJsonCurrent.step !== 'TR-02') {
         currentSteps['file'].row = []
-        // currentSteps['file'].row.push([])
-        // currentSteps['file'].row.push([])
-        // const objArr: any = []
-        // currentSteps['supervision']['m1'] = []
-        currentSteps.supervision.push([])
-        // currentSteps['supervision']['m2'] = []
         currentSteps.supervision.push([])
         currentSteps.supervision.push([])
         currentSteps.supervision.push([])
         currentSteps.supervision.push([])
         currentSteps.supervision.push([])
-        // console.log(currentSteps.supervision[0]);
+        currentSteps.supervision.push([])
 
-        // currentSteps.supervision.push({ m3: [] })
-        // currentSteps.supervision.push({ m4: [] })
-        // currentSteps.supervision.push({ m5: [] })
-        // currentSteps.supervision.push({ m6: [] })
-        // currentSteps['supervision']['m3'] = []
-        // currentSteps['supervision']['m4'] = []
-        // currentSteps['supervision']['m5'] = []
-        // currentSteps['supervision']['m6'] = []
         const objSupervision = {}
         const objSupervision1 = {}
         const objSupervision2 = {}
@@ -1279,9 +2042,6 @@ export default class UsersController {
         const objSupervision4 = {}
         const objSupervision5 = {}
         for (let i = 0; i < allUserHasDoc.length; i++) {
-          // console.log(documentStatusesJsonCurrent)
-          // console.log(userHasDoc[i], 'test')
-
           if (
             (documentStatusesJsonCurrent.step === 'TR-01' &&
               documentStatusesJsonCurrent.status === 'Approved' &&
@@ -1292,9 +2052,6 @@ export default class UsersController {
               const currentStepFile = await File.query()
                 .where('user_has_doc_id', allUserHasDoc[i].id)
                 .where('step_file_type', 'signedFile')
-              // {
-              // console.log('เข้า')
-              // console.log(currentStepFile)
 
               if (currentStepFile[0]) {
                 currentSteps['file'].row.push(currentStepFile[0].serialize())
@@ -1303,14 +2060,6 @@ export default class UsersController {
           } else if (
             allUserHasDoc[i].step === 'TR-01' &&
             documentStatusesJsonCurrent.step === 'TR-01'
-            // &&
-            // (!checkForStepHasPassed || checkForStepHasPassed.length <= 0) &&
-            // documentStatusesJsonCurrent.step !== 'TR-01' &&
-            // documentStatusesJsonCurrent.status !== 'Approved'
-
-            // &&
-            // request.qs().step &&
-            // !request.qs().step.includes('TR-02')
           ) {
             const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
             const StFileResult = await File.query()
@@ -1322,23 +2071,13 @@ export default class UsersController {
             const signedFileResult = await File.query()
               .where('user_has_doc_id', allUserHasDoc[i].id)
               .andWhere('step_file_type', 'signedFile')
-            // console.log(feedbackFileResult,'asdasd')
 
             const obj = {}
             obj['feedbackFile'] = {}
             obj['signedFile'] = {}
             obj['studentFile'] = {}
             obj['reason'] = {}
-            // const lastestStSendingFile = await UserHasDoc.query()
-            //   .where('user_in_academic_year_id', allUserHasDoc[i].user_in_academic_year_id)
-            //   .andWhere('step', 'TR-01')
-            //   // .andWhere('status', StepStatus.PENDING)
-            //   // .orWhere('status', StepStatus.APPROVED)
-            //   .orderBy('updated_at', 'desc')
-            // const lastestStSendingFileResult = await File.query().where(
-            //   'user_has_doc_id',
-            //   lastestStSendingFile[0].id
-            // )
+
             if (result && result.length > 0) {
               if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
                 obj['studentFile'] =
@@ -1381,22 +2120,11 @@ export default class UsersController {
               documentStatusesJsonCurrent.step.includes('Informed') &&
               documentStatusesJsonCurrent.status !== 'Approved')
           ) {
-            // console.log(เข้า)
             if (
               allUserHasDoc[i] &&
               allUserHasDoc[i].step &&
               allUserHasDoc[i].step.includes('Informed')
             ) {
-              // console.log(allUserHasDoc[i])
-
-              // if (
-              //   !(
-              //     objSupervision && // 👈 null and undefined check
-              //     Object.keys(objSupervision).length === 0 &&
-              //     Object.getPrototypeOf(objSupervision) === Object.prototype
-              //   )
-              // ) {
-              // console.log(obj, 'test')
               if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
                 objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
                 objSupervision['studentDate'] = allUserHasDoc[i].student_date
@@ -1492,23 +2220,8 @@ export default class UsersController {
                 objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
                 objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
                 currentSteps.supervision[0].push(objSupervision)
-                // currentSteps['supervision']['m1'].push(objSupervision)
               }
-
-              // if (i === allUserHasDoc.length - 1) {
-              //   // else if (allUserHasDoc[i].step.includes('Informed supervision (2/6)')) {
-              //   //   objArr.push(obj)
-              //   // console.log(objArr)
-              //   // console.log("เข้า");
-              //   currentSteps['supervision'].push(objArr)
-              //   // }
-              // }
-              // }
             }
-
-            // console.log(obj)
-
-            // currentSteps['supervision'].push(obj)
           } else if (
             allUserHasDoc[i].step.includes('TR-03') &&
             documentStatusesJsonCurrent.step.includes('TR-03')
@@ -1523,24 +2236,15 @@ export default class UsersController {
             const feedbackFileResult = await File.query()
               .where('user_has_doc_id', allUserHasDoc[i].id)
               .andWhere('step_file_type', 'feedbackFile')
-            // const signedFileResult = await File.query()
-            //   .where('user_has_doc_id', allUserHasDoc[i].id)
-            //   .andWhere('step_file_type', 'signedFile')
             if (allUserHasDoc[i].is_react) {
-              // const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
               if (feedbackFileResult[0]) {
                 obj['feedbackFile'] = feedbackFileResult[0].serialize()
               }
 
-              // const resultFeedback = await File.query().where(
-              //   'user_has_doc_id',
-              //   allUserHasDoc[i - 1].id
-              // )
               if (StFileResult[0]) {
                 obj['studentFile'] = StFileResult[0].serialize()
               }
             } else {
-              // const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
               if (StFileResult[0]) {
                 obj['studentFile'] = StFileResult[0].serialize()
               }
@@ -1594,61 +2298,45 @@ export default class UsersController {
           }
         }
 
-        // currentSteps['file'].templateFile = templateFile
-        // currentSteps['file'].feedbackFile = feedbackFile
-        // currentSteps['file'].signedFile = signedFile
-        // currentSteps['file'].studentFile = studentFile
-
         currentSteps['name'] = documentStatusesJsonCurrent.step
         currentSteps['status'] = documentStatusesJsonCurrent.status
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
           .tz('Asia/Bangkok')
           .format('MMMM D, YYYY h:mm A')
-        // console.log(new Date(documentStatusesJsonCurrent.student_date));
+        let stepIndex: any
+        if (
+          currentSteps['name'].includes === AllSteps.TR_03_TR_05 ||
+          currentSteps['name'].includes === AllSteps.INFORMED_SUPERVISION
+        ) {
+          stepIndex = steps.findIndex((word) => word['month'].value === currentSteps['name'])
+        } else {
+          stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
+        }
+        // if (
+        //   currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+        //   currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+        // ) {
+        //   console.log('เข้า')
 
-        // currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
-        // currentSteps['advisorDate'] = documentStatusesJsonCurrent.advisor_date
-        // // ? moment(documentStatusesJsonCurrent.advisor_date)
-        // //     .tz('Asia/Bangkok')
-        // //     .format('MMMM D, YYYY h:mm A')
-        // // : null
-
-        // currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
-        // // ? moment(documentStatusesJsonCurrent.student_date)
-        // //     .tz('Asia/Bangkok')
-        // //     .format('MMMM D, YYYY')
-        // // : null
-        // currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
-        // currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
-        // // currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
-        // currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
-        // console.log(Steps[Steps.])
-        const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
-        // console.log(stepIndex)
+        //   stepIndex = stepsRender.findIndex(
+        //     (word) => word.month['value'] === currentSteps['name']
+        //   )
+        // } else {
+        //   stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
+        // }
         if (stepIndex >= 0) {
           steps[stepIndex]['status'] = userHasDoc[0].status
           if (userHasDoc[0].status === 'Approved') {
-            // console.log(steps[stepIndex + 1])
-
-            // const body = {}
-            // body['step'] = steps[stepIndex + 1] ? steps[stepIndex + 1].name : steps[stepIndex].name
-            // body['status'] = 'Waiting'
-            // await usersInAcademicYear[0].related('userHasDoc').create(body)
             nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
-            // nextStep['isPassed'] = false
-            // console.log(steps[stepIndex]);
           } else {
             nextStep = steps[stepIndex]
-            // nextStep['isPassed'] = true
           }
         }
         const userHasDocForRC = await UserHasDoc.query()
           .where('user_in_academic_year_id', usersInAcademicYear[0].id)
           .orderBy('created_at', 'desc')
-        // console.log(userHasDocForRC[0])
 
         realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
-        // console.log(userHasDocForRC)
 
         for (
           let i = 0;
@@ -1658,56 +2346,24 @@ export default class UsersController {
           steps[i]['status'] = 'Approved'
         }
       } else {
-        // console.log("เข้ามัเยนิ");
         currentSteps['name'] = steps[0].name
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
-        // const templateFile = await File.query().where('template_step', steps[0].name)
-        // console.log(templateFile)
         currentSteps['file'] = {}
-        // if (templateFile && templateFile.length > 0) {
-        //   currentSteps['file']['templateFile'] = templateFile[0].serialize()
-        // }
         nextStep = steps[0]
-        // nextStep['status'] = 'Waiting'
       }
-      // console.log(steps)
+
       if (currentSteps.supervision) {
         currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
       }
 
-      console.log(currentSteps.file.row)
+      // console.log(currentSteps)
+      // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
       console.log(nextStep)
-      let stepPaged = []
-      if (qs.firstStepPaging) {
-        const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
-        stepPaged =
-          qs.gnext === 'true'
-            ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
-            : steps.slice(firstStepPagingIndex - 4, firstStepPagingIndex)
-      } else {
-        // if (nextStepIndex / 4 <= 1) {
-        //   console.log('1')
-        //   stepPaged = steps.slice(0, 4)
-        // } else if (nextStepIndex / 4 <= 2) {
-        //   console.log('2')
-        //   stepPaged = steps.slice(4, 8)
-        // } else if (nextStepIndex / 4 <= 3) {
-        //   console.log('3')
-        //   stepPaged = steps.slice(8, 12)
-        // } else {
-        //   console.log('4')
-        //   stepPaged = steps.slice(8, 10)
-        // }
-        stepPaged = steps.slice(0, 4)
-      }
-      const lastOfAllStep = steps[steps.length - 1].name
-      const firstOfAllStep = steps[0].name
-      // console.log(request.updateQs({}))
       const academicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       // return response.redirect('/student/' + studentUser.student.student_id)
       return view.render('student-information', {
@@ -1719,8 +2375,8 @@ export default class UsersController {
         currentSteps,
         // stepPaged,
         stepsRender,
-        firstOfAllStep,
-        lastOfAllStep,
+        // firstOfAllStep,
+        // lastOfAllStep,
         submission: submission,
         studentInfo: studentInfo,
         academicYears: academicYearAll,
