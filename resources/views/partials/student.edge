@@ -11,7 +11,7 @@
         </div>
       </a>
   @else
-  <div class="mt-12"></div>
+  <div class="mt-8"></div>
   @end
   <div class="flex px-10">
     <div class="flex flex-col z-10 flex-shrink-0">
@@ -110,12 +110,21 @@
           </div>
           <div class="collapse-content bg-white text-[#495057] border-2 border-[#E6E7EA] flex flex-col space-y-5 font-bold"> 
             @each((step,i) in stepsRender)
+            @if(!step.month)
             <a id="{{step.name}}" href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status} }) }}">
-              <p><span>{{i+1}}. </span>{{step.name}}</p>                   
+            @end  
+              <p><span>{{i+1}}. </span>{{step.name}}</p>  
+            @if(!step.month)                 
             </a>
-              @if(step.sub)
-                @each((subStep,j) in step.sub)
-                  <p class="ml-5 cursor-pointer">{{i+1}}.{{j+1}} {{subStep.name}}</p>
+            @end  
+              @if(step.month)
+                @each((month,j) in step.month)
+                  <p class="text-[#A8B0B8]"> Month {{j+1}}</p>
+                  @each((subStep,j) in month)
+                  <a id="{{subStep.name}}" href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: subStep.value , status: step.status} }) }}">
+                    <li class="ml-5 cursor-pointer text-sm">{{subStep.value}}</li>
+                  </a>  
+                  @end
                 @end
               @end
             @end
@@ -299,7 +308,7 @@
             @if(auth.user.role !== 'staff' && request.qs().status !== 'Approved')
               <button type="submit" id="submitStepButton" class="mt-5 btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
             @end
-            @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-01' &&  currentSteps.status === 'Approved' || currentSteps.name === 'TR-02' && !nextStep.name.includes('TR-03'))
+            @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-02' )
               <table class="table w-full mt-2">    
               <thead>
                   <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -342,7 +351,7 @@
               @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
               <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role === "student" ? 'Submit' : 'Confirm'}}</button>
               @end
-              @elseif(request.qs().step && request.qs().step.includes('TR-03') || currentSteps.name === 'TR-02' &&  currentSteps.status === 'Approved' || currentSteps.name.includes('TR-03') && !nextStep.name.includes('Informed supervision'))
+              @elseif(request.qs().step && request.qs().step.includes('TR-03') || currentSteps.name.includes('TR-03'))
               <table class="table w-full mt-2">
                 <thead>
                   <tr class="border-2 border-[#E6E7EA] rounded-none">
