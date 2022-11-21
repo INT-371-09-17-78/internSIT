@@ -1901,66 +1901,42 @@ export default class UsersController {
               {
                 name: Steps6Month.TR03_TR05_AND_SUPERVISION,
                 month: [
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_1_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_1_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_2_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_2_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_3_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_3_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_4_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_4_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_5_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_5_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_6_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_6_6,
-                    },
-                  ],
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_1_6,
+                    supName: Steps6Month.SUPERVISION,
+                    supValue: Steps6Month.INFORMED_SUPERVISION_1_6,
+                  },
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_2_6,
+                    supName: Steps6Month.SUPERVISION,
+                    supValue: Steps6Month.INFORMED_SUPERVISION_2_6,
+                  },
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_3_6,
+                    supName: Steps6Month.SUPERVISION,
+                    supValue: Steps6Month.INFORMED_SUPERVISION_3_6,
+                  },
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_4_6,
+                    supName: Steps6Month.SUPERVISION,
+                    supValue: Steps6Month.INFORMED_SUPERVISION_4_6,
+                  },
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_5_6,
+                    supName: Steps6Month.SUPERVISION,
+                    supValue: Steps6Month.INFORMED_SUPERVISION_5_6,
+                  },
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_6_6,
+                    supName: Steps6Month.SUPERVISION,
+                    supValue: Steps6Month.INFORMED_SUPERVISION_6_6,
+                  },
                 ],
               },
               {
