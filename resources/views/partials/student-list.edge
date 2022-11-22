@@ -38,48 +38,55 @@
     </div>
   </div>
   <div class="flex space-x-5 h-full">
-        <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
-          <li class="{{activeAll}}">
-            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information') }}">All Student</a>
-          </li>
-          <li class="{{activeTwoMonth}}">
-            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 2}})  }}">INT340 (2 months)</a>
-          </li>
-          <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
-          <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
-          @if(auth.user.role ==="advisor")
-          <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a></li>
+    <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
+      <li class="{{activeAll}}">
+        <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information') }}">All Student</a>
+      </li>
+      <li class="{{activeTwoMonth}}">
+        <a class="active:bg-[#A1D9FF] active:text-[#495057]"
+          href="{{ route('/student-information', {} , {qs: {month: 2}})  }}">INT340 (2 months)</a>
+      </li>
+      <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
+          href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
+      <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
+          href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
+      @if(auth.user.role ==="advisor")
+      <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
+          href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a>
+      </li>
+      @end
+    </ul>
+    @if(allAmoutSt !== noApprove && studentUsers.length > 0)
+    <div class="flex-1 pr-20">
+      <table class="table w-full mt-5">
+        <thead>
+          <tr class="border-2 border-[#F6F7F9]">
+            <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
+            <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+            <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each((student,index) in studentUsers)
+          @if(student.approved)
+          <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]"
+            onclick="window.location='/student-information/{{student.user_id}}'">
+            <td>{{student.user_id}}</td>
+            <td>{{student.firstname + " " + student.lastname}}</td>
+            <td class="{{checkStatus(student.lastestStatus)}} font-bold">{{student.lastestStatus}}</td>
+          </tr>
           @end
-        </ul>
-        @if(allAmoutSt !== noApprove && studentUsers.length > 0)
-        <div class="flex-1 pr-20">
-          <table class="table w-full mt-5">
-            <thead>
-              <tr class="border-2 border-[#F6F7F9]">
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Latest status</th>
-              </tr>
-            </thead>
-            <tbody>
-              @each((student,index) in studentUsers)
-              @if(student.approved)
-                  <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="window.location='/student-information/{{student.user_id}}'">
-                    <td>{{student.user_id}}</td>
-                    <td>{{student.firstname + " " + student.lastname}}</td>
-                    <td class="{{checkStatus(student.lastestStatus)}} font-bold">{{student.lastestStatus}}</td>
-                  </tr>
-              @end
-              @end
-            </tbody>
-          </table>
-        </div>
-        @else
-        <div class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
-            <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
-            <p>No students in the system</p>
-            <p class="text-base">Please add students into the system first or Check your filters.</p>
-        </div>
-        @end
+          @end
+        </tbody>
+      </table>
+    </div>
+    @else
+    <div
+      class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+      <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
+      <p>No students in the system</p>
+      <p class="text-base">Please add students into the system first or Check your filters.</p>
+    </div>
+    @end
   </div>
 </div>

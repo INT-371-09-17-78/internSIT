@@ -12,67 +12,74 @@
 @section('student-information')
 @if(request.matchesRoute('/register-request'))
 @set('activeRequestTab', 'bg-white text-primary fill-primary')
-@elseif(request.matchesRoute(['/student-information', '/student-information/:id','/student-information/:id/editInformedSupervision']))
+@elseif(request.matchesRoute(['/student-information',
+'/student-information/:id','/student-information/:id/editInformedSupervision']))
 @set('activeInfoTab', 'bg-white text-primary fill-primary')
 @else
 @set('activeCourseTab', 'bg-white text-primary fill-primary')
 @end
 
-  @if(request.qs().month == 2)
-   @set('activeTwoMonth', 'bg-[#DAF0FF]')
-  @elseif(request.qs().month == 4)
-   @set('activeFourMonth', 'bg-[#DAF0FF]')
-  @elseif(request.qs().month == 6)
-    @set('activeSixMonth', 'bg-[#DAF0FF]')
-  @elseif(request.qs().advisor)
-    @set('activeStudentByAdvisor', 'bg-[#DAF0FF]')
-  @else
-    @set('activeAll', 'bg-[#DAF0FF]')
-  @end
-  <section class="flex flex-col h-full w-full z-[5] bg-white">
-    @if(auth.user.role !== "student")
-      <div class="flex px-8 bg-[#F0F3F8] w-full py-6">
-        @if(request.matchesRoute('/academic-year'))
-        <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
-          Academic year
-        </p>
-        @else
-        <div class="flex items-center space-x-5">
-          <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
-            {{auth.user.firstname + ' ' +  auth.user.lastname}}
-            </p>
-            <div class="flex items-center space-x-2">
-              <svg class="w-4 h-4" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.9998 6.62069C7.82805 6.62069 9.31014 5.1386 9.31014 3.31034C9.31014 1.48209 7.82805 0 5.9998 0C4.17154 0 2.68945 1.48209 2.68945 3.31034C2.68945 5.1386 4.17154 6.62069 5.9998 6.62069Z" fill="#4263EB"/>
-                <path d="M6 6.59766C2.68629 6.59766 0 9.28395 0 12.5977H12C12 9.28395 9.31371 6.59766 6 6.59766Z" fill="#4263EB"/>
-              </svg> 
-              <p class="text-primary font-medium capitalize">{{auth.user.role}}</p>
-            </div>
-        </div>
-        <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
-          <p class="font-bold">Academic year: {{request.cookie('year') || academicYears[0].academic_year}} </p>
-          <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
-        </div>
-        @end
+@if(request.qs().month == 2)
+@set('activeTwoMonth', 'bg-[#DAF0FF]')
+@elseif(request.qs().month == 4)
+@set('activeFourMonth', 'bg-[#DAF0FF]')
+@elseif(request.qs().month == 6)
+@set('activeSixMonth', 'bg-[#DAF0FF]')
+@elseif(request.qs().advisor)
+@set('activeStudentByAdvisor', 'bg-[#DAF0FF]')
+@else
+@set('activeAll', 'bg-[#DAF0FF]')
+@end
+<section class="flex flex-col h-full w-full z-[5] bg-white">
+  @if(auth.user.role !== "student")
+  <div class="flex px-8 bg-[#F0F3F8] w-full py-6">
+    @if(request.matchesRoute('/academic-year'))
+    <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
+      Academic year
+    </p>
+    @else
+    <div class="flex items-center space-x-5">
+      <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
+        {{auth.user.firstname + ' ' + auth.user.lastname}}
+      </p>
+      <div class="flex items-center space-x-2">
+        <svg class="w-4 h-4" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M5.9998 6.62069C7.82805 6.62069 9.31014 5.1386 9.31014 3.31034C9.31014 1.48209 7.82805 0 5.9998 0C4.17154 0 2.68945 1.48209 2.68945 3.31034C2.68945 5.1386 4.17154 6.62069 5.9998 6.62069Z"
+            fill="#4263EB" />
+          <path d="M6 6.59766C2.68629 6.59766 0 9.28395 0 12.5977H12C12 9.28395 9.31371 6.59766 6 6.59766Z"
+            fill="#4263EB" />
+        </svg>
+        <p class="text-primary font-medium capitalize">{{auth.user.role}}</p>
       </div>
-        @if(request.matchesRoute('/academic-year'))
-          @include('partials/academic-year')
-        @else
-          @include('partials/info-tab')
-        @end
-      @end
-      @if(request.matchesRoute('/student-information'))
-        @include('partials/student-list')
-      @elseif(request.matchesRoute('/register-request'))
-        @include('partials/register-request')
-      @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/complete-course'))
-        @include('partials/course-info')
-      @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit') || request.matchesRoute('/course-info/edit/supervised-student'))
-        @include('partials/steps')
-      @elseif(request.matchesRoute('/student-information/:id') || request.matchesRoute('/student-information/:id/editInformedSupervision'))
-        @include('partials/student')
-      @end
-  </section>
+    </div>
+    <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
+      <p class="font-bold">Academic year: {{request.cookie('year') || academicYears[0].academic_year}} </p>
+      <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
+    </div>
+    @end
+  </div>
+  @if(request.matchesRoute('/academic-year'))
+  @include('partials/academic-year')
+  @else
+  @include('partials/info-tab')
+  @end
+  @end
+  @if(request.matchesRoute('/student-information'))
+  @include('partials/student-list')
+  @elseif(request.matchesRoute('/register-request'))
+  @include('partials/register-request')
+  @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') ||
+  request.matchesRoute('/course-info/complete-course'))
+  @include('partials/course-info')
+  @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit') ||
+  request.matchesRoute('/course-info/edit/supervised-student'))
+  @include('partials/steps')
+  @elseif(request.matchesRoute('/student-information/:id') ||
+  request.matchesRoute('/student-information/:id/editInformedSupervision'))
+  @include('partials/student')
+  @end
+</section>
 
 <script>
   const year = document.getElementById("acdemic-years")
@@ -362,7 +369,8 @@
       }
     })
     
-    document.getElementById('student-table-row').innerHTML += `<tr id="${document.getElementById('student').value}"><td>${document.getElementById('student').value}</td> <td class="text-right"><div class="flex justify-end"> 
+    document.getElementById('student-table-row').innerHTML += 
+    /*html*/`<tr id="${document.getElementById('student').value}"><td>${document.getElementById('student').value}</td> <td class="text-right"><div class="flex justify-end"> 
                             <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStudent('${document.getElementById('student').value}')">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
@@ -387,7 +395,8 @@
       }
     })
     
-    document.getElementById('advisor-table-row').innerHTML += `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
+    document.getElementById('advisor-table-row').innerHTML += 
+    /*html*/ `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
                             <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalAdvisor('${document.getElementById('advisor').value}')">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
@@ -412,7 +421,8 @@
       }
     })
     
-    document.getElementById('staff-table-row').innerHTML += `<tr id="${document.getElementById('staff').value}"><td>${document.getElementById('staff').value}</td> <td class="text-right"><div class="flex justify-end"> 
+    document.getElementById('staff-table-row').innerHTML += 
+    /*html*/ `<tr id="${document.getElementById('staff').value}"><td>${document.getElementById('staff').value}</td> <td class="text-right"><div class="flex justify-end"> 
                             <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStaff('${document.getElementById('staff').value}')">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
@@ -495,7 +505,7 @@
   }
    const openAlertDeleteRequest = (id) => {
     const alertDeleteRequest = 
-    `<div id="modal-confirm-delete-request" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+    /*html*/ `<div id="modal-confirm-delete-request" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
       <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
         <div class="alert bg-base-100 shadow-lg font-bold">
           <div>

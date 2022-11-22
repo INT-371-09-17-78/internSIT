@@ -1,19 +1,19 @@
 @set('hidePostButton', '')
 @if(request.matchesRoute(['/announcement/create', '/announcement/edit/:id']))
-    @set('hidePostButton', 'hidden')
+@set('hidePostButton', 'hidden')
 @end
 <div class="header-element flex flex-col mt-12">
-        <div class="header text-black flex font-bold text-4xl flex-shrink-0 lg:items-start items-center mt-5 lg:mt-0">
-          <p class="text-base lg:text-3xl text-base-content">Announcement</p>
-        </div>  
-        @if(auth.user.role!=="student" && posts && posts.length > 0)
-        <a class="ml-auto flex-shrink-0 {{hidePostButton}} absolute right-52" href="{{ route('/announcement/create')}}">
-          @component('components/common/button',{
-            text: 'Create new post',
-            type: 'text',
-            classProps: 'btn btn-sm btn-primary border-none rounded-full h-10 font-medium',
-          })
-          @end
-          </a>
-        @end
+  <div class="header text-black flex font-bold text-4xl flex-shrink-0 lg:items-start items-center mt-5 lg:mt-0">
+    <p class="text-base lg:text-3xl text-base-content">Announcement</p>
+  </div>
+  @if(auth.user.role!=="student" && posts && posts.length > 0)
+  <a class="ml-auto flex-shrink-0 {{hidePostButton}} absolute right-52" href="{{ route('/announcement/create')}}">
+    @component('components/common/button',{
+    text: 'Create new post',
+    type: 'text',
+    classProps: 'btn btn-sm btn-primary border-none rounded-full h-10 font-medium',
+    })
+    @end
+  </a>
+  @end
 </div>
