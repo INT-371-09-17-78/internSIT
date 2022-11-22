@@ -118,8 +118,8 @@
             <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="justify-self-end">
               <button type="button"
                 class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
-              <a>
-                @end
+            </a>
+             @end
           </div>
         </div>
       </div>
@@ -128,25 +128,32 @@
           Steps
         </div>
         <div
-          class="collapse-content bg-white text-[#495057] border-2 border-[#E6E7EA] flex flex-col space-y-5 font-bold">
+          class="collapse-content bg-white text-[#495057] border-2 border-[#E6E7EA] flex flex-col space-y-5 pt-5 font-bold">
           @each((step,i) in stepsRender)
           @if(!step.month)
           <a id="{{step.name}}"
             href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status} }) }}">
-            @end
-            <p><span>{{i+1}}. </span>{{step.name}}</p>
-            @if(!step.month)
+          @end
+            <p class="{{step.status==='Approved' ? 'text-green-700': step.status==='Disapproved' ? 'text-red-700' : step.status==='Pending' ? 'text-yellow-700' : ''}}"><span>{{i+1}}. </span>{{step.name}}</p>
+          @if(!step.month)
           </a>
           @end
           @if(step.month)
           @each((month,j) in step.month)
-          <p class="text-[#A8B0B8]"> Month {{j+1}}</p>
-          @each((subStep,j) in month)
-          <a id="{{subStep.name}}"
-            href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: subStep.value , status: step.status} }) }}">
-            <li class="ml-5 cursor-pointer text-sm">{{subStep.value}}</li>
-          </a>
-          @end
+          <div class="flex text-sm space-x-2 pl-5">
+            <p class="text-[#A8B0B8] flex-shrink-0"> Month {{j+1}}</p>
+            <div class="flex flex-col space-y-2">
+              @each((subStep,k) in month)
+              <a id="{{subStep.name}}" class="flex items-center space-x-2 {{subStep.status==='Approved' ? 'text-green-700': subStep.status==='Disapproved' ? 'text-red-700' : subStep.status==='Pending' ? 'text-yellow-700' : ''}}"
+                href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: subStep.name + ` (Month ${j+1})` , status: step.status} }) }}">
+                <svg class="w-3 h-3 fill-[#495057]" viewBox="0 0 5 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 8.7035L0.751912 9.5L5 5L0.751912 0.5L0 1.2965L3.49618 5L0 8.7035Z" fill="current"/>
+                </svg>                  
+                <p class="cursor-pointer">{{subStep.name}}</p>
+              </a>
+              @end
+            </div>
+          </div>
           @end
           @end
           @end
@@ -241,7 +248,7 @@
               <tr class="font-medium border-2 border-[#F6F7F9]">
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
+                  <div class="space-y-2 whitespace-normal">
                     <a class="link link-primary w-fit"
                       href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
                       {{row.studentFile.file_name}}
@@ -298,17 +305,19 @@
                 </td>
                 @else
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
+                  <div class="space-y-2 whitespace-normal">
                     @if(row.reason.body && row.feedbackFile.file_name)
-                    <div class="space-y-2 w-44 whitespace-normal">
+                    <div class="space-y-2 whitespace-normal">
                       <p class="text-red-700">Disapproved</p>
-                      <p>{{row.reason.body}}</p>
-                      <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">
-                        <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
-                          target="_blank">
-                          {{row.feedbackFile.file_name}}
-                        </a>
+                      <p>Feedback file: 
+                        <span class="{{row.feedbackFile.file_name && 'link link-primary' }}">
+                          <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
+                            target="_blank">
+                            {{row.feedbackFile.file_name}}
+                          </a>
+                        </span>
                       </p>
+                      <p>{{row.reason.body}}</p>
                       <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
                     </div>
                     @elseif(row.reason.body)
@@ -317,22 +326,26 @@
                     <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
                     @elseif(row.feedbackFile.file_name)
                     <p class="text-red-700">Disapproved</p>
-                    <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">
-                      <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
-                        target="_blank">
-                        {{row.feedbackFile.file_name}}
-                      </a>
+                    <p>Feedback file: 
+                      <span class="{{row.feedbackFile.file_name && 'link link-primary' }}">
+                        <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
+                          target="_blank">
+                          {{row.feedbackFile.file_name}}
+                        </a>
+                      </span>
                     </p>
                     <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
                     @elseif(!row.signedFile.file_name && !row.reason.body && !row.feedbackFile.file_name)
                     <p>-</p>
                     @else
-                    <div class="space-y-2 w-44 whitespace-normal">
+                    <div class="space-y-2 whitespace-normal">
                       <p class="text-green-700">Completed</p>
-                      <p class="{{row.signedFile.file_name && 'link link-primary' }}">
-                        <a href="/api/file/{{row.signedFile.file_id}}?prev=prev&&isStep=true" target="_blank">
-                          {{row.signedFile.file_name || '-'}}
-                        </a>
+                      <p>Signed file :
+                        <span class="{{row.signedFile.file_name && 'link link-primary' }}">
+                          <a href="/api/file/{{row.signedFile.file_id}}?prev=prev&&isStep=true" target="_blank">
+                            {{row.signedFile.file_name || '-'}}
+                          </a>
+                        </span>
                       </p>
                       <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
                     </div>
@@ -368,7 +381,7 @@
             class="mt-5 btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role ===
             "student" ? 'Submit' : 'Confirm'}}</button>
           @end
-          @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-02' )
+          @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-02' && currentSteps.status !== 'Approved' )
           <table class="table w-full mt-2">
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -387,12 +400,12 @@
             <tr class="font-medium border-2 border-[#F6F7F9]">
               <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                <div class="space-y-2 whitespace-normal">
-                  <a class="link link-primary w-fit" href="/api/file/{{row.file_id}}?prev=prev&&isStep=true"
-                    target="_blank">
-                    {{row.file_name || ''}}
+                <div class="space-y-2 w-44 whitespace-normal">
+                  <a class="link link-primary w-fit"
+                    href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
+                    {{row.studentFile.file_name}}
                   </a>
-                  <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
+                  <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
                 </div>
               </td>
             </tr>
@@ -420,7 +433,7 @@
             class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
             "student" ? 'Submit' : 'Confirm'}}</button>
           @end
-          @elseif(request.qs().step && request.qs().step.includes('TR-03') || currentSteps.name.includes('TR-03'))
+          @elseif(request.qs().step && request.qs().step.includes('TR-03') || currentSteps.name.includes('TR-03') && currentSteps.status !== 'Approved')
           <table class="table w-full mt-2">
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -462,7 +475,7 @@
               <tr class="font-medium border-2 border-[#F6F7F9]">
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
+                  <div class="space-y-2 whitespace-normal">
                     <a class="link link-primary w-fit"
                       href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
                       {{row.studentFile.file_name}}
@@ -470,8 +483,7 @@
                     <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
                   </div>
                 </td>
-                @if(auth.user.role === 'staff' && currentSteps.status !== 'Disapproved' && request.qs().status !==
-                'Approved' && index === currentSteps.file.row.length -1)
+                @if(auth.user.role === 'staff' && currentSteps.status !== 'Disapproved' && request.qs().status !== 'Approved' && index === currentSteps.file.row.length -1 && currentSteps.status !== 'Approved')
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
                   <div class="flex">
                     <div class="flex flex-col">
@@ -507,16 +519,18 @@
                 </td>
                 @else
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
+                  <div class="space-y-2 whitespace-normal">
                     @if(row.reason.body && row.feedbackFile.file_name)
-                    <div class="space-y-2 w-44 whitespace-normal">
+                    <div class="space-y-2 whitespace-normal">
                       <p class="text-red-700">Disapproved</p>
                       <p>{{row.reason.body}}</p>
-                      <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">
-                        <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
-                          target="_blank">
-                          {{row.feedbackFile.file_name}}
-                        </a>
+                      <p>Feedback file: 
+                        <span class="{{row.feedbackFile.file_name && 'link link-primary' }}">
+                          <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
+                            target="_blank">
+                            {{row.feedbackFile.file_name}}
+                          </a>
+                        </span>
                       </p>
                       <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
                     </div>
@@ -526,11 +540,13 @@
                     <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
                     @elseif(row.feedbackFile.file_name)
                     <p class="text-red-700">Disapproved</p>
-                    <p class="{{row.feedbackFile.file_name && 'link link-primary' }}">
-                      <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
-                        target="_blank">
-                        {{row.feedbackFile.file_name}}
-                      </a>
+                    <p>Feedback file: 
+                      <span class="{{row.feedbackFile.file_name && 'link link-primary' }}">
+                        <a href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
+                          target="_blank">
+                          {{row.feedbackFile.file_name}}
+                        </a>
+                      </span>
                     </p>
                     <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
                     @elseif(currentSteps.status === 'Approved' && index === currentSteps.file.row.length - 1)
@@ -545,7 +561,7 @@
                 @end
               </tr>
               @end
-              @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
+              @if(auth.user.role === 'student' && request.qs().status !== 'Approved' && currentSteps.status !== 'Approved')
               <tr class="font-medium border-2 border-[#F6F7F9]">
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&
                   currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 ||
