@@ -1791,103 +1791,7 @@ export default class UsersController {
       ]
       const qs = request.qs()
       const plans = [2, 4, 6]
-      let steps: any =
-        studentUser.student.plan === 6
-          ? [
-              {
-                name: Steps6Month.TR01,
-                // defaultFile:
-              },
-              {
-                name: Steps6Month.TR02,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_1_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_1_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_2_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_2_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_3_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_3_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_4_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_4_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_5_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_5_6,
-              },
-              {
-                name: Steps6Month.PRESENTATION,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_6_6,
-              },
-            ]
-          : studentUser.student.plan === 4
-          ? [
-              {
-                name: Steps4Month.TR01,
-              },
-              {
-                name: Steps4Month.TR02,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_1_4,
-              },
-              {
-                name: Steps4Month.INFORMED_SUPERVISION_1_4,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_2_4,
-              },
-              {
-                name: Steps4Month.INFORMED_SUPERVISION_2_4,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_3_4,
-              },
-              {
-                name: Steps4Month.INFORMED_SUPERVISION_3_4,
-              },
-              {
-                name: Steps4Month.PRESENTATION,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_4_4,
-              },
-            ]
-          : [
-              {
-                name: Steps2Month.TR01,
-              },
-              {
-                name: Steps2Month.TR02,
-              },
-              {
-                name: Steps2Month.INFORMED_SUPERVISION,
-              },
-              {
-                name: Steps2Month.SENT_PRESENTATION,
-              },
-              {
-                name: Steps2Month.TR03_AND_TR08,
-              },
-            ]
+
       let stepsRender: any =
         studentUser.student.plan === 6
           ? [
@@ -2340,13 +2244,29 @@ export default class UsersController {
           .tz('Asia/Bangkok')
           .format('MMMM D, YYYY h:mm A')
         let stepIndex: any
+        let monthStepIndex: any
+        let stepsRenderIndex: any
         if (
-          currentSteps['name'].includes === AllSteps.TR_03_TR_05 ||
-          currentSteps['name'].includes === AllSteps.INFORMED_SUPERVISION
+          currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+          currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
         ) {
-          stepIndex = steps.findIndex((word) => word['month'].value === currentSteps['name'])
+          stepsRenderIndex = stepsRender.findIndex(
+            (step) => step.name === AllSteps.TR03_TR05_AND_SUPERVISION
+          )
+
+          stepIndex = stepsRender[stepsRenderIndex].month.findIndex((word) => {
+            return word.findIndex((sub) => sub.value === currentSteps['name'])
+          })
+
+          monthStepIndex = stepsRender[stepsRenderIndex].month.findIndex(
+            (word) => word[stepIndex].value === currentSteps['name']
+          )
+          // console.log(currentSteps['name'])
+
+          // console.log(stepIndex)
+          // console.log(monthStepIndex)
         } else {
-          stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
+          stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
         }
         // if (
         //   currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
@@ -2361,33 +2281,95 @@ export default class UsersController {
         //   stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
         // }
         if (stepIndex >= 0) {
-          steps[stepIndex]['status'] = userHasDoc[0].status
+          // stepsRender[stepIndex]['status'] = userHasDoc[0].status
+          // stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]['status'] =
+          //   userHasDoc[0].status
           if (userHasDoc[0].status === 'Approved') {
-            nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
+            // stepsRender[stepsRenderIndex].month[monthStepIndex]
+            //   ? stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex +]
+            //   : stepsRender[stepsRenderIndex].month[monthStepIndex]
+            // monthStepIndex === 5 ? stepsRender[stepsRenderIndex + 1] ? stepsRender[stepsRenderIndex + 1] : stepsRender[stepsRenderIndex]
+            if (
+              currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+              currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+            ) {
+              nextStep =
+                stepIndex === 1
+                  ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1]
+                    ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1][0]
+                    : stepsRender[stepsRenderIndex + 1]
+                    ? stepsRender[stepsRenderIndex + 1]
+                    : stepsRender[stepsRenderIndex]
+                  : stepsRender[stepsRenderIndex].month[monthStepIndex][1]
+              // ? stepsRender[stepsRenderIndex].month[monthStepIndex][1]
+              // : stepsRender[stepsRenderIndex + 1]
+              // ? stepsRender[stepsRenderIndex + 1]
+              // : stepsRender[stepsRenderIndex]
+            } else {
+              nextStep = stepsRender[stepIndex + 1]
+                ? stepsRender[stepIndex + 1]
+                : stepsRender[stepIndex]
+            }
+            // stepsRender[stepsRenderIndex]
           } else {
-            nextStep = steps[stepIndex]
+            if (
+              currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+              currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+            ) {
+              stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]
+            } else {
+              nextStep = stepsRender[stepIndex]
+            }
           }
         }
-        const userHasDocForRC = await UserHasDoc.query()
-          .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .orderBy('created_at', 'desc')
+        // const userHasDocForRC = await UserHasDoc.query()
+        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        //   .orderBy('created_at', 'desc')
 
-        realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
+        // realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
 
-        for (
-          let i = 0;
-          i <= (userHasDocForRC[0].status === 'Approved' ? realCurrentStep : realCurrentStep - 1);
-          i++
-        ) {
-          steps[i]['status'] = 'Approved'
+        for (let i = 0; i < stepsRender.length; i++) {
+          console.log(stepsRender[i]['name']);
+          
+          if (
+            stepsRender[i]['name'].includes('Supervision') 
+            // ||
+            // stepsRender[i]['name'].includes(AllSteps.INFORMED_SUPERVISION)
+          ) {
+            for (let j = 0; j < stepsRender[i].month.length; j++) {
+              for (let k = 0; k < stepsRender[i].month[j].length; k++) {
+                // console.log(stepsRender[i].month[j][k]);
+                
+                const allLastestStepStat = await UserHasDoc.query()
+                  .where('step', stepsRender[i].month[j][k].value)
+                  .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+                  .orderBy('created_at', 'desc')
+                if (allLastestStepStat && allLastestStepStat.length > 0) {
+                  stepsRender[i].month[j][k]['status'] = allLastestStepStat[0].status
+                }
+              }
+            }
+          } else {
+            const allLastestStepStat = await UserHasDoc.query()
+              .where('step', stepsRender[i].name)
+              .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+              .orderBy('created_at', 'desc')
+            if (allLastestStepStat && allLastestStepStat.length > 0) {
+              const stepIndexTmp = stepsRender.findIndex(
+                (word) => word.name === allLastestStepStat[0].step
+              )
+              stepsRender[stepIndexTmp]['status'] = allLastestStepStat[0].status
+            }
+          }
+          // steps[i]['status'] = 'Approved'
         }
       } else {
-        currentSteps['name'] = steps[0].name
+        currentSteps['name'] = stepsRender[0].name
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
         currentSteps['file'] = {}
-        nextStep = steps[0]
+        nextStep = stepsRender[0]
       }
 
       if (currentSteps.supervision) {
@@ -2395,7 +2377,7 @@ export default class UsersController {
       }
 
       // console.log(currentSteps)
-      console.log(steps)
+      console.log(stepsRender[2].month)
 
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.row)
