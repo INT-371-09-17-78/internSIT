@@ -2313,17 +2313,31 @@ export default class UsersController {
             (step) => step.name === AllSteps.TR03_TR05_AND_SUPERVISION
           )
 
-          stepIndex = stepsRender[stepsRenderIndex].month.findIndex((word) => {
-            return word.findIndex((sub) => sub.value === currentSteps['name'])
-          })
+          for (let i = 0; i < stepsRender[stepsRenderIndex].month.length; i++) {
+            for (let j = 0; j < stepsRender[stepsRenderIndex].month[i].length; j++) {
+              if (stepsRender[stepsRenderIndex].month[i][j].value === currentSteps['name']) {
+                stepIndex = j
+                monthStepIndex = i
+                // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]);
+                break
+              }
+            }
+          }
+          // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]);
+          // stepIndex = stepsRender[stepsRenderIndex].month.findIndex((word) =>
+          //   word.findIndex((sub) => sub.value === 'TR-03 and TR-05 (4/6)')
+          // )
 
-          monthStepIndex = stepsRender[stepsRenderIndex].month.findIndex(
-            (word) => word[stepIndex].value === currentSteps['name']
-          )
+          // monthStepIndex = stepsRender[stepsRenderIndex].month.findIndex(
+          //   (word) => word[stepIndex].value === currentSteps['name']
+          // )
           // console.log(currentSteps['name'])
-
-          // console.log(stepIndex)
+          // console.log(stepsRenderIndex)
           // console.log(monthStepIndex)
+          // console.log(stepIndex)
+          // // console.log(stepIndex)
+          // // console.log(monthStepIndex)
+          // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]);
         } else {
           stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
         }
@@ -2339,6 +2353,7 @@ export default class UsersController {
         // } else {
         //   stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
         // }
+
         if (stepIndex >= 0) {
           // stepsRender[stepIndex]['status'] = userHasDoc[0].status
           // stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]['status'] =
@@ -2375,7 +2390,10 @@ export default class UsersController {
               currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
               currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
             ) {
-              stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]
+              // console.log(stepIndex)
+              // // console.log(stepIndex)
+              // console.log(monthStepIndex)
+              nextStep = stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]
             } else {
               nextStep = stepsRender[stepIndex]
             }
@@ -2392,12 +2410,14 @@ export default class UsersController {
 
           if (
             stepsRender[i]['name'].includes('Supervision')
+            // ||stepsRender[i]['name'].includes('TR-03 and TR-05')
             // ||
             // stepsRender[i]['name'].includes(AllSteps.INFORMED_SUPERVISION)
           ) {
             for (let j = 0; j < stepsRender[i].month.length; j++) {
               for (let k = 0; k < stepsRender[i].month[j].length; k++) {
                 // console.log(stepsRender[i].month[j][k]);
+                // console.log('เข้า่นี่2')
                 const allLastestStepStat = await UserHasDoc.query()
                   .where('step', stepsRender[i].month[j][k].value)
                   .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
@@ -2408,6 +2428,8 @@ export default class UsersController {
               }
             }
           } else {
+            // console.log('เข้า่นี่')
+
             const allLastestStepStat = await UserHasDoc.query()
               .where('step', stepsRender[i].name)
               .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
@@ -2434,15 +2456,15 @@ export default class UsersController {
         currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
       }
 
-      // console.log(currentSteps)
-      console.log(stepsRender[2].month)
+      console.log(currentSteps)
+      // console.log(stepsRender[2].month)
       // console.log(stepsRender)
 
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
-      // console.log(nextStep)
+      console.log(nextStep)
       const academicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       // return response.redirect('/student/' + studentUser.student.student_id)
       return view.render('student-information', {
