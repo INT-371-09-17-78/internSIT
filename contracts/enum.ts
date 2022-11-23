@@ -9,7 +9,7 @@ export enum AllSteps {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
   INFORMED_SUPERVISION = 'Informed supervision',
-  SENT_PRESENTATION = 'Sent Presentation',
+  PRESENTATION = 'Presentation',
   TR03_AND_TR08 = 'TR-03 and TR-08',
   TR03_TR05_AND_SUPERVISION = 'TR-03, TR-05 and Supervision',
   TR_03_TR_05 = 'TR-03 and TR-05',
@@ -40,7 +40,7 @@ export enum Steps2Month {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
   INFORMED_SUPERVISION = 'Informed supervision',
-  SENT_PRESENTATION = 'Sent Presentation',
+  PRESENTATION = 'Presentation',
   TR03_AND_TR08 = 'TR-03 and TR-08',
 }
 

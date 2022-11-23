@@ -1921,7 +1921,7 @@ export default class UsersController {
                 name: Steps2Month.INFORMED_SUPERVISION,
               },
               {
-                name: Steps2Month.SENT_PRESENTATION,
+                name: Steps2Month.PRESENTATION,
               },
               {
                 name: Steps2Month.TR03_AND_TR08,
@@ -1944,10 +1944,46 @@ export default class UsersController {
       let isChangeStep: any = false
       let realCurrentStep: any
       if (userHasDocResult[0]) {
-        if (request.qs().step && request.qs().status) {
+        // if (request.qs().step && request.qs().status) {
+        //   userHasDoc = await UserHasDoc.query()
+        //     .where('step', request.qs().step)
+        //     .andWhere('status', request.qs().status)
+        //     .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+        //   isChangeStep = true
+        // } else {
+        //   userHasDoc.push(userHasDocResult[0])
+        // }
+        if (
+          request.qs().step &&
+          (request.qs().step.includes('TR-03 and TR-05') || request.qs().step.includes('Informed'))
+        ) {
+          const step = request.qs().step
+          const stepSplit = step.split('Month ')
+          const stepSplitRe = stepSplit[1].split(')')
+          const TrStep = request.qs().step.includes('TR-03')
+            ? AllSteps.TR_03_TR_05 + ' (' + stepSplitRe[0] + '/' + studentUser.student.plan + ')'
+            : AllSteps.INFORMED_SUPERVISION +
+              ' (' +
+              stepSplitRe[0] +
+              '/' +
+              studentUser.student.plan +
+              ')'
+          // }
+
+          // if (request.qs().step) {
+          userHasDoc = await UserHasDoc.query()
+            .where('step', TrStep)
+            // .andWhere('status', request.qs().status)
+            .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          isChangeStep = true
+        } else if (
+          request.qs().step &&
+          !request.qs().step.includes('TR-03 and TR-05') &&
+          !request.qs().step.includes('Informed')
+        ) {
           userHasDoc = await UserHasDoc.query()
             .where('step', request.qs().step)
-            .andWhere('status', request.qs().status)
+            // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
           isChangeStep = true
         } else {
@@ -2166,74 +2202,91 @@ export default class UsersController {
             allUserHasDoc[i].step.includes('TR-03') &&
             documentStatusesJsonCurrent.step.includes('TR-03')
           ) {
-            const obj = {}
-            obj['studentFile'] = {}
-            obj['feedbackFile'] = {}
-            obj['reason'] = ''
-            const StFileResult = await File.query()
-              .where('user_has_doc_id', allUserHasDoc[i].id)
-              .andWhere('step_file_type', 'studentFile')
-            const feedbackFileResult = await File.query()
-              .where('user_has_doc_id', allUserHasDoc[i].id)
-              .andWhere('step_file_type', 'feedbackFile')
-            if (allUserHasDoc[i].is_react) {
-              if (feedbackFileResult[0]) {
-                obj['feedbackFile'] = feedbackFileResult[0].serialize()
-              }
+            // if (allUserHasDoc[i].step === 'TR-02') {
+            //   const currentStepFile = await File.query()
+            //     .where('user_has_doc_id', allUserHasDoc[i].id)
+            //     .where('step_file_type', 'signedFile')
 
-              if (StFileResult[0]) {
-                obj['studentFile'] = StFileResult[0].serialize()
+            //   if (currentStepFile[0]) {
+            //     currentSteps['file'].row.push(currentStepFile[0].serialize())
+            //   }
+            // }
+            // console.log(request.qs().step)
+
+            console.log(allUserHasDoc[i].step)
+            console.log(documentStatusesJsonCurrent.step)
+
+            if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+              const obj = {}
+              obj['studentFile'] = {}
+              obj['feedbackFile'] = {}
+              obj['reason'] = ''
+              const StFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'studentFile')
+              const feedbackFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'feedbackFile')
+              if (allUserHasDoc[i].is_react) {
+                if (feedbackFileResult[0]) {
+                  obj['feedbackFile'] = feedbackFileResult[0].serialize()
+                }
+
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
+              } else {
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
               }
-            } else {
-              if (StFileResult[0]) {
-                obj['studentFile'] = StFileResult[0].serialize()
+              if (allUserHasDoc[i].no_approve_reason) {
+                obj['reason'] = {
+                  body: allUserHasDoc[i].no_approve_reason,
+                  date: allUserHasDoc[i].updatedAt,
+                }
               }
-            }
-            if (allUserHasDoc[i].no_approve_reason) {
-              obj['reason'] = {
-                body: allUserHasDoc[i].no_approve_reason,
-                date: allUserHasDoc[i].updatedAt,
+              if (
+                !(
+                  obj && // 👈 null and undefined check
+                  Object.keys(obj).length === 0 &&
+                  Object.getPrototypeOf(obj) === Object.prototype
+                )
+              ) {
+                // if (allUserHasDoc[i].step === 'TR-03 and TR-05 (1/6)') {
+                //   currentSteps['file'].row[0].push(obj)
+                // } else if (allUserHasDoc[i].step === 'TR-03 and TR-05 (2/6)') {
+                //   currentSteps['file'].row[1].push(obj)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+                //   currentSteps['file'].row[2].push(obj)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+                //   currentSteps['file'].row[3].push(obj)
+                //   // currentSteps['supervision']['m4'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+                //   currentSteps['file'].row[4].push(obj)
+                //   // currentSteps['supervision']['m5'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+                //   currentSteps['file'].row[5].push(obj)
+                //   // currentSteps['supervision']['m6'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+                //   currentSteps.supervision[0].push(objSupervision)
+                //   // currentSteps['supervision']['m1'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+                //   currentSteps.supervision[1].push(objSupervision1)
+                //   // currentSteps['supervision']['m2'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+                //   currentSteps.supervision[2].push(objSupervision2)
+                //   // currentSteps['supervision']['m3'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+                //   currentSteps.supervision[3].push(objSupervision3)
+                //   // currentSteps['supervision']['m4'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision') {
+                //   currentSteps.supervision[0].push(objSupervision)
+                //   // currentSteps['supervision']['m1'].push(objSupervision)
+                // }
+                currentSteps['file'].row.push(obj)
+                // break
               }
-            }
-            if (
-              !(
-                obj && // 👈 null and undefined check
-                Object.keys(obj).length === 0 &&
-                Object.getPrototypeOf(obj) === Object.prototype
-              )
-            ) {
-              // if (allUserHasDoc[i].step === 'TR-03 and TR-05 (1/6)') {
-              //   currentSteps['file'].row[0].push(obj)
-              // } else if (allUserHasDoc[i].step === 'TR-03 and TR-05 (2/6)') {
-              //   currentSteps['file'].row[1].push(obj)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
-              //   currentSteps['file'].row[2].push(obj)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
-              //   currentSteps['file'].row[3].push(obj)
-              //   // currentSteps['supervision']['m4'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
-              //   currentSteps['file'].row[4].push(obj)
-              //   // currentSteps['supervision']['m5'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
-              //   currentSteps['file'].row[5].push(obj)
-              //   // currentSteps['supervision']['m6'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
-              //   currentSteps.supervision[0].push(objSupervision)
-              //   // currentSteps['supervision']['m1'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
-              //   currentSteps.supervision[1].push(objSupervision1)
-              //   // currentSteps['supervision']['m2'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
-              //   currentSteps.supervision[2].push(objSupervision2)
-              //   // currentSteps['supervision']['m3'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
-              //   currentSteps.supervision[3].push(objSupervision3)
-              //   // currentSteps['supervision']['m4'].push(objSupervision)
-              // } else if (allUserHasDoc[i].step === 'Informed supervision') {
-              //   currentSteps.supervision[0].push(objSupervision)
-              //   // currentSteps['supervision']['m1'].push(objSupervision)
-              // }
-              currentSteps['file'].row.push(obj)
             }
           }
         }
@@ -2329,17 +2382,16 @@ export default class UsersController {
         // realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
 
         for (let i = 0; i < stepsRender.length; i++) {
-          console.log(stepsRender[i]['name']);
-          
+          // console.log(stepsRender[i]['name'])
+
           if (
-            stepsRender[i]['name'].includes('Supervision') 
+            stepsRender[i]['name'].includes('Supervision')
             // ||
             // stepsRender[i]['name'].includes(AllSteps.INFORMED_SUPERVISION)
           ) {
             for (let j = 0; j < stepsRender[i].month.length; j++) {
               for (let k = 0; k < stepsRender[i].month[j].length; k++) {
                 // console.log(stepsRender[i].month[j][k]);
-                
                 const allLastestStepStat = await UserHasDoc.query()
                   .where('step', stepsRender[i].month[j][k].value)
                   .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
@@ -2377,13 +2429,13 @@ export default class UsersController {
       }
 
       // console.log(currentSteps)
-      console.log(stepsRender[2].month)
+      // console.log(stepsRender[2].month)
 
-      // console.log(currentSteps.file.row)
+      console.log(currentSteps.file.row)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
-      console.log(nextStep)
+      // console.log(nextStep)
       const academicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       // return response.redirect('/student/' + studentUser.student.student_id)
       return view.render('student-information', {
