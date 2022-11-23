@@ -134,7 +134,7 @@
           <a id="{{step.name}}"
             href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status} }) }}">
           @end
-            <p class="{{step.status==='Approved' ? 'text-green-700': step.status==='Disapproved' ? 'text-red-700' : step.status==='Pending' ? 'text-yellow-700' : ''}}"><span>{{i+1}}. </span>{{step.name}}</p>
+          <p class="{{step.status==='Approved' ? 'text-green-700': step.status==='Disapproved' ? 'text-red-700' : step.status==='Pending' ? 'text-yellow-700' : ''}}"><span>{{i+1}}. </span>{{step.name}}</p>
           @if(!step.month)
           </a>
           @end
@@ -145,7 +145,7 @@
             <div class="flex flex-col space-y-2">
               @each((subStep,k) in month)
               <a id="{{subStep.name}}" class="flex items-center space-x-2 {{subStep.status==='Approved' ? 'text-green-700': subStep.status==='Disapproved' ? 'text-red-700' : subStep.status==='Pending' ? 'text-yellow-700' : ''}}"
-                href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: subStep.name + ` (Month ${j+1})` , status: step.status} }) }}">
+                href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: subStep.name + ` (Month ${j+1})` , status: subStep.status} }) }}">
                 <svg class="w-3 h-3 fill-[#495057]" viewBox="0 0 5 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M0 8.7035L0.751912 9.5L5 5L0.751912 0.5L0 1.2965L3.49618 5L0 8.7035Z" fill="current"/>
                 </svg>                  
@@ -398,14 +398,16 @@
             @each((row,index) in currentSteps.file.row)
             {{-- @if(row && Object.keys(row).length === 0 && Object.getPrototypeOf(row) === Object.prototype) --}}
             <tr class="font-medium border-2 border-[#F6F7F9]">
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                <div class="space-y-2 w-44 whitespace-normal">
+                {{index+1}}
+              </td>
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                <div class="space-y-2 whitespace-normal">
                   <a class="link link-primary w-fit"
-                    href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
-                    {{row.studentFile.file_name}}
+                    href="/api/file/{{row.file_id}}?prev=prev&&isStep=true" target="_blank">
+                    {{row.file_name}}
                   </a>
-                  <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
+                  <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
                 </div>
               </td>
             </tr>
@@ -561,7 +563,7 @@
                 @end
               </tr>
               @end
-              @if(auth.user.role === 'student' && request.qs().status !== 'Approved' && currentSteps.status !== 'Approved')
+              @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
               <tr class="font-medium border-2 border-[#F6F7F9]">
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&
                   currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 ||
@@ -907,8 +909,6 @@
                     </div>
                   </div>
                 </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -921,7 +921,6 @@
                     placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น."
                     oninput="checkAdvisorDate()"></textarea>
                 </td>
-                <td class="align-top border-2 border-[#F6F7F9]">-</td>
                 <td class="align-top border-2 border-[#F6F7F9]">-</td>
               </tr>
               @end
