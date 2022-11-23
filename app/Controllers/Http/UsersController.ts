@@ -1927,7 +1927,7 @@ export default class UsersController {
                 name: Steps2Month.TR03_AND_TR08,
               },
             ]
-      let nextStep: any
+      let nextStep: any = {}
       let currentSteps: any = {}
       const disabled =
         studentUser.student.plan === null || studentUser.student.plan === 0 ? '' : 'disabled'
@@ -1943,6 +1943,7 @@ export default class UsersController {
       let userHasDoc: any = []
       let isChangeStep: any = false
       let realCurrentStep: any
+      let documentStatusesJsonCurrent: any
       if (userHasDocResult[0]) {
         // if (request.qs().step && request.qs().status) {
         //   userHasDoc = await UserHasDoc.query()
@@ -1957,6 +1958,8 @@ export default class UsersController {
           request.qs().step &&
           (request.qs().step.includes('TR-03 and TR-05') || request.qs().step.includes('Informed'))
         ) {
+          // console.log('เข้าอันงี้')
+
           const step = request.qs().step
           const stepSplit = step.split('Month ')
           const stepSplitRe = stepSplit[1].split(')')
@@ -1975,9 +1978,9 @@ export default class UsersController {
             .where('step', TrStep)
             // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-          if (!userHasDoc || userHasDoc.length <= 0) {
-            userHasDoc.push(userHasDocResult[0])
-          }
+          // if (!userHasDoc || userHasDoc.length <= 0) {
+          //   userHasDoc.push(userHasDocResult[0])
+          // }
           isChangeStep = true
         } else if (
           request.qs().step &&
@@ -1988,9 +1991,9 @@ export default class UsersController {
             .where('step', request.qs().step)
             // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-          if (!userHasDoc || userHasDoc.length <= 0) {
-            userHasDoc.push(userHasDocResult[0])
-          }
+          // if (!userHasDoc || userHasDoc.length <= 0) {
+          //   userHasDoc.push(userHasDocResult[0])
+          // }
           isChangeStep = true
         } else {
           userHasDoc.push(userHasDocResult[0])
@@ -1998,7 +2001,7 @@ export default class UsersController {
       }
 
       if (userHasDoc && userHasDoc.length > 0) {
-        const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+        documentStatusesJsonCurrent = userHasDoc[0].toJSON()
         currentSteps['id'] = documentStatusesJsonCurrent.id
         currentSteps['file'] = {}
         currentSteps['file'].row = []
@@ -2307,7 +2310,8 @@ export default class UsersController {
         let stepsRenderIndex: any
         if (
           currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-          currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+          currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
+          (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved')
         ) {
           stepsRenderIndex = stepsRender.findIndex(
             (step) => step.name === AllSteps.TR03_TR05_AND_SUPERVISION
@@ -2353,96 +2357,112 @@ export default class UsersController {
         // } else {
         //   stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
         // }
+        // console.log(currentSteps['name'])
 
-        if (stepIndex >= 0) {
-          // stepsRender[stepIndex]['status'] = userHasDoc[0].status
-          // stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]['status'] =
-          //   userHasDoc[0].status
-          if (userHasDoc[0].status === 'Approved') {
-            // stepsRender[stepsRenderIndex].month[monthStepIndex]
-            //   ? stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex +]
-            //   : stepsRender[stepsRenderIndex].month[monthStepIndex]
-            // monthStepIndex === 5 ? stepsRender[stepsRenderIndex + 1] ? stepsRender[stepsRenderIndex + 1] : stepsRender[stepsRenderIndex]
-            if (
-              currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-              currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
-            ) {
-              nextStep =
-                stepIndex === 1
-                  ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1]
-                    ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1][0]
-                    : stepsRender[stepsRenderIndex + 1]
-                    ? stepsRender[stepsRenderIndex + 1]
-                    : stepsRender[stepsRenderIndex]
-                  : stepsRender[stepsRenderIndex].month[monthStepIndex][1]
-              // ? stepsRender[stepsRenderIndex].month[monthStepIndex][1]
-              // : stepsRender[stepsRenderIndex + 1]
-              // ? stepsRender[stepsRenderIndex + 1]
-              // : stepsRender[stepsRenderIndex]
+        // stepsRender[stepIndex]['status'] = userHasDoc[0].status
+        // stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]['status'] =
+        //   userHasDoc[0].status
+        if (userHasDoc[0].status === 'Approved') {
+          // stepsRender[stepsRenderIndex].month[monthStepIndex]
+          //   ? stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex +]
+          //   : stepsRender[stepsRenderIndex].month[monthStepIndex]
+          // monthStepIndex === 5 ? stepsRender[stepsRenderIndex + 1] ? stepsRender[stepsRenderIndex + 1] : stepsRender[stepsRenderIndex]
+          if (
+            currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+            currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
+            (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved')
+          ) {
+            if (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved') {
+              // console.log(nextStep = stepsRender[stepsRenderIndex].month[0][0]);
+
+              nextStep['name'] = stepsRender[stepsRenderIndex].month[0][0].value
             } else {
-              nextStep = stepsRender[stepIndex + 1]
-                ? stepsRender[stepIndex + 1]
-                : stepsRender[stepIndex]
+              if (stepIndex >= 0) {
+                nextStep['name'] =
+                  stepIndex === 1
+                    ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1].value
+                      ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1][0].value
+                      : stepsRender[stepsRenderIndex + 1].name
+                      ? stepsRender[stepsRenderIndex + 1]
+                      : stepsRender[stepsRenderIndex].name
+                    : stepsRender[stepsRenderIndex].month[monthStepIndex][1].value
+              }
             }
-            // stepsRender[stepsRenderIndex]
+
+            // ? stepsRender[stepsRenderIndex].month[monthStepIndex][1]
+            // : stepsRender[stepsRenderIndex + 1]
+            // ? stepsRender[stepsRenderIndex + 1]
+            // : stepsRender[stepsRenderIndex]
           } else {
-            if (
-              currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-              currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
-            ) {
-              // console.log(stepIndex)
-              // // console.log(stepIndex)
-              // console.log(monthStepIndex)
-              nextStep = stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]
-            } else {
-              nextStep = stepsRender[stepIndex]
+            // console.log('เข้าอันงี้')
+            // console.log(stepsRender[stepIndex + 1])
+            if (stepIndex >= 0) {
+              nextStep['name'] = stepsRender[stepIndex + 1]
+                ? stepsRender[stepIndex + 1].name
+                : stepsRender[stepIndex].name
             }
           }
+          // stepsRender[stepsRenderIndex]
+        } else {
+          if (
+            currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+            currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+          ) {
+            // console.log(stepIndex)
+            // // console.log(stepIndex)
+            // console.log(monthStepIndex)
+            if (stepIndex >= 0) {
+              nextStep['name'] =
+                stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex].value
+            }
+          } else {
+            if (stepIndex >= 0) {
+              nextStep['name'] = stepsRender[stepIndex].name
+            }
+          }
+          // }
         }
         // const userHasDocForRC = await UserHasDoc.query()
         //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         //   .orderBy('created_at', 'desc')
 
         // realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
+      } else if (
+        request.qs().step &&
+        (request.qs().step.includes('TR-03 and TR-05') || request.qs().step.includes('Informed'))
+      ) {
+        // console.log('เข้าอันงี้')
 
-        for (let i = 0; i < stepsRender.length; i++) {
-          // console.log(stepsRender[i]['name'])
+        const step = request.qs().step
+        const stepSplit = step.split('Month ')
+        const stepSplitRe = stepSplit[1].split(')')
+        const TrStep = request.qs().step.includes('TR-03')
+          ? AllSteps.TR_03_TR_05 + ' (' + stepSplitRe[0] + '/' + studentUser.student.plan + ')'
+          : AllSteps.INFORMED_SUPERVISION +
+            ' (' +
+            stepSplitRe[0] +
+            '/' +
+            studentUser.student.plan +
+            ')'
 
-          if (
-            stepsRender[i]['name'].includes('Supervision')
-            // ||stepsRender[i]['name'].includes('TR-03 and TR-05')
-            // ||
-            // stepsRender[i]['name'].includes(AllSteps.INFORMED_SUPERVISION)
-          ) {
-            for (let j = 0; j < stepsRender[i].month.length; j++) {
-              for (let k = 0; k < stepsRender[i].month[j].length; k++) {
-                // console.log(stepsRender[i].month[j][k]);
-                // console.log('เข้า่นี่2')
-                const allLastestStepStat = await UserHasDoc.query()
-                  .where('step', stepsRender[i].month[j][k].value)
-                  .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-                  .orderBy('created_at', 'desc')
-                if (allLastestStepStat && allLastestStepStat.length > 0) {
-                  stepsRender[i].month[j][k]['status'] = allLastestStepStat[0].status
-                }
-              }
-            }
-          } else {
-            // console.log('เข้า่นี่')
+        currentSteps['name'] = TrStep
+        currentSteps['status'] = ''
+        currentSteps['createAt'] = ''
+        currentSteps['reason'] = ''
+        currentSteps['file'] = {}
+        nextStep['name'] = TrStep
+      } else if (
+        request.qs().step &&
+        !(request.qs().step.includes('TR-03 and TR-05') || request.qs().step.includes('Informed'))
+      ) {
+        // console.log('เข้าอันงี้')
 
-            const allLastestStepStat = await UserHasDoc.query()
-              .where('step', stepsRender[i].name)
-              .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-              .orderBy('created_at', 'desc')
-            if (allLastestStepStat && allLastestStepStat.length > 0) {
-              const stepIndexTmp = stepsRender.findIndex(
-                (word) => word.name === allLastestStepStat[0].step
-              )
-              stepsRender[stepIndexTmp]['status'] = allLastestStepStat[0].status
-            }
-          }
-          // steps[i]['status'] = 'Approved'
-        }
+        currentSteps['name'] = request.qs().step
+        currentSteps['status'] = ''
+        currentSteps['createAt'] = ''
+        currentSteps['reason'] = ''
+        currentSteps['file'] = {}
+        nextStep['name'] = request.qs().step
       } else {
         currentSteps['name'] = stepsRender[0].name
         currentSteps['status'] = ''
@@ -2456,6 +2476,48 @@ export default class UsersController {
         currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
       }
 
+      for (let i = 0; i < stepsRender.length; i++) {
+        // console.log(stepsRender[i]['name'])
+
+        if (
+          stepsRender[i]['name'].includes('Supervision')
+          // ||
+          // stepsRender[i]['name'].includes('TR-03 and TR-05 (')
+          // ||
+          // stepsRender[i]['name'].includes(AllSteps.INFORMED_SUPERVISION)
+        ) {
+          // console.log("เข้่า")
+          for (let j = 0; j < stepsRender[i].month.length; j++) {
+            for (let k = 0; k < stepsRender[i].month[j].length; k++) {
+              // console.log(stepsRender[i].month[j][k]);
+              // console.log('เข้า่นี่2')
+              const allLastestStepStat = await UserHasDoc.query()
+                .where('step', stepsRender[i].month[j][k].value)
+                .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+                .orderBy('created_at', 'desc')
+              // console.log('เข้่า')
+
+              if (allLastestStepStat && allLastestStepStat.length > 0) {
+                stepsRender[i].month[j][k]['status'] = allLastestStepStat[0].status
+              }
+            }
+          }
+        } else {
+          // console.log('เข้า่นี่')
+
+          const allLastestStepStat = await UserHasDoc.query()
+            .where('step', stepsRender[i].name)
+            .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+            .orderBy('created_at', 'desc')
+          if (allLastestStepStat && allLastestStepStat.length > 0) {
+            const stepIndexTmp = stepsRender.findIndex(
+              (word) => word.name === allLastestStepStat[0].step
+            )
+            stepsRender[stepIndexTmp]['status'] = allLastestStepStat[0].status
+          }
+        }
+        // steps[i]['status'] = 'Approved'
+      }
       console.log(currentSteps)
       // console.log(stepsRender[2].month)
       // console.log(stepsRender)
