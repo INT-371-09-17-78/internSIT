@@ -1975,6 +1975,9 @@ export default class UsersController {
             .where('step', TrStep)
             // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          if (!userHasDoc || userHasDoc.length <= 0) {
+            userHasDoc.push(userHasDocResult[0])
+          }
           isChangeStep = true
         } else if (
           request.qs().step &&
@@ -1985,6 +1988,9 @@ export default class UsersController {
             .where('step', request.qs().step)
             // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          if (!userHasDoc || userHasDoc.length <= 0) {
+            userHasDoc.push(userHasDocResult[0])
+          }
           isChangeStep = true
         } else {
           userHasDoc.push(userHasDocResult[0])
@@ -2213,8 +2219,8 @@ export default class UsersController {
             // }
             // console.log(request.qs().step)
 
-            console.log(allUserHasDoc[i].step)
-            console.log(documentStatusesJsonCurrent.step)
+            // console.log(allUserHasDoc[i].step)
+            // console.log(documentStatusesJsonCurrent.step)
 
             if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
               const obj = {}
@@ -2429,9 +2435,10 @@ export default class UsersController {
       }
 
       // console.log(currentSteps)
-      // console.log(stepsRender[2].month)
+      console.log(stepsRender[2].month)
+      // console.log(stepsRender)
 
-      console.log(currentSteps.file.row)
+      // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
