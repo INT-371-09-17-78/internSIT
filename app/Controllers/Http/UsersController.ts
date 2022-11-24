@@ -1937,7 +1937,7 @@ export default class UsersController {
         body['date_confirm_status'] = dateConfirmStatus
       }
 
-      if (status && status !== StepStatus.PENDING && step && step !== AllSteps.TR02) {
+      if (status && status !== StepStatus.PENDING) {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
