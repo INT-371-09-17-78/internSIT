@@ -181,7 +181,7 @@
           @else
           <p class="font-bold text-2xl {{request.qs().status === 'Approved' && 'text-green-700'}}">
             {{request.qs().step || nextStep.name}}
-            @if(request.qs().status === "Approved")
+            @if(request.qs().status === 'Approved')
             <span class="text-xl">Completed</span>
             @end
           </p>
@@ -393,10 +393,14 @@
                     <p class="text-base">TR-02</p>
                   </div>
                 </th>
+                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                  <div class="flex items-center space-x-2">
+                    <p class="text-base">Date</p>
+                  </div>
+                </th>
               </tr>
             </thead>
             @each((row,index) in currentSteps.file.row)
-            {{-- @if(row && Object.keys(row).length === 0 && Object.getPrototypeOf(row) === Object.prototype) --}}
             <tr class="font-medium border-2 border-[#F6F7F9]">
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
                 {{index+1}}
@@ -427,10 +431,72 @@
                   <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                 </div>
               </td>
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                <div class="grid grid-cols-2 items-center gap-3 text-[#495057]">
+                    <p>Send to the firm</p>
+                    <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                    <p>Receive form the firm</p>
+                    <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                </div>
+              </td>
             </tr>
             @end
           </table>
           @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
+          <button type="submit" id="submitStepButton"
+            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
+            "student" ? 'Submit' : 'Confirm'}}</button>
+          @end
+          @elseif(request.qs().step.includes('Presentation') && currentSteps.status !== 'Approved' )
+          <table class="table w-full mt-2">
+            <thead>
+              <tr class="border-2 border-[#E6E7EA] rounded-none">
+                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                  <p class="text-base">No.</p>
+                </th>
+                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                  <div class="flex items-center space-x-2">
+                    <p class="text-base">Presentation</p>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            @each((row,index) in currentSteps.file.row)
+            {{-- @if(row && Object.keys(row).length === 0 && Object.getPrototypeOf(row) === Object.prototype) --}}
+            <tr class="font-medium border-2 border-[#F6F7F9]">
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                {{index+1}}
+              </td>
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                <div class="space-y-2 whitespace-normal">
+                  <a class="link link-primary w-fit"
+                    href="/api/file/{{row.file_id}}?prev=prev&&isStep=true" target="_blank">
+                    {{row.file_name}}
+                  </a>
+                  <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
+                </div>
+              </td>
+            </tr>
+            {{-- @end --}}
+            @end
+            @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
+            <tr class="font-medium border-2 border-[#F6F7F9]">
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">{{(!(currentSteps.name === 'TR-01' &&
+                currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1')}}
+              </td>
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                <div class="flex items-center space-x-2 w-44">
+                  <label for="signedFile" id="labelStaffFile"
+                    class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose
+                    file</label>
+                  <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showStaffFile')" />
+                  <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                </div>
+              </td>
+            </tr>
+            @end
+          </table>
+          @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
           <button type="submit" id="submitStepButton"
             class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
             "student" ? 'Submit' : 'Confirm'}}</button>
@@ -603,7 +669,7 @@
                     </svg>
                   </div>
                 </div>
-                <p class="{{!currentSteps.supervision.supervisionStatus ? 'text-yellow-500' : 'text-green-500'}}">{{currentSteps.supervision.supervisionStatus || 'Pending'}}</p>
+                <p class="{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'text-yellow-500' : 'text-green-700'}}">{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'Pending' : 'Done'}}</p>
               </div>
               @else
               <div class="flex space-x-2 items-center">
@@ -619,10 +685,14 @@
                     </svg>
                   </div>
                 </div>
-                <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
+                @if(currentSteps.supervision.supervisionStatus==='Pending' || !currentSteps.supervision.supervisionStatus)
+                <select class="select select-sm w-fit bg-[#F6F7F9]" {{currentSteps.supervision.supervisionStatus==='Done' && 'disabled'}} id="supervisionStatus">
                   <option class="text-black" value="Pending" {{currentSteps.supervision.supervisionStatus==='Pending' && 'selected'}}>Pending</option>
                   <option class="text-black" value="Done" {{currentSteps.supervision.supervisionStatus==='Done' && 'selected'}}>Done</option>
                 </select>
+                @else
+                <p class="{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'text-yellow-500' : 'text-green-700'}}">{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'Pending' : 'Done'}}</p>
+                @end
               </div>
               @end
               <table class="table w-full mt-2">
@@ -687,7 +757,7 @@
                         @else
                         <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.supervision.advisorDate}}</td>
                         @end
-                        @if(auth.user.role === 'advisor'   && !currentSteps.supervision.studentDate)
+                        @if(auth.user.role === 'advisor' && !currentSteps.supervision.studentDate)
                           @if(currentSteps.supervision.completeDate)
                           <td class="align-top border-2 border-[#F6F7F9] text-sm">
                             <p class="text-green-700">Completed</p>
@@ -777,11 +847,10 @@
                   </tr>
                 </tbody>
               </table>
-            @if(request.qs().status !== 'Approved' || (currentSteps.supervision.dateConfirmStatus !== 'Done' && auth.user.role === 'student'))
+            @if(request.qs().status !== 'Approved' || (auth.user.role === 'student' && currentSteps.supervision.supervisionStatus !== 'Done'))
             <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2">Confirm</button>
             @end
-            @elseif(request.qs().step && request.qs().step.includes('Presentation'))
-            
+
             @end
           @else
             @if(auth.user.role === 'student')
@@ -810,6 +879,10 @@ if(document.getElementById('isComplete') && document.getElementById('isComplete'
 
 if(document.getElementById('hasSignedFile') && document.getElementById('hasSignedFile').checked &&  document.getElementById('signedForm')){
   document.getElementById('signedForm').classList.remove('invisible')
+}
+
+if(document.getElementById('dateConfirm') && !document.getElementById('dateConfirm').value && document.getElementById('meetlink') && !document.getElementById('meetlink').value){
+  document.getElementById('submitStepButton').disabled = true
 }
 
 
@@ -892,52 +965,62 @@ const checkStartDateMax = () => {
   let dateConfirm = ''
   
   const isShowComplete = () =>{
-  file = null
-  document.getElementById('submitStepButton').disabled = true
-  if(document.getElementById('showFeedbackFile')){
-    document.getElementById('showFeedbackFile').innerHTML = "No choosen file"
-  }
-  if(document.getElementById('showFeedbackFile')){
-  document.getElementById('feedbackFile').value = ""
-  }
-  if(document.getElementById('labelFeedbackFile')){
-    document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
-  }
-  if(dateConfirm && meetlink){
-    document.getElementById('submitStepButton').disabled = false
-  }
-  if(document.getElementById('isComplete') && document.getElementById('isComplete').checked){
-  document.getElementById('submitStepButton').disabled = false
-  }
-  if(document.getElementById('signedForm')){
-    document.getElementById('signedForm').classList.remove('invisible')
-  }
-  document.getElementById('feedbackForm').classList.add('invisible')
-  }
-
-  const isShowFeedback = () =>{
-  // document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
-  // document.getElementById('feedback').disabled = false
-  // document.getElementById('feedback').placeholder = "Add your feedback"
-  file = null
-  if(document.getElementById('showSignedFile')){
-    document.getElementById('showSignedFile').innerHTML = "No choosen file"
-  }
-  if(document.getElementById('signedFile')){
-    document.getElementById('signedFile').value = ""
-  }
-  if(document.getElementById('labelSignedFile')){
-    document.getElementById('labelSignedFile').classList.remove('btn-disabled')
-  }
-  if(document.getElementById('signedForm')){
-    document.getElementById('signedForm').classList.add('invisible')
-  }
-  if(inputFeedback && file){
-    document.getElementById('submitStepButton').disabled = false
-  }else{
+    file = null
+    if(document.getElementById('feedback')){
+      document.getElementById('feedback').value = ''
+    }
     document.getElementById('submitStepButton').disabled = true
-  }
-  document.getElementById('feedbackForm').classList.remove('invisible')
+    if(document.getElementById('showFeedbackFile')){
+      document.getElementById('showFeedbackFile').innerHTML = "No choosen file"
+    }
+    if(document.getElementById('showFeedbackFile')){
+    document.getElementById('feedbackFile').value = ""
+    }
+    if(document.getElementById('labelFeedbackFile')){
+      document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
+    }
+    if(dateConfirm && meetlink){
+      document.getElementById('submitStepButton').disabled = false
+    }
+    if(document.getElementById('isComplete') && document.getElementById('isComplete').checked){
+    document.getElementById('submitStepButton').disabled = false
+    }
+    if(document.getElementById('signedForm')){
+      document.getElementById('signedForm').classList.remove('invisible')
+    }
+    document.getElementById('feedbackForm').classList.add('invisible')
+    }
+
+    const isShowFeedback = () =>{
+    if(document.getElementById('dateConfirm')){
+      document.getElementById('dateConfirm').value = ""
+    }
+    if(document.getElementById('meetlink')){
+      document.getElementById('meetlink').value = ""
+    }
+    // document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
+    // document.getElementById('feedback').disabled = false
+    // document.getElementById('feedback').placeholder = "Add your feedback"
+
+    file = null
+    if(document.getElementById('showSignedFile')){
+      document.getElementById('showSignedFile').innerHTML = "No choosen file"
+    }
+    if(document.getElementById('signedFile')){
+      document.getElementById('signedFile').value = ""
+    }
+    if(document.getElementById('labelSignedFile')){
+      document.getElementById('labelSignedFile').classList.remove('btn-disabled')
+    }
+    if(document.getElementById('signedForm')){
+      document.getElementById('signedForm').classList.add('invisible')
+    }
+    if(inputFeedback && file){
+      document.getElementById('submitStepButton').disabled = false
+    }else{
+      document.getElementById('submitStepButton').disabled = true
+    }
+    document.getElementById('feedbackForm').classList.remove('invisible')
   }
 
   const removeCurrentFile = (text,input) =>{
@@ -952,7 +1035,7 @@ const checkStartDateMax = () => {
       document.getElementById(text.id).innerHTML = "No choosen file"
       document.getElementById(input.id).value = ""
       file = null
-      if(!inputFeedback){
+      if(!inputFeedback && !document.getElementById('acknowledgeDate').value && !document.getElementById('requestDate').value){
         document.getElementById('submitStepButton').disabled = true
       }
     }
@@ -968,6 +1051,7 @@ const checkStartDateMax = () => {
     inputFeedback = document.getElementById('feedback').value
     if(inputFeedback) {
       document.getElementById('submitStepButton').disabled = false
+      if(document.getElementById('labelSignedFile'))
       document.getElementById('labelSignedFile').classList.add('btn-disabled')
     }else if(!inputFeedback && !file){
       document.getElementById('submitStepButton').disabled = true
@@ -985,10 +1069,19 @@ const checkStartDateMax = () => {
     }
   }
   let fileType = ''
+  const getRequestDate = () =>{
+    document.getElementById('submitStepButton').disabled = false
+  }
+
+  const getAcknowledgeDate = () =>{
+    document.getElementById('submitStepButton').disabled = false
+  }
   const getFile = (event, showInput) =>{
     file = event.target.files[0]
     if(file) {
-      document.getElementById('submitStepButton').disabled = false
+      // if(document.getElementById('acknowledgeDate').value && document.getElementById('requestDate').value){
+        document.getElementById('submitStepButton').disabled = false
+      // }
       // if(event.target.id === 'feedbackFile' && document.getElementById('labelSignedFile')) {
       //   document.getElementById('labelSignedFile').classList.add('btn-disabled')
       // }else if(event.target.id === 'signedFile'){
