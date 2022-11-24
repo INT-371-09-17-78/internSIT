@@ -1008,10 +1008,10 @@ const checkStartDateMax = () => {
     event.preventDefault() 
     let reason, supervisionStatus, appointmentStatus = ''
     if(document.getElementById('supervisionStatus')){
-      document.getElementById('supervisionStatus').value
+      supervisionStatus = document.getElementById('supervisionStatus').value
     }
     if(document.getElementById('appointmentStatus')){
-      document.getElementById('appointmentStatus').value
+      appointmentStatus = document.getElementById('appointmentStatus').value
     }
     if(document.getElementById('feedback')){
       reason = document.getElementById('feedback').value
@@ -1050,8 +1050,9 @@ const checkStartDateMax = () => {
     formData.append('studentId', {{studentUser.user_id}})
     formData.append('stepFileType', fileType)
     // formData.append('studentId', {{studentUser.user_id}})
-      if(supervisionStatus || appointmentStatus)
-      await fetch('/api/user/student/super/{{studentUser.user_id}}?_method=PATCH',{
+    // console.log(bodyNotUpdateStatus);
+      if(supervisionStatus || appointmentStatus){
+        await fetch('/api/user/student/super/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
           'Accept': 'application/json',
@@ -1059,8 +1060,9 @@ const checkStartDateMax = () => {
       },
       body: JSON.stringify(bodyNotUpdateStatus),
       })
-
-      await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+      }
+      if(dateConfirm || advisorDateValue || reason){
+        await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
           'Accept': 'application/json',
@@ -1068,6 +1070,10 @@ const checkStartDateMax = () => {
       },
       body: JSON.stringify(body),
       })
+      }
+      
+
+      
 
       if(file){
       await fetch('/api/file/steps?_method=POST', {
