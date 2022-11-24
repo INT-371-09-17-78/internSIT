@@ -1203,6 +1203,9 @@ export default class UsersController {
               if (currentStepFile[0]) {
                 currentSteps['file'].row.push(currentStepFile[0].serialize())
               }
+
+              currentSteps['sentFirmDate'] = allUserHasDoc[i].advisor_date
+              currentSteps['recievedFirmDate'] = allUserHasDoc[i].student_date
             }
           } else if (
             allUserHasDoc[i].step === 'TR-01' &&
@@ -1469,6 +1472,67 @@ export default class UsersController {
                 // }
                 currentSteps['file'].row.push(obj)
                 // break
+              }
+            }
+          } else if (
+            (documentStatusesJsonCurrent.step === 'Presentation' &&
+              documentStatusesJsonCurrent.status === 'Approved' &&
+              !request.qs().step) ||
+            request.qs().step === 'TR-03 and TR-08' ||
+            request.qs().step === 'TR-03 and TR-06'
+          ) {
+            if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+              const obj = {}
+              obj['studentFile'] = {}
+              obj['feedbackFile'] = {}
+              obj['reason'] = ''
+              const StFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'studentFile')
+              const feedbackFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'feedbackFile')
+              if (allUserHasDoc[i].is_react) {
+                if (feedbackFileResult[0]) {
+                  obj['feedbackFile'] = feedbackFileResult[0].serialize()
+                }
+
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
+              } else {
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
+              }
+              if (allUserHasDoc[i].no_approve_reason) {
+                obj['reason'] = {
+                  body: allUserHasDoc[i].no_approve_reason,
+                  date: allUserHasDoc[i].updatedAt,
+                }
+              }
+              if (
+                !(
+                  obj && // 👈 null and undefined check
+                  Object.keys(obj).length === 0 &&
+                  Object.getPrototypeOf(obj) === Object.prototype
+                )
+              ) {
+                currentSteps['file'].row.push(obj)
+              }
+            }
+          } else if (
+            allUserHasDoc[i].step.includes('Presentation') &&
+            documentStatusesJsonCurrent.step.includes('Presentation')
+          ) {
+            if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+              const currentStepFile = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .where('step_file_type', 'signedFile')
+              // console.log("laskdkasl");
+
+              if (currentStepFile[0]) {
+                currentSteps['file'].row.push(currentStepFile[0].serialize())
               }
             }
           }

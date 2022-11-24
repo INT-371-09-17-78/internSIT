@@ -11,6 +11,7 @@ export enum AllSteps {
   INFORMED_SUPERVISION = 'Informed supervision',
   PRESENTATION = 'Presentation',
   TR03_AND_TR08 = 'TR-03 and TR-08',
+  TR03_AND_TR06 = 'TR-03 and TR-06',
   TR03_TR05_AND_SUPERVISION = 'TR-03, TR-05 and Supervision',
   TR_03_TR_05 = 'TR-03 and TR-05',
   SUPERVISION = 'Supervision',
