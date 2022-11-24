@@ -620,8 +620,8 @@
                   </div>
                 </div>
                 <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
-                  <option class="text-black" value="Pending">Pending</option>
-                  <option class="text-black" value="Done">Done</option>
+                  <option class="text-black" value="Pending" {{currentSteps.supervision.supervisionStatus==='Pending' && 'selected'}}>Pending</option>
+                  <option class="text-black" value="Done" {{currentSteps.supervision.supervisionStatus==='Done' && 'selected'}}>Done</option>
                 </select>
               </div>
               @end
@@ -1006,12 +1006,9 @@ const checkStartDateMax = () => {
   }
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason, supervisionStatus, appointmentStatus = ''
+    let reason, supervisionStatus = ''
     if(document.getElementById('supervisionStatus')){
-      document.getElementById('supervisionStatus').value
-    }
-    if(document.getElementById('appointmentStatus')){
-      document.getElementById('appointmentStatus').value
+      supervisionStatus = document.getElementById('supervisionStatus').value
     }
     if(document.getElementById('feedback')){
       reason = document.getElementById('feedback').value
@@ -1041,7 +1038,6 @@ const checkStartDateMax = () => {
     const bodyNotUpdateStatus = {
       step: '{{currentSteps.name}}',
       supervisionStatus : supervisionStatus,
-      dateConfirmStatus :  appointmentStatus
     }
     const formData = new FormData()
     formData.append('files', file)
