@@ -620,8 +620,8 @@
                   </div>
                 </div>
                 <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
-                  <option class="text-black" value="Pending">Pending</option>
-                  <option class="text-black" value="Done">Done</option>
+                  <option class="text-black" value="Pending" {{currentSteps.supervision.supervisionStatus==='Pending' && 'selected'}}>Pending</option>
+                  <option class="text-black" value="Done" {{currentSteps.supervision.supervisionStatus==='Done' && 'selected'}}>Done</option>
                 </select>
               </div>
               @end
@@ -1006,12 +1006,9 @@ const checkStartDateMax = () => {
   }
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason, supervisionStatus, appointmentStatus = ''
+    let reason, supervisionStatus = ''
     if(document.getElementById('supervisionStatus')){
       supervisionStatus = document.getElementById('supervisionStatus').value
-    }
-    if(document.getElementById('appointmentStatus')){
-      appointmentStatus = document.getElementById('appointmentStatus').value
     }
     if(document.getElementById('feedback')){
       reason = document.getElementById('feedback').value
@@ -1041,7 +1038,6 @@ const checkStartDateMax = () => {
     const bodyNotUpdateStatus = {
       step: '{{currentSteps.name}}',
       supervisionStatus : supervisionStatus,
-      dateConfirmStatus :  appointmentStatus
     }
     const formData = new FormData()
     formData.append('files', file)
@@ -1051,7 +1047,7 @@ const checkStartDateMax = () => {
     formData.append('stepFileType', fileType)
     // formData.append('studentId', {{studentUser.user_id}})
     // console.log(bodyNotUpdateStatus);
-      if(supervisionStatus || appointmentStatus){
+      if(supervisionStatus){
         await fetch('/api/user/student/super/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -1061,7 +1057,20 @@ const checkStartDateMax = () => {
       body: JSON.stringify(bodyNotUpdateStatus),
       })
       }
-      if(dateConfirm || advisorDateValue || reason){
+      // console.log(body);
+      // console.log('{{currentSteps.name}}')
+      if('{{currentSteps.name}}'.includes('Informed')){
+        if(dateConfirm || advisorDateValue || reason){
+        await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+             method: 'PATCH',
+             headers: {
+                 'Accept': 'application/json',
+                 'Content-Type': 'application/json',
+             },
+            body: JSON.stringify(body),
+        })
+       }
+      }else{
         await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
       method: 'PATCH',
       headers: {
@@ -1070,9 +1079,7 @@ const checkStartDateMax = () => {
       },
       body: JSON.stringify(body),
       })
-      }
-      
-
+    }
       
 
       if(file){
