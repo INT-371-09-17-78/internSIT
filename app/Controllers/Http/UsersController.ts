@@ -2006,7 +2006,7 @@ export default class UsersController {
         currentSteps['id'] = documentStatusesJsonCurrent.id
         currentSteps['file'] = {}
         currentSteps['file'].row = []
-        currentSteps['supervision'] = []
+        currentSteps['supervision'] = {}
 
         const allUserHasDoc = await UserHasDoc.query().where(
           'user_in_academic_year_id',
@@ -2014,19 +2014,19 @@ export default class UsersController {
         )
 
         currentSteps['file'].row = []
-        currentSteps.supervision.push([])
-        currentSteps.supervision.push([])
-        currentSteps.supervision.push([])
-        currentSteps.supervision.push([])
-        currentSteps.supervision.push([])
-        currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
 
         const objSupervision = {}
-        const objSupervision1 = {}
-        const objSupervision2 = {}
-        const objSupervision3 = {}
-        const objSupervision4 = {}
-        const objSupervision5 = {}
+        // const objSupervision1 = {}
+        // const objSupervision2 = {}
+        // const objSupervision3 = {}
+        // const objSupervision4 = {}
+        // const objSupervision5 = {}
         for (let i = 0; i < allUserHasDoc.length; i++) {
           if (
             (documentStatusesJsonCurrent.step === 'TR-01' &&
@@ -2126,7 +2126,7 @@ export default class UsersController {
                     Object.getPrototypeOf(objSupervision) === Object.prototype
                   )
                 ) {
-                  currentSteps.supervision[0].push(objSupervision)
+                  currentSteps['supervision'] = objSupervision 
                 }
               }
               // }
@@ -2463,7 +2463,7 @@ export default class UsersController {
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
         currentSteps['file'] = {}
-        currentSteps['supervision'] = []
+        currentSteps['supervision'] = {}
         nextStep['name'] = TrStep
       } else if (
         request.qs().step &&
@@ -2478,7 +2478,7 @@ export default class UsersController {
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
         currentSteps['file'] = {}
-        currentSteps['supervision'] = []
+        currentSteps['supervision'] = {}
         nextStep['name'] = request.qs().step
       } else {
         currentSteps['name'] = stepsRender[0].name
@@ -2490,9 +2490,9 @@ export default class UsersController {
         nextStep = stepsRender[0]
       }
 
-      if (currentSteps.supervision) {
-        currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
-      }
+      // if (currentSteps.supervision) {
+      //   currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
+      // }
 
       for (let i = 0; i < stepsRender.length; i++) {
         // console.log(stepsRender[i]['name'])
@@ -2539,7 +2539,8 @@ export default class UsersController {
       console.log(currentSteps)
       // console.log(stepsRender[2].month)
       // console.log(stepsRender)
-
+      console.log(currentSteps.supervision);
+      
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
