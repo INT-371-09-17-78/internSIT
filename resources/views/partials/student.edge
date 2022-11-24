@@ -583,372 +583,222 @@
               @end
             </tbody>
           </table>
-          @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
-          <button type="submit" id="submitStepButton"
-            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
-            "student" ? 'Submit' : 'Confirm'}}</button>
-          @end
-          @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-01' && currentSteps.status === 'Approved'
-          || currentSteps.name === 'TR-02' && !nextStep.name.includes('TR-03'))
-          <table class="table w-full mt-2">
-            <thead>
-              <tr class="border-2 border-[#E6E7EA] rounded-none">
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <p class="text-base">No.</p>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <div class="flex items-center space-x-2">
-                    <p class="text-base">TR-02</p>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            @each((row,index) in currentSteps.file.row)
-            {{-- @if(row && Object.keys(row).length === 0 && Object.getPrototypeOf(row) === Object.prototype) --}}
-            <tr class="font-medium border-2 border-[#F6F7F9]">
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                <div class="space-y-2 whitespace-normal">
-                  <a class="link link-primary w-fit" href="/api/file/{{row.file_id}}?prev=prev&&isStep=true"
-                    target="_blank">
-                    {{row.file_name || ''}}
-                  </a>
-                  <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
-                </div>
-              </td>
-            </tr>
-            {{-- @end --}}
+            @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
+            <button type="submit" id="submitStepButton"
+              class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
+              "student" ? 'Submit' : 'Confirm'}}</button>
             @end
-            @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
-            <tr class="font-medium border-2 border-[#F6F7F9]">
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">{{(!(currentSteps.name === 'TR-01' &&
-                currentSteps.status === 'Approved') && currentSteps.file.row && currentSteps.file.row.length+1 || '1')}}
-              </td>
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                <div class="flex items-center space-x-2 w-44">
-                  <label for="signedFile" id="labelStaffFile"
-                    class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose
-                    file</label>
-                  <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showStaffFile')" />
-                  <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+          @elseif(request.qs().step && request.qs().step.includes('Supervision'))
+              @if(auth.user.role !== 'student')
+              <div class="flex space-x-2">
+                <div class="flex items-center space-x-2">
+                  <p>Supervision status</p>
+                  <div class="tooltip z-20 font-normal normal-case"
+                            data-tip="Feedback from advisor to student &#10; for improve the document">
+                    <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
+                                  fill="#495057" />
+                    </svg>
+                  </div>
                 </div>
-              </td>
-            </tr>
+                <p class="{{!currentSteps.supervision.supervisionStatus ? 'text-yellow-500' : 'text-green-500'}}">{{currentSteps.supervision.supervisionStatus || 'Pending'}}</p>
+              </div>
+              @else
+              <div class="flex space-x-2 items-center">
+                <div class="flex items-center space-x-2">
+                  <p>Supervision status</p>
+                  <div class="tooltip z-20 font-normal normal-case"
+                            data-tip="Feedback from advisor to student &#10; for improve the document">
+                    <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
+                                  fill="#495057" />
+                    </svg>
+                  </div>
+                </div>
+                <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
+                  <option class="text-black" value="Pending">Pending</option>
+                  <option class="text-black" value="Done">Done</option>
+                </select>
+              </div>
+              @end
+              <table class="table w-full mt-2">
+                <thead>
+                  <tr class="border-2 border-[#E6E7EA] rounded-none">
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      <p class="text-base">No.</p>
+                    </th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      <div class="flex items-center space-x-2">
+                        <p class="text-base">Advisor available date</p>
+                        <div class="tooltip z-20 font-normal normal-case"
+                          data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
+                          <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
+                              fill="#495057" />
+                          </svg>
+                        </div>
+                      </div>
+                    </th>
+                    <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
+                      <div class="flex items-center space-x-2">
+                        <p class="text-base">Feedback</p>
+                        <div class="tooltip z-20 font-normal normal-case"
+                          data-tip="Feedback from advisor to student &#10; for improve the document">
+                          <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
+                              fill="#495057" />
+                          </svg>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="font-medium border-2 border-[#F6F7F9]">
+                    <td class="align-top border-2 border-[#F6F7F9] text-sm">1.</td>
+                      @if(!currentSteps.supervision.advisorDate && !currentSteps.supervision.completeDate)
+                        @if(auth.user.role === 'student')
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">Please wait for the advisor's appointment.</td>
+                        @elseif(auth.user.role === 'advisor')
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
+                          <textarea id="advisorDate"
+                            class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                            placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น."
+                            oninput="checkAdvisorDate()"></textarea>
+                          </td>
+                        @end
+                      <td class="align-top border-2 border-[#F6F7F9] text-sm"></td>
+                      @else
+                        @if(currentSteps.supervision.studentDate && auth.user.role === 'advisor')
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
+                          <textarea id="advisorDate"
+                            class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                            placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น."
+                            oninput="checkAdvisorDate()"></textarea>
+                          </td>
+                        @else
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.supervision.advisorDate}}</td>
+                        @end
+                        @if(auth.user.role === 'advisor'   && !currentSteps.supervision.studentDate)
+                          @if(currentSteps.supervision.completeDate)
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                            <p class="text-green-700">Completed</p>
+                            <p>{{currentSteps.supervision.completeDate}}</p>
+                            <span>Link: 
+                              <a href="{{currentSteps.supervision.meetingLink ? currentSteps.supervision.meetingLink : '#'}}"
+                              class="{{currentSteps.supervision.meetingLink && 'link link-primary'}}" target="_blank">
+                              {{currentSteps.supervision.meetingLink}}
+                              </a>
+                            </span>
+                          </td>
+                          @else
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm">Please wait for the student's feedback.</td>
+                          @end
+                        @elseif(auth.user.role === 'student' && !currentSteps.supervision.studentDate)
+                          @if(!currentSteps.supervision.completeDate)
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                            <div class="flex">
+                              <div>
+                                <div class="flex space-x-2 items-center mb-5">
+                                  <input type="radio" name="radio-1" class="radio radio-primary" id="hasSignedFile" checked
+                                    onchange="isShowComplete()" />
+                                  <p>Complete</p>
+                                </div>
+                                <div class="invisible" id="signedForm">
+                                  <p>Date Confirm</p>
+                                  <textarea id="dateConfirm"
+                                    class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                                    placeholder="วันอังคาร 14/6/65 เวลา 10.00น. - 11.00น." oninput="checkRequiredData()"></textarea>
+                                  <p>Meet link</p>
+                                  <textarea id="meetlink"
+                                    class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                                    placeholder="https://google.com/meet123" oninput="checkRequiredData()"></textarea>
+                                </div>
+                              </div>
+                              <div>
+                                <div class="flex space-x-2 items-center mb-5">
+                                  <input type="radio" name="radio-1" class="radio radio-primary" id="hasFeedback"
+                                    onchange="isShowFeedback()" />
+                                  <p class="text-red-500">Improve</p>
+                                </div>
+                                <div class="invisible" id="feedbackForm">
+                                  <p>Date Confirm</p>
+                                  <textarea id="feedback"
+                                    class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                                    placeholder="วันอังคาร 14/6/65 เวลา 10.00น. - 11.00น." oninput="checkFeedback()"></textarea>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          @else
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                            <p class="text-green-700">Completed</p>
+                            <p>{{currentSteps.supervision.completeDate}}</p>
+                            <span>Link: 
+                              <a href="{{currentSteps.supervision.meetingLink ? currentSteps.supervision.meetingLink : '#'}}"
+                              class="{{currentSteps.supervision.meetingLink && 'link link-primary'}}" target="_blank">
+                              {{currentSteps.supervision.meetingLink}}
+                              </a>
+                            </span>
+                          </td>
+                          @end
+                        @elseif(auth.user.role === 'staff')
+                          @if(!currentSteps.supervision.completeDate)
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                          </td>
+                          @elseif(currentSteps.supervision.completeDate && !currentSteps.supervision.studentDate)
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                            <p class="text-green-700">Completed</p>
+                            <p>{{currentSteps.supervision.completeDate}}</p>
+                            <span>Link: 
+                              <a href="{{currentSteps.supervision.meetingLink ? currentSteps.supervision.meetingLink : '#'}}"
+                              class="{{currentSteps.supervision.meetingLink && 'link link-primary'}}" target="_blank">
+                              {{currentSteps.supervision.meetingLink}}
+                              </a>
+                            </span>
+                          </td>
+                          @end
+                        @end
+                        @if(currentSteps.supervision.studentDate)
+                        <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                          <p class="text-red-700">Please change the appointment date.</p>
+                          <p>{{currentSteps.supervision.studentDate}}</p>
+                         </td>
+                        @end
+                      @end
+                  </tr>
+                </tbody>
+              </table>
+            @if(request.qs().status !== 'Approved' || (currentSteps.supervision.dateConfirmStatus !== 'Done' && auth.user.role === 'student'))
+            <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2">Confirm</button>
             @end
-          </table>
-          @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
-          <button type="submit" id="submitStepButton"
-            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
-            "student" ? 'Submit' : 'Confirm'}}</button>
-          @end
-          @elseif(request.qs().step && request.qs().step.includes('Informed supervision') ||
-          currentSteps.name.includes('TR-03') && currentSteps.status === 'Approved' ||
-          currentSteps.name.includes('Informed supervision') && !nextStep.name.includes('TR-03'))
-          @if(currentSteps.supervision.length > 0)
-          @each(month in currentSteps.supervision)
-          @if(auth.user.role !== 'staff')
-          <div class="flex space-x-2">
-            <p>Appointment status</p>
-            <p class="text-yellow-500">Pending</p>
-            <p>Supervision status</p>
-            <p class="text-yellow-500">Pending</p>
-          </div>
+            @elseif(request.qs().step && request.qs().step.includes('Presentation'))
+            
+            @end
           @else
-          <div class="flex space-x-2 items-center">
-            <p>Appointment status</p>
-            <select class="select select-sm w-fit bg-[#F6F7F9]" id="appointmentStatus">
-              <option class="text-black" value="Pending">Pending</option>
-              <option class="text-black" value="Done">Done</option>
-            </select>
-            <p>Supervision status</p>
-            <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
-              <option class="text-black" value="Pending">Pending</option>
-              <option class="text-black" value="Done">Done</option>
-            </select>
-          </div>
-          @end
-          <table class="table w-full mt-2">
-            <thead>
-              <tr class="border-2 border-[#E6E7EA] rounded-none">
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <p class="text-base">No.</p>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <div class="flex items-center space-x-2">
-                    <p class="text-base normal-case">Advisor available date</p>
-                    <div class="tooltip z-20 font-normal normal-case"
-                      data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
-                      <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
-                          fill="#495057" />
-                      </svg>
-                    </div>
-                  </div>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <div class="flex items-center space-x-2">
-                    <p class="text-base">Feedback</p>
-                    <div class="tooltip z-20 font-normal normal-case"
-                      data-tip="Feedback from advisor to student &#10; for improve the document">
-                      <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
-                          fill="#495057" />
-                      </svg>
-                    </div>
-                  </div>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              @each((row,index) in month)
-              <tr class="font-medium border-2 border-[#F6F7F9]">
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
-                  <p>{{row.advisorDate}}</p>
-                </td>
-                @if(auth.user.role === 'student' && currentSteps.status !== 'Approved' &&currentSteps.status !==
-                'Disapproved' && month.length-1 === index)
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="flex space-x-2 items-center mb-5">
-                    <input type="radio" name="radio-1" class="radio radio-primary" id="hasSignedFile" checked
-                      onchange="isShowComplete()" />
-                    <p>Complete</p>
-                  </div>
-                  <div class="invisible" id="signedForm">
-                    <p>Date Confirm</p>
-                    <textarea id="dateConfirm"
-                      class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                      placeholder="วันอังคาร 14/6/65 เวลา 10.00น. - 11.00น." oninput="checkRequiredData()"></textarea>
-                    <p>Meet link</p>
-                    <textarea id="meetlink"
-                      class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                      placeholder="https://google.com/meet123" oninput="checkRequiredData()"></textarea>
-                  </div>
-                </td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="flex space-x-2 items-center mb-5">
-                    <input type="radio" name="radio-1" class="radio radio-primary" id="hasFeedback"
-                      onchange="isShowFeedback()" />
-                    <p class="text-red-500">Improve</p>
-                  </div>
-                  <div class="invisible" id="feedbackForm">
-                    <p>Date Confirm</p>
-                    <textarea id="feedback"
-                      class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                      placeholder="วันอังคาร 14/6/65 เวลา 10.00น. - 11.00น." oninput="checkFeedback()"></textarea>
-                  </div>
-                </td>
-                @else
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 break-all whitespace-normal">
-                    <p>Complete</p>
-                    <p>{{row.completeDate || '-'}}</p>
-                    <a href="{{row.meetingLink ? row.meetingLink : '#'}}"
-                      class="{{row.meetingLink && 'link link-primary'}}" target="_blank">
-                      <p>{{row.meetingLink || '-'}}</p>
-                    </a>
-                  </div>
-                </td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
-                    <p class="text-red-500">Improve</p>
-                    <p>Date Confirm</p>
-                    <p>{{row.studentDate || '-'}}</p>
-                  </div>
-                </td>
-                @end
-              </tr>
-              {{-- <tr class="font-medium border-2 border-[#F6F7F9]">
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">{{index+1}}</td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
-                    <a class="link link-primary w-fit"
-                      href="/api/file/{{row.studentFile.file_id}}?prev=prev&&isStep=true" target="_blank">
-                      {{row.advisorDate}}
-                    </a>
-                    <p class="text-[#858D95]">Submitted: <span>{{row.studentFile.created_at}}</span></p>
-                  </div>
-                </td>
-                @if(auth.user.role === 'student' && currentSteps.status !== 'Disapproved' && request.qs().status !==
-                'Approved' && (!row.reason.body && !row.feedbackFile.file_name))
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="flex space-x-2 items-center mb-5">
-                    <input type="radio" name="radio-1" class="radio radio-primary" id="isComplete" checked
-                      onchange="isShowComplete()" />
-                    <p>Complete</p>
-                  </div>
-                </td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="flex space-x-2 items-center mb-5">
-                    <input type="radio" name="radio-1" class="radio radio-primary" id="hasFeedback"
-                      onchange="isShowFeedback()" />
-                    <p class="text-red-500">Improve</p>
-                  </div>
-                  <div class="invisible" id="feedbackForm">
-                    <p>Feedback file</p>
-                    <div class="flex items-center space-x-2 w-44 mt-2">
-                      <label for="feedbackFile" id="labelFeedbackFile"
-                        class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose
-                        file</label>
-                      <input type="file" id="feedbackFile" class="input hidden"
-                        onchange="getFile(event,'showFeedbackFile')" />
-                      <div id="showFeedbackFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
-                    </div>
-                    <textarea id="feedback"
-                      class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                      placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
-                  </div>
-                </td>
-                @else
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <div class="space-y-2 w-44 whitespace-normal">
-                    <p>Complete</p>
-                    <p>-</p>
-                  </div>
-                </td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                  <p class="text-red-500">Improve</p>
-                  @if(!row.reason.body && !row.feedbackFile.file_name)
-                  <p>-</p>
-                  @else
-                  <div class="space-y-2 w-44 whitespace-normal">
-                    @if(row.reason.body)
-                    <p>{{row.reason.body}}</p>
-                    <p class="text-[#858D95]">Submitted: <span>{{row.reason.date}}</span></p>
-                    @end
-                    @if(row.feedbackFile.file_name)
-                    <a class="{{row.feedbackFile.file_name && 'link link-primary' }}"
-                      href="/api/file/{{row.feedbackFile && row.feedbackFile.file_id}}?prev=prev&&isStep=true"
-                      target="_blank">
-                      {{row.feedbackFile.file_name}}
-                    </a>
-                    <p class="text-[#858D95]">Submitted: <span>{{row.feedbackFile.created_at}}</span></p>
-                    @end
-                  </div>
-                  @end
-                </td>
-                @end --}}
-              </tr>
-              @end
-              @if(auth.user.role === 'advisor' && request.qs().status !== 'Approved')
-              <tr class="font-medium border-2 border-[#F6F7F9]">
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">{{!(currentSteps.name === 'TR-02' &&
-                  currentSteps.status === 'Approved') && month.length+1 || '1'}}</td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
-                  <textarea id="advisorDate"
-                    class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                    placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น."
-                    oninput="checkAdvisorDate()"></textarea>
-                </td>
-                <td class="align-top border-2 border-[#F6F7F9]">-</td>
-                <td class="align-top border-2 border-[#F6F7F9]">-</td>
-              </tr>
-              @end
-            </tbody>
-          </table>
-          @end
-          @else
-          @if(auth.user.role !== 'staff')
-          <div class="flex space-x-2">
-            <p>Appointment status</p>
-            <p class="text-yellow-500">Pending</p>
-            <p>Supervision status</p>
-            <p class="text-yellow-500">Pending</p>
-          </div>
-          @else
-          <div class="flex space-x-2 items-center">
-            <p>Appointment status</p>
-            <select class="select select-sm w-fit bg-[#F6F7F9]" id="appointmentStatus">
-              <option class="text-black" value="Pending">Pending</option>
-              <option class="text-black" value="Done">Done</option>
-            </select>
-            <p>Supervision status</p>
-            <select class="select select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
-              <option class="text-black" value="Pending">Pending</option>
-              <option class="text-black" value="Done">Done</option>
-            </select>
-          </div>
-          @end
-          <table class="table w-full mt-2">
-            <thead>
-              <tr class="border-2 border-[#E6E7EA] rounded-none">
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <p class="text-base">No.</p>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <div class="flex items-center space-x-2">
-                    <p class="text-base normal-case">Advisor available date</p>
-                    <div class="tooltip z-20 font-normal normal-case"
-                      data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
-                      <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
-                          fill="#495057" />
-                      </svg>
-                    </div>
-                  </div>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <div class="flex items-center space-x-2">
-                    <p class="text-base">Feedback</p>
-                    <div class="tooltip z-20 font-normal normal-case"
-                      data-tip="Feedback from advisor to student &#10; for improve the document">
-                      <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M4.54759 7.48531H5.51116V4.53584H4.54759V7.48531ZM4.99412 3.84254C5.15864 3.84254 5.29377 3.78966 5.39953 3.6839C5.50529 3.57814 5.55817 3.44693 5.55817 3.29025C5.55817 3.1179 5.50333 2.97885 5.39365 2.87309C5.28398 2.76733 5.1508 2.71445 4.99412 2.71445C4.82961 2.71445 4.69448 2.76733 4.58872 2.87309C4.48296 2.97885 4.43008 3.11398 4.43008 3.2785C4.43008 3.44301 4.48492 3.57814 4.59459 3.6839C4.70427 3.78966 4.83745 3.84254 4.99412 3.84254ZM4.99412 10C4.28907 10 3.63102 9.8727 3.01998 9.6181C2.40893 9.36349 1.88014 9.01293 1.43361 8.56639C0.987074 8.11986 0.636506 7.59107 0.381904 6.98002C0.127301 6.36898 0 5.71093 0 5.00588C0 4.30082 0.127301 3.64473 0.381904 3.0376C0.636506 2.43047 0.987074 1.90168 1.43361 1.45123C1.88014 1.00078 2.40893 0.646298 3.01998 0.387779C3.63102 0.12926 4.28907 0 4.99412 0C5.69918 0 6.35527 0.12926 6.9624 0.387779C7.56953 0.646298 8.09832 1.00078 8.54877 1.45123C8.99922 1.90168 9.3537 2.43047 9.61222 3.0376C9.87074 3.64473 10 4.30082 10 5.00588C10 5.71093 9.87074 6.36898 9.61222 6.98002C9.3537 7.59107 8.99922 8.11986 8.54877 8.56639C8.09832 9.01293 7.56953 9.36349 6.9624 9.6181C6.35527 9.8727 5.69918 10 4.99412 10ZM4.98237 8.89542C6.05562 8.89542 6.97415 8.51743 7.73796 7.76146C8.50176 7.00548 8.88367 6.08696 8.88367 5.00588C8.88367 3.93263 8.50176 3.01606 7.73796 2.25617C6.97415 1.49628 6.05954 1.11633 4.99412 1.11633C3.92088 1.11633 3.00431 1.49628 2.24442 2.25617C1.48453 3.01606 1.10458 3.93263 1.10458 5.00588C1.10458 6.08696 1.48453 7.00548 2.24442 7.76146C3.00431 8.51743 3.91696 8.89542 4.98237 8.89542Z"
-                          fill="#495057" />
-                      </svg>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              @if(auth.user.role === 'advisor' && request.qs().status !== 'Approved')
-              <tr class="font-medium border-2 border-[#F6F7F9]">
-                <td class="align-top border-2 border-[#F6F7F9] text-sm">1</td>
-                <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
-                  <textarea id="advisorDate"
-                    class="p-2 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                    placeholder="วันศุกร์ 27/5/65 เวลา 13.00น. - 15.00น., วันจันทร์ 29/5/65  เวลา 9.00น. - 11.00น."
-                    oninput="checkAdvisorDate()"></textarea>
-                </td>
-                <td class="align-top border-2 border-[#F6F7F9]">-</td>
-              </tr>
-              @end
-            </tbody>
-          </table>
-          @end
-          @if(request.qs().status !== 'Approved')
-          <button type="submit" id="submitStepButton"
-            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" {{auth.user.role !=='staff'
-            && 'disabled' }}>Confirm</button>
-          @end
-          @end
-          @else
-          @if(auth.user.role === 'student')
-          <div class="absolute left-80 top-12">
-            <svg width="103" height="25" viewBox="0 0 103 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M10.1783 11.7942C41.1941 -3.08664 71.6458 -3.60876 103 8.66143C100.744 11.4026 98.827 10.3584 97.3608 9.83624C86.0823 6.31181 74.4655 5.92018 62.9614 5.39805C46.382 4.61487 30.7052 9.05306 15.3662 16.2324C14.6895 16.4935 14.1254 17.0156 12.7719 18.0599C20.5541 19.8873 28.3367 16.7545 35.1037 20.4095C34.9906 20.9316 34.9906 21.5843 34.878 22.1064C29.8027 22.498 24.6148 22.8896 19.539 23.4118C14.4637 23.9339 9.50157 24.5866 4.42628 24.9782C0.704399 25.2392 -0.874757 23.1507 0.478653 19.2347C2.17042 14.1439 4.53888 9.44462 6.6816 4.61487C6.90735 4.09274 7.2457 3.44005 7.69666 3.17899C8.93746 2.65687 10.1783 2.5263 11.5317 2.13468C11.7569 3.44006 12.321 4.87593 12.2084 6.05074C11.9826 7.61712 11.1933 8.92249 10.1783 11.7942Z"
-                fill="#4263EB" />
-            </svg>
-            <p class="text-primary font-medium pl-20">Click here to add new academic year</p>
-          </div>
-          @else
-          <div
-            class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
-            <p>Please wait for student assigns a plan.</p>
-          </div>
-          @end
+            @if(auth.user.role === 'student')
+            <div class="absolute left-80 top-12">
+              <svg width="103" height="25" viewBox="0 0 103 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M10.1783 11.7942C41.1941 -3.08664 71.6458 -3.60876 103 8.66143C100.744 11.4026 98.827 10.3584 97.3608 9.83624C86.0823 6.31181 74.4655 5.92018 62.9614 5.39805C46.382 4.61487 30.7052 9.05306 15.3662 16.2324C14.6895 16.4935 14.1254 17.0156 12.7719 18.0599C20.5541 19.8873 28.3367 16.7545 35.1037 20.4095C34.9906 20.9316 34.9906 21.5843 34.878 22.1064C29.8027 22.498 24.6148 22.8896 19.539 23.4118C14.4637 23.9339 9.50157 24.5866 4.42628 24.9782C0.704399 25.2392 -0.874757 23.1507 0.478653 19.2347C2.17042 14.1439 4.53888 9.44462 6.6816 4.61487C6.90735 4.09274 7.2457 3.44005 7.69666 3.17899C8.93746 2.65687 10.1783 2.5263 11.5317 2.13468C11.7569 3.44006 12.321 4.87593 12.2084 6.05074C11.9826 7.61712 11.1933 8.92249 10.1783 11.7942Z"
+                  fill="#4263EB" />
+              </svg>
+              <p class="text-primary font-medium pl-20">Click here to add new academic year</p>
+            </div>
+            @else
+            <div
+              class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+              <p>Please wait for student assigns a plan.</p>
+            </div>
+            @end
           @end
 </section>
 <script>
@@ -1044,9 +894,15 @@ const checkStartDateMax = () => {
   const isShowComplete = () =>{
   file = null
   document.getElementById('submitStepButton').disabled = true
-  document.getElementById('showFeedbackFile').innerHTML = "No choosen file"
+  if(document.getElementById('showFeedbackFile')){
+    document.getElementById('showFeedbackFile').innerHTML = "No choosen file"
+  }
+  if(document.getElementById('showFeedbackFile')){
   document.getElementById('feedbackFile').value = ""
-  document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
+  }
+  if(document.getElementById('labelFeedbackFile')){
+    document.getElementById('labelFeedbackFile').classList.remove('btn-disabled')
+  }
   if(dateConfirm && meetlink){
     document.getElementById('submitStepButton').disabled = false
   }
