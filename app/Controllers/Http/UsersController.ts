@@ -1812,6 +1812,7 @@ export default class UsersController {
         advisorComment,
         dateConfirmStatus,
         isSigned,
+        advisorDate,
       } = request.only([
         'study',
         'status',
@@ -1825,12 +1826,8 @@ export default class UsersController {
         'dateConfirmStatus',
         'isSigned',
         'completeDate',
+        'advisorDate',
       ])
-      // console.log('เข้า')
-
-      // console.log(status)
-      // console.log(step)
-      console.log('เข้า')
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUser: any
@@ -1915,6 +1912,10 @@ export default class UsersController {
           body['is_react'] = true
           body['is_signed'] = isSigned
         }
+      }
+
+      if (advisorDate) {
+        body['advisor_date'] = advisorDate
       }
 
       if (completeDate) {
