@@ -414,8 +414,17 @@
                   <p class="text-[#858D95]">Submitted: <span>{{row.created_at}}</span></p>
                 </div>
               </td>
+              <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                <div class="space-y-2 whitespace-normal">
+                  <div class="grid grid-cols-2 items-center gap-3 text-[#495057]">
+                    <p>Send to the firm</p>
+                    <p class="text-[#858D95]">{{row.sentFirmDate}}</p>
+                    <p>Receive form the firm</p>
+                    <p class="text-[#858D95]">{{row.recievedFirmDate}}</p>
+                  </div>
+                </div>
+              </td>
             </tr>
-            {{-- @end --}}
             @end
             @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
             <tr class="font-medium border-2 border-[#F6F7F9]">
@@ -447,7 +456,7 @@
             class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
             "student" ? 'Submit' : 'Confirm'}}</button>
           @end
-          @elseif(request.qs().step.includes('Presentation') && currentSteps.status !== 'Approved' )
+          @elseif(request.qs().step && request.qs().step.includes('Presentation'))
           <table class="table w-full mt-2">
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -462,7 +471,6 @@
               </tr>
             </thead>
             @each((row,index) in currentSteps.file.row)
-            {{-- @if(row && Object.keys(row).length === 0 && Object.getPrototypeOf(row) === Object.prototype) --}}
             <tr class="font-medium border-2 border-[#F6F7F9]">
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
                 {{index+1}}
@@ -477,7 +485,6 @@
                 </div>
               </td>
             </tr>
-            {{-- @end --}}
             @end
             @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
             <tr class="font-medium border-2 border-[#F6F7F9]">
@@ -654,7 +661,7 @@
               class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
               "student" ? 'Submit' : 'Confirm'}}</button>
             @end
-          @elseif(request.qs().step && request.qs().step.includes('Supervision'))
+          @elseif(request.qs().step && request.qs().step && request.qs().step.includes('Supervision'))
               @if(auth.user.role !== 'student')
               <div class="flex space-x-2">
                 <div class="flex items-center space-x-2">
@@ -755,7 +762,12 @@
                             oninput="checkAdvisorDate()"></textarea>
                           </td>
                         @else
-                        <td class="align-top border-2 border-[#F6F7F9] text-sm">{{currentSteps.supervision.advisorDate}}</td>
+                          <td class="align-top border-2 border-[#F6F7F9] text-sm space-y-2">
+                            @if(currentSteps.supervision.is_new == '1')
+                            <div class="badge badge-lg text-primary bg-[#E1E7FF] border-0 px-3 py-4 rounded-md">New update</div>
+                            @end
+                            <p>{{currentSteps.supervision.advisorDate}}</p>
+                          </td>
                         @end
                         @if(auth.user.role === 'advisor' && !currentSteps.supervision.studentDate)
                           @if(currentSteps.supervision.completeDate)
@@ -1099,9 +1111,16 @@ const checkStartDateMax = () => {
   }
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason, supervisionStatus = ''
+    let reason, supervisionStatus, acknowledgeDate, requestDate   = ''
     if(document.getElementById('supervisionStatus')){
       supervisionStatus = document.getElementById('supervisionStatus').value
+    }
+    if(document.getElementById('acknowledgeDate')){
+      acknowledgeDate = document.getElementById('acknowledgeDate').value
+    }
+
+    if(document.getElementById('requestDate')){
+      requestDate = document.getElementById('requestDate').value
     }
     if(document.getElementById('feedback')){
       reason = document.getElementById('feedback').value
@@ -1125,7 +1144,8 @@ const checkStartDateMax = () => {
       reason : reason ,
       isSigned : status == 'Approved',
       date: advisorDateValue || reason,
-      completeDate: dateConfirm,
+      completeDate: dateConfirm || acknowledgeDate,
+      advisorDate: requestDate,
       meetingLink: meetlink
     }
     const bodyNotUpdateStatus = {
