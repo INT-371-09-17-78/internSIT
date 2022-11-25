@@ -1719,7 +1719,8 @@ export default class UsersController {
       // if (currentSteps.supervision) {
       //   currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
       // }
-
+      let step01Stat: any
+      let step02Stat: any
       for (let i = 0; i < stepsRender.length; i++) {
         // console.log(stepsRender[i]['name'])
 
@@ -1758,6 +1759,12 @@ export default class UsersController {
               (word) => word.name === allLastestStepStat[0].step
             )
             stepsRender[stepIndexTmp]['status'] = allLastestStepStat[0].status
+            if (stepsRender[i].name === AllSteps.TR01) {
+              step01Stat = allLastestStepStat[0].status
+            }
+            if (stepsRender[i].name === AllSteps.TR02) {
+              step02Stat = allLastestStepStat[0].status
+            }
           }
         }
         // steps[i]['status'] = 'Approved'
@@ -1787,6 +1794,8 @@ export default class UsersController {
         submission: submission,
         studentInfo: studentInfo,
         academicYears: academicYearAll,
+        step01Stat,
+        step02Stat,
         // userHasDoc: userHasDoc[0].id,
       })
       // return response.redirect('/announcement')
