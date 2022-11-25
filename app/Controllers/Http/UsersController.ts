@@ -1205,7 +1205,7 @@ export default class UsersController {
               }
 
               currentSteps['sentFirmDate'] = allUserHasDoc[i].advisor_date
-              currentSteps['recievedFirmDate'] = allUserHasDoc[i].student_date
+              currentSteps['recievedFirmDate'] = allUserHasDoc[i].complete_date
             }
           } else if (
             allUserHasDoc[i].step === 'TR-01' &&
