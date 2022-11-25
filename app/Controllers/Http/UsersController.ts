@@ -1951,6 +1951,7 @@ export default class UsersController {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
+          .where('step', step)
           .orderBy('created_at', 'desc')
         // stepTracking[0].status = body['status']
         for (let i = 0; i < Object.keys(body).length; i++) {
