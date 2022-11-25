@@ -131,7 +131,7 @@
           class="collapse-content bg-white text-[#495057] border-2 border-[#E6E7EA] flex flex-col space-y-5 pt-5 font-bold">
           @each((step,i) in stepsRender)
           @if(!step.month)
-          <a id="{{step.name}}" onclick="{{step01Stat === 'Approved' && step.name==='TR-02' || step01Stat === 'Approved' && step.name==='TR-01' ? '' : 'return false'}}" class="{{step01Stat === 'Approved' && step.name==='TR-02' || step01Stat === 'Approved' && step.name==='TR-01' ? '' : 'text-gray-400 cursor-default'}}"
+          <a id="{{step.name}}" onclick="{{step01Stat === 'Approved' && step.name==='TR-02' || step.name==='TR-01' || step01Stat === 'Approved' && step02Stat === 'Approved' ? '' : 'return false'}}" class="{{step01Stat === 'Approved' && step02Stat === 'Approved' || step01Stat === 'Approved' && step.name==='TR-02' || step.name==='TR-01' ? '' : 'text-gray-400 cursor-default'}}"
             href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: step.name , status: step.status} }) }}">
           @end
           <p class="{{step.status==='Approved' ? 'text-green-700': step.status==='Disapproved' ? 'text-red-700' : step.status==='Pending' ? 'text-yellow-700' : ''}}"><span>{{i+1}}. </span>{{step.name}}</p>
