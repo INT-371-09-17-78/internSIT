@@ -2011,8 +2011,11 @@ export default class UsersController {
       }
 
       if (supervision[0]) {
-        dateConfirmStatus ? (supervision[0].date_confirm_status = dateConfirmStatus) : null
-        supervisionStatus ? (supervision[0].supervision_status = supervisionStatus) : null
+        // dateConfirmStatus ? (supervision[0].date_confirm_status = dateConfirmStatus) : null
+        if (supervisionStatus) {
+          supervision[0].supervision_status = supervisionStatus
+        }
+        //  ? () : null
         await supervision[0].save()
       }
 
