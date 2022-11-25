@@ -1201,7 +1201,7 @@ export default class UsersController {
                 .where('step_file_type', 'signedFile')
 
               if (currentStepFile[0]) {
-                currentSteps['file'].row.push(currentStepFile[0].serialize())
+                currentSteps['file'] = currentStepFile[0].serialize()
               }
 
               currentSteps['sentFirmDate'] = allUserHasDoc[i].advisor_date
