@@ -483,9 +483,9 @@ export default class UsersController {
       }
       const AllStepByMonth = {}
       // const body = {}
-      AllStepByMonth['2'] = Steps2Month
-      AllStepByMonth['4'] = Steps4Month
-      AllStepByMonth['6'] = Steps6Month
+      AllStepByMonth['2'] = this.showSteps(2)
+      AllStepByMonth['4'] = this.showSteps(4)
+      AllStepByMonth['6'] = this.showSteps(6)
       console.log(AllStepByMonth)
       // console.log(auth.user);
 
@@ -946,141 +946,7 @@ export default class UsersController {
       const qs = request.qs()
       const plans = [2, 4, 6]
 
-      let stepsRender: any =
-        studentUser.student.plan === 6
-          ? [
-              {
-                name: Steps6Month.TR01,
-                // defaultFile:
-              },
-              {
-                name: Steps6Month.TR02,
-              },
-              {
-                name: Steps6Month.TR03_TR05_AND_SUPERVISION,
-                month: [
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_1_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_1_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_2_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_2_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_3_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_3_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_4_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_4_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_5_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_5_6,
-                    },
-                  ],
-                  [
-                    {
-                      name: Steps6Month.TR_03_TR_05,
-                      value: Steps6Month.TR03_AND_TR05_6_6,
-                    },
-                    {
-                      name: Steps6Month.SUPERVISION,
-                      value: Steps6Month.INFORMED_SUPERVISION_6_6,
-                    },
-                  ],
-                ],
-              },
-              {
-                name: Steps6Month.PRESENTATION,
-              },
-              {
-                name: Steps6Month.TR03_TR06,
-              },
-            ]
-          : studentUser.student.plan === 4
-          ? [
-              {
-                name: Steps4Month.TR01,
-              },
-              {
-                name: Steps4Month.TR02,
-              },
-              {
-                name: Steps4Month.TR03_TR05_AND_SUPERVISION,
-                month: [
-                  {
-                    name: Steps6Month.TR_03_TR_05,
-                    value: Steps4Month.TR03_AND_TR05_1_4,
-                  },
-                  {
-                    name: Steps6Month.TR_03_TR_05,
-                    value: Steps4Month.TR03_AND_TR05_2_4,
-                  },
-                  {
-                    name: Steps6Month.TR_03_TR_05,
-                    value: Steps4Month.TR03_AND_TR05_3_4,
-                  },
-                  {
-                    name: Steps6Month.TR_03_TR_05,
-                    value: Steps4Month.TR03_AND_TR05_4_4,
-                  },
-                ],
-              },
-              {
-                name: Steps4Month.PRESENTATION,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_4_4,
-              },
-            ]
-          : [
-              {
-                name: Steps2Month.TR01,
-              },
-              {
-                name: Steps2Month.TR02,
-              },
-              {
-                name: Steps2Month.INFORMED_SUPERVISION,
-              },
-              {
-                name: Steps2Month.PRESENTATION,
-              },
-              {
-                name: Steps2Month.TR03_AND_TR08,
-              },
-            ]
+      let stepsRender: any = this.showSteps(studentUser.student.plan)
       let nextStep: any = {}
       let currentSteps: any = {}
       const disabled =
@@ -1947,7 +1813,14 @@ export default class UsersController {
         body['date_confirm_status'] = dateConfirmStatus
       }
 
-      if (status && status !== StepStatus.PENDING && step && step !== AllSteps.TR02) {
+      if (
+        status &&
+        status !== StepStatus.PENDING &&
+        step &&
+        step !== AllSteps.TR02 &&
+        step !== AllSteps.PRESENTATION
+      ) {
+        // !(step === AllSteps.TR02 && status === StepStatus.APPROVED)
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
@@ -1969,6 +1842,20 @@ export default class UsersController {
         //   await usersInAcademicYear[0].related('userHasDoc').create(body)
         // }
         // console.log(test)
+      } else if (step && step === AllSteps.TR02) {
+        const stepTracking = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', step)
+          .orderBy('created_at', 'desc')
+        if (stepTracking && stepTracking.length > 0) {
+          for (let i = 0; i < Object.keys(body).length; i++) {
+            stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
+          }
+          await stepTracking[0].save()
+        } else {
+          await usersInAcademicYear[0].related('userHasDoc').create(body)
+        }
       } else {
         await usersInAcademicYear[0].related('userHasDoc').create(body)
       }
@@ -2034,6 +1921,146 @@ export default class UsersController {
       console.log(error)
       return response.status(400).json({ message: error.message })
     }
+  }
+
+  private showSteps(month) {
+    const steps =
+      month === 6
+        ? [
+            {
+              name: Steps6Month.TR01,
+              // defaultFile:
+            },
+            {
+              name: Steps6Month.TR02,
+            },
+            {
+              name: Steps6Month.TR03_TR05_AND_SUPERVISION,
+              month: [
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_1_6,
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_1_6,
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_2_6,
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_2_6,
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_3_6,
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_3_6,
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_4_6,
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_4_6,
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_5_6,
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_5_6,
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_6_6,
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_6_6,
+                  },
+                ],
+              ],
+            },
+            {
+              name: Steps6Month.PRESENTATION,
+            },
+            {
+              name: Steps6Month.TR03_TR06,
+            },
+          ]
+        : month === 4
+        ? [
+            {
+              name: Steps4Month.TR01,
+            },
+            {
+              name: Steps4Month.TR02,
+            },
+            {
+              name: Steps4Month.TR03_TR05_AND_SUPERVISION,
+              month: [
+                {
+                  name: Steps6Month.TR_03_TR_05,
+                  value: Steps4Month.TR03_AND_TR05_1_4,
+                },
+                {
+                  name: Steps6Month.TR_03_TR_05,
+                  value: Steps4Month.TR03_AND_TR05_2_4,
+                },
+                {
+                  name: Steps6Month.TR_03_TR_05,
+                  value: Steps4Month.TR03_AND_TR05_3_4,
+                },
+                {
+                  name: Steps6Month.TR_03_TR_05,
+                  value: Steps4Month.TR03_AND_TR05_4_4,
+                },
+              ],
+            },
+            {
+              name: Steps4Month.PRESENTATION,
+            },
+            {
+              name: Steps4Month.TR03_AND_TR05_4_4,
+            },
+          ]
+        : [
+            {
+              name: Steps2Month.TR01,
+            },
+            {
+              name: Steps2Month.TR02,
+            },
+            {
+              name: Steps2Month.INFORMED_SUPERVISION,
+            },
+            {
+              name: Steps2Month.PRESENTATION,
+            },
+            {
+              name: Steps2Month.TR03_AND_TR08,
+            },
+          ]
+
+    return steps
   }
 
   public async updateStudentUserApprove({ request, response }: HttpContextContract) {
@@ -2398,6 +2425,7 @@ export default class UsersController {
             // approved: true,
           },
         ]
+
         const usersArr = await User.createMany(arr)
         usersArr.forEach(
           async (user) =>
