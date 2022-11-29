@@ -1300,7 +1300,7 @@ const checkStartDateMax = () => {
         }
       }
       
-      if(file){
+      if(file && !error){
         await fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formData,
@@ -1309,13 +1309,17 @@ const checkStartDateMax = () => {
       if(error){
         const urlParams = new URLSearchParams()
         urlParams.append('step', '{{request.qs().step}}')
-        urlParams.append('status', '{{request.qs().status}}')
+        if('{{request.qs().status}}' !== 'undefined'){
+          urlParams.append('status', '{{request.qs().status}}')
+        }
         urlParams.append('mode', 'edit')
         window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
       }else{
         const urlParams = new URLSearchParams()
         urlParams.append('step', '{{request.qs().step}}')
-        urlParams.append('status', '{{request.qs().status}}')
+        if('{{request.qs().status}}' !== 'undefined'){
+          urlParams.append('status', '{{request.qs().status}}')
+        }
         window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
       }
     // @if(flashMessages.get('error', ''))
