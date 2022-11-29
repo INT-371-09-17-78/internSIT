@@ -535,6 +535,9 @@
             </tr>
             @end  --}}
           </table>
+           @if(flashMessages.get('error', ''))
+                   <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
+           @end
           @if((auth.user.role === 'staff' && isEdit) || (auth.user.role === 'staff' && currentSteps.status !== 'Approved'))
           <button type="submit" id="submitStepButton"
             class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2">{{auth.user.role ===
@@ -1276,15 +1279,26 @@ const checkStartDateMax = () => {
         })
        }
       }else{
-        await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
-      method: 'PATCH',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-      })
-    }
+        try {
+          let response = await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+          method: 'PATCH',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+          })
+
+          if (!response.ok) throw response.statusText;
+
+        } catch (e) {
+          const urlParams = new URLSearchParams()
+          urlParams.append('step', '{{request.qs().step}}')
+          urlParams.append('status', '{{request.qs().status}}')
+          urlParams.append('mode', 'edit')
+          window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
+        }
+      }
       
 
       if(file){
@@ -1299,11 +1313,7 @@ const checkStartDateMax = () => {
     const urlParams = new URLSearchParams()
     urlParams.append('step', '{{request.qs().step}}')
     urlParams.append('status', '{{request.qs().status}}')
-    if('{{flashMessages.get('error')}}'){
-      window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}&mode=edit`
-    }else{
     window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
-    }
   }
 </script>
 @end
