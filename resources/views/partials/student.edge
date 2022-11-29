@@ -1231,8 +1231,12 @@ const checkStartDateMax = () => {
     }
     
     let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
+    let step = null
+    if('{{currentSteps.name}}' === 'TR-02' && '{{currentSteps.status}}' === 'Approved'){
+      step = '{{currentSteps.name}}'
+    }
     const body = {
-      step: '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
+      step: step ? '{{currentSteps.name}}' : '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
       status: status,
       reason : reason ,
       isSigned : status == 'Approved',

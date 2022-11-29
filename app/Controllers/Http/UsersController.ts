@@ -1065,6 +1065,7 @@ export default class UsersController {
               const currentStepFile = await File.query()
                 .where('user_has_doc_id', allUserHasDoc[i].id)
                 .where('step_file_type', 'signedFile')
+                .orderBy('created_at', 'desc')
 
               if (currentStepFile[0]) {
                 currentSteps['file'] = currentStepFile[0].serialize()
@@ -1812,7 +1813,8 @@ export default class UsersController {
       if (dateConfirmStatus) {
         body['date_confirm_status'] = dateConfirmStatus
       }
-
+      console.log('เข้า')
+      console.log(step, 'asdasd')
       if (
         status &&
         status !== StepStatus.PENDING &&
@@ -1842,7 +1844,7 @@ export default class UsersController {
         //   await usersInAcademicYear[0].related('userHasDoc').create(body)
         // }
         // console.log(test)
-      } else if (step && step === AllSteps.TR02) {
+      } else if ((step && step === AllSteps.TR02) || (step && step === AllSteps.PRESENTATION)) {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
@@ -1857,6 +1859,7 @@ export default class UsersController {
           await usersInAcademicYear[0].related('userHasDoc').create(body)
         }
       } else {
+        console.log('เข้า')
         await usersInAcademicYear[0].related('userHasDoc').create(body)
       }
       return response.status(200).json('success')
