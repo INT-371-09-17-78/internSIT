@@ -1,6 +1,10 @@
 @set('title', 'students page')
 @set('firstStep', '')
 @set('lastStep', '')
+@set('isEdit', false)
+@if(request.qs().mode === 'edit')
+@set('isEdit', true)
+@end
 @section('student-information')
 <section class="h-full w-full z-[5] relative flex flex-col overflow-auto">
   @if(auth.user.role !== "student")
@@ -99,7 +103,7 @@
 
   @if(studentUser.student.plan)
   <div class="flex pl-11 py-7 space-x-10">
-    <div class="flex flex-col space-y-1 w-64">
+    <div class="flex flex-col space-y-1 w-72">
       <div class="collapse collapse-arrow">
         <input type="checkbox" class="peer" />
         <div
@@ -205,7 +209,26 @@
               </div>
             </a>
           </div>
-          <p class="font-bold text-lg">Submission</p>
+          <div class="flex items-center">
+            <p class="font-bold text-lg">Submission</p>
+            <a class="btn btn-sm btn-primary btn-square ml-auto" href="{{ route('/student-information/:id', { id : studentUser.user_id } , {qs: {step: currentSteps.name , status: currentSteps.status , mode: !isEdit ? 'edit' : 'show'} }) }}">
+              @if(!isEdit)  
+              <svg class="svg-icon" class="w-5 h-5" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M834.3 705.7c0 82.2-66.8 149-149 149H325.9c-82.2 0-149-66.8-149-149V346.4c0-82.2 66.8-149 149-149h129.8v-42.7H325.9c-105.7 0-191.7 86-191.7 191.7v359.3c0 105.7 86 191.7 191.7 191.7h359.3c105.7 0 191.7-86 191.7-191.7V575.9h-42.7v129.8z"  /><path d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2zM362 585.3L710.3 237 816 342.8 467.8 691.1 362 585.3zM409.7 730l-101.1 14.4L323 643.3c1.4-9.5 4.8-18.7 9.9-26.7L436.3 720c-8 5.2-17.1 8.7-26.6 10z m449.8-430.7l-13.3 13.3-105.7-105.8 13.3-13.3c14.1-14.1 32.9-21.9 52.9-21.9s38.8 7.8 52.9 21.9c29.1 29.2 29.1 76.7-0.1 105.8z"  /></svg>
+              @else
+              <svg version="1.1" id="Layer_1" class="fill-white w-5 h-5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 512 512" xml:space="preserve">
+                  <g>
+                    <path d="M256,341.36c-47.08,0-85.36-38.28-85.36-85.36s38.28-85.36,85.36-85.36s85.36,38.28,85.36,85.36S303.05,341.36,256,341.36z
+                      M256,191.98c-35.29,0-64.02,28.73-64.02,64.02s28.73,64.02,64.02,64.02s64.02-28.73,64.02-64.02S291.29,191.98,256,191.98z"/>
+                    <path d="M256,405.37c-122.06,0-222.8-103.58-250.76-135.33c-6.98-8.02-6.98-20.07-0.04-28.07
+                      C33.18,210.23,133.93,106.63,256,106.63c121.93,0,222.61,103.39,250.67,135.22l0.13,0.16c6.94,7.97,6.94,20.02,0,27.99
+                      C478.8,301.77,378.04,405.37,256,405.37z M256,127.96c-113.09,0-208.3,98.04-234.75,128.1C47.73,286,142.88,384.04,256,384.04
+                      c113.09,0,208.27-98.04,234.75-128.1C464.24,226,369.07,127.96,256,127.96z"/>
+                  </g>
+                  </svg>
+              @end
+            </a>
+          </div>
           @if(request.qs().step === 'TR-01' || currentSteps.name === 'TR-01' && nextStep.name !== 'TR-02')
           <table class="table w-full mt-2">
             <thead>
@@ -405,7 +428,7 @@
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
                 1
               </td>
-              @if(!currentSteps.file.file_name && !currentSteps.file.file_id)
+              @if((!currentSteps.file.file_name && !currentSteps.file.file_id))
                 @if(auth.user.role === 'staff')
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
                   <div class="flex items-center space-x-2 w-44">
@@ -423,6 +446,7 @@
                 @end
               @else
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                @if(!isEdit || auth.user.role !== 'staff')
                 <div class="space-y-2 whitespace-normal">
                   <a class="link link-primary w-fit"
                     href="/api/file/{{currentSteps.file.file_id}}?prev=prev&&isStep=true" target="_blank">
@@ -430,6 +454,15 @@
                   </a>
                   <p class="text-[#858D95]">Submitted: <span>{{currentSteps.file.created_at}}</span></p>
                 </div>
+                @else
+                <div class="flex items-center space-x-2 w-44">
+                  <label for="signedFile" id="labelStaffFile"
+                    class="btn btn-outline btn-xs h-7 bg-white border-[#A8B0B8] border-2 capitalize font-medium rounded-md">Choose
+                    file</label>
+                  <input type="file" id="signedFile" class="input hidden" onchange="getFile(event,'showStaffFile')" />
+                  <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
+                </div>
+                @end
               </td>
               @end
               @if(auth.user.role === 'staff')
@@ -437,16 +470,24 @@
                 <div class="space-y-2 whitespace-normal">
                   <div class="grid grid-cols-2 items-center gap-3 text-[#495057]">
                     <p>Send to the firm</p>
-                    @if(currentSteps.sentFirmDate)
+                    @if(currentSteps.sentFirmDate && !isEdit)
                     <p class="text-[#858D95]">{{currentSteps.sentFirmDate}}</p>
                     @else
-                    <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                      @if(!isEdit)
+                      <p>-</p>
+                      @else
+                      <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                      @end
                     @end
                     <p>Receive form the firm</p>
-                    @if(currentSteps.recievedFirmDate)
+                    @if(currentSteps.recievedFirmDate && !isEdit)
                     <p class="text-[#858D95]">{{currentSteps.recievedFirmDate}}</p>
                     @else
-                    <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                      @if(!isEdit)
+                      <p>-</p>
+                      @else
+                      <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                      @end
                     @end
                   </div>
                 </div>
@@ -458,17 +499,17 @@
                   <p>Send to the firm</p>
                   <p class="text-[#858D95]">{{currentSteps.sentFirmDate}}</p>
                   @else
-                  @if(auth.user.role === 'staff')
-                  <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
-                  @end
+                    @if(auth.user.role === 'staff')
+                    <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                    @end
                   @end
                   @if(currentSteps.recievedFirmDate)
                   <p>Receive form the firm</p>
                   <p class="text-[#858D95]">{{currentSteps.recievedFirmDate}}</p>
                   @else
-                  @if(auth.user.role === 'staff')
-                  <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
-                  @end
+                    @if(auth.user.role === 'staff')
+                    <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                    @end
                   @end
                 </div>
               </td>
@@ -500,9 +541,9 @@
             </tr>
             @end  --}}
           </table>
-          @if(auth.user.role === 'staff' && request.qs().status !== 'Approved')
+          @if((auth.user.role === 'staff' && isEdit) || (auth.user.role === 'staff' && currentSteps.status !== 'Approved'))
           <button type="submit" id="submitStepButton"
-            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
+            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2">{{auth.user.role ===
             "student" ? 'Submit' : 'Confirm'}}</button>
           @end
           @elseif(request.qs().step && request.qs().step.includes('Presentation'))
@@ -948,7 +989,6 @@ if(document.getElementById('dateConfirm') && !document.getElementById('dateConfi
   document.getElementById('submitStepButton').disabled = true
 }
 
-
 const checkEndDateMin = () =>{
   document.getElementById('advisorEndDate').min = document.getElementById('advisorStartDate').value
 }
@@ -1254,8 +1294,10 @@ const checkStartDateMax = () => {
         body: formData,
       })
     }
-
-    window.location.reload()
+    const urlParams = new URLSearchParams()
+    urlParams.append('step', '{{request.qs().step}}')
+    urlParams.append('status', '{{request.qs().status}}')
+    window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
   }
 </script>
 @end
