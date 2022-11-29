@@ -1249,7 +1249,7 @@ const checkStartDateMax = () => {
     }
     const formData = new FormData()
     formData.append('files', file)
-    formData.append('step', '{{nextStep.name}}')
+    formData.append('step', step ? '{{currentSteps.name}}' : '{{nextStep.name}}')
     formData.append('status', status)
     formData.append('studentId', {{studentUser.user_id}})
     formData.append('stepFileType', fileType)
