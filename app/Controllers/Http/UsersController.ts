@@ -270,7 +270,7 @@ export default class UsersController {
           type: 'negative',
         })
       }
-      return response.redirect('/')
+      // return response.redirect('/')
     }
   }
 
@@ -1066,6 +1066,7 @@ export default class UsersController {
                 .where('user_has_doc_id', allUserHasDoc[i].id)
                 .where('step_file_type', 'signedFile')
                 .orderBy('created_at', 'desc')
+              console.log(currentStepFile)
 
               if (currentStepFile[0]) {
                 currentSteps['file'] = currentStepFile[0].serialize()
@@ -1673,7 +1674,7 @@ export default class UsersController {
     }
   }
 
-  public async updateStudentUserStatus({ auth, request, response }: HttpContextContract) {
+  public async updateStudentUserStatus({ auth, session, request, response }: HttpContextContract) {
     try {
       const {
         study,
@@ -1792,10 +1793,14 @@ export default class UsersController {
 
       if (advisorDate) {
         body['advisor_date'] = advisorDate
+      } else if (step && step === AllSteps.TR02 && !advisorDate) {
+        throw new Error('no adDate')
       }
 
       if (completeDate) {
         body['complete_date'] = completeDate
+      } else if (step && step === AllSteps.TR02 && !completeDate) {
+        throw new Error('no compDate')
       }
 
       if (supervisionStatus) {
@@ -1813,8 +1818,8 @@ export default class UsersController {
       if (dateConfirmStatus) {
         body['date_confirm_status'] = dateConfirmStatus
       }
-      console.log('เข้า')
-      console.log(step, 'asdasd')
+      // console.log('เข้า')
+      // console.log(step, 'asdasd')
       if (
         status &&
         status !== StepStatus.PENDING &&
@@ -1859,12 +1864,40 @@ export default class UsersController {
           await usersInAcademicYear[0].related('userHasDoc').create(body)
         }
       } else {
-        console.log('เข้า')
+        // console.log('เข้า')
         await usersInAcademicYear[0].related('userHasDoc').create(body)
       }
       return response.status(200).json('success')
     } catch (error) {
       console.log(error)
+      // console.log(error)
+      if (
+        error.message === 'no adDate' ||
+        error.message === 'no compDate'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      }
+      // else if (error.message === 'no privacy in this academic_year') {
+      //   session.flash({
+      //     error: 'No Permission In This Academic Year',
+      //     type: 'negative',
+      //   })
+      // } else {
+      //   session.flash({
+      //     error: 'Invalid creditials',
+      //     type: 'negative',
+      //   })
+      // }
+      // return response.redirect(
+      //   // `/student-information/${request.param('id')}?step=${request.body().step}&status=${
+      //   //   request.body().step === AllSteps.TR02 ? StepStatus.APPROVED : request.body().status
+      //   // }&mode=edit`
+      //   '/'
+      // )
       return response.status(400).json({ message: error.message })
     }
   }

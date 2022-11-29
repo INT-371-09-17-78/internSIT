@@ -73,7 +73,7 @@ export default class FilesController {
     return err
   }
 
-  public async storeDirect({ request, response }: HttpContextContract) {
+  public async storeDirect({ session, request, response }: HttpContextContract) {
     try {
       const { step, studentId, status, stepFileType, stepFileTypePlan } = request.only([
         'step',
@@ -180,6 +180,15 @@ export default class FilesController {
       return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
       console.log(error)
+      if (
+        error.message === 'not have files'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      }
       return response.status(400).json({ message: error.messages })
     }
   }
