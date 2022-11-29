@@ -411,9 +411,6 @@
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
                 <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
-                  <p class="text-base">No.</p>
-                </th>
-                <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
                   <div class="flex items-center space-x-2">
                     <p class="text-base">TR-02</p>
                   </div>
@@ -427,9 +424,6 @@
             </thead>
             {{--  @each((row,index) in currentSteps.file.row)  --}}
             <tr class="font-medium border-2 border-[#F6F7F9]">
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                1
-              </td>
               @if((!currentSteps.file.file_name && !currentSteps.file.file_id))
                 @if(auth.user.role === 'staff')
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -441,10 +435,10 @@
                     <div id="showStaffFile" class="text-[#858D95] text-xs flex items-center">No file choosen</div>
                   </div>
                 </td>
-                @else
+                {{--  @else
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
 
-                </td>
+                </td>  --}}
                 @end
               @else
               <td class="align-top border-2 border-[#F6F7F9] text-sm">
@@ -475,38 +469,40 @@
                     @if(currentSteps.sentFirmDate && !isEdit)
                     <p class="text-[#858D95]">{{currentSteps.sentFirmDate}}</p>
                     @else
-                      <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                      <input value="{{currentSteps.sentFirmDate}}" id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
                     @end
                     <p>Receive form the firm</p>
                     @if(currentSteps.recievedFirmDate && !isEdit)
                     <p class="text-[#858D95]">{{currentSteps.recievedFirmDate}}</p>
                     @else
-                      <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                      <input value="{{currentSteps.recievedFirmDate}}" id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
                     @end
                   </div>
                 </div>
               </td>
               @else
-              <td class="align-top border-2 border-[#F6F7F9] text-sm">
-                <div class="grid grid-cols-2 items-center gap-3 text-[#495057]">
-                  @if(currentSteps.sentFirmDate)
-                  <p>Send to the firm</p>
-                  <p class="text-[#858D95]">{{currentSteps.sentFirmDate}}</p>
-                  @else
-                    @if(auth.user.role === 'staff')
-                    <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                @if(currentSteps.sentFirmDate || currentSteps.recievedFirmDate || currentSteps.file.file_name)
+                <td class="align-top border-2 border-[#F6F7F9] text-sm">
+                  <div class="grid grid-cols-2 items-center gap-3 text-[#495057]">
+                    @if(currentSteps.sentFirmDate)
+                    <p>Send to the firm</p>
+                    <p class="text-[#858D95]">{{currentSteps.sentFirmDate}}</p>
+                    @else
+                      @if(auth.user.role === 'staff')
+                      <input id="requestDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getRequestDate()">
+                      @end
                     @end
-                  @end
-                  @if(currentSteps.recievedFirmDate)
-                  <p>Receive form the firm</p>
-                  <p class="text-[#858D95]">{{currentSteps.recievedFirmDate}}</p>
-                  @else
-                    @if(auth.user.role === 'staff')
-                    <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                    @if(currentSteps.recievedFirmDate)
+                    <p>Receive form the firm</p>
+                    <p class="text-[#858D95]">{{currentSteps.recievedFirmDate}}</p>
+                    @else
+                      @if(auth.user.role === 'staff')
+                      <input id="acknowledgeDate" class="border-2 border-[#ACB5BD] rounded-md px-2 py-1" type="date" onchange="getAcknowledgeDate()">
+                      @end
                     @end
-                  @end
-                </div>
-              </td>
+                  </div>
+                </td>
+                @end
               @end
             </tr>
             {{--  @end  --}}
@@ -1227,7 +1223,7 @@ const checkStartDateMax = () => {
       meetlink = document.getElementById('meetlink').value
     }
     
-    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
+    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || {{isEdit}} || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     // if(('{{currentSteps.name}}' === 'TR-02' && !acknowledgeDate) || ('{{currentSteps.name}}' === 'TR-02' && !requestDate) || ('{{currentSteps.name}}' === 'TR-02' && !file)) return
     let step = null
     if('{{currentSteps.name}}' === 'TR-02' && '{{currentSteps.status}}' === 'Approved'){
@@ -1247,6 +1243,7 @@ const checkStartDateMax = () => {
       step: '{{currentSteps.name}}',
       supervisionStatus : supervisionStatus,
     }
+    let error
     const formData = new FormData()
     formData.append('files', file)
     formData.append('step', step ? '{{currentSteps.name}}' : '{{nextStep.name}}')
@@ -1288,28 +1285,39 @@ const checkStartDateMax = () => {
           },
           body: JSON.stringify(body),
           })
-
           if (!response.ok) throw response.statusText;
-          const urlParams = new URLSearchParams()
-          urlParams.append('step', '{{request.qs().step}}')
-          urlParams.append('status', '{{request.qs().status}}')
-          window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
+          // const urlParams = new URLSearchParams()
+          // urlParams.append('step', '{{request.qs().step}}')
+          // urlParams.append('status', '{{request.qs().status}}')
+          // window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
         } catch (e) {
-          const urlParams = new URLSearchParams()
-          urlParams.append('step', '{{request.qs().step}}')
-          urlParams.append('status', '{{request.qs().status}}')
-          urlParams.append('mode', 'edit')
-          window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
+          error = e
+          // const urlParams = new URLSearchParams()
+          // urlParams.append('step', '{{request.qs().step}}')
+          // urlParams.append('status', '{{request.qs().status}}')
+          // urlParams.append('mode', 'edit')
+          // window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
         }
       }
       
-
       if(file){
-      await fetch('/api/file/steps?_method=POST', {
-        method: 'POST',
-        body: formData,
-      })
-    }
+        await fetch('/api/file/steps?_method=POST', {
+          method: 'POST',
+          body: formData,
+        })
+      }
+      if(error){
+        const urlParams = new URLSearchParams()
+        urlParams.append('step', '{{request.qs().step}}')
+        urlParams.append('status', '{{request.qs().status}}')
+        urlParams.append('mode', 'edit')
+        window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
+      }else{
+        const urlParams = new URLSearchParams()
+        urlParams.append('step', '{{request.qs().step}}')
+        urlParams.append('status', '{{request.qs().status}}')
+        window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
+      }
     // @if(flashMessages.get('error', ''))
     //         <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
     // @end
