@@ -1290,7 +1290,10 @@ const checkStartDateMax = () => {
           })
 
           if (!response.ok) throw response.statusText;
-
+          const urlParams = new URLSearchParams()
+          urlParams.append('step', '{{request.qs().step}}')
+          urlParams.append('status', '{{request.qs().status}}')
+          window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
         } catch (e) {
           const urlParams = new URLSearchParams()
           urlParams.append('step', '{{request.qs().step}}')
@@ -1310,10 +1313,6 @@ const checkStartDateMax = () => {
     // @if(flashMessages.get('error', ''))
     //         <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
     // @end
-    const urlParams = new URLSearchParams()
-    urlParams.append('step', '{{request.qs().step}}')
-    urlParams.append('status', '{{request.qs().status}}')
-    window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
   }
 </script>
 @end
