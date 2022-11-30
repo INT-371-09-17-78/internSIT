@@ -7,13 +7,12 @@
     <p class="text-base lg:text-3xl text-base-content">Announcement</p>
   </div>
   @if(auth.user.role!=="student" && posts && posts.length > 0)
-  <a class="ml-auto flex-shrink-0 {{hidePostButton}} absolute right-52" href="{{ route('/announcement/create')}}">
-    @component('components/common/button',{
-    text: 'Create new post',
-    type: 'text',
-    classProps: 'btn btn-sm btn-primary border-none rounded-full h-10 font-medium',
+  <a class="ml-auto flex-shrink-0 {{hidePostButton}} absolute right-48" href="{{ route('/announcement/create')}}">
+    @!common.bgButton({
+      text: 'Create new post',
+      type: 'button',
+      classProps: 'rounded-full h-10',
     })
-    @end
   </a>
   @end
 </div>

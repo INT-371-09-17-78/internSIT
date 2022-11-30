@@ -30,12 +30,10 @@
                 <span class="label-text text-[10px] lg:text-sm leading-5">{{ t('messages.welcome.login.rememberMe')
                     }}</span>
             </label>
-            @!common.button({
-            text: `${t('messages.welcome.login.button')}`,
-            type: 'submit',
-            classProps: 'btn-primary btn-block text-base btn-xs h-9 lg:text-xl lg:h-14',
+            @!common.bgButton({
+                text: `${t('messages.welcome.login.button')}`,
+                type: 'submit',
+                classProps: 'btn-block text-base h-9 lg:text-xl lg:h-14',
             })
-            {{-- <p class="text-center mt-6 text-sm lg:text-base font-medium">No have account? <a
-                    href="{{ route('/register') }}" class="link link-primary">Register now</a></p> --}}
         </form>
-    </div>
+</div>

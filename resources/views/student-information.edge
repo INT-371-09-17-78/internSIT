@@ -69,12 +69,12 @@
   @include('partials/student-list')
   @elseif(request.matchesRoute('/register-request'))
   @include('partials/register-request')
-  @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') ||
-  request.matchesRoute('/course-info/complete-course'))
+  @elseif(request.matchesRoute('/course-info') || request.matchesRoute('/course-info/edit') || request.matchesRoute('/course-info/edit/supervised-student') || request.matchesRoute('/course-info/complete-course'))
   @include('partials/course-info')
-  @elseif(request.matchesRoute('/steps') || request.matchesRoute('/steps/edit') ||
-  request.matchesRoute('/course-info/edit/supervised-student'))
+  @elseif(request.matchesRoute('/steps'))
   @include('partials/steps')
+  @elseif(request.matchesRoute('/step/:name/edit'))
+  @include('partials/step')
   @elseif(request.matchesRoute('/student-information/:id') ||
   request.matchesRoute('/student-information/:id/editInformedSupervision'))
   @include('partials/student')

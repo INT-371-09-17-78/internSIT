@@ -66,7 +66,7 @@ Route.get('/', async ({ view, auth, response }) => {
   if (year) {
     response.cookie('year', year.academic_year)
   }
-  if (auth.user) return response.redirect('/announcement')
+  if (auth.user) return response.redirect('/student-information')
   else {
     const roles = ['Student', 'Advisor', 'Staff']
     return view.render('home', { roles })
@@ -103,7 +103,7 @@ Route.get('/course-info/complete-course', 'UsersController.showStudentUser')
 
 Route.get('/steps', 'UsersController.showStudentUser')
 
-Route.get('/steps/edit', 'UsersController.showStudentUser')
+Route.get('/step/:name/edit', 'UsersController.showStudentUser')
 
 Route.get('/course-info/edit/supervised-student', 'UsersController.showStudentUser')
 

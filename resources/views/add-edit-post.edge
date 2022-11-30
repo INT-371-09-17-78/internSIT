@@ -78,17 +78,17 @@
       </div>
       <div class="flex w-full justify-end space-x-2">
         <a href="{{ route('/announcement') }}">
-          @!common.button({
+          @!common.borderButton({
           text: 'Cancel',
           type: 'button',
-          classProps: 'btn-sm btn-outline border-2 border-base-200 px-6',
+          classProps: 'px-5',
           })
         </a>
-        @!common.button({
+        @!common.bgButton({
         text: `${buttonName}`,
         type: 'submit',
         id: 'sendButton',
-        classProps: 'btn-sm btn-primary px-6',
+        classProps: 'px-5',
         disabled,
         })
       </div>

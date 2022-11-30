@@ -42,7 +42,7 @@
             </label>
             <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-md w-32 ml-36 text-[#495057]">
                 <li><a class="py-1" href="{{ route('/course-info')}}">Course Info</a></li>
-                <li><a class="py-1" href="{{ route('/steps')}}">Steps</a></li>
+                <li><a class="py-1" href="{{ route('/steps', {} , {qs: {month: 2, year: academicYears[0].academic_year }}) }}">Steps</a></li>
             </ul>
         </div>
     </div>

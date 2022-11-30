@@ -483,10 +483,10 @@ export default class UsersController {
       }
       const AllStepByMonth = {}
       // const body = {}
-      AllStepByMonth['2'] = this.showSteps(2)
-      AllStepByMonth['4'] = this.showSteps(4)
-      AllStepByMonth['6'] = this.showSteps(6)
-      console.log(AllStepByMonth)
+      AllStepByMonth['twoMonth'] = this.showSteps(2)
+      AllStepByMonth['fourMonth'] = this.showSteps(4)
+      AllStepByMonth['sixMonth'] = this.showSteps(6)
+      console.log(AllStepByMonth, 'JA')
       // console.log(auth.user);
 
       // AllStepByMonth.push(body)
@@ -504,6 +504,7 @@ export default class UsersController {
         advisorById: advisorById[0],
         studentUsersByAd: adSe,
         studentUsersByAdOne: studentUsersByAdOne,
+        AllStepByMonth: AllStepByMonth,
       })
     } catch (error) {
       console.log(error)

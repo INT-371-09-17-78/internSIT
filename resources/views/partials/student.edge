@@ -118,10 +118,13 @@
             <p class="break-words">{{info.key === 'duration' && info.value ? info.value + ' months' : info.value ||
               '-'}}</p>
             @end
-            @if(auth.user.role === "student")
+            @if(auth.user.role === 'student')
             <a href="{{ route('/student/:id/edit', { id: studentUser.user_id }) }}" class="justify-self-end">
-              <button type="button"
-                class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">edit</button>
+              @!common.borderButton({
+                text: 'edit',
+                type: 'button',
+                classProps: 'px-5',
+              })
             </a>
              @end
           </div>
@@ -402,9 +405,13 @@
             </tbody>
           </table>
           @if(auth.user.role !== 'staff' && request.qs().status !== 'Approved')
-          <button type="submit" id="submitStepButton"
-            class="mt-5 btn btn-primary btn-sm font-medium capitalize w-fit ml-auto" disabled>{{auth.user.role ===
-            "student" ? 'Submit' : 'Confirm'}}</button>
+          @!common.bgButton({
+            text: 'Confirm',
+            type: 'submit',
+            classProps: 'ml-auto mt-2',
+            id: 'submitStepButton',
+            disabled,
+          })
           @end
           @elseif(request.qs().step === 'TR-02' || currentSteps.name === 'TR-02' && currentSteps.status !== 'Approved' )
           <table class="table w-full mt-2">
@@ -535,9 +542,13 @@
                    <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
            @end
           @if((auth.user.role === 'staff' && isEdit) || (auth.user.role === 'staff' && currentSteps.status !== 'Approved'))
-          <button type="submit" id="submitStepButton"
-            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2">{{auth.user.role ===
-            "student" ? 'Submit' : 'Confirm'}}</button>
+          @!common.bgButton({
+            text: 'Confirm',
+            type: 'submit',
+            classProps: 'ml-auto mt-2',
+            id: 'submitStepButton',
+            disabled,
+          })
           @end
           @elseif(request.qs().step && request.qs().step.includes('Presentation'))
           <table class="table w-full mt-2">
@@ -587,9 +598,13 @@
             @end
           </table>
           @if(auth.user.role === 'student' && request.qs().status !== 'Approved')
-          <button type="submit" id="submitStepButton"
-            class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
-            "student" ? 'Submit' : 'Confirm'}}</button>
+          @!common.bgButton({
+            text: 'Confirm',
+            type: 'submit',
+            classProps: 'ml-auto mt-2',
+            id: 'submitStepButton',
+            disabled,
+          })
           @end
           @elseif(request.qs().step && request.qs().step.includes('TR-03') || currentSteps.name.includes('TR-03') && currentSteps.status !== 'Approved')
           <table class="table w-full mt-2">
@@ -740,9 +755,13 @@
             </tbody>
           </table>
             @if(auth.user.role !== 'advisor' && request.qs().status !== 'Approved')
-            <button type="submit" id="submitStepButton"
-              class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2" disabled>{{auth.user.role ===
-              "student" ? 'Submit' : 'Confirm'}}</button>
+            @!common.bgButton({
+              text: 'Confirm',
+              type: 'submit',
+              classProps: 'ml-auto mt-2',
+              id: 'submitStepButton',
+              disabled,
+            })
             @end
           @elseif(request.qs().step && request.qs().step && request.qs().step.includes('Supervision'))
               @if(auth.user.role !== 'student')
@@ -945,7 +964,13 @@
                 </tbody>
               </table>
             @if(request.qs().status !== 'Approved' || (auth.user.role === 'student' && currentSteps.supervision.supervisionStatus !== 'Done'))
-            <button type="submit" id="submitStepButton" class="btn btn-primary btn-sm font-medium capitalize w-fit ml-auto mt-2">Confirm</button>
+            @!common.bgButton({
+              text: 'Confirm',
+              type: 'submit',
+              classProps: 'ml-auto mt-2',
+              id: 'submitStepButton',
+              disabled,
+            })
             @end
 
             @end
@@ -1014,7 +1039,7 @@ const checkStartDateMax = () => {
       return str.substring(0, 4) + '...' + str.substring(str.length - 8)
     }
     return str
-    }
+  }
 
 
   const changeSteps = async (firstStepPaging, gnext) => {
@@ -1277,7 +1302,7 @@ const checkStartDateMax = () => {
        }
       }else{
         try {
-          let response = await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+          await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
           method: 'PATCH',
           headers: {
               'Accept': 'application/json',
@@ -1285,7 +1310,6 @@ const checkStartDateMax = () => {
           },
           body: JSON.stringify(body),
           })
-          if (!response.ok) throw response.statusText;
           // const urlParams = new URLSearchParams()
           // urlParams.append('step', '{{request.qs().step}}')
           // urlParams.append('status', '{{request.qs().status}}')
@@ -1299,13 +1323,16 @@ const checkStartDateMax = () => {
           // window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
         }
       }
-      
-      if(file && !error){
+      try {
         await fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formData,
         })
+      } catch (e) {
+        error = e
       }
+
+
       if(error){
         const urlParams = new URLSearchParams()
         urlParams.append('step', '{{request.qs().step}}')
