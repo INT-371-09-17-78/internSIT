@@ -55,17 +55,18 @@ export enum Steps4Month {
   // TR03_TR05_AND_SUPERVISION2 = '(2/4) TR-03, TR-05 and Supervision',
   // TR03_TR05_AND_SUPERVISION3 = '(3/4) TR-03, TR-05 and Supervision',
   // TR03_TR05_AND_SUPERVISION4 = '(4/4) TR-03, TR-05 and Supervision',
-  TR03_TR06 = 'TR-03 and TR-06',
+
   TR03_AND_TR05_1_4 = 'TR-03 and TR-05 (1/4)',
   INFORMED_SUPERVISION_1_4 = 'Informed supervision (1/4)',
   TR03_AND_TR05_2_4 = 'TR-03 and TR-05 (2/4)',
   INFORMED_SUPERVISION_2_4 = 'Informed supervision (2/4)',
   TR03_AND_TR05_3_4 = 'TR-03 and TR-05 (3/4)',
   INFORMED_SUPERVISION_3_4 = 'Informed supervision (3/4)',
-  // INFORMED_SUPERVISION_4_4 = 'Informed supervision (4/4)',
+  TR03_AND_TR05_4_4 = 'TR-03 and TR-05 (4/4)',
+  INFORMED_SUPERVISION_4_4 = 'Informed supervision (4/4)',
 
   PRESENTATION = 'Presentation',
-  TR03_AND_TR05_4_4 = 'TR-03 and TR-05 (4/4)',
+  TR03_TR06 = 'TR-03 and TR-06',
 }
 
 export enum Steps6Month {
