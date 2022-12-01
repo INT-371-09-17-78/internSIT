@@ -1468,35 +1468,36 @@ export default class UsersController {
         // currentSteps['name'] = TrStep
         console.log(documentStatusesJsonCurrent.step, 'adasd')
 
-        // if (
-        //   documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') ||
-        //   documentStatusesJsonCurrent.step.includes('supervision')
-        // ) {
-        //   let showStep: any
-        //   showStep = this.showSteps(studentUser.student.plan)
-        //   const stepReIndex = showStep.findIndex(
-        //     (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
-        //   )
-        //   if (stepReIndex > -1) {
-        //     // console.log(showStep[stepReIndex])
-        //     for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
-        //       const stepRe = showStep[stepReIndex].month[shm].find(
-        //         (ele) => ele.value === currentSteps['name']
-        //       )
-        //       // console.log(stepRe)
-        //       // console.log(currentSteps['name'])
+        if (
+          documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') ||
+          documentStatusesJsonCurrent.step.includes('supervision')
+        ) {
+          let showStep: any
+          showStep = this.showSteps(studentUser.student.plan)
+          const stepReIndex = showStep.findIndex(
+            (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+          )
+          if (stepReIndex > -1) {
+            // console.log(showStep[stepReIndex])
+            for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
+              const stepRe = showStep[stepReIndex].month[shm].find(
+                (ele) => ele.value === documentStatusesJsonCurrent.step
+              )
+              // console.log(stepRe)
+              // console.log(currentSteps['name'])
 
-        //       if (stepRe) {
-        //         currentSteps['description'] = stepRe.description
-        //       }
-        //     }
-        //   }
-        // } else {
-        //   let showStep: any
-        //   showStep = this.showSteps(studentUser.student.plan)
-        //   const stepRe = showStep.find((ele) => ele.name === request.qs().step)
-        //   currentSteps['description'] = stepRe.description
-        // }
+              if (stepRe) {
+                currentSteps['description'] = stepRe.description
+              }
+            }
+          }
+        } else {
+          let showStep: any
+          showStep = this.showSteps(studentUser.student.plan)
+          const stepRe = showStep.find((ele) => ele.name === documentStatusesJsonCurrent.step)
+
+          currentSteps['description'] = stepRe.description
+        }
 
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
           .tz('Asia/Bangkok')
@@ -1621,9 +1622,7 @@ export default class UsersController {
         if (stepReIndex > -1) {
           // console.log(showStep[stepReIndex])
           for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
-            const stepRe = showStep[stepReIndex].month[shm].find(
-              (ele) => ele.value === currentSteps['name']
-            )
+            const stepRe = showStep[stepReIndex].month[shm].find((ele) => ele.value === TrStep)
             // console.log(stepRe)
             // console.log(currentSteps['name'])
 
