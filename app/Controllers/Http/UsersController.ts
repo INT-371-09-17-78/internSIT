@@ -558,32 +558,32 @@ export default class UsersController {
     // if (request.qs() && request.qs().month && request.qs().step) {
     if (month === '2') {
       // console.log(m2)
-      if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
-        const stepEditIndex = m2.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
-        if (stepEditIndex > -1) {
-          stepEdit = m2[stepEditIndex].find((ele) => ele.name === step)
-        }
-      } else {
-        stepEdit = m2.find((ele) => ele.name === step)
-      }
+      // if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   const stepEditIndex = m2.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
+      //   if (stepEditIndex > -1) {
+      //     stepEdit = m2[stepEditIndex].find((ele) => ele.name === step)
+      //   }
+      // } else {
+      stepEdit = m2.find((ele) => ele.name === step)
+      // }
     } else if (month === '4') {
-      if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
-        const stepEditIndex = m4.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
-        if (stepEditIndex > -1) {
-          stepEdit = m4[stepEditIndex].find((ele) => ele.name === step)
-        }
-      } else {
-        stepEdit = m4.find((ele) => ele.name === step)
-      }
+      // if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   const stepEditIndex = m4.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
+      //   if (stepEditIndex > -1) {
+      //     stepEdit = m4[stepEditIndex].find((ele) => ele.name === step)
+      //   }
+      // } else {
+      stepEdit = m4.find((ele) => ele.name === step)
+      // }
     } else if (month === '6') {
-      if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
-        const stepEditIndex = m6.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
-        if (stepEditIndex > -1) {
-          stepEdit = m6[stepEditIndex].find((ele) => ele.name === step)
-        }
-      } else {
-        stepEdit = m6.find((ele) => ele.name === step)
-      }
+      // if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   const stepEditIndex = m6.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
+      //   if (stepEditIndex > -1) {
+      //     stepEdit = m6[stepEditIndex].find((ele) => ele.name === step)
+      //   }
+      // } else {
+      stepEdit = m6.find((ele) => ele.name === step)
+      // }
     }
     // }
     // console.log(stepEdit)
@@ -593,33 +593,33 @@ export default class UsersController {
   private async addTemplateFiletoStepMonth(stepMonth, month) {
     for (let i = 0; i < stepMonth.length; i++) {
       stepMonth[i]['templateFile'] = []
-      if (stepMonth[i].name.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
-        for (let j = 0; j < stepMonth[i].month.length; j++) {
-          stepMonth[i].month[j]['templateFile'] = []
-          const templateFileQuery = 'template' + stepMonth[i].month[j].name + month
-          const templateFile = await File.query().where('step_file_type', templateFileQuery)
-          // console.log(templateFile)
+      // if (stepMonth[i].name.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   for (let j = 0; j < stepMonth[i].month.length; j++) {
+      //     stepMonth[i].month[j]['templateFile'] = []
+      //     const templateFileQuery = 'template' + stepMonth[i].month[j].name + month
+      //     const templateFile = await File.query().where('step_file_type', templateFileQuery)
+      //     // console.log(templateFile)
 
-          // currentSteps['id'] = documentStatusesJsonCurrent.id
-          if (templateFile && templateFile.length > 0) {
-            for (let k = 0; k < templateFile.length; k++) {
-              stepMonth[i].month[j]['templateFile'].push(templateFile[k].serialize())
-            }
-          }
-        }
-      } else {
-        const templateFileQuery = 'template' + stepMonth[i].name + month
-        const templateFile = await File.query().where('step_file_type', templateFileQuery)
-        // console.log(templateFile)
+      //     // currentSteps['id'] = documentStatusesJsonCurrent.id
+      //     if (templateFile && templateFile.length > 0) {
+      //       for (let k = 0; k < templateFile.length; k++) {
+      //         stepMonth[i].month[j]['templateFile'].push(templateFile[k].serialize())
+      //       }
+      //     }
+      //   }
+      // } else {
+      const templateFileQuery = 'template' + stepMonth[i].name + month
+      const templateFile = await File.query().where('step_file_type', templateFileQuery)
+      // console.log(templateFile)
 
-        // currentSteps['id'] = documentStatusesJsonCurrent.id
-        if (templateFile && templateFile.length > 0) {
-          for (let k = 0; k < templateFile.length; k++) {
-            stepMonth[i]['templateFile'].push(templateFile[k].serialize())
-          }
+      // currentSteps['id'] = documentStatusesJsonCurrent.id
+      if (templateFile && templateFile.length > 0) {
+        for (let k = 0; k < templateFile.length; k++) {
+          stepMonth[i]['templateFile'].push(templateFile[k].serialize())
         }
       }
     }
+    // }
     // console.log(stepMonth)
     return stepMonth
   }
@@ -1465,6 +1465,39 @@ export default class UsersController {
 
         currentSteps['name'] = documentStatusesJsonCurrent.step
         currentSteps['status'] = documentStatusesJsonCurrent.status
+        // currentSteps['name'] = TrStep
+        console.log(documentStatusesJsonCurrent.step, 'adasd')
+
+        if (
+          documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') ||
+          documentStatusesJsonCurrent.step.includes('supervision')
+        ) {
+          let showStep: any
+          showStep = this.showSteps(studentUser.student.plan)
+          const stepReIndex = showStep.findIndex(
+            (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+          )
+          if (stepReIndex > -1) {
+            // console.log(showStep[stepReIndex])
+            for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
+              const stepRe = showStep[stepReIndex].month[shm].find(
+                (ele) => ele.value === currentSteps['name']
+              )
+              // console.log(stepRe)
+              // console.log(currentSteps['name'])
+
+              if (stepRe) {
+                currentSteps['description'] = stepRe.description
+              }
+            }
+          }
+        } else {
+          let showStep: any
+          showStep = this.showSteps(studentUser.student.plan)
+          const stepRe = showStep.find((ele) => ele.name === request.qs().step)
+          currentSteps['description'] = stepRe.description
+        }
+
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
           .tz('Asia/Bangkok')
           .format('MMMM D, YYYY h:mm A')
@@ -1490,47 +1523,10 @@ export default class UsersController {
               }
             }
           }
-          // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]);
-          // stepIndex = stepsRender[stepsRenderIndex].month.findIndex((word) =>
-          //   word.findIndex((sub) => sub.value === 'TR-03 and TR-05 (4/6)')
-          // )
-
-          // monthStepIndex = stepsRender[stepsRenderIndex].month.findIndex(
-          //   (word) => word[stepIndex].value === currentSteps['name']
-          // )
-          // console.log(currentSteps['name'])
-          // console.log(stepsRenderIndex)
-          // console.log(monthStepIndex)
-          // console.log(stepIndex)
-          // // console.log(stepIndex)
-          // // console.log(monthStepIndex)
-          // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]);
         } else {
           stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
         }
-        // if (
-        //   currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-        //   currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
-        // ) {
-        //   console.log('เข้า')
-
-        //   stepIndex = stepsRender.findIndex(
-        //     (word) => word.month['value'] === currentSteps['name']
-        //   )
-        // } else {
-        //   stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
-        // }
-        // console.log(currentSteps['name'])
-        // console.log(stepIndex)
-
-        // stepsRender[stepIndex]['status'] = userHasDoc[0].status
-        // stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]['status'] =
-        //   userHasDoc[0].status
         if (userHasDoc[0].status === 'Approved') {
-          // stepsRender[stepsRenderIndex].month[monthStepIndex]
-          //   ? stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex +]
-          //   : stepsRender[stepsRenderIndex].month[monthStepIndex]
-          // monthStepIndex === 5 ? stepsRender[stepsRenderIndex + 1] ? stepsRender[stepsRenderIndex + 1] : stepsRender[stepsRenderIndex]
           if (
             currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
             currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
@@ -1610,6 +1606,32 @@ export default class UsersController {
             ')'
 
         currentSteps['name'] = TrStep
+        // let showStep: any
+        // showStep = this.showSteps(studentUser.student.plan)
+        // const stepReIndex = showStep.findIndex(
+        //   (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+        // )
+        // const stepRe = showStep[stepReIndex].find((ele) => ele.name === TrStep)
+        // currentSteps['description'] = stepRe.description
+        let showStep: any
+        showStep = this.showSteps(studentUser.student.plan)
+        const stepReIndex = showStep.findIndex(
+          (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+        )
+        if (stepReIndex > -1) {
+          // console.log(showStep[stepReIndex])
+          for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
+            const stepRe = showStep[stepReIndex].month[shm].find(
+              (ele) => ele.value === currentSteps['name']
+            )
+            // console.log(stepRe)
+            // console.log(currentSteps['name'])
+
+            if (stepRe) {
+              currentSteps['description'] = stepRe.description
+            }
+          }
+        }
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
@@ -1625,6 +1647,10 @@ export default class UsersController {
         // console.log('เข้าอันงี้')
 
         currentSteps['name'] = request.qs().step
+        let showStep: any
+        showStep = this.showSteps(studentUser.student.plan)
+        const stepRe = showStep.find((ele) => ele.name === request.qs().step)
+        currentSteps['description'] = stepRe.description
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
@@ -1633,6 +1659,7 @@ export default class UsersController {
         nextStep['name'] = request.qs().step
       } else {
         currentSteps['name'] = stepsRender[0].name
+        currentSteps['description'] = stepsRender[0].description
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
@@ -2235,6 +2262,8 @@ export default class UsersController {
             },
             {
               name: Steps2Month.TR03_AND_TR08,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-08) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
             },
           ]
 
