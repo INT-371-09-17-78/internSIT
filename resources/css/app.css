@@ -1,5 +1,5 @@
 @import "./tailwind.css";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 @media (min-width: 1024px){
     .drawer-mobile > .drawer-toggle ~ .drawer-side {
@@ -12,9 +12,18 @@
 }
 
 .steps .step {
-    min-width: 10rem;
+    width: 10rem;
+    grid-template-rows: 50px 1fr;
 }
 
 .steps .step:after {
-    content: '';
+    content: var(--my-content-var);
+    width: 3rem;
+    height: 3rem;
+    display: none;
+}
+
+.tooltip:before{
+    max-width: none;
+    white-space: pre;
 }

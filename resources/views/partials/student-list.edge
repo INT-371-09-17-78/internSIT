@@ -1,8 +1,8 @@
 <div class="p-8">
   <div class="pr-20 flex items-end">
-    <p class="text-base px-2 lg:text-3xl text-base-content font-semibold">Student information</p>
+    <p class="text-base px-2 lg:text-2xl text-base-content font-semibold">Student information</p>
     <div class="dropdown ml-auto">
-      <label tabindex="0" class="select select-sm" id="selectInput">Filter by</label>
+      <label tabindex="0" class="select select-sm bg-[#F6F7F9]" id="selectInput">Filter by</label>
       <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box mt-2 space-y-2">
         <p>Steps</p>
         <div class="flex flex-row space-x-2">
@@ -27,10 +27,6 @@
           <p>Pending</p>
         </div>
         <div class="flex flex-row space-x-2">
-          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Waiting for TR-01">
-          <p>Waiting for TR-01</p>
-        </div>
-        <div class="flex flex-row space-x-2">
           <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Approved">
           <p>Approved</p>
         </div>
@@ -42,17 +38,20 @@
     </div>
   </div>
   <div class="flex space-x-5 h-full">
-        <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
+        <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
           <li class="{{activeAll}}">
-            <a href="{{ request.cookie('year') ? route('/student-information') : route('/academic-year') }}">All</a>
+            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information') }}">All Student</a>
           </li>
           <li class="{{activeTwoMonth}}">
-            <a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 2}}) : route('/academic-year') }}">INT340 (2 months)</a>
+            <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 2}})  }}">INT340 (2 months)</a>
           </li>
-          <li class="{{activeFourMonth}}"><a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 4}}) : route('/academic-year') }}">INT350 (4 months)</a></li>
-          <li class="{{activeSixMonth}}"><a href="{{ request.cookie('year') ? route('/student-information', {} , {qs: {month: 6}}) : route('/academic-year') }}">INT370 (6 months)</a></li>
+          <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
+          <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
+          @if(auth.user.role ==="advisor")
+          <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a></li>
+          @end
         </ul>
-        @if(allAmoutSt !== noApprove)
+        @if(allAmoutSt !== noApprove && studentUsers.length > 0)
         <div class="flex-1 pr-20">
           <table class="table w-full mt-5">
             <thead>
@@ -65,10 +64,10 @@
             <tbody>
               @each((student,index) in studentUsers)
               @if(student.approved)
-                  <tr class="cursor-pointer font-bold border-2 border-[#F6F7F9]" onclick="window.location='/student/{{student.user_id }}'">
+                  <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="window.location='/student-information/{{student.user_id}}'">
                     <td>{{student.user_id}}</td>
                     <td>{{student.firstname + " " + student.lastname}}</td>
-                    <td class="{{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+                    <td class="{{checkStatus(student.lastestStatus)}} font-bold">{{student.lastestStatus}}</td>
                   </tr>
               @end
               @end

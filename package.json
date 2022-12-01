@@ -65,6 +65,7 @@
   "dependencies": {
     "@adonisjs/auth": "^8.1.0",
     "@adonisjs/core": "^5.6.0",
+    "@adonisjs/i18n": "^1.5.6",
     "@adonisjs/lucid": "^17.2.0",
     "@adonisjs/mail": "^8.1.2",
     "@adonisjs/repl": "^3.1.0",
@@ -73,7 +74,7 @@
     "@adonisjs/view": "^6.1.0",
     "@tailwindcss/line-clamp": "^0.4.0",
     "@types/uuid": "^8.3.4",
-    "daisyui": "^2.13.6",
+    "daisyui": "^2.38.1",
     "file-loader": "^6.2.0",
     "ldapauth-fork": "^5.0.2",
     "luxon": "^2.3.1",

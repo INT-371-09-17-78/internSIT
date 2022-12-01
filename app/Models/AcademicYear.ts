@@ -20,6 +20,8 @@ export default class AcademicYear extends BaseModel {
   })
   public users: ManyToMany<typeof User>
 
+  @column()
+  public status: boolean
   // @hasMany(() => User, { foreignKey: 'conf_id' })
   // public users: HasMany<typeof User>
 

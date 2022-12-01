@@ -12,51 +12,51 @@
       <div class="flex space-x-5 h-full">
         <ul tabindex="0" class="dropdown-content menu w-fit mt-4">
           <li class="{{activeTwoMonth}}">
-            <a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 2,year: request.cookie('year') }}) : route('/academic-year') }}">INT340 (2 months)</a>
+            <a href="{{ route('/steps', {} , {qs: {month: 2, year: academicYears[0].academic_year }}) }}">INT340 (2 months)</a>
           </li>
           <li class="{{activeFourMonth}}"><a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 4,year: request.cookie('year') }}) : route('/academic-year') }}">INT350 (4 months)</a></li>
           <li class="{{activeSixMonth}}"><a href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 6,year: request.cookie('year') }}) : route('/academic-year') }}">INT370 (6 months)</a></li>
         </ul>
-
-            <div class="flex flex-col flex-wrap">
-                <div class="flex font-medium items-center space-x-2 mt-2 h-fit">
-                    <a href="{{ route('/steps')}}" class="hover:text-blue-800">
-                    <p>Steps</p>
-                    </a>
-                    {{--  <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
-                    <p>Create new step</p>  --}}
-                  </div>
-                  <div class="flex items-center h-fit">
-                      <p>Name</p>
-                      <p>-</p>
-                      {{--  <input type="text" placeholder="Type here" class="input input-sm w-full" />  --}}
-                  </div>
-                  <div class="bg-[#F4F4F4] p-5 rounded-md w-[30rem]">
-                    <p class="font-medium">Files for students to download and submission</p>
-                    <div class="form-control mt-2 flex">
-                        <form id="step-files">
-                            {{--  <div class="input-group" >  --}}
-                                <label for="test" class="btn btn-primary btn-block">Choose File</label>
-                                <input type="file" id="test" name="images" class="hidden">
-                                {{--  <input type="text" class="input input-bordered" />
-                                <span class="btn btn-primary">Add</span>  --}}
-                            {{--  </div>  --}}
-                        </form>
-                    </div>
-                  </div>
-            </div> 
-            <div class="flex justify-end items-end space-x-2">
-                <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
-                  cancel
-                </a>
-                <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize">save change</button>
-            </div>
+        <div class="flex-1 pr-20">
+          <table class="table w-full mt-5">
+            <thead>
+              <tr class="border-2 border-[#F6F7F9]">
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Type</th>
+                <th class="bg-[#F6F7F9] text-[#7C8DA7]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @each((step,index) in steps)
+                  <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]" onclick="window.location='/student-information/{{student.user_id}}'">
+                    <td>{{index+1}}</td>
+                    <td>{{step.name}}</td>
+                    <td>{{step.type}}</td>
+                    <td>
+                        <div class="dropdown dropdown-top">
+                          <label tabindex="0">
+                            <div class="w-5 h-5 cursor-pointer">
+                              <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z"/></svg>
+                            </div>
+                          </label>
+                          <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
+                            <li><a href="#" class="font-medium py-2 px-5">Edit</a></li>
+                            <li><a href="#" class="font-medium py-2 px-5 text-red-500 active:bg-transparent">Delete</a></li>
+                          </ul>
+                        </div>
+                    </td>
+                  </tr>
+              @end
+            </tbody>
+          </table>
+        </div>
       </div>
 </div>
 <script>
     const middleEllipsis = (str) => {
     if (str.length > 35) {
-      return str.substring(0, 20) + '...' + str.substring(str.length - 10)
+      return str.substring(0, 30) + '...' + str.substring(str.length - 10)
     }
     return str
     }

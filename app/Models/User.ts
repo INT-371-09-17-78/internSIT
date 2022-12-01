@@ -57,14 +57,14 @@ export default class User extends BaseModel {
   // @hasMany(() => File, { foreignKey: 'file_id' })
   // public files: HasMany<typeof File>
 
-  @hasOne(() => Student, { foreignKey: 'student_id' })
-  public student: HasOne<typeof Student>
+  // @hasOne(() => Student, { foreignKey: 'student_id' })
+  // public student: HasOne<typeof Student>
 
-  @hasOne(() => Advisor, { foreignKey: 'advisor_id' })
-  public advisor: HasOne<typeof Advisor>
+  // @hasOne(() => Advisor, { foreignKey: 'advisor_id' })
+  // public advisor: HasOne<typeof Advisor>
 
-  @hasOne(() => Staff, { foreignKey: 'staff_id' })
-  public staff: HasOne<typeof Staff>
+  // @hasOne(() => Staff, { foreignKey: 'staff_id' })
+  // public staff: HasOne<typeof Staff>
 
   @manyToMany(() => AcademicYear, {
     localKey: 'user_id',

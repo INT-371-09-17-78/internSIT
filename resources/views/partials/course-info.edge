@@ -1,23 +1,23 @@
 <form id="course_form" class="px-10 pt-5 h-full flex flex-col overflow-auto space-y-5">
-        <p class="text-base lg:text-3xl text-base-content font-semibold">Course information</p>
+        <p class="text-base lg:text-2xl text-base-content font-semibold">Course information</p>
         @if(request.matchesRoute('/course-info'))
-        <div class="grid grid-cols-5 gap-y-5">
+        <div class="grid grid-cols-5 gap-y-5 font-medium text-base">
           <p>Academic year</p>
-          <p class="col-span-4">{{academicYears[0].academic_year}}</p>
+          <p class="col-span-4 font-normal">{{academicYears[0].academic_year}}</p>
           <p>Advisor</p>
           @if(advisorUsers.length > 0)
-          <div class="flex flex-col border-2 rounded-md col-span-4">
+          <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
               @each((advisor,index) in studentUsersByAd)
-              <div tabindex="0" class="collapse collapse-arrow bg-base-100 rounded-box">
+              <div tabindex="0" class="collapse collapse-arrow bg-base-100">
                 <input type="checkbox" class="peer" /> 
-                <div class="collapse-title text-xl font-medium">
-                 {{advisor.user_id}}
+                <div class="collapse-title font-medium">
+                 {{index+1}}. {{advisor.firstname + ' ' + advisor.lastname}}
                 </div>
-                <div class="collapse-content"> 
-                  <p class="font-medium text-[#7C8DA7]">Supervised students</p>
+                <div class="collapse-content bg-[#F6F7F9] rounded-b-md"> 
+                  <p class="font-medium text-[#7C8DA7] pt-3">Supervised students</p>
                   <div class="pl-10">
                     @each((student,index) in advisor.st)
-                      <p> {{index+1}}. {{student.user_id}}</p>
+                      <p> {{index+1}}. {{student.firstname + ' ' + student.lastname}}</p>
                     @end
                   </div>
                 </div>
@@ -29,12 +29,12 @@
           @end
           <p>Staff</p>
           @if(staffUsers.length > 0)
-          <div class="flex flex-col border-2 rounded-md col-span-4">
+          <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
             @each((staff,index) in staffUsers)
-            <div tabindex="0" class="collapse bg-base-100 rounded-box">
+            <div tabindex="0" class="collapse bg-base-100 rounded-b-md">
               <input type="checkbox" class="peer" /> 
-              <div class="collapse-title text-xl font-medium">
-                {{index+1}}. {{staff.user_id}}
+              <div class="collapse-title text-base font-medium border-b-2 border-[#F6F7F9]">
+                {{index+1}}. {{staff.firstname + " " + staff.lastname}}
               </div>
             </div>
             @end
@@ -43,19 +43,25 @@
           <p class="col-span-4">-</p>
           @end
         </div>
-        <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-primary rounded-3xl text-white capitalize w-fit ml-auto">
-            edit
+        <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit ml-auto">
+          edit
+        </a>
+        <div class="border-t-2 border-[#A8B0B8]"></div> 
+        <a href="{{ route('/course-info/complete-course')}}" id="complete-button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">
+          Complete course
         </a>
         @else
-        <div class="flex font-medium items-center space-x-2 mt-2">
+        <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
           <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
           <p>Course information</p>
           </a>
+          @if(request.matchesRoute('/course-info/complete-course'))
           <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
-          <a href="{{ route('/course-info/edit')}}" class="hover:text-blue-800">
+          <p>Complete coruse</p>
+          @elseif(request.matchesRoute('/course-info/edit'))
+          <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
           <p>Edit</p>
-          </a>
-          @if(request.matchesRoute('/course-info/edit/supervised-student'))
+          @elseif(request.matchesRoute('/course-info/edit/supervised-student'))
           <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
           <p>Supervised student</p>
           @end
@@ -63,7 +69,7 @@
         @if(request.matchesRoute('/course-info/edit/supervised-student'))
         <div class="grid grid-cols-5 font-medium gap-y-5">
           <p class="font-medium">Advisor</p>
-          <p class="font-medium col-span-4">{{advisorById.advisor_id}}</p>
+          <p class="font-medium col-span-4">{{advisorById.firstname + " "+ advisorById.lastname}}</p>
           <p class="col-span-1"></p>
           <div class="flex flex-row col-span-4 space-x-2">
             <p>Add an new student</p>
@@ -83,9 +89,9 @@
               </tr>
             </thead>
             <tbody id="student-table-row">
-              @each((student,index) in studentUsersByAdOne)
+              @each((student,index) in studentUsersByAdOne.st)
               <tr id="{{student.user_id}}">
-                <td>{{index+1}}. {{student.user_id}}</td> 
+                <td>{{index+1}}. {{student.firstname + ' ' +student.lastname}}</td> 
                 <td class="text-right">
                 <div class="flex justify-end space-x-2"> 
                   <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteStudent('{{student.user_id}}')">
@@ -100,11 +106,28 @@
             </tbody>
           </table>
         </div>             
-        <div class="flex justify-end items-end space-x-2">
-          <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+        <div class="flex justify-end items-end space-x-2 pb-5">
+          <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit" href="{{ route('/course-info')}}">
             cancel
           </a>
-          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="updateSettings2()">save change</button>
+          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="updateSettings2()">save change</button>
+        </div>
+        @elseif(request.matchesRoute('/course-info/complete-course'))
+        <div class="mx-auto flex flex-col space-y-5">
+          <div class="border-red-600 p-10 border-2 w-[28rem] h-52 flex flex-col justify-center items-center text-center space-y-2 rounded-lg">
+            <p class="text-red-600 font-bold text-xl">Course Finish</p>
+            <p>After <span class="font-bold leading-10">‘Confirm’</span> you can not edit anything in this academic year and you need to start a new academic year.</p>
+          </div>
+          <div class="flex space-x-3">
+            <input type="checkbox" class="checkbox" id="accept-end-course" onchange="isCheckEndCourse()" />
+            <p>I understand and accept the terms.</p>
+          </div>
+          <div class="flex justify-end items-end space-x-2 pb-5">
+            <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit" href="{{ route('/course-info')}}">
+              cancel
+            </a>
+            <button id="confirm-end-course-button" class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="" disabled>confirm</button>
+          </div>
         </div>
         @else
         <div class="grid grid-cols-5 font-medium gap-y-5">
@@ -129,9 +152,9 @@
               </tr>
             </thead>
             <tbody id="advisor-table-row">
-              @each(advisor in advisorUsers)
+              @each((advisor,index) in advisorUsers)
               <tr id="{{advisor.user_id}}">
-                <td>{{advisor.user_id}}</td> 
+                <td>{{index+1}}. {{advisor.firstname + " " + advisor.lastname}}</td> 
                 <td class="text-right">
                 <div class="flex justify-end space-x-2"> 
                   <div class="tooltip" data-tip="Students under supervision">
@@ -174,9 +197,9 @@
               </tr>
             </thead>
             <tbody id="staff-table-row">
-              @each(staff in staffUsers)
+              @each((staff,index) in staffUsers)
               <tr id="{{staff.user_id}}">
-                <td>{{staff.user_id}}</td> 
+                <td>{{index+1}}. {{staff.firstname + " " + staff.lastname}}</td> 
                 <td class="text-right">
                 <div class="flex justify-end space-x-2"> 
                   <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteStaff('{{staff.user_id}}')">
@@ -191,11 +214,11 @@
             </tbody>
           </table>
         </div>             
-        <div class="flex justify-end items-end space-x-2">
-          <a class="btn btn-sm btn-primary rounded-3xl text-white capitalize" href="{{ route('/course-info')}}">
+        <div class="flex justify-end items-end space-x-2 pb-5">
+          <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit font-medium" href="{{ route('/course-info')}}">
             cancel
           </a>
-          <button class="btn btn-sm btn-primary rounded-3xl text-white capitalize" onclick="updateSettings()">save change</button>
+          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit font-medium" onclick="updateSettings()">save change</button>
         </div>
         @end
       @end

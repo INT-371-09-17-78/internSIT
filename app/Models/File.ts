@@ -15,6 +15,9 @@ export default class File extends BaseModel {
   @column()
   public file_size: string
 
+  @column()
+  public template_step: string
+
   // @column()
   // public doc_name: string
 

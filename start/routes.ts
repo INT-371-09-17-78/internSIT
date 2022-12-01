@@ -20,12 +20,18 @@
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
 import UsersController from 'App/Controllers/Http/UsersController'
+// import DocumentStatus from 'App/Models/StepStatus'
+// import Status from 'App/Models/Status'
 
 View.global('middleEllipsis', (str: string) => {
   if (str.length > 30) {
     return str.substring(0, 20) + '...' + str.substring(str.length - 10)
   }
   return str
+})
+
+View.global('getCurrentYear', () => {
+  return new Date().getFullYear()
 })
 
 View.global('checkStatus', (str: string) => {
@@ -55,10 +61,6 @@ Route.get('/', async ({ view, auth, response }) => {
   }
 })
 
-Route.get('/register', async ({ view }) => {
-  return view.render('home')
-})
-
 Route.get('/success-regis', async ({ view }) => {
   return view.render('success-regis')
 })
@@ -71,7 +73,11 @@ Route.group(() => {
   Route.get('/:id', 'UsersController.showStudentUserById')
 }).prefix('/student')
 
-Route.get('/student-information', 'UsersController.showStudentUser')
+Route.group(() => {
+  Route.get('/', 'UsersController.showStudentUser')
+  Route.get('/:id', 'UsersController.showStudentUserById')
+  Route.get('/:id/editInformedSupervision', 'UsersController.showStudentUserById')
+}).prefix('/student-information')
 
 Route.get('/academic-year', 'UsersController.showStudentUser')
 
@@ -80,6 +86,8 @@ Route.get('/register-request', 'UsersController.showStudentUser')
 Route.get('/course-info', 'UsersController.showStudentUser')
 
 Route.get('/course-info/edit', 'UsersController.showStudentUser')
+
+Route.get('/course-info/complete-course', 'UsersController.showStudentUser')
 
 Route.get('/steps', 'UsersController.showStudentUser')
 
@@ -119,6 +127,7 @@ Route.group(() => {
     Route.get('/studentByAdv', 'UsersController.getStudentUserByAdvisor')
     Route.delete('/delUserAc/:id', 'UsersController.delUsersInAcademicYear')
     Route.delete('/delUserAdv/:id', 'UsersController.delUsersFromAdvisor')
+    // Route.patch('/supervision/:id', 'UsersController.updateSupervision')
   })
     // .middleware('login')
     .prefix('/user')
@@ -138,6 +147,6 @@ Route.group(() => {
     Route.get('/:fileId', 'FilesController.downloadFile')
     Route.delete('/:fileId', 'FilesController.deleteFileDirect')
   })
-    .middleware('login')
+    // .middleware('login')
     .prefix('/file')
 }).prefix('/api')

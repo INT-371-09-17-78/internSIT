@@ -6,15 +6,19 @@ export default class UsersInAcademicYears extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
+      table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       table
         .integer('academic_year')
         // .unsigned()
         .references('academic_years.academic_year')
         .onDelete('CASCADE')
-      table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       table.boolean('approved').defaultTo(false).notNullable()
       table.unique(['academic_year', 'user_id'])
-      table.string('advisor_id').references('advisors.advisor_id').onDelete('CASCADE')
+      table
+        .integer('advisor_ac_id')
+        .unsigned()
+        .references('users_in_academic_years.id')
+        .onDelete('CASCADE')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

@@ -7,7 +7,7 @@ import {
   // manyToMany,
   // ManyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
-import User from 'App/Models/User'
+import UsersInAcademicYear from 'App/Models/UsersInAcademicYear'
 // import Advisor from 'App/Models/Advisor'
 // import Document_Status from 'App/Models/DocumentStatus'
 
@@ -80,8 +80,8 @@ export default class Student extends BaseModel {
   // @column()
   // public rememberMeToken?: string
 
-  @belongsTo(() => User)
-  public user: BelongsTo<typeof User>
+  @belongsTo(() => UsersInAcademicYear)
+  public usersInAcademicYear: BelongsTo<typeof UsersInAcademicYear>
 
   // @belongsTo(() => Advisor)
   // public advisor: BelongsTo<typeof Advisor>
