@@ -996,7 +996,7 @@ export default class UsersController {
           key: 'advisorFullName',
         },
       ]
-      const qs = request.qs()
+      // const qs = request.qs()
       const plans = [2, 4, 6]
 
       let stepsRender: any = this.showSteps(studentUser.student.plan)
@@ -1012,10 +1012,10 @@ export default class UsersController {
         .orderBy('created_at', 'desc')
 
       let submission: any = []
-      let stepFile: any
+      // let stepFile: any
       let userHasDoc: any = []
       let isChangeStep: any = false
-      let realCurrentStep: any
+      // let realCurrentStep: any
       let documentStatusesJsonCurrent: any
       if (userHasDocResult[0]) {
         // if (request.qs().step && request.qs().status) {
@@ -1769,7 +1769,7 @@ export default class UsersController {
         // stepStatId,
         supervisionStatus,
         meetingLink,
-        advisorComment,
+        // advisorComment,
         dateConfirmStatus,
         isSigned,
         advisorDate,
@@ -1790,7 +1790,7 @@ export default class UsersController {
       ])
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
-      let studentUser: any
+      // let studentUser: any
       let usersInAcademicYear: any
       const studentUsersRole = await User.query()
         .where('role', 'student')
@@ -1987,7 +1987,7 @@ export default class UsersController {
 
   public async updateSupervisionStatus({ request, response }: HttpContextContract) {
     try {
-      const { step, supervisionStatus, dateConfirmStatus } = request.only([
+      const { step, supervisionStatus } = request.only([
         'step',
         'supervisionStatus',
         'dateConfirmStatus',
@@ -2326,7 +2326,7 @@ export default class UsersController {
     try {
       const {
         firm,
-        email,
+        // email,
         tel,
         department,
         position,
@@ -2632,17 +2632,18 @@ export default class UsersController {
           },
         ]
 
-        const usersArr = await User.createMany(arr)
-        usersArr.forEach(
-          async (user) =>
-            user.role === 'staff'
-              ? await user.related('staff').create({})
-              : // ,
-                // await year.related('users').attach([user.user_id]))
-                await user.related('advisor').create({})
-          // ,
-          // await year.related('users').attach([user.user_id]))
-        )
+        // const usersArr =
+        await User.createMany(arr)
+        // usersArr.forEach(
+        //   async (user) =>
+        //     user.role === 'staff'
+        //       ? await user.related('staff').create({})
+        //       : // ,
+        //         // await year.related('users').attach([user.user_id]))
+        //         await user.related('advisor').create({})
+        //   // ,
+        //   // await year.related('users').attach([user.user_id]))
+        // )
         await File.create({
           file_id: 'TR-01DEF',
           file_name: 'TR-01DEF.pdf',
