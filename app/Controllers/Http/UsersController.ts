@@ -541,6 +541,7 @@ export default class UsersController {
         studentUsersByAd: adSe,
         studentUsersByAdOne: studentUsersByAdOne,
         AllStepByMonth: AllStepByMonth,
+        stepEdit: stepEdit,
       })
     } catch (error) {
       console.log(error)
