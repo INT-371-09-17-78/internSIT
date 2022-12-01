@@ -73,7 +73,7 @@
   @include('partials/course-info')
   @elseif(request.matchesRoute('/steps'))
   @include('partials/steps')
-  @elseif(request.matchesRoute('/step/:name/edit'))
+  @elseif(request.matchesRoute('/step/edit'))
   @include('partials/step')
   @elseif(request.matchesRoute('/student-information/:id') ||
   request.matchesRoute('/student-information/:id/editInformedSupervision'))

@@ -40,7 +40,7 @@
                   </div>
                 </label>
                 <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
-                  <li><a href="{{ route('/step/:name/edit', { name: step.name }) }}" class="font-medium py-2 px-5 rounded-lg">Edit</a></li>
+                  <li><a href="{{ route('/step/edit', {}, {qs: { step: step.name , month: request.qs().month }}) }}" class="font-medium py-2 px-5 rounded-lg">Edit</a></li>
                 </ul>
               </div>
             </td>

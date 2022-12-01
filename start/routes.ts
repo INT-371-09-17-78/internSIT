@@ -103,7 +103,7 @@ Route.get('/course-info/complete-course', 'UsersController.showStudentUser')
 
 Route.get('/steps', 'UsersController.showStudentUser')
 
-Route.get('/step/:name/edit', 'UsersController.showStudentUser')
+Route.get('/step/edit', 'UsersController.showStudentUser')
 
 Route.get('/course-info/edit/supervised-student', 'UsersController.showStudentUser')
 
