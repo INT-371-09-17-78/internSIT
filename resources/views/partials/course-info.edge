@@ -1,225 +1,273 @@
 <form id="course_form" class="px-10 pt-5 h-full flex flex-col overflow-auto space-y-5">
-        <p class="text-base lg:text-2xl text-base-content font-semibold">Course information</p>
-        @if(request.matchesRoute('/course-info'))
-        <div class="grid grid-cols-5 gap-y-5 font-medium text-base">
-          <p>Academic year</p>
-          <p class="col-span-4 font-normal">{{academicYears[0].academic_year}}</p>
-          <p>Advisor</p>
-          @if(advisorUsers.length > 0)
-          <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
-              @each((advisor,index) in studentUsersByAd)
-              <div tabindex="0" class="collapse collapse-arrow bg-base-100">
-                <input type="checkbox" class="peer" /> 
-                <div class="collapse-title font-medium">
-                 {{index+1}}. {{advisor.firstname + ' ' + advisor.lastname}}
-                </div>
-                <div class="collapse-content bg-[#F6F7F9] rounded-b-md"> 
-                  <p class="font-medium text-[#7C8DA7] pt-3">Supervised students</p>
-                  <div class="pl-10">
-                    @each((student,index) in advisor.st)
-                      <p> {{index+1}}. {{student.firstname + ' ' + student.lastname}}</p>
-                    @end
-                  </div>
-                </div>
-              </div>
-              @end
-          </div>
-          @else
-          <p class="col-span-4">-</p>
-          @end
-          <p>Staff</p>
-          @if(staffUsers.length > 0)
-          <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
-            @each((staff,index) in staffUsers)
-            <div tabindex="0" class="collapse bg-base-100 rounded-b-md">
-              <input type="checkbox" class="peer" /> 
-              <div class="collapse-title text-base font-medium border-b-2 border-[#F6F7F9]">
-                {{index+1}}. {{staff.firstname + " " + staff.lastname}}
-              </div>
-            </div>
+  <p class="text-base lg:text-2xl text-base-content font-semibold">Course information</p>
+  @if(request.matchesRoute('/course-info'))
+  <div class="grid grid-cols-5 gap-y-5 font-medium text-base">
+    <p>Academic year</p>
+    <p class="col-span-4 font-normal">{{academicYears[0].academic_year}}</p>
+    <p>Advisor</p>
+    @if(advisorUsers.length > 0)
+    <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
+      @each((advisor,index) in studentUsersByAd)
+      <div tabindex="0" class="collapse collapse-arrow bg-base-100">
+        <input type="checkbox" class="peer" />
+        <div class="collapse-title font-medium">
+          {{index+1}}. {{advisor.firstname + ' ' + advisor.lastname}}
+        </div>
+        <div class="collapse-content bg-[#F6F7F9] rounded-b-md">
+          <p class="font-medium text-[#7C8DA7] pt-3">Supervised students</p>
+          <div class="pl-10">
+            @each((student,index) in advisor.st)
+            <p> {{index+1}}. {{student.firstname + ' ' + student.lastname}}</p>
             @end
           </div>
-          @else
-          <p class="col-span-4">-</p>
-          @end
         </div>
-        <a href="{{ route('/course-info/edit')}}" id="editButton" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit ml-auto">
-          edit
-        </a>
-        <div class="border-t-2 border-[#A8B0B8]"></div> 
-        <a href="{{ route('/course-info/complete-course')}}" id="complete-button" class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit">
-          Complete course
-        </a>
-        @else
-        <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
-          <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
-          <p>Course information</p>
-          </a>
-          @if(request.matchesRoute('/course-info/complete-course'))
-          <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
-          <p>Complete coruse</p>
-          @elseif(request.matchesRoute('/course-info/edit'))
-          <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
-          <p>Edit</p>
-          @elseif(request.matchesRoute('/course-info/edit/supervised-student'))
-          <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
-          <p>Supervised student</p>
-          @end
-        </div>
-        @if(request.matchesRoute('/course-info/edit/supervised-student'))
-        <div class="grid grid-cols-5 font-medium gap-y-5">
-          <p class="font-medium">Advisor</p>
-          <p class="font-medium col-span-4">{{advisorById.firstname + " "+ advisorById.lastname}}</p>
-          <p class="col-span-1"></p>
-          <div class="flex flex-row col-span-4 space-x-2">
-            <p>Add an new student</p>
-            <div class="flex flex-col">
-              <input id="student" type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" onkeyup="searchStudent()"/>
-              <div class="dropdown dropdown-open max-w-xs" id="student_list">
-              </div>
-            </div>
-            <button id="add-student-button" class="btn btn-primary capitalize btn-sm" onclick="addStudent()">add</button>
-          </div>
-          <p></p>
-          <table class="table w-full col-span-4">
-            <thead>
-              <tr>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                <th class="bg-[#F6F7F9]"></th>
-              </tr>
-            </thead>
-            <tbody id="student-table-row">
-              @each((student,index) in studentUsersByAdOne.st)
-              <tr id="{{student.user_id}}">
-                <td>{{index+1}}. {{student.firstname + ' ' +student.lastname}}</td> 
-                <td class="text-right">
-                <div class="flex justify-end space-x-2"> 
-                  <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteStudent('{{student.user_id}}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                    </svg>
-                  </button>
-                </div>
-                </td>
-              </tr>
-              @end
-            </tbody>
-          </table>
-        </div>             
-        <div class="flex justify-end items-end space-x-2 pb-5">
-          <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit" href="{{ route('/course-info')}}">
-            cancel
-          </a>
-          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="updateSettings2()">save change</button>
-        </div>
-        @elseif(request.matchesRoute('/course-info/complete-course'))
-        <div class="mx-auto flex flex-col space-y-5">
-          <div class="border-red-600 p-10 border-2 w-[28rem] h-52 flex flex-col justify-center items-center text-center space-y-2 rounded-lg">
-            <p class="text-red-600 font-bold text-xl">Course Finish</p>
-            <p>After <span class="font-bold leading-10">‘Confirm’</span> you can not edit anything in this academic year and you need to start a new academic year.</p>
-          </div>
-          <div class="flex space-x-3">
-            <input type="checkbox" class="checkbox" id="accept-end-course" onchange="isCheckEndCourse()" />
-            <p>I understand and accept the terms.</p>
-          </div>
-          <div class="flex justify-end items-end space-x-2 pb-5">
-            <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit" href="{{ route('/course-info')}}">
-              cancel
-            </a>
-            <button id="confirm-end-course-button" class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="" disabled>confirm</button>
-          </div>
-        </div>
-        @else
-        <div class="grid grid-cols-5 font-medium gap-y-5">
-          <p>Academic year</p>
-          <p class="col-span-4">{{academicYears[0].academic_year}}</p>
-          <p class="font-medium">Advisor</p>
-          <div class="flex flex-row col-span-4 space-x-2">
-            <p>Add an new advisor</p>
-            <div class="flex flex-col">
-              <input id="advisor" type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" onkeyup="searchAdvisor()"/>
-              <div class="dropdown dropdown-open max-w-xs" id="advisor_list">
-              </div>
-            </div>
-            <button id="add-advisor-button" class="btn btn-primary capitalize btn-sm" onclick="addAdvisor()">add</button>
-          </div>
-          <p></p>
-          <table class="table w-full col-span-4">
-            <thead>
-              <tr>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                <th class="bg-[#F6F7F9]"></th>
-              </tr>
-            </thead>
-            <tbody id="advisor-table-row">
-              @each((advisor,index) in advisorUsers)
-              <tr id="{{advisor.user_id}}">
-                <td>{{index+1}}. {{advisor.firstname + " " + advisor.lastname}}</td> 
-                <td class="text-right">
-                <div class="flex justify-end space-x-2"> 
-                  <div class="tooltip" data-tip="Students under supervision">
-                      <a href="{{ route('/course-info/edit/supervised-student', {} ,{qs: {advisor: advisor.user_id}}) }}"  class="btn btn-sm btn-circle border-none bg-transparent hover:bg-gray-700 hover:border-gray-700">
-                        <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M27.5586 12.8453C25.9998 11.5673 24.3207 10.7192 23.9826 10.553C23.9425 10.5358 23.9196 10.4957 23.9196 10.4499V8.02576C24.2233 7.82519 24.4239 7.47562 24.4239 7.0802V4.56441C24.4239 3.31512 23.4095 2.30078 22.1602 2.30078H21.8909H21.6215C20.3722 2.30078 19.3579 3.31512 19.3579 4.56441V7.0802C19.3579 7.47562 19.5585 7.81946 19.8622 8.02576V10.4499C19.8622 10.467 19.8565 10.4785 19.8565 10.49C20.3321 10.8166 20.8307 11.1834 21.3178 11.5845C21.8852 12.0545 22.2118 12.7421 22.2118 13.4871V15.5101H27.9998V13.7851C27.9998 13.4241 27.8394 13.0803 27.5586 12.8453Z" fill="#A8A8A8"/>
-                          <path d="M8.13761 10.4499V8.02576C8.44134 7.82519 8.64192 7.47562 8.64192 7.0802V4.56441C8.64192 3.31512 7.62758 2.30078 6.37828 2.30078H6.10894H5.8396C4.5903 2.30078 3.57597 3.31512 3.57597 4.56441V7.0802C3.57597 7.47562 3.77654 7.81946 4.08027 8.02576V10.4499C4.08027 10.49 4.05735 10.5301 4.01723 10.553C3.67339 10.7192 1.99429 11.5673 0.441265 12.8453C0.16046 13.0745 0 13.4241 0 13.7851V15.5101H5.78802V13.4871C5.78802 12.7479 6.11467 12.0545 6.68201 11.5845C7.16912 11.1834 7.6677 10.8166 8.14334 10.49C8.14334 10.4785 8.13761 10.467 8.13761 10.4499Z" fill="#A8A8A8"/>
-                          <path d="M20.6595 12.3841C18.8314 10.8826 16.86 9.88548 16.4532 9.68491C16.4073 9.66198 16.3787 9.61614 16.3787 9.56456V6.7164C16.734 6.47571 16.9747 6.06883 16.9747 5.61037V2.65905C16.9747 1.19199 15.7827 0 14.3156 0H14.0004H13.6852C12.2182 0 11.0262 1.19199 11.0262 2.65905V5.61037C11.0262 6.07456 11.2611 6.48144 11.6222 6.7164V9.56456C11.6222 9.61614 11.5935 9.66198 11.5477 9.68491C11.1465 9.87975 9.17515 10.8769 7.34132 12.3841C7.00894 12.6534 6.81982 13.0603 6.81982 13.4901V15.513H9.53045V15.2838C9.53045 14.6936 9.94879 14.2007 10.5047 14.0861C10.5104 14.0746 10.5161 14.0632 10.5219 14.0517C10.3901 13.8569 10.3213 13.6219 10.3213 13.3812C10.3213 13.0546 10.4474 12.7508 10.6766 12.5159L11.0032 12.1892C11.2325 11.96 11.5419 11.8339 11.8686 11.8339C12.115 11.8339 12.35 11.9084 12.5448 12.0402C12.5563 12.0345 12.562 12.0345 12.5735 12.0288C12.6823 11.4672 13.1752 11.0431 13.7712 11.0431H14.2354C14.8314 11.0431 15.3242 11.4672 15.4331 12.0288C15.4388 12.0345 15.4445 12.0345 15.456 12.0402C15.6566 11.9027 15.8915 11.8282 16.1437 11.8282C16.4703 11.8282 16.7741 11.9543 17.0033 12.1835L17.33 12.5101C17.7483 12.9285 17.7999 13.5818 17.479 14.0574C17.4847 14.0632 17.4847 14.0689 17.4904 14.0804C18.052 14.1892 18.4818 14.6821 18.4818 15.2781V15.513H21.1925V13.4901C21.181 13.0603 20.9919 12.6534 20.6595 12.3841Z" fill="#A8A8A8"/>
-                          <path d="M17.2493 14.9753H16.7908C16.7163 14.5971 16.573 14.236 16.3438 13.9094L16.6705 13.5827C16.7851 13.4681 16.7851 13.2733 16.6705 13.1587L16.3438 12.832C16.2292 12.7174 16.0344 12.7174 15.9197 12.832L15.5931 13.1587C15.2664 12.9352 14.8997 12.7862 14.5272 12.7174V12.2589C14.5272 12.0927 14.3954 11.9609 14.2292 11.9609H13.765C13.5988 11.9609 13.467 12.0927 13.467 12.2589V12.7117C13.0888 12.7804 12.722 12.9294 12.3953 13.1529L12.0744 12.832C11.9598 12.7174 11.765 12.7174 11.6504 12.832L11.3237 13.1587C11.2091 13.2733 11.2091 13.4681 11.3237 13.5827L11.6389 13.8979C11.4154 14.2303 11.2607 14.5971 11.1919 14.9753H10.7506C10.5844 14.9753 10.4526 15.1071 10.4526 15.2733V15.7375C10.4526 15.9037 10.5844 16.0355 10.7506 16.0355H11.1919C11.2607 16.4137 11.4097 16.7862 11.6389 17.1129L11.3294 17.4223C11.2148 17.5369 11.2148 17.7318 11.3294 17.8464L11.6561 18.173C11.7707 18.2876 11.9655 18.2876 12.0802 18.173L12.3896 17.8636C12.722 18.0871 13.0888 18.2361 13.4727 18.3106V18.7518C13.4727 18.918 13.6045 19.0498 13.7707 19.0498H14.2349C14.4011 19.0498 14.5329 18.918 14.5329 18.7518V18.3106C14.9111 18.2361 15.2779 18.0871 15.6045 17.8636L15.9197 18.1788C16.0344 18.2934 16.2292 18.2934 16.3438 18.1788L16.6705 17.8521C16.7851 17.7375 16.7851 17.5427 16.6705 17.428L16.3495 17.1071C16.573 16.7747 16.7163 16.4137 16.7908 16.0355H17.2435C17.4097 16.0355 17.5415 15.9037 17.5415 15.7375V15.2733C17.553 15.1128 17.4155 14.9753 17.2493 14.9753ZM15.0945 16.6028C14.4928 17.2045 13.5128 17.2103 12.9054 16.6028C12.3037 16.0011 12.2979 15.0211 12.9054 14.4137C13.5071 13.812 14.4871 13.8062 15.0945 14.4137C15.6962 15.0211 15.6962 16.0011 15.0945 16.6028Z" fill="#A8A8A8"/>
-                        </svg>
-                      </a>
-                  </div>
-                  <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteAdvisor('{{advisor.user_id}}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                    </svg>
-                  </button>
-                </div>
-                </td>
-              </tr>
-              @end
-            </tbody>
-          </table>
-          <p class="font-medium">Staff</p>
-          <div class="flex flex-row col-span-4 space-x-2">
-            <p>Add an new staff</p>
-            <div class="flex flex-col">
-              <input id="staff" type="text" class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2" onkeyup="searchStaff()"/>
-              <div class="dropdown dropdown-open max-w-xs" id="staff_list">
-              </div>
-            </div>
-            <button id="add-staff-button" class="btn btn-primary capitalize btn-sm" onclick="addStaff()">add</button>
-          </div>
-          <p></p>
-          <table class="table w-full col-span-4">
-            <thead>
-              <tr>
-                <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-                <th class="bg-[#F6F7F9]"></th> 
-              </tr>
-            </thead>
-            <tbody id="staff-table-row">
-              @each((staff,index) in staffUsers)
-              <tr id="{{staff.user_id}}">
-                <td>{{index+1}}. {{staff.firstname + " " + staff.lastname}}</td> 
-                <td class="text-right">
-                <div class="flex justify-end space-x-2"> 
-                  <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteStaff('{{staff.user_id}}')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                    </svg>
-                  </button>
-                </div>
-                </td>
-              </tr>
-              @end
-            </tbody>
-          </table>
-        </div>             
-        <div class="flex justify-end items-end space-x-2 pb-5">
-          <a class="btn btn-sm btn-outline rounded-md bg-white border-[#A8B0B8] border-2 px-5 capitalize w-fit font-medium" href="{{ route('/course-info')}}">
-            cancel
-          </a>
-          <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit font-medium" onclick="updateSettings()">save change</button>
-        </div>
-        @end
+      </div>
       @end
+    </div>
+    @else
+    <p class="col-span-4">-</p>
+    @end
+    <p>Staff</p>
+    @if(staffUsers.length > 0)
+    <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
+      @each((staff,index) in staffUsers)
+      <div tabindex="0" class="collapse bg-base-100 rounded-b-md">
+        <input type="checkbox" class="peer" />
+        <div class="collapse-title text-base font-medium border-b-2 border-[#F6F7F9]">
+          {{index+1}}. {{staff.firstname + " " + staff.lastname}}
+        </div>
+      </div>
+      @end
+    </div>
+    @else
+    <p class="col-span-4">-</p>
+    @end
+  </div>
+  <a href="{{ route('/course-info/edit')}}" class="ml-auto">
+    @!common.borderButton({
+      text: 'edit',
+      type: 'button',
+      classProps: 'px-5',
+      id: 'editButton',
+    })
+  </a>
+  <div class="border-t-2 border-[#A8B0B8]"></div>
+  <a href="{{ route('/course-info/complete-course')}}">
+    @!common.borderButton({
+      text: 'Complete course',
+      type: 'button',
+      classProps: 'px-5',
+      id: 'complete-button',
+    })
+  </a>
+  @else
+  <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
+    <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
+      <p>Course information</p>
+    </a>
+    @if(request.matchesRoute('/course-info/complete-course'))
+    <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
+    <p>Complete coruse</p>
+    @elseif(request.matchesRoute('/course-info/edit'))
+    <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
+    <p>Edit</p>
+    @elseif(request.matchesRoute('/course-info/edit/supervised-student'))
+    <img class="w-3 h-3 rotate-180" src="{{ asset('assets/images/arrow.svg') }}" />
+    <p>Supervised student</p>
+    @end
+  </div>
+  @if(request.matchesRoute('/course-info/edit/supervised-student'))
+  <div class="grid grid-cols-5 font-medium gap-y-5">
+    <p class="font-medium">Advisor</p>
+    <p class="font-medium col-span-4">{{advisorById.firstname + " "+ advisorById.lastname}}</p>
+    <p class="col-span-1"></p>
+    <div class="flex flex-row col-span-4 space-x-2">
+      <p>Add an new student</p>
+      <div class="flex flex-col">
+        <input id="student" type="text"
+          class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
+          onkeyup="searchStudent()" />
+        <div class="dropdown dropdown-open max-w-xs" id="student_list">
+        </div>
+      </div>
+      <button id="add-student-button" class="btn btn-primary capitalize btn-sm" onclick="addStudent()">add</button>
+    </div>
+    <p></p>
+    <table class="table w-full col-span-4">
+      <thead>
+        <tr>
+          <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+          <th class="bg-[#F6F7F9]"></th>
+        </tr>
+      </thead>
+      <tbody id="student-table-row">
+        @each((student,index) in studentUsersByAdOne.st)
+        <tr id="{{student.user_id}}">
+          <td>{{index+1}}. {{student.firstname + ' ' +student.lastname}}</td>
+          <td class="text-right">
+            <div class="flex justify-end space-x-2">
+              <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500"
+                onclick="deleteStudent('{{student.user_id}}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path
+                    d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        @end
+      </tbody>
+    </table>
+  </div>
+  <div class="flex justify-end items-end space-x-2 pb-5">
+    <a href="{{ route('/course-info')}}">
+      @!common.borderButton({
+        text: 'cancel',
+        type: 'button',
+      })
+    </a>
+    <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick="updateSettings2()">save
+      change</button>
+  </div>
+  @elseif(request.matchesRoute('/course-info/complete-course'))
+  <div class="mx-auto flex flex-col space-y-5">
+    <div
+      class="border-red-600 p-10 border-2 w-[28rem] h-52 flex flex-col justify-center items-center text-center space-y-2 rounded-lg">
+      <p class="text-red-600 font-bold text-xl">Course Finish</p>
+      <p>After <span class="font-bold leading-10">‘Confirm’</span> you can not edit anything in this academic year and
+        you need to start a new academic year.</p>
+    </div>
+    <div class="flex space-x-3">
+      <input type="checkbox" class="checkbox" id="accept-end-course" onchange="isCheckEndCourse()" />
+      <p>I understand and accept the terms.</p>
+    </div>
+    <div class="flex justify-end items-end space-x-2 pb-5">
+      <a 
+        href="{{ route('/course-info')}}">
+        @!common.borderButton({
+          text: 'cancel',
+          type: 'button',
+          classProps: 'px-5',
+        })
+      </a>
+      <button id="confirm-end-course-button" class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit" onclick=""
+        disabled>confirm</button>
+    </div>
+  </div>
+  @else
+  <div class="grid grid-cols-5 font-medium gap-y-5">
+    <p>Academic year</p>
+    <p class="col-span-4">{{academicYears[0].academic_year}}</p>
+    <p class="font-medium">Advisor</p>
+    <div class="flex flex-row col-span-4 space-x-2">
+      <p>Add an new advisor</p>
+      <div class="flex flex-col">
+        <input id="advisor" type="text"
+          class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
+          onkeyup="searchAdvisor()" />
+        <div class="dropdown dropdown-open max-w-xs" id="advisor_list">
+        </div>
+      </div>
+      <button id="add-advisor-button" class="btn btn-primary capitalize btn-sm" onclick="addAdvisor()">add</button>
+    </div>
+    <p></p>
+    <table class="table w-full col-span-4">
+      <thead>
+        <tr>
+          <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+          <th class="bg-[#F6F7F9]"></th>
+        </tr>
+      </thead>
+      <tbody id="advisor-table-row">
+        @each((advisor,index) in advisorUsers)
+        <tr id="{{advisor.user_id}}">
+          <td>{{index+1}}. {{advisor.firstname + " " + advisor.lastname}}</td>
+          <td class="text-right">
+            <div class="flex justify-end space-x-2">
+              <div class="tooltip" data-tip="Students under supervision">
+                <a href="{{ route('/course-info/edit/supervised-student', {} ,{qs: {advisor: advisor.user_id}}) }}"
+                  class="btn btn-sm btn-circle border-none bg-transparent hover:bg-gray-700 hover:border-gray-700">
+                  <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M27.5586 12.8453C25.9998 11.5673 24.3207 10.7192 23.9826 10.553C23.9425 10.5358 23.9196 10.4957 23.9196 10.4499V8.02576C24.2233 7.82519 24.4239 7.47562 24.4239 7.0802V4.56441C24.4239 3.31512 23.4095 2.30078 22.1602 2.30078H21.8909H21.6215C20.3722 2.30078 19.3579 3.31512 19.3579 4.56441V7.0802C19.3579 7.47562 19.5585 7.81946 19.8622 8.02576V10.4499C19.8622 10.467 19.8565 10.4785 19.8565 10.49C20.3321 10.8166 20.8307 11.1834 21.3178 11.5845C21.8852 12.0545 22.2118 12.7421 22.2118 13.4871V15.5101H27.9998V13.7851C27.9998 13.4241 27.8394 13.0803 27.5586 12.8453Z"
+                      fill="#A8A8A8" />
+                    <path
+                      d="M8.13761 10.4499V8.02576C8.44134 7.82519 8.64192 7.47562 8.64192 7.0802V4.56441C8.64192 3.31512 7.62758 2.30078 6.37828 2.30078H6.10894H5.8396C4.5903 2.30078 3.57597 3.31512 3.57597 4.56441V7.0802C3.57597 7.47562 3.77654 7.81946 4.08027 8.02576V10.4499C4.08027 10.49 4.05735 10.5301 4.01723 10.553C3.67339 10.7192 1.99429 11.5673 0.441265 12.8453C0.16046 13.0745 0 13.4241 0 13.7851V15.5101H5.78802V13.4871C5.78802 12.7479 6.11467 12.0545 6.68201 11.5845C7.16912 11.1834 7.6677 10.8166 8.14334 10.49C8.14334 10.4785 8.13761 10.467 8.13761 10.4499Z"
+                      fill="#A8A8A8" />
+                    <path
+                      d="M20.6595 12.3841C18.8314 10.8826 16.86 9.88548 16.4532 9.68491C16.4073 9.66198 16.3787 9.61614 16.3787 9.56456V6.7164C16.734 6.47571 16.9747 6.06883 16.9747 5.61037V2.65905C16.9747 1.19199 15.7827 0 14.3156 0H14.0004H13.6852C12.2182 0 11.0262 1.19199 11.0262 2.65905V5.61037C11.0262 6.07456 11.2611 6.48144 11.6222 6.7164V9.56456C11.6222 9.61614 11.5935 9.66198 11.5477 9.68491C11.1465 9.87975 9.17515 10.8769 7.34132 12.3841C7.00894 12.6534 6.81982 13.0603 6.81982 13.4901V15.513H9.53045V15.2838C9.53045 14.6936 9.94879 14.2007 10.5047 14.0861C10.5104 14.0746 10.5161 14.0632 10.5219 14.0517C10.3901 13.8569 10.3213 13.6219 10.3213 13.3812C10.3213 13.0546 10.4474 12.7508 10.6766 12.5159L11.0032 12.1892C11.2325 11.96 11.5419 11.8339 11.8686 11.8339C12.115 11.8339 12.35 11.9084 12.5448 12.0402C12.5563 12.0345 12.562 12.0345 12.5735 12.0288C12.6823 11.4672 13.1752 11.0431 13.7712 11.0431H14.2354C14.8314 11.0431 15.3242 11.4672 15.4331 12.0288C15.4388 12.0345 15.4445 12.0345 15.456 12.0402C15.6566 11.9027 15.8915 11.8282 16.1437 11.8282C16.4703 11.8282 16.7741 11.9543 17.0033 12.1835L17.33 12.5101C17.7483 12.9285 17.7999 13.5818 17.479 14.0574C17.4847 14.0632 17.4847 14.0689 17.4904 14.0804C18.052 14.1892 18.4818 14.6821 18.4818 15.2781V15.513H21.1925V13.4901C21.181 13.0603 20.9919 12.6534 20.6595 12.3841Z"
+                      fill="#A8A8A8" />
+                    <path
+                      d="M17.2493 14.9753H16.7908C16.7163 14.5971 16.573 14.236 16.3438 13.9094L16.6705 13.5827C16.7851 13.4681 16.7851 13.2733 16.6705 13.1587L16.3438 12.832C16.2292 12.7174 16.0344 12.7174 15.9197 12.832L15.5931 13.1587C15.2664 12.9352 14.8997 12.7862 14.5272 12.7174V12.2589C14.5272 12.0927 14.3954 11.9609 14.2292 11.9609H13.765C13.5988 11.9609 13.467 12.0927 13.467 12.2589V12.7117C13.0888 12.7804 12.722 12.9294 12.3953 13.1529L12.0744 12.832C11.9598 12.7174 11.765 12.7174 11.6504 12.832L11.3237 13.1587C11.2091 13.2733 11.2091 13.4681 11.3237 13.5827L11.6389 13.8979C11.4154 14.2303 11.2607 14.5971 11.1919 14.9753H10.7506C10.5844 14.9753 10.4526 15.1071 10.4526 15.2733V15.7375C10.4526 15.9037 10.5844 16.0355 10.7506 16.0355H11.1919C11.2607 16.4137 11.4097 16.7862 11.6389 17.1129L11.3294 17.4223C11.2148 17.5369 11.2148 17.7318 11.3294 17.8464L11.6561 18.173C11.7707 18.2876 11.9655 18.2876 12.0802 18.173L12.3896 17.8636C12.722 18.0871 13.0888 18.2361 13.4727 18.3106V18.7518C13.4727 18.918 13.6045 19.0498 13.7707 19.0498H14.2349C14.4011 19.0498 14.5329 18.918 14.5329 18.7518V18.3106C14.9111 18.2361 15.2779 18.0871 15.6045 17.8636L15.9197 18.1788C16.0344 18.2934 16.2292 18.2934 16.3438 18.1788L16.6705 17.8521C16.7851 17.7375 16.7851 17.5427 16.6705 17.428L16.3495 17.1071C16.573 16.7747 16.7163 16.4137 16.7908 16.0355H17.2435C17.4097 16.0355 17.5415 15.9037 17.5415 15.7375V15.2733C17.553 15.1128 17.4155 14.9753 17.2493 14.9753ZM15.0945 16.6028C14.4928 17.2045 13.5128 17.2103 12.9054 16.6028C12.3037 16.0011 12.2979 15.0211 12.9054 14.4137C13.5071 13.812 14.4871 13.8062 15.0945 14.4137C15.6962 15.0211 15.6962 16.0011 15.0945 16.6028Z"
+                      fill="#A8A8A8" />
+                  </svg>
+                </a>
+              </div>
+              <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500"
+                onclick="deleteAdvisor('{{advisor.user_id}}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path
+                    d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        @end
+      </tbody>
+    </table>
+    <p class="font-medium">Staff</p>
+    <div class="flex flex-row col-span-4 space-x-2">
+      <p>Add an new staff</p>
+      <div class="flex flex-col">
+        <input id="staff" type="text"
+          class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
+          onkeyup="searchStaff()" />
+        <div class="dropdown dropdown-open max-w-xs" id="staff_list">
+        </div>
+      </div>
+      <button id="add-staff-button" class="btn btn-primary capitalize btn-sm" onclick="addStaff()">add</button>
+    </div>
+    <p></p>
+    <table class="table w-full col-span-4">
+      <thead>
+        <tr>
+          <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+          <th class="bg-[#F6F7F9]"></th>
+        </tr>
+      </thead>
+      <tbody id="staff-table-row">
+        @each((staff,index) in staffUsers)
+        <tr id="{{staff.user_id}}">
+          <td>{{index+1}}. {{staff.firstname + " " + staff.lastname}}</td>
+          <td class="text-right">
+            <div class="flex justify-end space-x-2">
+              <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500"
+                onclick="deleteStaff('{{staff.user_id}}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path
+                    d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        @end
+      </tbody>
+    </table>
+  </div>
+  <div class="flex justify-end items-end space-x-2 pb-5">
+    <a href="{{ route('/course-info')}}">
+      @!common.borderButton({
+        text: 'cancel',
+        type: 'button',
+        classProps: 'px-5',
+      })
+    </a>
+    <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit font-medium" onclick="updateSettings()">save
+      change</button>
+  </div>
+  @end
+  @end
 </form>

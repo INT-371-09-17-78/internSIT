@@ -3,7 +3,7 @@ import User from 'App/Models/User'
 import Student from 'App/Models/Student'
 // import Status from 'App/Models/Status'
 import File from 'App/Models/File'
-import { StepStatus, Steps4Month, Steps2Month, Steps6Month } from 'Contracts/enum'
+import { StepStatus, Steps4Month, Steps2Month, Steps6Month, AllSteps } from 'Contracts/enum'
 // import Document from 'App/Models/Document'
 // import StepStatusModel from 'App/Models/StepStatus'
 import AcademicYear from 'App/Models/AcademicYear'
@@ -456,7 +456,7 @@ export default class UsersController {
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           const userHasDoc = await UserHasDoc.query()
             .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-            .orderBy('updated_at', 'desc')
+            .orderBy('created_at', 'desc')
           // console.log(userHasDoc)
           if (userHasDoc && userHasDoc.length > 0) {
             // studentUsers[i].serialize()
@@ -481,6 +481,51 @@ export default class UsersController {
           result = this.queryStringFilter(studentUsers, request.qs().step)
         }
       }
+      const AllStepByMonth = {}
+      // const body = {}
+      AllStepByMonth['twoMonth'] = this.showSteps(2)
+      AllStepByMonth['fourMonth'] = this.showSteps(4)
+      AllStepByMonth['sixMonth'] = this.showSteps(6)
+      let stepEdit: any
+      // console.log(auth.user);
+      AllStepByMonth['twoMonth'] = await this.addTemplateFiletoStepMonth(
+        AllStepByMonth['twoMonth'],
+        2
+      )
+      AllStepByMonth['fourMonth'] = await this.addTemplateFiletoStepMonth(
+        AllStepByMonth['fourMonth'],
+        4
+      )
+      AllStepByMonth['sixMonth'] = await this.addTemplateFiletoStepMonth(
+        AllStepByMonth['sixMonth'],
+        6
+      )
+      // console.log(stepEdit)
+
+      if (request.qs() && request.qs().month && request.qs().step) {
+        stepEdit = this.findStepEdit(
+          request.qs().month,
+          request.qs().step,
+          AllStepByMonth['twoMonth'],
+          AllStepByMonth['fourMonth'],
+          AllStepByMonth['sixMonth']
+        )
+      }
+      // AllStepByMonth['fourMonth'] = this.addTemplateFiletoStepMonth(AllStepByMonth['fourMonth'], 4)
+      // AllStepByMonth['sixMonth'] = this.addTemplateFiletoStepMonth(AllStepByMonth['sixMonth'], 6)
+      // console.log(request.param('TR-01'))
+      console.log(AllStepByMonth, 'JA')
+      console.log(stepEdit)
+
+      // const templateFileQuery = 'template' + documentStatusesJsonCurrent.step
+      // const templateFile = await File.query().where('step_file_type', templateFileQuery)
+      // console.log(templateFile)
+
+      // currentSteps['id'] = documentStatusesJsonCurrent.id
+      // if (templateFile && templateFile.length > 0) {
+      //   currentSteps['templateFile'] = templateFile[0].serialize()
+      // }
+      // AllStepByMonth.push(body)
       // response.cookie('year', year)
       return view.render('student-information', {
         studentUsers:
@@ -495,6 +540,8 @@ export default class UsersController {
         advisorById: advisorById[0],
         studentUsersByAd: adSe,
         studentUsersByAdOne: studentUsersByAdOne,
+        AllStepByMonth: AllStepByMonth,
+        stepEdit: stepEdit,
       })
     } catch (error) {
       console.log(error)
@@ -503,64 +550,79 @@ export default class UsersController {
     }
   }
 
-  // public async updateSupervision({ request, response }: HttpContextContract) {
-  //   try {
-  //     const {
-  //       date,
-  //       // stepStatId,
-  //       supervisionStatus,
-  //       meetingLink,
-  //       advisorComment,
-  //       dateConfirmStatus,
-  //     } = request.all()
-  //     // console.log('เข้า')
+  private findStepEdit(month, step, m2, m4, m6) {
+    let stepEdit: any
+    // console.log(month, step)
+    // console.log(m2)
 
-  //     const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-  //     const user = await User.query().where('user_id', request.param('id'))
-  //     if (user && user.length > 0) {
-  //       const userAc = await UsersInAcademicYearModel.query()
-  //         .where('user_id', user[0].user_id)
-  //         .andWhere('academic_year', AcademicYearCf[0].academic_year)
-  //       // console.log(userAc[0].id);
-  //       // const UserhasSupervision = await UserHasDoc.query()
-  //       //   .where('id', stepStatId)
-  //       //   .andWhere('user_in_academic_year_id', userAc[0].id)
-  //       //   .orderBy('updated_at', 'desc')
-  //       const UserhasSupervision = new UserHasDoc()
-  //       // console.log(UserhasSupervision[0])
-  //       if (date) {
-  //         if (user[0].role === 'advisor') {
-  //           UserhasSupervision.advisor_date = date
-  //         } else {
-  //           UserhasSupervision.student_date = date
-  //         }
-  //       }
+    // if (request.qs() && request.qs().month && request.qs().step) {
+    if (month === '2') {
+      // console.log(m2)
+      // if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   const stepEditIndex = m2.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
+      //   if (stepEditIndex > -1) {
+      //     stepEdit = m2[stepEditIndex].find((ele) => ele.name === step)
+      //   }
+      // } else {
+      stepEdit = m2.find((ele) => ele.name === step)
+      // }
+    } else if (month === '4') {
+      // if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   const stepEditIndex = m4.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
+      //   if (stepEditIndex > -1) {
+      //     stepEdit = m4[stepEditIndex].find((ele) => ele.name === step)
+      //   }
+      // } else {
+      stepEdit = m4.find((ele) => ele.name === step)
+      // }
+    } else if (month === '6') {
+      // if (step.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   const stepEditIndex = m6.findIndex((ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION)
+      //   if (stepEditIndex > -1) {
+      //     stepEdit = m6[stepEditIndex].find((ele) => ele.name === step)
+      //   }
+      // } else {
+      stepEdit = m6.find((ele) => ele.name === step)
+      // }
+    }
+    // }
+    // console.log(stepEdit)
 
-  //       if (supervisionStatus) {
-  //         UserhasSupervision.supervision_status = supervisionStatus
-  //       }
+    return stepEdit
+  }
+  private async addTemplateFiletoStepMonth(stepMonth, month) {
+    for (let i = 0; i < stepMonth.length; i++) {
+      stepMonth[i]['templateFile'] = []
+      // if (stepMonth[i].name.includes(AllSteps.TR03_TR05_AND_SUPERVISION)) {
+      //   for (let j = 0; j < stepMonth[i].month.length; j++) {
+      //     stepMonth[i].month[j]['templateFile'] = []
+      //     const templateFileQuery = 'template' + stepMonth[i].month[j].name + month
+      //     const templateFile = await File.query().where('step_file_type', templateFileQuery)
+      //     // console.log(templateFile)
 
-  //       if (meetingLink) {
-  //         UserhasSupervision.meeting_link = meetingLink
-  //       }
+      //     // currentSteps['id'] = documentStatusesJsonCurrent.id
+      //     if (templateFile && templateFile.length > 0) {
+      //       for (let k = 0; k < templateFile.length; k++) {
+      //         stepMonth[i].month[j]['templateFile'].push(templateFile[k].serialize())
+      //       }
+      //     }
+      //   }
+      // } else {
+      const templateFileQuery = 'template' + stepMonth[i].name + month
+      const templateFile = await File.query().where('step_file_type', templateFileQuery)
+      // console.log(templateFile)
 
-  //       if (advisorComment) {
-  //         UserhasSupervision.advisor_comment = advisorComment
-  //       }
-
-  //       if (dateConfirmStatus) {
-  //         UserhasSupervision.date_confirm_status = dateConfirmStatus
-  //       }
-  //       // console.log(UserhasSupervision[0])
-  //       UserhasSupervision.user_in_academic_year_id = userAc[0].id
-  //       await UserhasSupervision.save()
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-
-  //     return response.status(400).json({ message: error.message })
-  //   }
-  // }
+      // currentSteps['id'] = documentStatusesJsonCurrent.id
+      if (templateFile && templateFile.length > 0) {
+        for (let k = 0; k < templateFile.length; k++) {
+          stepMonth[i]['templateFile'].push(templateFile[k].serialize())
+        }
+      }
+    }
+    // }
+    // console.log(stepMonth)
+    return stepMonth
+  }
 
   public async updateCourseInformation({ auth, request, response }: HttpContextContract) {
     try {
@@ -882,10 +944,6 @@ export default class UsersController {
 
   public async showStudentUserById({ auth, request, response, view }: HttpContextContract) {
     try {
-      // const role = request.param('role')
-      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
-      // const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
-      // console.log(auth.user)
       let AcademicYearCf: any
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
@@ -901,15 +959,12 @@ export default class UsersController {
       const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
-      // .preload('student')
-      // const studentUser = studentUsers[0]
 
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
           .preload('student')
-        // console.log(usersInAcademicYear)
 
         if (usersInAcademicYear[0]) {
           const stSerialize = studentUsersRole[0].serialize()
@@ -918,10 +973,6 @@ export default class UsersController {
         }
       }
 
-      // if (studentUser.student.advisor_id) {
-      //   const advisor = await User.findOrFail(studentUser.student.advisor_id)
-      //   studentUser.student['advisorFullName'] = advisor.firstname + ' ' + advisor.lastname
-      // }
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
         { title: 'Email', value: studentUser.email, key: 'email' },
@@ -947,254 +998,120 @@ export default class UsersController {
       ]
       const qs = request.qs()
       const plans = [2, 4, 6]
-      let steps: any =
-        studentUser.student.plan === 6
-          ? [
-              {
-                name: Steps6Month.TR01,
-                // defaultFile:
-              },
-              {
-                name: Steps6Month.TR02,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_1_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_1_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_2_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_2_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_3_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_3_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_4_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_4_6,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_5_6,
-              },
-              {
-                name: Steps6Month.INFORMED_SUPERVISION_5_6,
-              },
-              {
-                name: Steps6Month.SENT_PRESENTATION,
-              },
-              {
-                name: Steps6Month.TR03_AND_TR05_6_6,
-              },
-            ]
-          : studentUser.student.plan === 4
-          ? [
-              {
-                name: Steps4Month.TR01,
-              },
-              {
-                name: Steps4Month.TR02,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_1_4,
-              },
-              {
-                name: Steps4Month.INFORMED_SUPERVISION_1_4,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_2_4,
-              },
-              {
-                name: Steps4Month.INFORMED_SUPERVISION_2_4,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_3_4,
-              },
-              {
-                name: Steps4Month.INFORMED_SUPERVISION_3_4,
-              },
-              {
-                name: Steps4Month.SENT_PRESENTATION,
-              },
-              {
-                name: Steps4Month.TR03_AND_TR05_4_4,
-              },
-            ]
-          : [
-              {
-                name: Steps2Month.TR01,
-              },
-              {
-                name: Steps2Month.TR02,
-              },
-              {
-                name: Steps2Month.INFORMED_SUPERVISION,
-              },
-              {
-                name: Steps2Month.SENT_PRESENTATION,
-              },
-              {
-                name: Steps2Month.TR03_AND_TR08,
-              },
-            ]
-      let nextStep: any
+
+      let stepsRender: any = this.showSteps(studentUser.student.plan)
+      let nextStep: any = {}
       let currentSteps: any = {}
       const disabled =
         studentUser.student.plan === null || studentUser.student.plan === 0 ? '' : 'disabled'
-      // const student = await Student.findOrFail(request.param('id'))
 
-      // const documentStatuses = await student
-      //   .related('documentsStatuses')
-      //   .query()
-      //   .wherePivot('student_id', request.param('id'))
-      //   .orderBy('pivot_updated_at', 'desc')
-
-      // const usersInAcademicYear = await UsersInAcademicYearModel.query()
-      //   .where('user_id', studentUser.user_id)
-      //   .andWhere('academic_year', AcademicYearCf[0].academic_year)
       let userHasDocResult: any
 
-      // if (request.qs().doc && request.qs().status) {
-      //   userHasDocResult = await UserHasDoc.query()
-      //     .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-      //     .where('doc_stat_id', request.qs().step)
-      // } else {
       userHasDocResult = await UserHasDoc.query()
         .where('user_in_academic_year_id', usersInAcademicYear[0].id)
         .orderBy('created_at', 'desc')
-      // }
 
-      // const userHasDocResultForTime = await UserHasDoc.query()
-      //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-      //   .orderBy('updated_at', 'asc')
       let submission: any = []
       let stepFile: any
       let userHasDoc: any = []
       let isChangeStep: any = false
       let realCurrentStep: any
+      let documentStatusesJsonCurrent: any
       if (userHasDocResult[0]) {
-        if (request.qs().step && request.qs().status) {
-          if (request.cookie('isChangeStepSame') === request.qs().step) {
-            const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
-            // console.log(stepIndex - (stepIndex % 4))
-            return response.redirect(
-              '/student-information/' +
-                studentUser.user_id +
-                '?firstStepPaging=' +
-                (stepIndex > 3
-                  ? steps[stepIndex - (4 + (stepIndex % 4))].name + '&gnext=true'
-                  : steps[4].name) +
-                '&gnext=false'
-            )
-          } else {
-            const stepIndex = steps.findIndex((step) => step.name === request.qs().step)
-            // console.log(stepIndex)
-            if (stepIndex > 3) {
-              qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
-              qs.gnext = 'true'
-              // console.log(qs)
-            }
-            userHasDoc = await UserHasDoc.query()
-              .where('step', request.qs().step)
-              .andWhere('status', request.qs().status)
-              .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-            isChangeStep = true
-          }
-          response.cookie('isChangeStepSame', request.qs().step)
+        // if (request.qs().step && request.qs().status) {
+        //   userHasDoc = await UserHasDoc.query()
+        //     .where('step', request.qs().step)
+        //     .andWhere('status', request.qs().status)
+        //     .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+        //   isChangeStep = true
+        // } else {
+        //   userHasDoc.push(userHasDocResult[0])
+        // }
+        if (
+          request.qs().step &&
+          (request.qs().step.includes('TR-03 and TR-05') ||
+            request.qs().step.includes('Supervision'))
+        ) {
+          // console.log('เข้าอันงี้')
+
+          const step = request.qs().step
+          const stepSplit = step.split('Month ')
+          const stepSplitRe = stepSplit[1].split(')')
+          const TrStep = request.qs().step.includes('TR-03')
+            ? AllSteps.TR_03_TR_05 + ' (' + stepSplitRe[0] + '/' + studentUser.student.plan + ')'
+            : AllSteps.INFORMED_SUPERVISION +
+              ' (' +
+              stepSplitRe[0] +
+              '/' +
+              studentUser.student.plan +
+              ')'
+          // }
+
+          // if (request.qs().step) {
+          userHasDoc = await UserHasDoc.query()
+            .where('step', TrStep)
+            // .andWhere('status', request.qs().status)
+            .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          // if (!userHasDoc || userHasDoc.length <= 0) {
+          //   userHasDoc.push(userHasDocResult[0])
+          // }
+          isChangeStep = true
+        } else if (
+          request.qs().step &&
+          !request.qs().step.includes('TR-03 and TR-05') &&
+          !request.qs().step.includes('Supervision')
+        ) {
+          userHasDoc = await UserHasDoc.query()
+            .where('step', request.qs().step)
+            // .andWhere('status', request.qs().status)
+            .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+          // if (!userHasDoc || userHasDoc.length <= 0) {
+          //   userHasDoc.push(userHasDocResult[0])
+          // }
+          isChangeStep = true
         } else {
-          const stepIndex = steps.findIndex((step) => step.name === userHasDocResult[0].step)
-          // let zero: any
-          if (Object.keys(request.qs()).length === 0 && stepIndex > 3) {
-            qs.firstStepPaging = steps[stepIndex - (4 + (stepIndex % 4))].name
-            qs.gnext = 'true'
-          }
-
-          response.cookie('isChangeStepSame', '')
           userHasDoc.push(userHasDocResult[0])
-        }
-        // if()
-        // userHasDoc = await Document_Status.query().where('id', userHasDocResult[0].doc_stat_id)
-        // const doc = await Document.query().where('doc_name', userHasDoc[0].document_id)
-        // const file = await File.query().where('doc_name', userHasDoc[0].document_id)
-        // stepFile = file[0].file_id
-        const stepStatToSubmission = await UserHasDoc.query()
-          .where('step', userHasDoc[0].step)
-          .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .andWhere('status', 'Pending')
-          .orderBy('updated_at', 'asc')
-        // const userHasDocResultForTime = await UserHasDoc.query()
-        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhere('step_stat_id', stepStatToSubmission[0].id)
-        //   .orderBy('updated_at', 'asc')
-
-        for (let i = 0; i < stepStatToSubmission.length; i++) {
-          let docWStatSe: any
-          docWStatSe = moment(stepStatToSubmission[i].createdAt.toString())
-            .tz('Asia/Bangkok')
-            .format('MMMM D, YYYY h:mm A')
-          submission.push({ created_at: docWStatSe })
         }
       }
 
-      // console.log(submission)
-      // console.log(userHasDocResult[0])
-      // userHasDocResult[0].related('')
-      // console.log(userHasDoc[0])
-      // console.log(userHasDoc)
-
       if (userHasDoc && userHasDoc.length > 0) {
-        const documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+        documentStatusesJsonCurrent = userHasDoc[0].toJSON()
+        const templateFileQuery =
+          'template' + documentStatusesJsonCurrent.step + studentUser.student.plan
+        const templateFile = await File.query().where('step_file_type', templateFileQuery)
+        // console.log(templateFile)
+
         currentSteps['id'] = documentStatusesJsonCurrent.id
+        if (templateFile && templateFile.length > 0) {
+          currentSteps['templateFile'] = []
+          for (let tmpIndex = 0; tmpIndex < templateFile.length; tmpIndex++) {
+            currentSteps['templateFile'].push(templateFile[tmpIndex].serialize())
+          }
+        }
         currentSteps['file'] = {}
         currentSteps['file'].row = []
-        // currentSteps['file'].stepFile = []
-        const templateFile = await File.query().where(
-          'template_step',
-          documentStatusesJsonCurrent.step
-        )
+        currentSteps['supervision'] = {}
+
         const allUserHasDoc = await UserHasDoc.query().where(
           'user_in_academic_year_id',
           usersInAcademicYear[0].id
         )
 
-        // console.log(usersInAcademicYear[0].id);
-
-        // if (
-        //   documentStatusesJsonCurrent.step === 'TR-02' &&
-        //   request.qs().step &&
-        //   !request.qs().step.includes('TR-03')
-        // ) {
-        //   const currentStepFile = await File.query().where(
-        //     'user_has_doc_id',
-        //     documentStatusesJsonCurrent.id
-        //   )
-        //   // {
-        //   // console.log('เข้า')
-        //   // console.log(currentStepFile)
-
-        //   if (currentStepFile[0]) {
-        //     currentSteps['file'].row.push(currentStepFile[0].serialize())
-        //   }
-        // }
-        // const checkForStepHasPassedIndex = steps.findIndex(
-        //   (word) => word.name === documentStatusesJsonCurrent.step
-        // )
-        // const checkForStepHasPassed = await UserHasDoc.query()
-        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-        //   .andWhere('step', steps[checkForStepHasPassedIndex + 1].name)
-
-        // if (documentStatusesJsonCurrent.step !== 'TR-02') {
         currentSteps['file'].row = []
-        for (let i = 0; i < allUserHasDoc.length; i++) {
-          console.log(allUserHasDoc[i].step)
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
+        // currentSteps.supervision.push([])
 
+        const objSupervision = {}
+        // const objSupervision1 = {}
+        // const objSupervision2 = {}
+        // const objSupervision3 = {}
+        // const objSupervision4 = {}
+        // const objSupervision5 = {}
+        for (let i = 0; i < allUserHasDoc.length; i++) {
           if (
             (documentStatusesJsonCurrent.step === 'TR-01' &&
               documentStatusesJsonCurrent.status === 'Approved' &&
@@ -1202,74 +1119,65 @@ export default class UsersController {
             request.qs().step === 'TR-02'
           ) {
             if (allUserHasDoc[i].step === 'TR-02') {
-              const currentStepFile = await File.query().where(
-                'user_has_doc_id',
-                documentStatusesJsonCurrent.id
-              )
-              // {
-              // console.log('เข้า')
-              // console.log(currentStepFile)
+              const currentStepFile = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .where('step_file_type', 'signedFile')
+                .orderBy('created_at', 'desc')
+              console.log(currentStepFile)
 
               if (currentStepFile[0]) {
-                currentSteps['file'].row.push(currentStepFile[0].serialize())
+                currentSteps['file'] = currentStepFile[0].serialize()
               }
+
+              currentSteps['sentFirmDate'] = allUserHasDoc[i].advisor_date
+              currentSteps['recievedFirmDate'] = allUserHasDoc[i].complete_date
             }
           } else if (
             allUserHasDoc[i].step === 'TR-01' &&
             documentStatusesJsonCurrent.step === 'TR-01'
-            // &&
-            // (!checkForStepHasPassed || checkForStepHasPassed.length <= 0) &&
-            // documentStatusesJsonCurrent.step !== 'TR-01' &&
-            // documentStatusesJsonCurrent.status !== 'Approved'
-
-            // &&
-            // request.qs().step &&
-            // !request.qs().step.includes('TR-02')
           ) {
             const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
+            const StFileResult = await File.query()
+              .where('user_has_doc_id', allUserHasDoc[i].id)
+              .andWhere('step_file_type', 'studentFile')
+            const feedbackFileResult = await File.query()
+              .where('user_has_doc_id', allUserHasDoc[i].id)
+              .andWhere('step_file_type', 'feedbackFile')
+            const signedFileResult = await File.query()
+              .where('user_has_doc_id', allUserHasDoc[i].id)
+              .andWhere('step_file_type', 'signedFile')
+
             const obj = {}
             obj['feedbackFile'] = {}
             obj['signedFile'] = {}
             obj['studentFile'] = {}
             obj['reason'] = {}
-            const lastestStSendingFile = await UserHasDoc.query()
-              .where('user_in_academic_year_id', allUserHasDoc[i].user_in_academic_year_id)
-              .andWhere('step', 'TR-01')
-              .andWhere('status', StepStatus.PENDING)
-              // .orWhere('status', StepStatus.APPROVED)
-              .orderBy('updated_at', 'desc')
-            const lastestStSendingFileResult = await File.query().where(
-              'user_has_doc_id',
-              lastestStSendingFile[0].id
-            )
+
             if (result && result.length > 0) {
-              if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
-                obj['studentFile'] = lastestStSendingFileResult[0].serialize()
+              if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
+                obj['studentFile'] =
+                  StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
                 if (!allUserHasDoc[i].is_signed) {
-                  obj['feedbackFile'] = result[0].serialize()
+                  obj['feedbackFile'] =
+                    feedbackFileResult && feedbackFileResult.length > 0
+                      ? feedbackFileResult[0].serialize()
+                      : {}
                 }
                 if (allUserHasDoc[i].is_signed) {
-                  obj['signedFile'] = result[0].serialize()
+                  obj['signedFile'] =
+                    signedFileResult && signedFileResult.length > 0
+                      ? signedFileResult[0].serialize()
+                      : {}
                 }
-              } else if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
-                obj['studentFile'] = result[0].serialize()
+              } else if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_react) {
+                obj['studentFile'] =
+                  StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
               }
-              // if (allUserHasDoc[i].is_adv_react) {
-              //   if (!allUserHasDoc[i].is_signed) {
-              //     obj['feedbackFile'] = result[0].serialize()
-              //   }
-              //   if (allUserHasDoc[i].is_signed) {
-              //     obj['signedFile'] = result[0].serialize()
-              //   }
-              // }
-
-              // if (!allUserHasDoc[i].is_signed && !allUserHasDoc[i].is_adv_react) {
-              //   obj['studentFile'] = result[0].serialize()
-              // }
             }
 
-            if (allUserHasDoc[i].is_adv_react || allUserHasDoc[i].is_signed) {
-              obj['studentFile'] = lastestStSendingFileResult[0].serialize()
+            if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
+              obj['studentFile'] =
+                StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
             }
             if (allUserHasDoc[i].no_approve_reason) {
               obj['reason'] = {
@@ -1279,174 +1187,548 @@ export default class UsersController {
             }
             currentSteps['file'].row.push(obj)
           } else if (
+            (documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') &&
+              documentStatusesJsonCurrent.status === 'Approved' &&
+              !request.qs().step) ||
+            (request.qs().step && request.qs().step.includes('Supervision')) ||
+            (documentStatusesJsonCurrent.step &&
+              documentStatusesJsonCurrent.step.includes('Informed') &&
+              documentStatusesJsonCurrent.status !== 'Approved')
+          ) {
+            if (
+              allUserHasDoc[i] &&
+              allUserHasDoc[i].step &&
+              allUserHasDoc[i].step.includes('Informed')
+            ) {
+              // if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
+              if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+                objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+                objSupervision['studentDate'] = allUserHasDoc[i].student_date
+                objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+                objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+                objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+                objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+                objSupervision['is_new'] = allUserHasDoc[i].is_new
+                if (
+                  !(
+                    objSupervision && // 👈 null and undefined check
+                    Object.keys(objSupervision).length === 0 &&
+                    Object.getPrototypeOf(objSupervision) === Object.prototype
+                  )
+                ) {
+                  currentSteps['supervision'] = objSupervision
+                }
+              }
+              // }
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (2/6)') {
+              //   objSupervision1['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision1['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision1['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision1['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision1['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision1['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[1].push(objSupervision1)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+              //   objSupervision2['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision2['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision2['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision2['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision2['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision2['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[2].push(objSupervision2)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+              //   objSupervision3['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision3['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision3['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision3['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision3['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision3['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[3].push(objSupervision3)
+              //   // currentSteps['supervision']['m4'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+              //   objSupervision4['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision4['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision4['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision4['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision4['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision4['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[4].push(objSupervision4)
+              //   // currentSteps['supervision']['m5'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+              //   objSupervision5['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision5['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision5['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision5['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision5['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision5['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[5].push(objSupervision5)
+              //   // currentSteps['supervision']['m6'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+              //   objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[0].push(objSupervision)
+              //   // currentSteps['supervision']['m1'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+              //   objSupervision1['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision1['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision1['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision1['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision1['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision1['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[1].push(objSupervision1)
+              //   // currentSteps['supervision']['m2'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+              //   objSupervision2['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision2['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision2['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision2['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision2['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision2['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[2].push(objSupervision2)
+              //   // currentSteps['supervision']['m3'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+              //   objSupervision3['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision3['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision3['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision3['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision3['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision3['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[3].push(objSupervision3)
+              //   // currentSteps['supervision']['m4'].push(objSupervision)
+              // } else if (allUserHasDoc[i].step === 'Informed supervision') {
+              //   objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
+              //   objSupervision['studentDate'] = allUserHasDoc[i].student_date
+              //   objSupervision['completeDate'] = allUserHasDoc[i].complete_date
+              //   objSupervision['meetingLink'] = allUserHasDoc[i].meeting_link
+              //   objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
+              //   objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
+              //   currentSteps.supervision[0].push(objSupervision)
+              // }
+            }
+          } else if (
             allUserHasDoc[i].step.includes('TR-03') &&
             documentStatusesJsonCurrent.step.includes('TR-03')
           ) {
-            const obj = {}
-            obj['TR_03_TR_05File'] = {}
-            obj['feedbackFile'] = {}
-            obj['reason'] = ''
-            if (allUserHasDoc[i].is_adv_react) {
-              const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
-              if (result[0]) {
-                obj['feedbackFile'] = result[0].serialize()
-              }
+            // if (allUserHasDoc[i].step === 'TR-02') {
+            //   const currentStepFile = await File.query()
+            //     .where('user_has_doc_id', allUserHasDoc[i].id)
+            //     .where('step_file_type', 'signedFile')
 
-              const resultFeedback = await File.query().where(
-                'user_has_doc_id',
-                allUserHasDoc[i - 1].id
-              )
-              if (resultFeedback[0]) {
-                obj['TR_03_TR_05File'] = resultFeedback[0].serialize()
+            //   if (currentStepFile[0]) {
+            //     currentSteps['file'].row.push(currentStepFile[0].serialize())
+            //   }
+            // }
+            // console.log(request.qs().step)
+
+            // console.log(allUserHasDoc[i].step)
+            // console.log(documentStatusesJsonCurrent.step)
+
+            if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+              const obj = {}
+              obj['studentFile'] = {}
+              obj['feedbackFile'] = {}
+              obj['reason'] = ''
+              const StFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'studentFile')
+              const feedbackFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'feedbackFile')
+              if (allUserHasDoc[i].is_react) {
+                if (feedbackFileResult[0]) {
+                  obj['feedbackFile'] = feedbackFileResult[0].serialize()
+                }
+
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
+              } else {
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
               }
-            } else {
-              const result = await File.query().where('user_has_doc_id', allUserHasDoc[i].id)
-              if (result[0]) {
-                obj['TR_03_TR_05File'] = result[0].serialize()
+              if (allUserHasDoc[i].no_approve_reason) {
+                obj['reason'] = {
+                  body: allUserHasDoc[i].no_approve_reason,
+                  date: allUserHasDoc[i].updatedAt,
+                }
+              }
+              if (
+                !(
+                  obj && // 👈 null and undefined check
+                  Object.keys(obj).length === 0 &&
+                  Object.getPrototypeOf(obj) === Object.prototype
+                )
+              ) {
+                // if (allUserHasDoc[i].step === 'TR-03 and TR-05 (1/6)') {
+                //   currentSteps['file'].row[0].push(obj)
+                // } else if (allUserHasDoc[i].step === 'TR-03 and TR-05 (2/6)') {
+                //   currentSteps['file'].row[1].push(obj)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (3/6)') {
+                //   currentSteps['file'].row[2].push(obj)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (4/6)') {
+                //   currentSteps['file'].row[3].push(obj)
+                //   // currentSteps['supervision']['m4'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (5/6)') {
+                //   currentSteps['file'].row[4].push(obj)
+                //   // currentSteps['supervision']['m5'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (6/6)') {
+                //   currentSteps['file'].row[5].push(obj)
+                //   // currentSteps['supervision']['m6'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (1/4)') {
+                //   currentSteps.supervision[0].push(objSupervision)
+                //   // currentSteps['supervision']['m1'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (2/4)') {
+                //   currentSteps.supervision[1].push(objSupervision1)
+                //   // currentSteps['supervision']['m2'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (3/4)') {
+                //   currentSteps.supervision[2].push(objSupervision2)
+                //   // currentSteps['supervision']['m3'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision (4/4)') {
+                //   currentSteps.supervision[3].push(objSupervision3)
+                //   // currentSteps['supervision']['m4'].push(objSupervision)
+                // } else if (allUserHasDoc[i].step === 'Informed supervision') {
+                //   currentSteps.supervision[0].push(objSupervision)
+                //   // currentSteps['supervision']['m1'].push(objSupervision)
+                // }
+                currentSteps['file'].row.push(obj)
+                // break
               }
             }
-            if (allUserHasDoc[i].no_approve_reason) {
-              obj['reason'] = {
-                body: allUserHasDoc[i].no_approve_reason,
-                date: allUserHasDoc[i].updatedAt,
+          } else if (
+            (documentStatusesJsonCurrent.step === 'Presentation' &&
+              documentStatusesJsonCurrent.status === 'Approved' &&
+              !request.qs().step) ||
+            request.qs().step === 'TR-03 and TR-08' ||
+            request.qs().step === 'TR-03 and TR-06'
+          ) {
+            if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+              const obj = {}
+              obj['studentFile'] = {}
+              obj['feedbackFile'] = {}
+              obj['reason'] = ''
+              const StFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'studentFile')
+              const feedbackFileResult = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .andWhere('step_file_type', 'feedbackFile')
+              if (allUserHasDoc[i].is_react) {
+                if (feedbackFileResult[0]) {
+                  obj['feedbackFile'] = feedbackFileResult[0].serialize()
+                }
+
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
+              } else {
+                if (StFileResult[0]) {
+                  obj['studentFile'] = StFileResult[0].serialize()
+                }
+              }
+              if (allUserHasDoc[i].no_approve_reason) {
+                obj['reason'] = {
+                  body: allUserHasDoc[i].no_approve_reason,
+                  date: allUserHasDoc[i].updatedAt,
+                }
+              }
+              if (
+                !(
+                  obj && // 👈 null and undefined check
+                  Object.keys(obj).length === 0 &&
+                  Object.getPrototypeOf(obj) === Object.prototype
+                )
+              ) {
+                currentSteps['file'].row.push(obj)
               }
             }
-            if (
-              !(
-                obj && // 👈 null and undefined check
-                Object.keys(obj).length === 0 &&
-                Object.getPrototypeOf(obj) === Object.prototype
-              )
-            ) {
-              currentSteps['file'].row.push(obj)
+          } else if (
+            allUserHasDoc[i].step.includes('Presentation') &&
+            documentStatusesJsonCurrent.step.includes('Presentation')
+          ) {
+            if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
+              const currentStepFile = await File.query()
+                .where('user_has_doc_id', allUserHasDoc[i].id)
+                .where('step_file_type', 'signedFile')
+              // console.log("laskdkasl");
+
+              if (currentStepFile[0]) {
+                currentSteps['file'].row.push(currentStepFile[0].serialize())
+              }
             }
           }
-
-          // obj['TR-05File'] = {}
-          // obj['feedbackFile'] = {}
-          // const result03 = await File.query()
-          //   .where('user_has_doc_id', allUserHasDoc[i].id)
-          //   .andWhere('step_sep', 'TR-03')
-          // obj['TR-03File'] = result03[0].serialize()
-          // const result05 = await File.query()
-          //   .where('user_has_doc_id', allUserHasDoc[i].id)
-          //   .andWhere('step_sep', 'TR-05')
-          // obj['TR-05File'] = result05[0].serialize()
-          // if (allUserHasDoc[i].is_adv_react) {
-          //   const result = await File.query().where('user_has_doc_id', allUserHasDoc[i - 1].id)
-          //   obj['feedbackFile'] = result[0].serialize()
-          // }
-          // }
-          // }
         }
-
-        currentSteps['file'].templateFile = templateFile
-        // currentSteps['file'].feedbackFile = feedbackFile
-        // currentSteps['file'].signedFile = signedFile
-        // currentSteps['file'].studentFile = studentFile
 
         currentSteps['name'] = documentStatusesJsonCurrent.step
         currentSteps['status'] = documentStatusesJsonCurrent.status
+        // currentSteps['name'] = TrStep
+        console.log(documentStatusesJsonCurrent.step, 'adasd')
+
+        if (
+          documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') ||
+          documentStatusesJsonCurrent.step.includes('supervision')
+        ) {
+          let showStep: any
+          showStep = this.showSteps(studentUser.student.plan)
+          const stepReIndex = showStep.findIndex(
+            (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+          )
+          if (stepReIndex > -1) {
+            // console.log(showStep[stepReIndex])
+            for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
+              const stepRe = showStep[stepReIndex].month[shm].find(
+                (ele) => ele.value === documentStatusesJsonCurrent.step
+              )
+              // console.log(stepRe)
+              // console.log(currentSteps['name'])
+
+              if (stepRe) {
+                currentSteps['description'] = stepRe.description
+              }
+            }
+          }
+        } else {
+          let showStep: any
+          showStep = this.showSteps(studentUser.student.plan)
+          const stepRe = showStep.find((ele) => ele.name === documentStatusesJsonCurrent.step)
+
+          currentSteps['description'] = stepRe.description
+        }
+
         currentSteps['createAt'] = moment(documentStatusesJsonCurrent.created_at.toString())
           .tz('Asia/Bangkok')
           .format('MMMM D, YYYY h:mm A')
-        // console.log(new Date(documentStatusesJsonCurrent.student_date));
+        let stepIndex: any
+        let monthStepIndex: any
+        let stepsRenderIndex: any
+        if (
+          currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+          currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
+          (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved')
+        ) {
+          stepsRenderIndex = stepsRender.findIndex(
+            (step) => step.name === AllSteps.TR03_TR05_AND_SUPERVISION
+          )
 
-        currentSteps['reason'] = documentStatusesJsonCurrent.no_approve_reason
-        currentSteps['advisorDate'] = documentStatusesJsonCurrent.advisor_date
-          ? moment(documentStatusesJsonCurrent.advisor_date)
-              .tz('Asia/Bangkok')
-              .format('MMMM D, YYYY h:mm A')
-          : null
+          for (let i = 0; i < stepsRender[stepsRenderIndex].month.length; i++) {
+            for (let j = 0; j < stepsRender[stepsRenderIndex].month[i].length; j++) {
+              if (stepsRender[stepsRenderIndex].month[i][j].value === currentSteps['name']) {
+                stepIndex = j
+                monthStepIndex = i
+                // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex]);
+                break
+              }
+            }
+          }
+        } else {
+          stepIndex = stepsRender.findIndex((word) => word.name === currentSteps['name'])
+        }
+        if (userHasDoc[0].status === 'Approved') {
+          if (
+            currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+            currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
+            (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved')
+          ) {
+            if (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved') {
+              // console.log(nextStep = stepsRender[stepsRenderIndex].month[0][0]);
 
-        currentSteps['studentDate'] = documentStatusesJsonCurrent.student_date
-          ? moment(documentStatusesJsonCurrent.student_date)
-              .tz('Asia/Bangkok')
-              .format('MMMM D, YYYY')
-          : null
-        currentSteps['meetingLink'] = documentStatusesJsonCurrent.meeting_link
-        currentSteps['supervisionStatus'] = documentStatusesJsonCurrent.supervision_status
-        currentSteps['advisorComment'] = documentStatusesJsonCurrent.advisor_comment
-        currentSteps['dateConfirmStatus'] = documentStatusesJsonCurrent.date_confirm_status
-        // console.log(Steps[Steps.])
-        const stepIndex = steps.findIndex((word) => word.name === currentSteps['name'])
-        // console.log(stepIndex)
-        if (stepIndex >= 0) {
-          steps[stepIndex]['status'] = userHasDoc[0].status
-          if (userHasDoc[0].status === 'Approved') {
-            // console.log(steps[stepIndex + 1])
+              nextStep['name'] = stepsRender[stepsRenderIndex].month[0][0].value
+            } else {
+              if (stepIndex >= 0) {
+                nextStep['name'] =
+                  stepIndex === 1
+                    ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1]
+                      ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1][0].value
+                      : stepsRender[stepsRenderIndex + 1].name
+                      ? stepsRender[stepsRenderIndex + 1]
+                      : stepsRender[stepsRenderIndex].name
+                    : stepsRender[stepsRenderIndex].month[monthStepIndex][1].value
+              }
+            }
 
-            // const body = {}
-            // body['step'] = steps[stepIndex + 1] ? steps[stepIndex + 1].name : steps[stepIndex].name
-            // body['status'] = 'Waiting'
-            // await usersInAcademicYear[0].related('userHasDoc').create(body)
-            nextStep = steps[stepIndex + 1] ? steps[stepIndex + 1] : steps[stepIndex]
-            nextStep['isPassed'] = false
-            // console.log(steps[stepIndex]);
+            // ? stepsRender[stepsRenderIndex].month[monthStepIndex][1]
+            // : stepsRender[stepsRenderIndex + 1]
+            // ? stepsRender[stepsRenderIndex + 1]
+            // : stepsRender[stepsRenderIndex]
           } else {
-            nextStep = steps[stepIndex]
-            nextStep['isPassed'] = true
+            // console.log('เข้าอันงี้')
+            // console.log(stepsRender[stepIndex + 1])
+            if (stepIndex >= 0) {
+              nextStep['name'] = stepsRender[stepIndex + 1]
+                ? stepsRender[stepIndex + 1].name
+                : stepsRender[stepIndex].name
+            }
+          }
+          // stepsRender[stepsRenderIndex]
+        } else {
+          if (
+            currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
+            currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+          ) {
+            // console.log(stepIndex)
+            // // console.log(stepIndex)
+            // console.log(monthStepIndex)
+            if (stepIndex >= 0) {
+              nextStep['name'] =
+                stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex].value
+            }
+          } else {
+            if (stepIndex >= 0) {
+              nextStep['name'] = stepsRender[stepIndex].name
+            }
+          }
+          // }
+        }
+        // const userHasDocForRC = await UserHasDoc.query()
+        //   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+        //   .orderBy('created_at', 'desc')
+
+        // realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
+      } else if (
+        request.qs().step &&
+        (request.qs().step.includes('TR-03 and TR-05') || request.qs().step.includes('Supervision'))
+      ) {
+        // console.log('เข้าอันงี้')
+
+        const step = request.qs().step
+        const stepSplit = step.split('Month ')
+        const stepSplitRe = stepSplit[1].split(')')
+        const TrStep = request.qs().step.includes('TR-03')
+          ? AllSteps.TR_03_TR_05 + ' (' + stepSplitRe[0] + '/' + studentUser.student.plan + ')'
+          : AllSteps.INFORMED_SUPERVISION +
+            ' (' +
+            stepSplitRe[0] +
+            '/' +
+            studentUser.student.plan +
+            ')'
+
+        currentSteps['name'] = TrStep
+        // let showStep: any
+        // showStep = this.showSteps(studentUser.student.plan)
+        // const stepReIndex = showStep.findIndex(
+        //   (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+        // )
+        // const stepRe = showStep[stepReIndex].find((ele) => ele.name === TrStep)
+        // currentSteps['description'] = stepRe.description
+        let showStep: any
+        showStep = this.showSteps(studentUser.student.plan)
+        const stepReIndex = showStep.findIndex(
+          (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
+        )
+        if (stepReIndex > -1) {
+          // console.log(showStep[stepReIndex])
+          for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
+            const stepRe = showStep[stepReIndex].month[shm].find((ele) => ele.value === TrStep)
+            // console.log(stepRe)
+            // console.log(currentSteps['name'])
+
+            if (stepRe) {
+              currentSteps['description'] = stepRe.description
+            }
           }
         }
-        const userHasDocForRC = await UserHasDoc.query()
-          .where('user_in_academic_year_id', usersInAcademicYear[0].id)
-          .orderBy('updated_at', 'desc')
-        realCurrentStep = steps.findIndex((step) => step.name === userHasDocForRC[0].step)
-        // console.log(userHasDocForRC)
-
-        for (
-          let i = 0;
-          i <= (userHasDocForRC[0].status === 'Approved' ? realCurrentStep : realCurrentStep - 1);
-          i++
-        ) {
-          steps[i]['status'] = 'Approved'
-        }
-      } else {
-        currentSteps['name'] = steps[0].name
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
-        const templateFile = await File.query().where('template_step', steps[0].name)
-        // console.log(templateFile)
         currentSteps['file'] = {}
-        if (templateFile && templateFile.length > 0) {
-          currentSteps['file']['templateFile'] = templateFile[0].serialize()
-        }
-        nextStep = steps[0]
-        // nextStep['status'] = 'Waiting'
+        currentSteps['supervision'] = {}
+        nextStep['name'] = TrStep
+      } else if (
+        request.qs().step &&
+        !(
+          request.qs().step.includes('TR-03 and TR-05') || request.qs().step.includes('Supervision')
+        )
+      ) {
+        // console.log('เข้าอันงี้')
+
+        currentSteps['name'] = request.qs().step
+        let showStep: any
+        showStep = this.showSteps(studentUser.student.plan)
+        const stepRe = showStep.find((ele) => ele.name === request.qs().step)
+        currentSteps['description'] = stepRe.description
+        currentSteps['status'] = ''
+        currentSteps['createAt'] = ''
+        currentSteps['reason'] = ''
+        currentSteps['file'] = {}
+        currentSteps['supervision'] = {}
+        nextStep['name'] = request.qs().step
+      } else {
+        currentSteps['name'] = stepsRender[0].name
+        currentSteps['description'] = stepsRender[0].description
+        currentSteps['status'] = ''
+        currentSteps['createAt'] = ''
+        currentSteps['reason'] = ''
+        currentSteps['file'] = {}
+        currentSteps['supervision'] = {}
+        nextStep = stepsRender[0]
       }
-      // console.log(steps)
+
+      // if (currentSteps.supervision) {
+      //   currentSteps.supervision = currentSteps.supervision.filter((n) => n.length !== 0)
+      // }
+      let step01Stat: any
+      let step02Stat: any
+      for (let i = 0; i < stepsRender.length; i++) {
+        // console.log(stepsRender[i]['name'])
+
+        if (
+          stepsRender[i]['name'].includes('Supervision')
+          // ||
+          // stepsRender[i]['name'].includes('TR-03 and TR-05 (')
+          // ||
+          // stepsRender[i]['name'].includes(AllSteps.INFORMED_SUPERVISION)
+        ) {
+          // console.log("เข้่า")
+          for (let j = 0; j < stepsRender[i].month.length; j++) {
+            for (let k = 0; k < stepsRender[i].month[j].length; k++) {
+              // console.log(stepsRender[i].month[j][k]);
+              // console.log('เข้า่นี่2')
+              const allLastestStepStat = await UserHasDoc.query()
+                .where('step', stepsRender[i].month[j][k].value)
+                .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+                .orderBy('created_at', 'desc')
+              // console.log('เข้่า')
+
+              if (allLastestStepStat && allLastestStepStat.length > 0) {
+                stepsRender[i].month[j][k]['status'] = allLastestStepStat[0].status
+              }
+            }
+          }
+        } else {
+          // console.log('เข้า่นี่')
+
+          const allLastestStepStat = await UserHasDoc.query()
+            .where('step', stepsRender[i].name)
+            .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+            .orderBy('created_at', 'desc')
+          if (allLastestStepStat && allLastestStepStat.length > 0) {
+            const stepIndexTmp = stepsRender.findIndex(
+              (word) => word.name === allLastestStepStat[0].step
+            )
+            stepsRender[stepIndexTmp]['status'] = allLastestStepStat[0].status
+            if (stepsRender[i].name === AllSteps.TR01) {
+              step01Stat = allLastestStepStat[0].status
+            }
+            if (stepsRender[i].name === AllSteps.TR02) {
+              step02Stat = allLastestStepStat[0].status
+            }
+          }
+        }
+        // steps[i]['status'] = 'Approved'
+      }
       console.log(currentSteps)
-      console.log(currentSteps.file.row)
+      // console.log(stepsRender[2].month)
+      // console.log(stepsRender)
+      // console.log(currentSteps.supervision)
+      // console.log(currentSteps.file.row)
+      // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
       console.log(nextStep)
-      let stepPaged = []
-      if (qs.firstStepPaging) {
-        const firstStepPagingIndex = steps.findIndex((step) => step.name === qs.firstStepPaging)
-        stepPaged =
-          qs.gnext === 'true'
-            ? steps.slice(firstStepPagingIndex + 4, firstStepPagingIndex + 8)
-            : steps.slice(firstStepPagingIndex - 4, firstStepPagingIndex)
-      } else {
-        // if (nextStepIndex / 4 <= 1) {
-        //   console.log('1')
-        //   stepPaged = steps.slice(0, 4)
-        // } else if (nextStepIndex / 4 <= 2) {
-        //   console.log('2')
-        //   stepPaged = steps.slice(4, 8)
-        // } else if (nextStepIndex / 4 <= 3) {
-        //   console.log('3')
-        //   stepPaged = steps.slice(8, 12)
-        // } else {
-        //   console.log('4')
-        //   stepPaged = steps.slice(8, 10)
-        // }
-        stepPaged = steps.slice(0, 4)
-      }
-      const lastOfAllStep = steps[steps.length - 1].name
-      const firstOfAllStep = steps[0].name
-      // console.log(request.updateQs({}))
       const academicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       // return response.redirect('/student/' + studentUser.student.student_id)
       return view.render('student-information', {
@@ -1456,21 +1738,26 @@ export default class UsersController {
         disabled,
         nextStep,
         currentSteps,
-        stepPaged,
-        firstOfAllStep,
-        lastOfAllStep,
+        // stepPaged,
+        stepsRender,
+        // firstOfAllStep,
+        // lastOfAllStep,
         submission: submission,
         studentInfo: studentInfo,
         academicYears: academicYearAll,
+        step01Stat,
+        step02Stat,
         // userHasDoc: userHasDoc[0].id,
       })
       // return response.redirect('/announcement')
     } catch (error) {
+      console.log(error)
+
       return response.status(400).json({ message: error.message })
     }
   }
 
-  public async updateStudentUserStatus({ auth, request, response }: HttpContextContract) {
+  public async updateStudentUserStatus({ auth, session, request, response }: HttpContextContract) {
     try {
       const {
         study,
@@ -1478,12 +1765,14 @@ export default class UsersController {
         step,
         reason,
         date,
+        completeDate,
         // stepStatId,
         supervisionStatus,
         meetingLink,
         advisorComment,
         dateConfirmStatus,
         isSigned,
+        advisorDate,
       } = request.only([
         'study',
         'status',
@@ -1496,11 +1785,9 @@ export default class UsersController {
         'advisorComment',
         'dateConfirmStatus',
         'isSigned',
+        'completeDate',
+        'advisorDate',
       ])
-      // console.log('เข้า')
-
-      // console.log(status)
-      // console.log(step)
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUser: any
@@ -1516,14 +1803,6 @@ export default class UsersController {
           .where('user_id', studentUsersRole[0].user_id)
           .andWhere('academic_year', years[0].academic_year)
           .preload('student')
-        // console.log(usersInAcademicYear)
-        // console.log(usersInAcademicYear[0].student)
-
-        // if (usersInAcademicYear[0]) {
-        //   const stSerialize = studentUsersRole[0].serialize()
-        //   stSerialize['student'] = usersInAcademicYear[0].student
-        //   studentUser = stSerialize
-        // }
       }
       let user: any
       if (auth.user) {
@@ -1573,12 +1852,15 @@ export default class UsersController {
       if (status && step) {
         body['status'] = status
         body['step'] = step
-        body['is_adv_react'] =
+        body['is_react'] =
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? true : false
         body['is_signed'] =
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? isSigned : false
         body['no_approve_reason'] =
           reason && reason !== null && status === 'Disapproved' ? reason : null
+        if (step.includes('Informed')) {
+          body['is_new'] = auth.user?.role === 'student' ? false : true
+        }
       }
       // console.log(body)
 
@@ -1587,7 +1869,21 @@ export default class UsersController {
           body['advisor_date'] = date
         } else {
           body['student_date'] = date
+          body['is_react'] = true
+          body['is_signed'] = isSigned
         }
+      }
+
+      if (advisorDate) {
+        body['advisor_date'] = advisorDate
+      } else if (step && step === AllSteps.TR02 && !advisorDate) {
+        throw new Error('no adDate')
+      }
+
+      if (completeDate) {
+        body['complete_date'] = completeDate
+      } else if (step && step === AllSteps.TR02 && !completeDate) {
+        throw new Error('no compDate')
       }
 
       if (supervisionStatus) {
@@ -1598,45 +1894,379 @@ export default class UsersController {
         body['meeting_link'] = meetingLink
       }
 
-      if (advisorComment) {
-        body['advisor_comment'] = advisorComment
-      }
+      // if (advisorComment) {
+      //   body['advisor_comment'] = advisorComment
+      // }
 
       if (dateConfirmStatus) {
         body['date_confirm_status'] = dateConfirmStatus
       }
-      await usersInAcademicYear[0].related('userHasDoc').create(body)
-      // .then(async () => {
-      //   if (step && status) {
-      //     if (status === StepStatus.APPROVED) {
-      //       const object =
-      //         usersInAcademicYear[0].student.plan === 6
-      //           ? Steps6Month
-      //           : usersInAcademicYear[0].student.plan === 4
-      //           ? Steps4Month
-      //           : Steps2Month
-      //       const test = Object.keys(object).find((key) => object[key] === step)
-      //       // console.log(test)
-      //       // if(test){
+      // console.log('เข้า')
+      // console.log(step, 'asdasd')
+      if (
+        status &&
+        status !== StepStatus.PENDING &&
+        step &&
+        step !== AllSteps.TR02 &&
+        step !== AllSteps.PRESENTATION
+      ) {
+        // !(step === AllSteps.TR02 && status === StepStatus.APPROVED)
+        const stepTracking = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', step)
+          .orderBy('created_at', 'desc')
+        // stepTracking[0].status = body['status']
+        for (let i = 0; i < Object.keys(body).length; i++) {
+          stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
+        }
+        await stepTracking[0].save()
+        // if (step.includes('TR-03 and TR-05') && status === StepStatus.APPROVED) {
+        //   const body = {}
+        //   const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
+        //   const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
+        //   const s = Object.values(AllSteps)[indexOfS + 1]
+        //   // console.log(s)
+        //   body['step'] = s
+        //   // if(!s.includes('3/4') || !s.includes('3') )
+        //   await usersInAcademicYear[0].related('userHasDoc').create(body)
+        // }
+        // console.log(test)
+      } else if ((step && step === AllSteps.TR02) || (step && step === AllSteps.PRESENTATION)) {
+        const stepTracking = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', step)
+          .orderBy('created_at', 'desc')
+        if (stepTracking && stepTracking.length > 0) {
+          for (let i = 0; i < Object.keys(body).length; i++) {
+            stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
+          }
+          await stepTracking[0].save()
+        } else {
+          await usersInAcademicYear[0].related('userHasDoc').create(body)
+        }
+      } else {
+        // console.log('เข้า')
+        await usersInAcademicYear[0].related('userHasDoc').create(body)
+      }
+      return response.status(200).json('success')
+    } catch (error) {
+      console.log(error)
+      // console.log(error)
+      if (
+        error.message === 'no adDate' ||
+        error.message === 'no compDate'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      }
+      // else if (error.message === 'no privacy in this academic_year') {
+      //   session.flash({
+      //     error: 'No Permission In This Academic Year',
+      //     type: 'negative',
+      //   })
+      // } else {
+      //   session.flash({
+      //     error: 'Invalid creditials',
+      //     type: 'negative',
+      //   })
+      // }
+      // return response.redirect(
+      //   // `/student-information/${request.param('id')}?step=${request.body().step}&status=${
+      //   //   request.body().step === AllSteps.TR02 ? StepStatus.APPROVED : request.body().status
+      //   // }&mode=edit`
+      //   '/'
+      // )
+      return response.status(400).json({ message: error.message })
+    }
+  }
 
-      //       // }
-      //       const indexOfS = Object.keys(object).indexOf(test ? test : '')
-      //       // console.log(indexOfS);
+  public async updateSupervisionStatus({ request, response }: HttpContextContract) {
+    try {
+      const { step, supervisionStatus, dateConfirmStatus } = request.only([
+        'step',
+        'supervisionStatus',
+        'dateConfirmStatus',
+      ])
+      let supervision
+      let usersInAcademicYear: any
+      console.log('เข้าเมตอดนี้นะ')
 
-      //       const s = Object.values(object)[indexOfS + 1]
-      //       // console.log(s);
-      //       body['step'] = s
-      //       body['status'] = 'Waiting'
-      //       await usersInAcademicYear[0].related('userHasDoc').create(body)
-      //     }
-      //   }
-      // })
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const studentUsersRole = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+      // .preload('student')
+      // const studentUser = studentUsers[0]
+      // console.log('เข้า')
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+      }
+      if (step && step.includes('TR-03 and TR-05')) {
+        const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
+        const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
+        const s = Object.values(AllSteps)[indexOfS + 1]
+        supervision = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', s)
+          .orderBy('created_at', 'desc')
+      } else {
+        supervision = await usersInAcademicYear[0]
+          .related('userHasDoc')
+          .query()
+          .where('step', step)
+          .orderBy('created_at', 'desc')
+      }
+
+      if (supervision[0]) {
+        // dateConfirmStatus ? (supervision[0].date_confirm_status = dateConfirmStatus) : null
+        if (supervisionStatus) {
+          supervision[0].supervision_status = supervisionStatus
+        }
+        //  ? () : null
+        await supervision[0].save()
+      }
 
       return response.status(200).json('success')
     } catch (error) {
       console.log(error)
       return response.status(400).json({ message: error.message })
     }
+  }
+
+  private showSteps(month) {
+    const steps =
+      month === 6
+        ? [
+            {
+              name: Steps6Month.TR01,
+              description:
+                'เอกสารขอความอนุเคราะห์เข้าฝึกงาน เมื่อนักศึกษากรอกข้อมูลในเอกสารครบถ้วนและส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากอาจารย์หรือไม่ เมื่อเอกสารของนักศึกษาถูกต้องสมบูรณ์ จะมีการเซ็นเอกสารจากอาจารย์ส่งเข้าระบบ',
+              // defaultFile:
+            },
+            {
+              name: Steps6Month.TR02,
+              description:
+                'เอกสารตอบรับเข้าฝึกงานจากบริษัท เมื่อได้รับแล้ว เจ้าหน้าที่จะมีการส่งเอกสารเข้ามายังระบบ',
+            },
+            {
+              name: Steps6Month.TR03_TR05_AND_SUPERVISION,
+              month: [
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_1_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_1_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_2_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_2_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_3_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_3_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_4_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_4_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_5_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_5_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_6_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_6_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+              ],
+            },
+            {
+              name: Steps6Month.PRESENTATION,
+              description: 'งานนำเสนอการฝึกงานของนักษาที่ใช้ประกอบการนิเทศครั้งสุดท้าย',
+            },
+            {
+              name: Steps6Month.TR03_TR06,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-06) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+            },
+          ]
+        : month === 4
+        ? [
+            {
+              name: Steps4Month.TR01,
+              description:
+                'เอกสารขอความอนุเคราะห์เข้าฝึกงาน เมื่อนักศึกษากรอกข้อมูลในเอกสารครบถ้วนและส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากอาจารย์หรือไม่ เมื่อเอกสารของนักศึกษาถูกต้องสมบูรณ์ จะมีการเซ็นเอกสารจากอาจารย์ส่งเข้าระบบ',
+            },
+            {
+              name: Steps4Month.TR02,
+              description:
+                'เอกสารตอบรับเข้าฝึกงานจากบริษัท เมื่อได้รับแล้ว เจ้าหน้าที่จะมีการส่งเอกสารเข้ามายังระบบ',
+            },
+            {
+              name: Steps4Month.TR03_TR05_AND_SUPERVISION,
+              month: [
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_1_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_1_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_2_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_2_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_3_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_3_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_4_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_4_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                ],
+              ],
+            },
+            {
+              name: Steps4Month.PRESENTATION,
+              description: 'งานนำเสนอการฝึกงานของนักษาที่ใช้ประกอบการนิเทศครั้งสุดท้าย',
+            },
+            {
+              name: Steps4Month.TR03_TR06,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-06) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+            },
+          ]
+        : [
+            {
+              name: Steps2Month.TR01,
+              description:
+                'เอกสารขอความอนุเคราะห์เข้าฝึกงาน เมื่อนักศึกษากรอกข้อมูลในเอกสารครบถ้วนและส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากอาจารย์หรือไม่ เมื่อเอกสารของนักศึกษาถูกต้องสมบูรณ์ จะมีการเซ็นเอกสารจากอาจารย์ส่งเข้าระบบ',
+            },
+            {
+              name: Steps2Month.TR02,
+              description:
+                'เอกสารตอบรับเข้าฝึกงานจากบริษัท เมื่อได้รับแล้ว เจ้าหน้าที่จะมีการส่งเอกสารเข้ามายังระบบ',
+            },
+            {
+              name: Steps2Month.INFORMED_SUPERVISION,
+              description:
+                'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+            },
+            {
+              name: Steps2Month.PRESENTATION,
+              description: 'งานนำเสนอการฝึกงานของนักษาที่ใช้ประกอบการนิเทศครั้งสุดท้าย',
+            },
+            {
+              name: Steps2Month.TR03_AND_TR08,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-08) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+            },
+          ]
+
+    return steps
   }
 
   public async updateStudentUserApprove({ request, response }: HttpContextContract) {
@@ -2001,6 +2631,7 @@ export default class UsersController {
             // approved: true,
           },
         ]
+
         const usersArr = await User.createMany(arr)
         usersArr.forEach(
           async (user) =>
@@ -2016,12 +2647,14 @@ export default class UsersController {
           file_id: 'TR-01DEF',
           file_name: 'TR-01DEF.pdf',
           file_size: '200.06 KB',
+          step_file_type: 'templateTR-016',
         })
 
         await File.create({
           file_id: 'TR-02DEF',
           file_name: 'TR-02DEF.pdf',
           file_size: '200.06 KB',
+          step_file_type: 'templateTR-026',
         })
       }
 

@@ -73,13 +73,14 @@ export default class FilesController {
     return err
   }
 
-  public async storeDirect({ request, response }: HttpContextContract) {
+  public async storeDirect({ session, request, response }: HttpContextContract) {
     try {
-      const { step, studentId, status, template } = request.only([
+      const { step, studentId, status, stepFileType, stepFileTypePlan } = request.only([
         'step',
         'studentId',
         'status',
-        'template',
+        'stepFileType',
+        'stepFileTypePlan',
       ])
       // console.log(docId)
       // console.log(statId)
@@ -97,7 +98,9 @@ export default class FilesController {
         } else {
           const newFileName = uuidv4()
           await file.move(
-            Application.tmpPath(template === 'true' ? 'uploads/template' : 'uploads/steps'),
+            Application.tmpPath(
+              stepFileType.includes('template') ? 'uploads/template' : 'uploads/steps'
+            ),
             {
               name: newFileName + '.' + file.extname,
               overwrite: true, // overwrite in case of conflict
@@ -136,8 +139,15 @@ export default class FilesController {
           //     this.deleteFile(result, 'steps/')
           //   }
           // } else
-          if (template === 'true') {
-            const result = await File.query().where('template_step', step)
+          if (stepFileType.includes('template')) {
+            // if (auth.user) {
+            //   auth
+            const result = await File.query().where(
+              'step_file_type',
+              stepFileType + stepFileTypePlan
+            )
+            // }
+
             // console.log(result)
 
             if (result && result.length > 0) {
@@ -156,7 +166,8 @@ export default class FilesController {
             // doc_id: doc.doc_name,
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
-            template_step: template === 'true' ? step : null,
+            // step_file_type: template === 'true' ? step : null,
+            step_file_type: stepFileTypePlan ? stepFileType + stepFileTypePlan : stepFileType,
             // step_sep: stepSep && stepSep !== '' ? stepSep : null,
           })
           // userHasDoc[0].related('f')
@@ -169,6 +180,15 @@ export default class FilesController {
       return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
       console.log(error)
+      if (
+        error.message === 'not have files'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'All fields are required',
+          type: 'negative',
+        })
+      }
       return response.status(400).json({ message: error.messages })
     }
   }

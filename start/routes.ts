@@ -30,6 +30,18 @@ View.global('middleEllipsis', (str: string) => {
   return str
 })
 
+View.global('formatBytes', (bytes: number, decimals = 2) => {
+  if (!+bytes) return '0 Bytes'
+
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+})
+
 View.global('getCurrentYear', () => {
   return new Date().getFullYear()
 })
@@ -54,7 +66,7 @@ Route.get('/', async ({ view, auth, response }) => {
   if (year) {
     response.cookie('year', year.academic_year)
   }
-  if (auth.user) return response.redirect('/announcement')
+  if (auth.user) return response.redirect('/student-information')
   else {
     const roles = ['Student', 'Advisor', 'Staff']
     return view.render('home', { roles })
@@ -91,7 +103,7 @@ Route.get('/course-info/complete-course', 'UsersController.showStudentUser')
 
 Route.get('/steps', 'UsersController.showStudentUser')
 
-Route.get('/steps/edit', 'UsersController.showStudentUser')
+Route.get('/step/edit', 'UsersController.showStudentUser')
 
 Route.get('/course-info/edit/supervised-student', 'UsersController.showStudentUser')
 
@@ -113,6 +125,7 @@ Route.group(() => {
   Route.get('/logout', 'UsersController.logout').as('auth.logout')
   Route.group(() => {
     Route.patch('/student/:id', 'UsersController.updateStudentUserStatus')
+    Route.patch('/student/super/:id', 'UsersController.updateSupervisionStatus')
     Route.patch('/student/info/:id', 'UsersController.updateStudentUserInfo')
     Route.patch('/student/regis/approve', 'UsersController.updateStudentUserApprove')
     Route.delete('/student/:id', 'UsersController.deleteStudentUser')

@@ -1,35 +1,46 @@
 @layout('layouts/app')
 @set('title', 'announcement page')
 @section('announcement')
-  <section class="h-full w-full z-[5]">
-    @include('partials/announcement-header')
-      <div class="card-group flex flex-col space-y-5 mt-2 overflow-y-auto h-[85%] px-5">
-        @if(posts.length === 0 && auth.user?.role != "student")
-        <div class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">
-          <a href="{{ route('/announcement/create')}}" class="h-fit w-fit">
-            Click here to start a new post
-          </a>
-        </div>
-        @end
-        @each(post in posts)
-        <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
-          <div class="card card-side w-full max-h-32 card-compact card-bordered text-black-content flex border-0 bg-white/60 rounded-xl p-2 space-x-2">
-            <div class="avatar">
-              <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
-                <img src="{{ asset('assets/images/avatar.svg') }}"/>  
-              </div>
-            </div>
-            <div class="space-y-2 text-xs">
-              <div class="flex">
-                <p class="font-semibold">{{post.usersInAcademicYear.user_id}}</p>
-                <p class="text-xs ml-7">{{post.updated_at}}</p>
-              </div>
-              <p class="font-semibold">{{post.topic}}</p>
-              <p class="leading-5 line-clamp-3">{{post.content}}</p>
-            </div>
+<section class="h-full w-full z-[5] px-10">
+  @include('partials/announcement-header')
+  <div class="card-group flex flex-col space-y-5 mt-5 overflow-y-auto h-[85%] mx-40">
+    @if(posts.length === 0 && auth.user?.role != "student")
+    <div class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">
+      <a href="{{ route('/announcement/create')}}" class="h-fit w-fit">
+        Click here to start a new post
+      </a>
+    </div>
+    @end
+    @each(post in posts)
+    <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
+      <div
+        class="card card-side w-full max-h-40 card-compact card-bordered text-black-content flex border-0 bg-[#F0F3F8] rounded-xl p-5 space-x-2">
+        <div class="avatar">
+          <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
+            <img src="{{ asset('assets/images/avatar.svg') }}" />
           </div>
-        </a>
-        @end
-       </div>
-  </section>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex">
+            <p class="font-semibold">{{post.usersInAcademicYear.user_id}}</p>
+            <p class="text-xs ml-7">{{post.updated_at}}</p>
+          </div>
+          <p class="font-semibold">{{post.topic}}</p>
+          <p class="leading-5 line-clamp-2">{{post.content}}</p>
+          @if(post.files.length > 0)
+          <div class="flex space-x-2 pt-2">
+            <svg width="11" height="18" viewBox="0 0 11 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5.08032 17.3599C3.78789 17.3918 2.53577 16.8998 1.59848 15.9917C0.661194 15.0837 0.11524 13.8336 0.0803223 12.5156L0.0803223 3.87234C0.104351 2.91955 0.497526 2.01528 1.17379 1.35745C1.85005 0.699615 2.75432 0.341814 3.68866 0.36236C4.62442 0.339531 5.53083 0.696315 6.2089 1.35439C6.88698 2.01246 7.28131 2.91805 7.30532 3.87234L7.30532 12.5241C7.27067 13.1008 7.0216 13.6423 6.60892 14.0382C6.19624 14.434 5.65103 14.6544 5.08449 14.6544C4.51794 14.6544 3.97273 14.434 3.56006 14.0382C3.14738 13.6423 2.89831 13.1008 2.86366 12.5241L2.86366 4.54375C2.86366 4.31834 2.95145 4.10218 3.10773 3.94279C3.26401 3.78341 3.47598 3.69387 3.69699 3.69387C3.918 3.69387 4.12996 3.78341 4.28624 3.94279C4.44252 4.10218 4.53032 4.31834 4.53032 4.54375L4.53032 12.5241C4.54694 12.662 4.61246 12.789 4.71454 12.8811C4.81662 12.9732 4.9482 13.0241 5.08449 13.0241C5.22078 13.0241 5.35236 12.9732 5.45444 12.8811C5.55651 12.789 5.62204 12.662 5.63866 12.5241L5.63866 3.87234C5.61275 3.36957 5.39346 2.89749 5.02839 2.55858C4.66331 2.21968 4.1819 2.04128 3.68866 2.06211C3.19682 2.04357 2.71755 2.22299 2.35429 2.56167C1.99103 2.90034 1.7729 3.3711 1.74699 3.87234L1.74699 12.5156C1.78168 13.3828 2.15196 14.2007 2.77673 14.7901C3.4015 15.3795 4.22984 15.6923 5.08032 15.6601C5.93081 15.6923 6.75914 15.3795 7.38391 14.7901C8.00868 14.2007 8.37896 13.3828 8.41366 12.5156V3.87234C8.41366 3.64694 8.50145 3.43077 8.65773 3.27139C8.81401 3.11201 9.02597 3.02247 9.24699 3.02247C9.468 3.02247 9.67996 3.11201 9.83624 3.27139C9.99252 3.43077 10.0803 3.64694 10.0803 3.87234V12.5156C10.0454 13.8336 9.49945 15.0837 8.56216 15.9917C7.62488 16.8998 6.37275 17.3918 5.08032 17.3599Z"
+                fill="#495057" />
+            </svg>
+            <p>{{post.files.length}} attachment</p>
+          </div>
+          @end
+        </div>
+      </div>
+    </a>
+    @end
+  </div>
+</section>
 @end

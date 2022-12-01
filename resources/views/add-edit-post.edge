@@ -6,61 +6,94 @@
 @set('method', '')
 @set('buttonName', 'Publish')
 @if(request.matchesRoute('/announcement/edit/:id'))
-    @set('method', '?_method=PATCH')
-    @set('title', 'Edit post')
-    @set('buttonName', 'Save Changes')
+@set('method', '?_method=PATCH')
+@set('title', 'Edit post')
+@set('buttonName', 'Save Changes')
 @end
-<section class="w-full h-full z-[5] px-40 bg-[#F0F3F8]">
+<section class="w-full h-full z-[5] px-40">
   <form id="formElem" name="formElem">
-    <div class="bg-white bg-opacity-50 m-5 mt-20 p-5 rounded-md">
-        <p class="font-semibold text-xl text-center">{{title}}</p>
-        <hr class="border-base-200 my-2"/>
-        <div class="space-y-4">
-          <div class="flex items-center space-x-2">
-            <div class="avatar">
-              <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
-                <img src="{{ asset('assets/images/avatar.svg') }}"/>  
-              </div>
-            </div>
-            <p class="font-medium">{{auth.user?.user_id}}</p>
-          </div>
-          <input type="text" id="topic" name="topic" placeholder="Write your title..." class="input input-sm w-full text-xs" onkeyup="validateInput()" value="{{post ? post.topic : ''}}"/>
-          <div class="relative">
-            <textarea onkeyup="validateInput()" id="content" name="content" class="p-3 w-full h-28 text-xs rounded-lg" placeholder="Write your content...">{{post ? post.content : ''}}</textarea>
-            <div class="absolute bottom-2 right-0 w-8 h-8">
-              <label for="images" class="cursor-pointer"><img src="{{ asset('assets/images/paperclip.svg') }}"/></label>
-              <input type="file" id="images" name="images" class="hidden">
+    <div class="bg-[#F5F7FA] m-5 mt-20 p-5 rounded-md">
+      <p class="font-semibold text-xl text-center">{{title}}</p>
+      <hr class="border-base-200 my-2" />
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <div class="avatar">
+            <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
+              <img src="{{ asset('assets/images/avatar.svg') }}" />
             </div>
           </div>
-          <div id="selectedFile" class="flex flex-wrap p-2 gap-y-2">
-            @if(post)
-              @each((file, index) in post.files)
-              <p id="{{index}}" class="badge badge-secondary mr-2 p-3">
-                {{middleEllipsis(file.file_name)}}
-                <img class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}" onclick="deleteFile({{index}},'{{file.file_id}}')"/>
-              </p>
-              @end
-            @end
-          </div>
+          <p class="font-medium">{{auth.user?.user_id}}</p>
         </div>
-      <div class="flex w-full justify-end space-x-2">  
-        <a href="{{ route('/announcement') }}">        
-          @!common.button({
-            text: 'Cancel',
-            type: 'button',
-            classProps: 'btn-sm btn-outline border-2 border-base-200 px-6',
+        <input type="text" id="topic" name="topic" placeholder="Write your title..."
+          class="input input-sm w-full text-xs h-10" onkeyup="validateInput()" value="{{post ? post.topic : ''}}" />
+        <div class="relative">
+          <textarea onkeyup="validateInput()" id="content" name="content"
+            class="py-3 px-4  w-full h-36 text-xs rounded-lg"
+            placeholder="Write your content...">{{post ? post.content : ''}}</textarea>
+          <label for="images" class="absolute bottom-2 left-3 w-8 h-8">
+            <svg class="fill-[#ACB5BD] w-5 h-5 cursor-pointer" viewBox="0 0 10 17" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5 16.9985C3.70757 17.0305 2.45544 16.5385 1.51816 15.6304C0.580872 14.7223 0.0349182 13.4722 0 12.1542V3.51102C0.0240284 2.55823 0.417204 1.65395 1.09347 0.996118C1.76973 0.338287 2.674 -0.0195143 3.60833 0.00103177C4.5441 -0.0217969 5.45051 0.334987 6.12858 0.993061C6.80666 1.65113 7.20098 2.55672 7.225 3.51102V12.1627C7.19034 12.7395 6.94128 13.281 6.5286 13.6768C6.11592 14.0727 5.57071 14.2931 5.00417 14.2931C4.43762 14.2931 3.89241 14.0727 3.47973 13.6768C3.06705 13.281 2.81799 12.7395 2.78333 12.1627V4.18242C2.78333 3.95702 2.87113 3.74085 3.02741 3.58146C3.18369 3.42208 3.39565 3.33254 3.61667 3.33254C3.83768 3.33254 4.04964 3.42208 4.20592 3.58146C4.3622 3.74085 4.45 3.95702 4.45 4.18242V12.1627C4.46662 12.3007 4.53214 12.4277 4.63422 12.5198C4.7363 12.6119 4.86788 12.6627 5.00417 12.6627C5.14046 12.6627 5.27204 12.6119 5.37411 12.5198C5.47619 12.4277 5.54171 12.3007 5.55833 12.1627V3.51102C5.53243 3.00824 5.31314 2.53617 4.94806 2.19726C4.58299 1.85835 4.10158 1.67995 3.60833 1.70078C3.11649 1.68224 2.63723 1.86167 2.27397 2.20034C1.91071 2.53901 1.69258 3.00977 1.66667 3.51102V12.1542C1.70136 13.0215 2.07164 13.8394 2.69641 14.4288C3.32118 15.0181 4.14952 15.331 5 15.2988C5.85048 15.331 6.67882 15.0181 7.30359 14.4288C7.92836 13.8394 8.29864 13.0215 8.33333 12.1542V3.51102C8.33333 3.28562 8.42113 3.06945 8.57741 2.91006C8.73369 2.75068 8.94565 2.66114 9.16667 2.66114C9.38768 2.66114 9.59964 2.75068 9.75592 2.91006C9.9122 3.06945 10 3.28562 10 3.51102V12.1542C9.96508 13.4722 9.41913 14.7223 8.48184 15.6304C7.54455 16.5385 6.29243 17.0305 5 16.9985Z"
+                fill="#ACB5BD" />
+            </svg>
+            <input type="file" id="images" name="images" class="hidden">
+          </label>
+          <label for="images2" class="absolute bottom-2 left-12 w-8 h-8">
+            <svg class="w-5 h-5 cursor-pointer" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M13.4567 0H1.54941C0.695403 0 0 0.695403 0 1.54941V13.4567C0 14.3107 0.695403 15.003 1.54636 15.003H13.4536C14.3076 15.003 15 14.3076 15 13.4567V1.54941C15.0061 0.695403 14.3107 0 13.4567 0ZM13.1852 9.27204L10.8367 6.92353C10.7055 6.79238 10.489 6.79238 10.3578 6.92353L8.65288 8.62848L5.70352 5.67912C5.57237 5.54797 5.35582 5.54797 5.22467 5.67912L1.82086 9.07684V1.82086H13.1852V9.27204Z"
+                fill="#ACB5BD" />
+              <path
+                d="M9.05846 5.5759C9.7811 5.5759 10.3669 4.99008 10.3669 4.26744C10.3669 3.5448 9.7811 2.95898 9.05846 2.95898C8.33582 2.95898 7.75 3.5448 7.75 4.26744C7.75 4.99008 8.33582 5.5759 9.05846 5.5759Z"
+                fill="#ACB5BD" />
+            </svg>
+            <input type="file" id="images2" name="images2" class="hidden" accept="image/*">
+          </label>
+        </div>
+        <div id="selectedFile" class="flex flex-wrap p-2 gap-2">
+          @if(post)
+          @each((file, index) in post.files)
+          <div id="{{index}}"
+            class="flex bg-white rounded-md border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2 relative">
+            <svg class="w-5 h-5" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.7203 3.69231C10.3981 3.69231 10.1111 3.43408 10.1111 3.11538V0H0.60923C0.286998 0 0 0.258231 0 0.576923V18.3462C0 18.6641 0.272999 18.9413 0.59453 18.9423L13.4408 19H13.4419C13.597 19 13.7321 18.9202 13.8414 18.8125C13.9512 18.7042 14 18.538 14 18.3846V3.69231H10.7203ZM10.7592 13.9231H3.05922C2.73698 13.9231 2.47589 13.6648 2.47589 13.3462C2.47589 13.0275 2.73698 12.7692 3.05922 12.7692H10.7592C11.0814 12.7692 11.3425 13.0275 11.3425 13.3462C11.3425 13.6648 11.0814 13.9231 10.7592 13.9231ZM10.7592 11.3846H3.05922C2.73698 11.3846 2.47589 11.1264 2.47589 10.8077C2.47589 10.489 2.73698 10.2308 3.05922 10.2308H10.7592C11.0814 10.2308 11.3425 10.489 11.3425 10.8077C11.3425 11.1264 11.0814 11.3846 10.7592 11.3846ZM10.7592 8.84615H3.05922C2.73698 8.84615 2.47589 8.58792 2.47589 8.26923C2.47589 7.95054 2.73698 7.69231 3.05922 7.69231H10.7592C11.0814 7.69231 11.3425 7.95054 11.3425 8.26923C11.3425 8.58792 11.0814 8.84615 10.7592 8.84615ZM10.7592 6.46154H3.05922C2.73698 6.46154 2.47589 6.20331 2.47589 5.88462C2.47589 5.56592 2.73698 5.30769 3.05922 5.30769H10.7592C11.0814 5.30769 11.3425 5.56592 11.3425 5.88462C11.3425 6.20331 11.0814 6.46154 10.7592 6.46154ZM13.7874 2.53846H11.2777V0.183308L13.7874 2.53846Z"
+                fill="#ACB5BD" />
+            </svg>
+            <div class="text-xs">
+              <p>{{middleEllipsis(file.file_name)}}</p>
+              <p class="text-[#ACB5BD]">{{file.file_size}}</p>
+            </div>
+            <svg onclick="deleteFile({{index}},'{{file.file_id}}')" class="w-4 h-4 cursor-pointer absolute right-2"
+              viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5.37194 4.49891L8.03128 1.84539C8.14774 1.72891 8.21316 1.57094 8.21316 1.40622C8.21316 1.24151 8.14774 1.08354 8.03128 0.967063C7.91482 0.85059 7.75687 0.785156 7.59218 0.785156C7.42749 0.785156 7.26954 0.85059 7.15308 0.967063L4.49993 3.62678L1.84678 0.967063C1.73032 0.85059 1.57237 0.785156 1.40768 0.785156C1.24299 0.785156 1.08504 0.85059 0.968581 0.967063C0.852125 1.08354 0.7867 1.24151 0.7867 1.40622C0.7867 1.57094 0.852125 1.72891 0.968581 1.84539L3.62792 4.49891L0.968581 7.15244C0.910615 7.20994 0.864606 7.27835 0.833208 7.35373C0.80181 7.4291 0.785645 7.50995 0.785645 7.5916C0.785645 7.67326 0.80181 7.7541 0.833208 7.82948C0.864606 7.90485 0.910615 7.97326 0.968581 8.03076C1.02607 8.08874 1.09448 8.13476 1.16984 8.16616C1.2452 8.19756 1.32604 8.21373 1.40768 8.21373C1.48932 8.21373 1.57016 8.19756 1.64552 8.16616C1.72089 8.13476 1.78929 8.08874 1.84678 8.03076L4.49993 5.37105L7.15308 8.03076C7.21057 8.08874 7.27897 8.13476 7.35434 8.16616C7.4297 8.19756 7.51054 8.21373 7.59218 8.21373C7.67382 8.21373 7.75466 8.19756 7.83002 8.16616C7.90539 8.13476 7.97379 8.08874 8.03128 8.03076C8.08924 7.97326 8.13525 7.90485 8.16665 7.82948C8.19805 7.7541 8.21422 7.67326 8.21422 7.5916C8.21422 7.50995 8.19805 7.4291 8.16665 7.35373C8.13525 7.27835 8.08924 7.20994 8.03128 7.15244L5.37194 4.49891Z"
+                fill="#495057" />
+            </svg>
+          </div>
+          @end
+          @end
+        </div>
+      </div>
+      <div class="flex w-full justify-end space-x-2">
+        <a href="{{ route('/announcement') }}">
+          @!common.borderButton({
+          text: 'Cancel',
+          type: 'button',
+          classProps: 'px-5',
           })
         </a>
-        @!common.button({
-          text: `${buttonName}`,
-          type: 'submit',
-          id: 'sendButton',
-          classProps: 'btn-sm btn-primary px-6',
-          disabled,
+        @!common.bgButton({
+        text: `${buttonName}`,
+        type: 'submit',
+        id: 'sendButton',
+        classProps: 'px-5',
+        disabled,
         })
       </div>
     </div>
-</form>
+  </form>
 </section>
 <script>
   window.onload = () => {
@@ -108,6 +141,18 @@
   
   getFiles()
 
+  const formatBytes =(bytes, decimals = 2)=> {
+    if (!+bytes) return '0 Bytes'
+
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+  }
+
   input.onchange = (e) => {
     const [file] = e.target.files
     if(file){
@@ -129,10 +174,21 @@
       }
 
       showFiles.forEach((file, index) => {
-        const warpper = document.createElement('p')
-        warpper.classList = "badge badge-secondary mr-2 p-3"
+        const warpper = document.createElement('div')
+        warpper.classList = "flex bg-white rounded-md border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2 relative"  
         warpper.id = index
-        warpper.innerHTML = middleEllipsis(file.name || file.file_name) + `<img id="deleteFile${index}" class="w-5 h-5 cursor-pointer ml-2" src="{{ asset('assets/images/close.svg') }}"/>`
+        warpper.innerHTML = `
+                             <svg class="w-5 h-5" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M10.7203 3.69231C10.3981 3.69231 10.1111 3.43408 10.1111 3.11538V0H0.60923C0.286998 0 0 0.258231 0 0.576923V18.3462C0 18.6641 0.272999 18.9413 0.59453 18.9423L13.4408 19H13.4419C13.597 19 13.7321 18.9202 13.8414 18.8125C13.9512 18.7042 14 18.538 14 18.3846V3.69231H10.7203ZM10.7592 13.9231H3.05922C2.73698 13.9231 2.47589 13.6648 2.47589 13.3462C2.47589 13.0275 2.73698 12.7692 3.05922 12.7692H10.7592C11.0814 12.7692 11.3425 13.0275 11.3425 13.3462C11.3425 13.6648 11.0814 13.9231 10.7592 13.9231ZM10.7592 11.3846H3.05922C2.73698 11.3846 2.47589 11.1264 2.47589 10.8077C2.47589 10.489 2.73698 10.2308 3.05922 10.2308H10.7592C11.0814 10.2308 11.3425 10.489 11.3425 10.8077C11.3425 11.1264 11.0814 11.3846 10.7592 11.3846ZM10.7592 8.84615H3.05922C2.73698 8.84615 2.47589 8.58792 2.47589 8.26923C2.47589 7.95054 2.73698 7.69231 3.05922 7.69231H10.7592C11.0814 7.69231 11.3425 7.95054 11.3425 8.26923C11.3425 8.58792 11.0814 8.84615 10.7592 8.84615ZM10.7592 6.46154H3.05922C2.73698 6.46154 2.47589 6.20331 2.47589 5.88462C2.47589 5.56592 2.73698 5.30769 3.05922 5.30769H10.7592C11.0814 5.30769 11.3425 5.56592 11.3425 5.88462C11.3425 6.20331 11.0814 6.46154 10.7592 6.46154ZM13.7874 2.53846H11.2777V0.183308L13.7874 2.53846Z" fill="#ACB5BD"/>
+                             </svg> 
+                              <div class="text-xs">
+                                <p>${middleEllipsis(file.name || file.file_name)}</p>    
+                                <p class="text-[#ACB5BD]">${file.file_size || formatBytes(file.size)}</p> 
+                              </div> 
+                              <svg id="deleteFile${index}" class="w-4 h-4 cursor-pointer absolute right-2" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M5.37194 4.49891L8.03128 1.84539C8.14774 1.72891 8.21316 1.57094 8.21316 1.40622C8.21316 1.24151 8.14774 1.08354 8.03128 0.967063C7.91482 0.85059 7.75687 0.785156 7.59218 0.785156C7.42749 0.785156 7.26954 0.85059 7.15308 0.967063L4.49993 3.62678L1.84678 0.967063C1.73032 0.85059 1.57237 0.785156 1.40768 0.785156C1.24299 0.785156 1.08504 0.85059 0.968581 0.967063C0.852125 1.08354 0.7867 1.24151 0.7867 1.40622C0.7867 1.57094 0.852125 1.72891 0.968581 1.84539L3.62792 4.49891L0.968581 7.15244C0.910615 7.20994 0.864606 7.27835 0.833208 7.35373C0.80181 7.4291 0.785645 7.50995 0.785645 7.5916C0.785645 7.67326 0.80181 7.7541 0.833208 7.82948C0.864606 7.90485 0.910615 7.97326 0.968581 8.03076C1.02607 8.08874 1.09448 8.13476 1.16984 8.16616C1.2452 8.19756 1.32604 8.21373 1.40768 8.21373C1.48932 8.21373 1.57016 8.19756 1.64552 8.16616C1.72089 8.13476 1.78929 8.08874 1.84678 8.03076L4.49993 5.37105L7.15308 8.03076C7.21057 8.08874 7.27897 8.13476 7.35434 8.16616C7.4297 8.19756 7.51054 8.21373 7.59218 8.21373C7.67382 8.21373 7.75466 8.19756 7.83002 8.16616C7.90539 8.13476 7.97379 8.08874 8.03128 8.03076C8.08924 7.97326 8.13525 7.90485 8.16665 7.82948C8.19805 7.7541 8.21422 7.67326 8.21422 7.5916C8.21422 7.50995 8.19805 7.4291 8.16665 7.35373C8.13525 7.27835 8.08924 7.20994 8.03128 7.15244L5.37194 4.49891Z" fill="#495057"/>
+                              </svg>
+                            `
         selectedFile.appendChild(warpper)
         const deleteFile = document.getElementById(`deleteFile${index}`)
         deleteFile.onclick = () => {
