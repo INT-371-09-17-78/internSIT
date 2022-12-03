@@ -1,4 +1,4 @@
-<div class="p-8">
+<form onsubmit="submitFile(event)" class="p-8">
     <p class="text-base lg:text-3xl text-base-content font-semibold">Steps</p>
     <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
         <a href="{{ route('/steps')}}" class="hover:text-blue-800">
@@ -19,7 +19,8 @@
                 </svg>
             </div>
         </div>
-        <input type="text" class="input input-sm border-2 border-[#ACB5BD] w-full py-4 col-span-3" />
+        <p class="col-span-3">{{stepEdit.name}}</p>
+        {{--  <input type="text" class="input input-sm border-2 border-[#ACB5BD] w-full py-4 col-span-3" />  --}}
         <div class="flex items-center space-x-2 col-span-2">
             <p class="font-medium">Description</p>
             <div class="tooltip z-20 font-normal normal-case"
@@ -31,7 +32,8 @@
                 </svg>
             </div>
         </div>
-        <textarea class="textarea border-2 border-[#ACB5BD] col-span-3"></textarea>
+        <p class="col-span-3">{{stepEdit.description}}</p>
+        {{--  <textarea class="textarea border-2 border-[#ACB5BD] col-span-3"></textarea>  --}}
         <div class="flex items-center space-x-2 col-span-2">
             <p class="font-medium">Templete document</p>
             <div class="tooltip z-20 font-normal normal-case"
@@ -55,6 +57,16 @@
             </div>
         </div>
     </div>
+    <div class="flex justify-end items-end space-x-2 pb-5 mt-5">
+        <a href="{{ route('/steps',{} , {qs:{month: 2}})}}">
+          @!common.borderButton({
+            text: 'cancel',
+            type: 'button',
+          })
+        </a>
+        <button type="submit" class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit">save
+          change</button>
+      </div>
     {{-- @component('components/common/button',{
     text: 'Create new step',
     type: 'text',
@@ -68,7 +80,7 @@
             d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
     </svg>
     @end --}}
-</div>
+</form>
 <script>
     let files = []
     const middleEllipsis = (str) => {
@@ -103,5 +115,17 @@
      document.getElementById('showTemplateFile').innerHTML = html
      console.log(files)
     }
-    
+
+    const submitFile = async (event)=> {
+        event.preventDefault()
+        const formData = new FormData()
+        formData.append('files', files)
+        formData.append('stepFileType', 'template')
+        formData.append('stepFileTypePlan',{ month : '{{request.qs().month}}', step : '{{request.qs().step}}'})
+        console.log(formData)
+        await fetch('/api/file/steps?_method=POST', {
+          method: 'POST',
+          body: formData,
+        })
+    }
 </script>
