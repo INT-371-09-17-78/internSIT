@@ -15,6 +15,7 @@ import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 import LdapAuth from 'ldapauth-fork'
 import moment from 'moment-timezone'
 import Mail from '@ioc:Adonis/Addons/Mail'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 interface LdapOptions {
   url: string
@@ -457,7 +458,9 @@ export default class UsersController {
           const userHasDoc = await UserHasDoc.query()
             .where('user_in_academic_year_id', usersInAcademicYear[0].id)
             .orderBy('created_at', 'desc')
-          // console.log(userHasDoc)
+          // .where('step', ['TR-01', 'TR-02'])
+          // const query = 'select * from users_has_docs where step = ?'
+          // const userHasDoc2 = await UserHasDoc.query().raw('select * from users_has_docs')
           if (userHasDoc && userHasDoc.length > 0) {
             // studentUsers[i].serialize()
             if (userHasDoc[0].status === StepStatus.WAITING) {
@@ -472,14 +475,54 @@ export default class UsersController {
           }
         }
 
-        if (request.qs().status && request.qs().step) {
-          const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
-          result = this.queryStringFilter(resultPre, request.qs().step)
-        } else if (request.qs().status) {
-          result = this.queryStringFilter(studentUsers, request.qs().status)
-        } else if (request.qs().step) {
-          result = this.queryStringFilter(studentUsers, request.qs().step)
-        }
+        // if (request.qs().status && request.qs().step) {
+        //   const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
+        //   result = this.queryStringFilter(resultPre, request.qs().step)
+        // } else if (request.qs().status) {
+        //   result = this.queryStringFilter(studentUsers, request.qs().status)
+        // } else if (request.qs().step) {
+        //   result = this.queryStringFilter(studentUsers, request.qs().step)
+        // }
+
+        // if (request.qs().status && request.qs().step) {
+        //   let query = 'select * from users_has_docs where step = ? and status = ?'
+        //   // const queryStringArr: any = []
+        //   let userHasDoc2: any
+        //   // queryStringArr.push(request.qs().step)
+        //   userHasDoc2 = await Database.rawQuery(query, [request.qs().step, request.qs().status])
+        //   console.log(userHasDoc2[0])
+        //   // const userHasDoc2 = await Database.rawQuery(
+        //   //   'select * from users_has_docs where step = ? or step = ?',
+        //   //   ['TR-01', 'TR-02']
+        //   // )
+        //   // console.log(userHasDoc2)
+        //   // const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
+        //   // result = this.queryStringFilter(resultPre, request.qs().step)
+        // }
+        // else if (request.qs().status) {
+        //   result = this.queryStringFilter(studentUsers, request.qs().status)
+        // } else if (request.qs().step) {
+        //   let query = 'select * from users_has_docs where step = ?' + ''
+        //   const queryStringArr: any = []
+        //   let userHasDoc2: any
+        //   if (Array.isArray(request.qs().step)) {
+        //     console.log('เข้า')
+
+        //     for (let i = 1; i < request.qs().step.length; i++) {
+        //       query = query + 'or step = ?'
+        //     }
+        //     userHasDoc2 = await Database.rawQuery(query, request.qs().step)
+        //   } else {
+        //     queryStringArr.push(request.qs().step)
+        //     userHasDoc2 = await Database.rawQuery(query, queryStringArr)
+        //     // console.log(userHasDoc2[0][0])
+        //   }
+        //   console.log(userHasDoc2[0])
+        //   for (let i = 0; i < userHasDoc2[0].length; i++) {
+        //     userHasDoc2[0][i].user_in_academic_year_id
+        //   }
+        // result = this.queryStringFilter(studentUsers, request.qs().step)
+        // }
       }
       const AllStepByMonth = {}
       // const body = {}
@@ -500,7 +543,20 @@ export default class UsersController {
         AllStepByMonth['sixMonth'],
         6
       )
+      // console.log(AllStepByMonth)
+
       // console.log(stepEdit)
+      let stepRender: any
+      if (request.qs() && request.qs().month) {
+        if (request.qs().month === '2') {
+          stepRender = AllStepByMonth['twoMonth']
+        } else if (request.qs().month === '4') {
+          stepRender = AllStepByMonth['fourMonth']
+        } else if (request.qs().month === '6') {
+          stepRender = AllStepByMonth['sixMonth']
+        }
+        console.log(stepRender)
+      }
 
       if (request.qs() && request.qs().month && request.qs().step) {
         stepEdit = this.findStepEdit(
@@ -511,22 +567,7 @@ export default class UsersController {
           AllStepByMonth['sixMonth']
         )
       }
-      // AllStepByMonth['fourMonth'] = this.addTemplateFiletoStepMonth(AllStepByMonth['fourMonth'], 4)
-      // AllStepByMonth['sixMonth'] = this.addTemplateFiletoStepMonth(AllStepByMonth['sixMonth'], 6)
-      // console.log(request.param('TR-01'))
-      console.log(AllStepByMonth, 'JA')
-      console.log(stepEdit)
 
-      // const templateFileQuery = 'template' + documentStatusesJsonCurrent.step
-      // const templateFile = await File.query().where('step_file_type', templateFileQuery)
-      // console.log(templateFile)
-
-      // currentSteps['id'] = documentStatusesJsonCurrent.id
-      // if (templateFile && templateFile.length > 0) {
-      //   currentSteps['templateFile'] = templateFile[0].serialize()
-      // }
-      // AllStepByMonth.push(body)
-      // response.cookie('year', year)
       return view.render('student-information', {
         studentUsers:
           (studentUsers && studentUsers.length > 0 && request.qs().status) || request.qs().step
@@ -542,12 +583,32 @@ export default class UsersController {
         studentUsersByAdOne: studentUsersByAdOne,
         AllStepByMonth: AllStepByMonth,
         stepEdit: stepEdit,
+        stepRender: stepRender,
       })
     } catch (error) {
       console.log(error)
 
       return response.status(400).json({ message: error.message })
     }
+  }
+
+  private queryStringFilter(arr, queryString) {
+    const result = arr.filter((word) => {
+      if (Array.isArray(queryString)) {
+        for (const qs of queryString) {
+          if (word['lastestStatus'].toUpperCase().includes(qs.toUpperCase())) {
+            return true
+          }
+        }
+        return false
+      } else {
+        if (word['lastestStatus'].toUpperCase().includes(queryString.toUpperCase())) {
+          return true
+        }
+        return false
+      }
+    })
+    return result
   }
 
   private findStepEdit(month, step, m2, m4, m6) {
@@ -921,25 +982,6 @@ export default class UsersController {
       console.log(error)
       return response.status(400).json({ message: error.message })
     }
-  }
-
-  private queryStringFilter(arr, queryString) {
-    const result = arr.filter((word) => {
-      if (Array.isArray(queryString)) {
-        for (const qs of queryString) {
-          if (word['lastestStatus'].toUpperCase().includes(qs.toUpperCase())) {
-            return true
-          }
-        }
-        return false
-      } else {
-        if (word['lastestStatus'].toUpperCase().includes(queryString.toUpperCase())) {
-          return true
-        }
-        return false
-      }
-    })
-    return result
   }
 
   public async showStudentUserById({ auth, request, response, view }: HttpContextContract) {
