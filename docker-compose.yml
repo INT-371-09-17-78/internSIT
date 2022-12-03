@@ -14,11 +14,7 @@ services:
       intern-sit-network:
         ipv4_address: 172.24.0.12
     volumes:
-       #- ./db:/var/lib/mysql
        - ./mysqlinit:/docker-entrypoint-initdb.d/
-    #    - ./init.sh:/init.sh
-    # entrypoint: sh -c "/init.sh"
-    # command: mysql -udbuser -phelloDEV371_
   phpmyadmin:
     depends_on:
       - db
@@ -43,14 +39,7 @@ services:
       - db
     container_name: intern-sit-app
     restart: always
-    # build:
-    #   context: .
-      #target: build
-    # image: intern_sit:dev
     image: ghcr.io/int-371-09-17-78/intern-sit:1.0.0
-    #volumes:
-     # - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
-     # - ./mysqlinit:/etc/ssl/certs/
     expose:
       #running inside container
       - 3333
@@ -59,8 +48,6 @@ services:
         ipv4_address: 172.24.0.11
 
   nginx:
-    # depends_on:
-    #   - phpmyadmin
     image: nginx:latest
     container_name: intern-sit-nginx
     restart: unless-stopped
@@ -71,23 +58,14 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./intern-sit.crt:/etc/ssl/intern-sit.crt
       - ./intern-sit.key:/etc/ssl/intern-sit.key
-      # - /home/ubuntu/ssl:/ssl/
     networks:
       intern-sit-network:
         ipv4_address: 172.24.0.13
-    # ports:
-    #   - 8081:80
 
 networks:
   intern-sit-network:
-    # external: true
     name: intern-sit-network
     ipam:
       config:
         - subnet: 172.24.0.0/16
-      # - 9229:9229
-    #env_file:
-      #- .env
-    #volumes:
-      #- ./:/home/node/app/build
-    #command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
+
