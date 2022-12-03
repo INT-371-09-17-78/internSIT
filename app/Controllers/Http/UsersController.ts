@@ -448,8 +448,52 @@ export default class UsersController {
       } else {
         studentUsers = []
       }
+      const AllStepByMonth = {}
+      // const body = {}
+      AllStepByMonth['twoMonth'] = this.showSteps(2)
+      AllStepByMonth['fourMonth'] = this.showSteps(4)
+      AllStepByMonth['sixMonth'] = this.showSteps(6)
+      let stepEdit: any
+      // console.log(auth.user);
+      AllStepByMonth['twoMonth'] = await this.addTemplateFiletoStepMonth(
+        AllStepByMonth['twoMonth'],
+        2
+      )
+      AllStepByMonth['fourMonth'] = await this.addTemplateFiletoStepMonth(
+        AllStepByMonth['fourMonth'],
+        4
+      )
+      AllStepByMonth['sixMonth'] = await this.addTemplateFiletoStepMonth(
+        AllStepByMonth['sixMonth'],
+        6
+      )
+      // console.log(AllStepByMonth)
+
+      // console.log(stepEdit)
+      let stepRender: any
+      if (request.qs() && request.qs().month) {
+        if (request.qs().month === '2') {
+          stepRender = AllStepByMonth['twoMonth']
+        } else if (request.qs().month === '4') {
+          stepRender = AllStepByMonth['fourMonth']
+        } else if (request.qs().month === '6') {
+          stepRender = AllStepByMonth['sixMonth']
+        }
+        // console.log(stepRender)
+      }
+
+      if (request.qs() && request.qs().month && request.qs().step) {
+        stepEdit = this.findStepEdit(
+          request.qs().month,
+          request.qs().step,
+          AllStepByMonth['twoMonth'],
+          AllStepByMonth['fourMonth'],
+          AllStepByMonth['sixMonth']
+        )
+      }
       // console.log(advisorUsersResult)
       // console.log(studentUsers.length)
+      let stepStat: any = []
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
           const usersInAcademicYear = await UsersInAcademicYearModel.query()
@@ -458,6 +502,36 @@ export default class UsersController {
           const userHasDoc = await UserHasDoc.query()
             .where('user_in_academic_year_id', usersInAcademicYear[0].id)
             .orderBy('created_at', 'desc')
+          if (stepRender && stepRender.length > 0) {
+            for (let j = 0; j < stepRender.length; j++) {
+              // console.log(stepRender[j].name.toUpperCase())
+              // console.log(AllSteps.TR03_TR05_AND_SUPERVISION.trim().toUpperCase())
+
+              if (stepRender[j].name === AllSteps.TR03_TR05_AND_SUPERVISION) {
+                for (let k = 0; k < stepRender[j].month.length; k++) {
+                  for (let g = 0; g < stepRender[j].month[k].length; g++) {
+                    // console.log(stepRender[j].month[k][g])
+                    // console.log('เข้า')
+
+                    const result = await UserHasDoc.query()
+                      .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+                      .andWhere('step', stepRender[j].month[k][g].value)
+                    studentUsers[i][stepRender[j].month[k][g].value] =
+                      result && result.length > 0 ? result[0].serialize().status : null
+                  }
+                }
+              } else {
+                // stepStat.push(
+                const result = await UserHasDoc.query()
+                  .where('user_in_academic_year_id', usersInAcademicYear[0].id)
+                  .andWhere('step', stepRender[j].name)
+                studentUsers[i][stepRender[j].name] =
+                  result && result.length > 0 ? result[0].serialize().status : null
+                // )
+              }
+            }
+          }
+
           // .where('step', ['TR-01', 'TR-02'])
           // const query = 'select * from users_has_docs where step = ?'
           // const userHasDoc2 = await UserHasDoc.query().raw('select * from users_has_docs')
@@ -474,6 +548,7 @@ export default class UsersController {
             studentUsers[i]['lastestStatus'] = `No plan selected`
           }
         }
+        console.log(studentUsers)
 
         // if (request.qs().status && request.qs().step) {
         //   const resultPre = this.queryStringFilter(studentUsers, request.qs().status)
@@ -523,49 +598,6 @@ export default class UsersController {
         //   }
         // result = this.queryStringFilter(studentUsers, request.qs().step)
         // }
-      }
-      const AllStepByMonth = {}
-      // const body = {}
-      AllStepByMonth['twoMonth'] = this.showSteps(2)
-      AllStepByMonth['fourMonth'] = this.showSteps(4)
-      AllStepByMonth['sixMonth'] = this.showSteps(6)
-      let stepEdit: any
-      // console.log(auth.user);
-      AllStepByMonth['twoMonth'] = await this.addTemplateFiletoStepMonth(
-        AllStepByMonth['twoMonth'],
-        2
-      )
-      AllStepByMonth['fourMonth'] = await this.addTemplateFiletoStepMonth(
-        AllStepByMonth['fourMonth'],
-        4
-      )
-      AllStepByMonth['sixMonth'] = await this.addTemplateFiletoStepMonth(
-        AllStepByMonth['sixMonth'],
-        6
-      )
-      // console.log(AllStepByMonth)
-
-      // console.log(stepEdit)
-      let stepRender: any
-      if (request.qs() && request.qs().month) {
-        if (request.qs().month === '2') {
-          stepRender = AllStepByMonth['twoMonth']
-        } else if (request.qs().month === '4') {
-          stepRender = AllStepByMonth['fourMonth']
-        } else if (request.qs().month === '6') {
-          stepRender = AllStepByMonth['sixMonth']
-        }
-        console.log(stepRender)
-      }
-
-      if (request.qs() && request.qs().month && request.qs().step) {
-        stepEdit = this.findStepEdit(
-          request.qs().month,
-          request.qs().step,
-          AllStepByMonth['twoMonth'],
-          AllStepByMonth['fourMonth'],
-          AllStepByMonth['sixMonth']
-        )
       }
 
       return view.render('student-information', {
