@@ -803,7 +803,10 @@ export default class UsersController {
         const newUser = users.advisors.concat(users.staffs)
 
         for (let i = 0; i < newUser.length; i++) {
-          const user = await User.find(newUser[i])
+          let user: any
+          if (newUser[i]) {
+            user = await User.find(newUser[i])
+          }
           if (user) {
             await AcademicYearCfResult[0]
               .related('users')
@@ -824,6 +827,7 @@ export default class UsersController {
         // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
       }
     } catch (error) {
+      console.log(error)
       return response.status(400).json({ message: error.message })
     }
   }
