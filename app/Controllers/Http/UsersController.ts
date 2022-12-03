@@ -820,6 +820,7 @@ export default class UsersController {
           }
         }
 
+        return response.status(200).json('success')
         // await AcademicYearCfResult[0].related('users').saveMany(usersArr)
       }
     } catch (error) {
