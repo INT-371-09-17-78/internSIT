@@ -45,11 +45,11 @@
               href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
           <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
               href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
-          @if(auth.user.role ==="advisor")
+          {{--  @if(auth.user.role ==="advisor")
           <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
               href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a>
           </li>
-          @end
+          @end  --}}
       </ul>
       {{--  <div tabindex="0" class="collapse collapse-open">
         <div class="collapse-title bg-[#E6E7EA] text-[#495057] font-bold">

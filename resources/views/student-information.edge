@@ -185,112 +185,225 @@
     })
   })
 
+  let advisorUsers, staffUsers, studentUsers
+  const getAdvisor = async () =>{
+    const response = await fetch(`/api/user/advisorUser`)
+    advisorUsers = await response.json()
+    advisorUsers.advisorUsers.forEach(advisor => {
+      document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}' ,'${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
+    })
+  }
+
+  const getStudent = async () =>{
+    const response = await fetch(`/api/user/studentCYear`)
+    studentUsers = await response.json()
+    studentUsers.studentUsers.forEach(student => {
+      document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}' ,'${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
+    })
+  }
+
+  const getStaff = async () =>{
+    const response = await fetch(`/api/user/staffUser`)
+    staffUsers = await response.json()
+    staffUsers.staffUsers.forEach(staff => {
+      document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}' ,'${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
+    })
+  }
+  if(document.getElementById('staff_list')){
+    getStaff()
+  }
+  if(document.getElementById('advisor_list')){
+    getAdvisor()
+  }
+  if(document.getElementById('student_list')){
+    getStudent()
+  }
 
   let advisorTemp = []
+  let studentTemp = []
+  let staffTemp = []
   const searchAdvisor = async () => {
-    const response =  await fetch(`/api/user/advisorUser`)
-    const { advisorUsers } = await response.json()
     const searchValue = document.getElementById('advisor').value
-    if(searchValue && advisorUsers.length > 0) document.getElementById('advisor_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
+    document.getElementById('advisor_list').innerHTML = ''
     let countNotFound = 0
-    advisorUsers.forEach(advisor => {
-      if(searchValue === advisor.user_id){
-        document.getElementById('add-advisor-button').disabled = false
-      }else{
-        document.getElementById('add-advisor-button').disabled = true
-      }
-      if(advisor.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
-        if(advisorTemp.length > 0){
-          advisorTemp.forEach(t =>{
-            if(t !== advisor.user_id){
-              document.getElementById('ul').innerHTML += `<li onclick="deleteAdvisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
-            }else{
-              countNotFound++
-            }
-          })
-        }else{
-          document.getElementById('ul').innerHTML += `<li onclick="deleteAdvisorList('${advisor.user_id}')"><a>${advisor.user_id}</a></li>`
-        }
+    advisorUsers.advisorUsers.forEach(advisor => {
+      if((advisor.user_id.toLowerCase().startsWith(searchValue.toLowerCase()) || advisor.firstname.toLowerCase().startsWith(searchValue.toLowerCase()) || advisor.lastname.toLowerCase().startsWith(searchValue.toLowerCase())) && searchValue){
+        document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}' ,'${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
+      }else if(!searchValue){
+        document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}' ,'${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
       }else{
         countNotFound++
       }
     })
-    if(countNotFound === advisorUsers.length){
-      document.getElementById('add-advisor-button').disabled = true
-      document.getElementById('advisor_list').innerHTML = ''
+    if(countNotFound === advisorUsers.advisorUsers.length){
+      document.getElementById('advisor_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
     }
+  }
+
+  const deleteLocalAdvisor = (id,firstname,lastname) => {
+    const obj = {
+      firstname: firstname,
+      lastname: lastname,
+      user_id: id
+    }
+    advisorTemp = advisorTemp.filter((t)=> t !== id)
+    if(advisorUsers.advisorUsers.length === 0)  document.getElementById('advisor_list').innerHTML = ''
+    if(advisorTemp.length === 0) {
+      advisorUsers.advisorUsers.forEach((advisor)=>{
+        document.getElementById('advisor_list').innerHTML = `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}', '${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
+      })
+    } 
+    document.getElementById('advisor').value = ''
+    document.getElementById(id).remove()
+    document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addAdvisorList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
+    advisorUsers.advisorUsers.push(obj)
+  }
+  
+  const deleteAdvisor = async (id) => {
+    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+
+  const addAdvisorList = (id, firstname, lastname) =>{
+    document.getElementById(id).remove()
+    document.getElementById('new_advisor_list').innerHTML += `<div class="border-2 p-2 rounded-md mb-2 flex" id="${id}">
+      <div><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>
+      <svg class="w-3 h-3 ml-auto cursor-pointer" onclick="deleteLocalAdvisor('${id}', '${firstname}', '${lastname}')"
+              viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5.37194 4.49891L8.03128 1.84539C8.14774 1.72891 8.21316 1.57094 8.21316 1.40622C8.21316 1.24151 8.14774 1.08354 8.03128 0.967063C7.91482 0.85059 7.75687 0.785156 7.59218 0.785156C7.42749 0.785156 7.26954 0.85059 7.15308 0.967063L4.49993 3.62678L1.84678 0.967063C1.73032 0.85059 1.57237 0.785156 1.40768 0.785156C1.24299 0.785156 1.08504 0.85059 0.968581 0.967063C0.852125 1.08354 0.7867 1.24151 0.7867 1.40622C0.7867 1.57094 0.852125 1.72891 0.968581 1.84539L3.62792 4.49891L0.968581 7.15244C0.910615 7.20994 0.864606 7.27835 0.833208 7.35373C0.80181 7.4291 0.785645 7.50995 0.785645 7.5916C0.785645 7.67326 0.80181 7.7541 0.833208 7.82948C0.864606 7.90485 0.910615 7.97326 0.968581 8.03076C1.02607 8.08874 1.09448 8.13476 1.16984 8.16616C1.2452 8.19756 1.32604 8.21373 1.40768 8.21373C1.48932 8.21373 1.57016 8.19756 1.64552 8.16616C1.72089 8.13476 1.78929 8.08874 1.84678 8.03076L4.49993 5.37105L7.15308 8.03076C7.21057 8.08874 7.27897 8.13476 7.35434 8.16616C7.4297 8.19756 7.51054 8.21373 7.59218 8.21373C7.67382 8.21373 7.75466 8.19756 7.83002 8.16616C7.90539 8.13476 7.97379 8.08874 8.03128 8.03076C8.08924 7.97326 8.13525 7.90485 8.16665 7.82948C8.19805 7.7541 8.21422 7.67326 8.21422 7.5916C8.21422 7.50995 8.19805 7.4291 8.16665 7.35373C8.13525 7.27835 8.08924 7.20994 8.03128 7.15244L5.37194 4.49891Z"
+                fill="#495057" />
+      </svg>
+      </div>`
+    advisorTemp.push(id)
+    advisorUsers['advisorUsers'] = advisorUsers.advisorUsers.filter((t)=> t.user_id !== id)
   }
 
   const searchStudent = async () => {
-    const response =  await fetch(`/api/user/studentCYear`)
-    const { studentUsers } = await response.json()
-    const searchValue = document.getElementById('student').value
-    if(searchValue && studentUsers.length > 0) document.getElementById('student_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="ul"></ul>'
-    let countNotFound = 0
-    studentUsers.forEach(student => {
-      console.log(student)
-      if(searchValue === student.user_id){
-        document.getElementById('add-student-button').disabled = false
-      }else{
-        document.getElementById('add-student-button').disabled = true
-      }
-      if(student.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
-        if(student.length > 0){
-          student.forEach(t =>{
-            if(t !== student.user_id){
-              document.getElementById('ul').innerHTML += `<li onclick="deleteStudentList('${student.user_id}')"><a>${student.user_id}</a></li>`
-            }else{
-              countNotFound++
-            }
-          })
-        }else{
-          document.getElementById('ul').innerHTML += `<li onclick="deleteStudentList('${student.user_id}')"><a>${student.user_id}</a></li>`
-        }
-      }else{
-        countNotFound++
-      }
-    })
-    if(countNotFound === studentUsers.length){
-      document.getElementById('add-student-button').disabled = true
+      const searchValue = document.getElementById('student').value
       document.getElementById('student_list').innerHTML = ''
+      let countNotFound = 0
+      studentUsers.studentUsers.forEach(student => {
+        if((student.user_id.toLowerCase().startsWith(searchValue.toLowerCase()) || student.firstname.toLowerCase().startsWith(searchValue.toLowerCase()) || student.lastname.toLowerCase().startsWith(searchValue.toLowerCase())) && searchValue){
+          document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}' ,'${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
+        }else if(!searchValue){
+          document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}' ,'${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
+        }else{
+          countNotFound++
+        }
+      })
+      if(countNotFound === studentUsers.studentUsers.length){
+        document.getElementById('student_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
+      }
+  }
+
+  const deleteLocalStudent = (id,firstname,lastname) => {
+    const obj = {
+      firstname: firstname,
+      lastname: lastname,
+      user_id: id
     }
+    studentTemp = studentTemp.filter((t)=> t !== id)
+    if(studentUsers.studentUsers.length === 0)  document.getElementById('student_list').innerHTML = ''
+    if(studentTemp.length === 0) {
+      studentUsers.studentUsers.forEach((student)=>{
+        document.getElementById('student_list').innerHTML = `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}', '${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
+      })
+    } 
+    document.getElementById('student').value = ''
+    document.getElementById(id).remove()
+    document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addStudentList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
+    studentUsers.studentUsers.push(obj)
+  }
+  
+  const deleteStudent = async (id) => {
+    await fetch(`/api/user/delUserAdv/${id}?_method=DELETE`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+
+  const addStudentList = (id, firstname, lastname) =>{
+    document.getElementById(id).remove()
+    document.getElementById('new_student_list').innerHTML += `<div class="border-2 p-2 rounded-md mb-2 flex" id="${id}">
+      <div><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>
+      <svg class="w-3 h-3 ml-auto cursor-pointer" onclick="deleteLocalStudent('${id}', '${firstname}', '${lastname}')"
+              viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5.37194 4.49891L8.03128 1.84539C8.14774 1.72891 8.21316 1.57094 8.21316 1.40622C8.21316 1.24151 8.14774 1.08354 8.03128 0.967063C7.91482 0.85059 7.75687 0.785156 7.59218 0.785156C7.42749 0.785156 7.26954 0.85059 7.15308 0.967063L4.49993 3.62678L1.84678 0.967063C1.73032 0.85059 1.57237 0.785156 1.40768 0.785156C1.24299 0.785156 1.08504 0.85059 0.968581 0.967063C0.852125 1.08354 0.7867 1.24151 0.7867 1.40622C0.7867 1.57094 0.852125 1.72891 0.968581 1.84539L3.62792 4.49891L0.968581 7.15244C0.910615 7.20994 0.864606 7.27835 0.833208 7.35373C0.80181 7.4291 0.785645 7.50995 0.785645 7.5916C0.785645 7.67326 0.80181 7.7541 0.833208 7.82948C0.864606 7.90485 0.910615 7.97326 0.968581 8.03076C1.02607 8.08874 1.09448 8.13476 1.16984 8.16616C1.2452 8.19756 1.32604 8.21373 1.40768 8.21373C1.48932 8.21373 1.57016 8.19756 1.64552 8.16616C1.72089 8.13476 1.78929 8.08874 1.84678 8.03076L4.49993 5.37105L7.15308 8.03076C7.21057 8.08874 7.27897 8.13476 7.35434 8.16616C7.4297 8.19756 7.51054 8.21373 7.59218 8.21373C7.67382 8.21373 7.75466 8.19756 7.83002 8.16616C7.90539 8.13476 7.97379 8.08874 8.03128 8.03076C8.08924 7.97326 8.13525 7.90485 8.16665 7.82948C8.19805 7.7541 8.21422 7.67326 8.21422 7.5916C8.21422 7.50995 8.19805 7.4291 8.16665 7.35373C8.13525 7.27835 8.08924 7.20994 8.03128 7.15244L5.37194 4.49891Z"
+                fill="#495057" />
+      </svg>
+      </div>`
+    studentTemp.push(id)
+    studentUsers['studentUsers'] = studentUsers.studentUsers.filter((t)=> t.user_id !== id)
   }
 
   const searchStaff = async () => {
-    const response =  await fetch(`/api/user/staffUser`)
-    const { staffUsers } = await response.json()
     const searchValue = document.getElementById('staff').value
-    if(searchValue && staffUsers.length > 0) document.getElementById('staff_list').innerHTML = '<ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 flex flex-col" id="staff-ul"></ul>'
+    document.getElementById('staff_list').innerHTML = ''
     let countNotFound = 0
-    staffUsers.forEach(staff => {
-      if(searchValue === staff.user_id){
-        document.getElementById('add-staff-button').disabled = false
-      }else{
-        document.getElementById('add-staff-button').disabled = true
-      }
-      if(staff.user_id.toLowerCase().includes(searchValue.toLowerCase()) && searchValue){
-        if(staffTemp.length > 0){
-          staffTemp.forEach(t =>{
-            if(t !== staff.user_id){
-              document.getElementById('staff-ul').innerHTML += `<li onclick="deleteStaffList('${staff.user_id}')"><a>${staff.user_id}</a></li>`
-            }else{
-              countNotFound++
-            }
-          })
-        }else{
-          document.getElementById('staff-ul').innerHTML += `<li onclick="deleteStaffList('${staff.user_id}')"><a>${staff.user_id}</a></li>`
-        }
+    staffUsers.staffUsers.forEach(staff => {
+      if((staff.user_id.toLowerCase().startsWith(searchValue.toLowerCase()) || staff.firstname.toLowerCase().startsWith(searchValue.toLowerCase()) || staff.lastname.toLowerCase().startsWith(searchValue.toLowerCase())) && searchValue){
+        document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}' ,'${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
+      }else if(!searchValue){
+        document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}' ,'${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
       }else{
         countNotFound++
       }
     })
-    if(countNotFound === staffUsers.length){
-      document.getElementById('add-staff-button').disabled = true
-      document.getElementById('staff_list').innerHTML = ''
+    if(countNotFound === staffUsers.staffUsers.length){
+      document.getElementById('staff_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
     }
   }
 
-  const updateSettings =  async () => { 
+  const deleteLocalStaff = (id,firstname,lastname) => {
+    const obj = {
+      firstname: firstname,
+      lastname: lastname,
+      user_id: id
+    }
+    staffTemp = staffTemp.filter((t)=> t !== id)
+    if(staffUsers.staffUsers.length === 0)  document.getElementById('staff_list').innerHTML = ''
+    if(staffTemp.length === 0) {
+      staffUsers.staffUsers.forEach((staff)=>{
+        document.getElementById('staff_list').innerHTML = `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}', '${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
+      })
+    } 
+    document.getElementById('staff').value = ''
+    document.getElementById(id).remove()
+    document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addStaffList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
+    staffUsers.staffUsers.push(obj)
+  }
+
+  const deleteStaff = async (id) => {
+    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.reload()
+    })
+  }
+
+  const addStaffList = (id, firstname, lastname) =>{
+    document.getElementById(id).remove()
+    document.getElementById('new_staff_list').innerHTML += `<div class="border-2 p-2 rounded-md mb-2 flex" id="${id}">
+      <div><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>
+      <svg class="w-3 h-3 ml-auto cursor-pointer" onclick="deleteLocalStaff('${id}', '${firstname}', '${lastname}')"
+              viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5.37194 4.49891L8.03128 1.84539C8.14774 1.72891 8.21316 1.57094 8.21316 1.40622C8.21316 1.24151 8.14774 1.08354 8.03128 0.967063C7.91482 0.85059 7.75687 0.785156 7.59218 0.785156C7.42749 0.785156 7.26954 0.85059 7.15308 0.967063L4.49993 3.62678L1.84678 0.967063C1.73032 0.85059 1.57237 0.785156 1.40768 0.785156C1.24299 0.785156 1.08504 0.85059 0.968581 0.967063C0.852125 1.08354 0.7867 1.24151 0.7867 1.40622C0.7867 1.57094 0.852125 1.72891 0.968581 1.84539L3.62792 4.49891L0.968581 7.15244C0.910615 7.20994 0.864606 7.27835 0.833208 7.35373C0.80181 7.4291 0.785645 7.50995 0.785645 7.5916C0.785645 7.67326 0.80181 7.7541 0.833208 7.82948C0.864606 7.90485 0.910615 7.97326 0.968581 8.03076C1.02607 8.08874 1.09448 8.13476 1.16984 8.16616C1.2452 8.19756 1.32604 8.21373 1.40768 8.21373C1.48932 8.21373 1.57016 8.19756 1.64552 8.16616C1.72089 8.13476 1.78929 8.08874 1.84678 8.03076L4.49993 5.37105L7.15308 8.03076C7.21057 8.08874 7.27897 8.13476 7.35434 8.16616C7.4297 8.19756 7.51054 8.21373 7.59218 8.21373C7.67382 8.21373 7.75466 8.19756 7.83002 8.16616C7.90539 8.13476 7.97379 8.08874 8.03128 8.03076C8.08924 7.97326 8.13525 7.90485 8.16665 7.82948C8.19805 7.7541 8.21422 7.67326 8.21422 7.5916C8.21422 7.50995 8.19805 7.4291 8.16665 7.35373C8.13525 7.27835 8.08924 7.20994 8.03128 7.15244L5.37194 4.49891Z"
+                fill="#495057" />
+      </svg>
+      </div>`
+    staffTemp.push(id)
+    staffUsers['staffUsers'] = staffUsers.staffUsers.filter((t)=> t.user_id !== id)
+  }
+
+  const updateSettings =  async (event) => { 
+    event.preventDefault()
     const users = {
       users:{
         advisors: advisorTemp,
@@ -304,8 +417,10 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(users),
-    }).then(() => {
-        window.location.href = `/course-info`
+    }).then((response) => {
+      if(response.ok){
+        window.location.reload()
+      }
     })
   }
 
@@ -331,147 +446,8 @@
         window.location.reload()
     })
   }
-  const deleteStudentList = (id) =>{
-    document.getElementById('student').value = id
-    document.getElementById('student_list').innerHTML = ''
-    document.getElementById('add-student-button').disabled = false
-  }
-  if(document.getElementById('student') || document.getElementById('student')){
-    if(!document.getElementById('student').value) document.getElementById('add-student-button').disabled = true
-    if(!document.getElementById('student').value) document.getElementById('add-student-button').disabled = true
-  }
-  const deleteAdvisorList = (id) =>{
-    document.getElementById('advisor').value = id
-    document.getElementById('advisor_list').innerHTML = ''
-    document.getElementById('add-advisor-button').disabled = false
-  }
-  if(document.getElementById('advisor') || document.getElementById('staff')){
-    if(!document.getElementById('advisor').value) document.getElementById('add-advisor-button').disabled = true
-    if(!document.getElementById('staff').value) document.getElementById('add-staff-button').disabled = true
-  }
-  const deleteStaffList = (id) =>{
-    document.getElementById('staff').value = id
-    document.getElementById('staff_list').innerHTML = ''
-    document.getElementById('add-staff-button').disabled = false
-  }
-  let studentTemp = []
-  const addStudent = () => {
-    
-    if(!document.getElementById('student').value) {
-      document.getElementById('add-student-button').disabled = true
-      return
-    }
-    
-    studentTemp.push(document.getElementById('student').value)
-    studentTemp.forEach(t=>{
-      if(t===document.getElementById('student').value){
-        document.getElementById('add-student-button').disabled = true
-      }
-    })
-    
-    document.getElementById('student-table-row').innerHTML += 
-    /*html*/`<tr id="${document.getElementById('student').value}"><td>${document.getElementById('student').value}</td> <td class="text-right"><div class="flex justify-end"> 
-                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStudent('${document.getElementById('student').value}')">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                              </svg>
-                            </button>
-                          </div>
-                        </td></tr>`
-    document.getElementById('student_list').innerHTML = ''
-    document.getElementById('student').value = ''
-  }
-  const addAdvisor = () => {
-    
-    if(!document.getElementById('advisor').value) {
-      document.getElementById('add-advisor-button').disabled = true
-      return
-    }
-    
-    advisorTemp.push(document.getElementById('advisor').value)
-    advisorTemp.forEach(t=>{
-      if(t===document.getElementById('advisor').value){
-        document.getElementById('add-advisor-button').disabled = true
-      }
-    })
-    
-    document.getElementById('advisor-table-row').innerHTML += 
-    /*html*/ `<tr id="${document.getElementById('advisor').value}"><td>${document.getElementById('advisor').value}</td> <td class="text-right"><div class="flex justify-end"> 
-                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalAdvisor('${document.getElementById('advisor').value}')">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                              </svg>
-                            </button>
-                          </div>
-                        </td></tr>`
-    document.getElementById('advisor_list').innerHTML = ''
-    document.getElementById('advisor').value = ''
-  }
-  let staffTemp =[]
-  const addStaff = () => {
-    if(!document.getElementById('staff').value) {
-      document.getElementById('add-staff-button').disabled = true
-      return
-    }
-    
-    staffTemp.push(document.getElementById('staff').value)
-    staffTemp.forEach(t=>{
-      if(t===document.getElementById('staff').value){
-        document.getElementById('add-staff-button').disabled = true
-      }
-    })
-    
-    document.getElementById('staff-table-row').innerHTML += 
-    /*html*/ `<tr id="${document.getElementById('staff').value}"><td>${document.getElementById('staff').value}</td> <td class="text-right"><div class="flex justify-end"> 
-                            <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500" onclick="deleteLocalStaff('${document.getElementById('staff').value}')">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                              </svg>
-                            </button>
-                          </div>
-                        </td></tr>`
-    document.getElementById('staff_list').innerHTML = ''
-    document.getElementById('staff').value = ''
-   
-  }
 
-  const deleteLocalAdvisor = (id) => {
-    document.getElementById(id).remove()
-    advisorTemp = advisorTemp.filter(e => e !== id)
-  }
 
-  const deleteLocalStudent = (id) => {
-    document.getElementById(id).remove()
-    studentTemp = studentTemp.filter(e => e !== id)
-  }
-
-  const deleteStudent = async (id) => {
-    await fetch(`/api/user/delUserAdv/${id}?_method=DELETE`, {
-        method: 'DELETE',
-    }).then(() => {
-        window.location.reload()
-    })
-  }
-
-  const deleteAdvisor = async (id) => {
-    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
-        method: 'DELETE',
-    }).then(() => {
-        window.location.reload()
-    })
-  }
-  const deleteStaff = async (id) => {
-    await fetch(`/api/user/delUserAc/${id}?_method=DELETE`, {
-        method: 'DELETE',
-    }).then(() => {
-        window.location.reload()
-    })
-  }
-
-  const deleteLocalStaff = (id) => {
-    document.getElementById(id).remove()
-    staffTemp = staffTemp.filter(e => e !== id)
-  }
   if(document.querySelectorAll('input[name=selectStep]:checked').length > 0 || document.querySelectorAll('input[name=selectStatus]:checked').length > 0){
     document.getElementById('selectInput').focus()
   }

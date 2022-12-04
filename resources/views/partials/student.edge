@@ -100,7 +100,6 @@
     </form>
   </div>
   @end
-
   @if(studentUser.student.plan)
   <div class="flex pl-11 py-7 space-x-10">
     <div class="flex flex-col space-y-1 w-72">
@@ -234,7 +233,7 @@
             </a>
             @end
           </div>
-          @if(request.qs().step === 'TR-01' || currentSteps.name === 'TR-01' && nextStep.name !== 'TR-02')
+          @if(request.qs().step === 'TR-01' || currentSteps.name === 'TR-01')
           <table class="table w-full mt-2">
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
