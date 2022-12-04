@@ -96,8 +96,9 @@
                 <p class="capitalize font-medium">Announcement</p>
               </a>
             </li>
+            @if(auth.user.role !== 'student')
             <li>
-              <a class="p-2 text-xs active:bg-base-300 active:text-base-content {{activeDashboard}}" href="{{ route('/dashboard') }}">
+              <a class="p-2 text-xs active:bg-base-300 active:text-base-content {{activeDashboard}}" href="{{ route('/dashboard', {} , {qs:{month: 2}}) }}">
                 <svg class="w-4 h-4" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.9189 6.5H12.3189L10.3689 12L6.46895 1L4.51895 6.5H1.91895" stroke="#495057"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -105,6 +106,7 @@
                 <p class="capitalize font-medium">dashboard</p>
               </a>
             </li>
+            @end
           </div>
           <div class="flex items-center mt-auto">
             <div class="avatar">
