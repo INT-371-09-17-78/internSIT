@@ -399,7 +399,7 @@ export default class UsersController {
             // tmp['st'] = []
             if (result && result.length > 0) {
               for (let i = 0; i < result.length; i++) {
-                console.log(result[i])
+                // console.log(result[i])
                 // const user = await User.query().where('user_id', result[i].user_id)
                 // tmp['st'].push(user[0].serialize())
                 const students = await Student.query().where('student_id', result[i].id)
@@ -576,6 +576,8 @@ export default class UsersController {
           AllStepByMonth['sixMonth']
         )
       }
+      console.log(stepEdit)
+
       // console.log(advisorUsersResult)
       // console.log(studentUsers.length)
       let stepStat: any = []
@@ -609,6 +611,7 @@ export default class UsersController {
                     const result = await UserHasDoc.query()
                       .where('user_in_academic_year_id', usersInAcademicYear[0].id)
                       .andWhere('step', stepRender[j].month[k][g].value)
+                      .orderBy('created_at', 'desc')
                     studentUsers[i][stepRender[j].month[k][g].value] =
                       result && result.length > 0 ? result[0].serialize().status : null
                     // console.log('เข้า')
@@ -620,6 +623,7 @@ export default class UsersController {
                 const result = await UserHasDoc.query()
                   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
                   .andWhere('step', stepRender[j].name)
+                  .orderBy('created_at', 'desc')
                 studentUsers[i][stepRender[j].name] =
                   result && result.length > 0 ? result[0].serialize().status : null
                 // console.log('เข้า')
@@ -1210,6 +1214,8 @@ export default class UsersController {
       let isChangeStep: any = false
       let realCurrentStep: any
       let documentStatusesJsonCurrent: any
+      console.log(userHasDocResult[0], 'test')
+
       if (userHasDocResult[0]) {
         // if (request.qs().step && request.qs().status) {
         //   userHasDoc = await UserHasDoc.query()
@@ -1245,6 +1251,7 @@ export default class UsersController {
             .where('step', TrStep)
             // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+            .orderBy('created_at', 'desc')
           // if (!userHasDoc || userHasDoc.length <= 0) {
           //   userHasDoc.push(userHasDocResult[0])
           // }
@@ -1258,6 +1265,7 @@ export default class UsersController {
             .where('step', request.qs().step)
             // .andWhere('status', request.qs().status)
             .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
+            .orderBy('created_at', 'desc')
           // if (!userHasDoc || userHasDoc.length <= 0) {
           //   userHasDoc.push(userHasDocResult[0])
           // }

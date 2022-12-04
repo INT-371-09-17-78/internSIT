@@ -88,7 +88,12 @@ export default class FilesController {
         size: '3mb',
         // extnames: ['jpg', 'png', 'gif'],
       })
+      // console.log(request.files)
+
+      // console.log(files)
+
       let err: Object[] = []
+      let stepFileTypePlanJSON = JSON.parse(stepFileTypePlan) || null
       if (files.length === 0) {
         throw new Error('not have files')
       }
@@ -144,7 +149,7 @@ export default class FilesController {
             //   auth
             const result = await File.query().where(
               'step_file_type',
-              stepFileType + stepFileTypePlan
+              stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
             )
             // }
 
@@ -156,6 +161,9 @@ export default class FilesController {
           }
 
           // console.log(userHasDocResult)
+          console.log(stepFileTypePlan)
+
+          console.log(JSON.parse(stepFileTypePlan).month)
 
           await File.create({
             file_id: newFileName,
@@ -167,7 +175,9 @@ export default class FilesController {
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
             // step_file_type: template === 'true' ? step : null,
-            step_file_type: stepFileTypePlan ? stepFileType + stepFileTypePlan : stepFileType,
+            step_file_type: stepFileTypePlanJSON
+              ? stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
+              : stepFileType,
             // step_sep: stepSep && stepSep !== '' ? stepSep : null,
           })
           // userHasDoc[0].related('f')
