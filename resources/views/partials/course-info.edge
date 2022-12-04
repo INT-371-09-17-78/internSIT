@@ -5,7 +5,7 @@
     <p>Academic year</p>
     <p class="col-span-4 font-normal">{{academicYears[0].academic_year}}</p>
     <p>Advisor</p>
-    @if(advisorUsers.length > 0)
+    @if(studentUsersByAd.length > 0)
     <div class="flex flex-col rounded-md col-span-4 border-[#ACB5BD] border-2">
       @each((advisor,index) in studentUsersByAd)
       <div tabindex="0" class="collapse collapse-arrow bg-white">
