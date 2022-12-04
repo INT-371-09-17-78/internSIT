@@ -1,12 +1,15 @@
 @set('hideSearch', '')
 @set('activeAnnouncement', '')
 @set('activeInternship','')
+@set('activeDashboard','')
 @set('background', 'block')
 @set('hideMenu', '')
 @if(request.matchesRoute(['/announcement','/announcement/create','/announcement/edit/:id','/announcement/:id']))
 @set('activeAnnouncement', 'btn-active bg-base-300')
 @elseif(request.matchesRoute(['/student-information/:id','/student-information','/academic-year','/student-information','/course-info','/course-info/edit','/register-request','/steps']))
 @set('activeInternship', 'btn-active bg-base-300')
+@elseif(request.matchesRoute(['/dashboard']))
+@set('activeDashboard','btn-active bg-base-300')
 @end
 @if(request.matchesRoute('/'))
 @set('background', 'hidden')
@@ -94,7 +97,7 @@
               </a>
             </li>
             <li>
-              <a class="p-2 text-xs active:bg-base-300 active:text-base-content">
+              <a class="p-2 text-xs active:bg-base-300 active:text-base-content {{activeDashboard}}" href="{{ route('/dashboard') }}">
                 <svg class="w-4 h-4" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.9189 6.5H12.3189L10.3689 12L6.46895 1L4.51895 6.5H1.91895" stroke="#495057"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -137,6 +140,7 @@
     @!section('file')
     @!section('student-information')
     @!section('edit-student')
+    @!section('dashboard')
   </div>
 </body>
 

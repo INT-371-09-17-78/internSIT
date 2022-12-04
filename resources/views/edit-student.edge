@@ -21,7 +21,7 @@
         @if(info.key!=='advisorFullName')
         <input type="{{info.key.toLowerCase().includes('tel') ? 'tel' : 'text'}}"
           class="input input-sm w-full max-w-xs border-2 border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}" id="{{info.key}}"
-          maxlength="{{info.key==='tel' && 12}}" oninput="test(event)">
+          maxlength="{{info.key==='tel' && 10}}">
         @else
         <p class="font-bold">{{info.value || '-'}}</p>
         @end
@@ -39,16 +39,16 @@
   </div>
 </section>
 <script>
-  const test =(event)=>{
-      const inputId = event.target.id
-      const key = event.keyCode || event.charCode;
-      const isDel = key === 8 || key === 46 
-      if(inputId.toLowerCase().includes('tel')){
-          event.target.value = event.target.value.replace(/[^0-9]/g, '')
-          const phoneString = event.target.value.replace(/\D/g, '').match(/(\d{3})(\d{3})(\d{4})/)
-          if(phoneString)
-          event.target.value = phoneString[1] + '-' + phoneString[2] + '-' + phoneString[3];
-      }
-    }
+  // const test =(event)=>{
+  //     const inputId = event.target.id
+  //     const key = event.keyCode || event.charCode;
+  //     const isDel = key === 8 || key === 46 
+  //     if(inputId.toLowerCase().includes('tel')){
+  //         event.target.value = event.target.value.replace(/[^0-9]/g, '')
+  //         const phoneString = event.target.value.replace(/\D/g, '').match(/(\d{3})(\d{3})(\d{4})/)
+  //         if(phoneString)
+  //         event.target.value = phoneString[1] + '-' + phoneString[2] + '-' + phoneString[3];
+  //     }
+  //   }
 </script>
 @end
