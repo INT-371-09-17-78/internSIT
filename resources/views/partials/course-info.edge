@@ -44,6 +44,7 @@
     <p class="col-span-4">-</p>
     @end
   </div>
+  @if(auth.user.role === 'staff' || auth.user.role === 'admin')
   <a href="{{ route('/course-info/edit')}}" class="ml-auto">
     @!common.borderButton({
       text: 'edit',
@@ -52,6 +53,7 @@
       id: 'editButton',
     })
   </a>
+  @end
   <div class="border-t-2 border-[#A8B0B8]"></div>
   <a href="{{ route('/course-info/complete-course')}}">
     @!common.borderButton({
