@@ -318,7 +318,10 @@ export default class UsersController {
       let allAmoutSt: any
       let noApprove: any
       let advisorById: any = []
+      let advisor: any = []
       let studentUsersByAdOne: any
+      // let studentUsersByAdOneArr: any = []
+      let adSe: any = []
       // if (Object.keys(request.qs()).length <= 0 && request.matchesRoute('/student-information')) {
       //   console.log('asdasd')
 
@@ -349,11 +352,35 @@ export default class UsersController {
           // adSe.push(tmp)
         }
 
-        console.log(studentUsersByAdOne)
+        // console.log(studentUsersByAdOne)
+      } else {
+        advisor = await User.query().where('role', 'advisor')
+        // .andWhere('role', 'advisor')
+        // console.log(advisorById);
+        if (advisor && advisor.length > 0) {
+          for (let i = 0; i < advisor.length; i++) {
+            const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
+              .where('user_id', advisor[i].user_id)
+              .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
+              const id = checkAdvisorExistInAcademicYear[0].id
+              const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
+              const tmp = advisor[0].serialize()
+              tmp['st'] = []
+              for (let j = 0; j < result.length; j++) {
+                const user = await User.query().where('user_id', result[j].user_id)
+                tmp['st'].push(user[0].serialize())
+              }
+              // tmp['st'] = result.map((re) => re.serialize())
+              adSe.push(tmp)
+              // adSe.push(tmp)
+            }
+          }
+        }
       }
-      const ad = await User.query().where('role', 'advisor').preload('academicYear')
-      let adSe: any = []
+
       if (auth.user && auth.user.role === 'advisor') {
+        const ad = await User.query().where('role', 'advisor').preload('academicYear')
         for (let i = 0; i < ad.length; i++) {
           // console.log(AcademicYearCf[0].academic_year)
           // console.log(ad[i].academicYear[0].$extras.pivot_id)
@@ -372,16 +399,16 @@ export default class UsersController {
             // tmp['st'] = []
             if (result && result.length > 0) {
               for (let i = 0; i < result.length; i++) {
-                // console.log(result[i])
+                console.log(result[i])
                 // const user = await User.query().where('user_id', result[i].user_id)
                 // tmp['st'].push(user[0].serialize())
                 const students = await Student.query().where('student_id', result[i].id)
                 const user = await User.query().where('user_id', result[i].user_id)
                 // console.log(students)
                 // console.log(students[0].student_id)
-
+                // log
                 if (user[0]) {
-                  const resultSe = user[i].serialize()
+                  const resultSe = user[0].serialize()
                   resultSe['approved'] = result[i].approved
                   resultSe['plan'] = students[0].plan || 0
                   // console.log(resultSe)
@@ -432,43 +459,79 @@ export default class UsersController {
             }
           }
 
-          allAmoutSt = studentUsers.length
+          // allAmoutSt = studentUsers.length
 
-          noApprove = studentUsers.filter((st) => !st.approved)
-          if (request.qs().month) {
-            studentUsers = studentUsers.filter(
-              (userPre) => userPre.plan === parseInt(request.qs().month)
-            )
-          }
+          // noApprove = studentUsers.filter((st) => !st.approved)
+          // if (request.qs().month) {
+          //   studentUsers = studentUsers.filter(
+          //     (userPre) => userPre.plan === parseInt(request.qs().month)
+          //   )
+          // }
 
-          const advisorUsers = await User.query().where('role', 'advisor')
-          const staffUsers = await User.query().where('role', 'staff')
-          for (let i = 0; i < advisorUsers.length; i++) {
-            const check = await UsersInAcademicYearModel.query()
-              .where('user_id', advisorUsers[i].user_id)
-              .andWhere('academic_year', AcademicYearCf[0].academic_year)
-            if (check && check.length > 0) {
-              advisorUsersResult.push(advisorUsers[i])
-            }
-          }
-          for (let i = 0; i < staffUsers.length; i++) {
-            const check = await UsersInAcademicYearModel.query()
-              .where('user_id', staffUsers[i].user_id)
-              .andWhere('academic_year', AcademicYearCf[0].academic_year)
-            if (check && check.length > 0) {
-              // const staffUser = await User.query().where('user_id', check[0].user_id)
-              // if (staffUser && staffUser.length > 0) {
-              staffUsersResult.push(staffUsers[i])
+          // const advisorUsers = await User.query().where('role', 'advisor')
+          // const staffUsers = await User.query().where('role', 'staff')
+          // for (let i = 0; i < advisorUsers.length; i++) {
+          //   const check = await UsersInAcademicYearModel.query()
+          //     .where('user_id', advisorUsers[i].user_id)
+          //     .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          //   if (check && check.length > 0) {
+          //     advisorUsersResult.push(advisorUsers[i])
+          //   }
+          // }
+          // for (let i = 0; i < staffUsers.length; i++) {
+          //   const check = await UsersInAcademicYearModel.query()
+          //     .where('user_id', staffUsers[i].user_id)
+          //     .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          //   if (check && check.length > 0) {
+          //     // const staffUser = await User.query().where('user_id', check[0].user_id)
+          //     // if (staffUser && staffUser.length > 0) {
+          //     staffUsersResult.push(staffUsers[i])
 
-              // }
-            }
-            // console.log(staffUsersResult)
-            // console.log(check)
-          }
+          //     // }
+          //   }
+          //   // console.log(staffUsersResult)
+          //   // console.log(check)
+          // }
         } else {
           studentUsers = []
         }
       }
+
+      allAmoutSt = studentUsers.length
+
+      noApprove = studentUsers.filter((st) => !st.approved)
+      if (request.qs().month) {
+        studentUsers = studentUsers.filter(
+          (userPre) => userPre.plan === parseInt(request.qs().month)
+        )
+      }
+
+      const advisorUsers = await User.query().where('role', 'advisor')
+      const staffUsers = await User.query().where('role', 'staff')
+      for (let i = 0; i < advisorUsers.length; i++) {
+        const check = await UsersInAcademicYearModel.query()
+          .where('user_id', advisorUsers[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        if (check && check.length > 0) {
+          advisorUsersResult.push(advisorUsers[i])
+        }
+      }
+      for (let i = 0; i < staffUsers.length; i++) {
+        const check = await UsersInAcademicYearModel.query()
+          .where('user_id', staffUsers[i].user_id)
+          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+        if (check && check.length > 0) {
+          // const staffUser = await User.query().where('user_id', check[0].user_id)
+          // if (staffUser && staffUser.length > 0) {
+          staffUsersResult.push(staffUsers[i])
+
+          // }
+        }
+        // console.log(staffUsersResult)
+        // console.log(check)
+      }
+      // console.log(advisorUsersResult, 'advisor Result')
+      // console.log(studentUsersByAd)
 
       const AllStepByMonth = {}
       // const body = {}
@@ -640,6 +703,7 @@ export default class UsersController {
         // result = this.queryStringFilter(studentUsers, request.qs().step)
         // }
       }
+      // console.log(studentUsersByAdOneArr)
 
       return view.render('student-information', {
         studentUsers:
@@ -1252,7 +1316,7 @@ export default class UsersController {
                 .where('user_has_doc_id', allUserHasDoc[i].id)
                 .where('step_file_type', 'signedFile')
                 .orderBy('created_at', 'desc')
-              console.log(currentStepFile)
+              // console.log(currentStepFile)
 
               if (currentStepFile[0]) {
                 currentSteps['file'] = currentStepFile[0].serialize()
@@ -1319,7 +1383,9 @@ export default class UsersController {
             (documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') &&
               documentStatusesJsonCurrent.status === 'Approved' &&
               !request.qs().step) ||
-            (request.qs().step && request.qs().step.includes('Supervision')) ||
+            (request.qs().step &&
+              (request.qs().step.includes('Supervision') ||
+                request.qs().step.includes('supervision'))) ||
             (documentStatusesJsonCurrent.step &&
               documentStatusesJsonCurrent.step.includes('Informed') &&
               documentStatusesJsonCurrent.status !== 'Approved')
@@ -1329,6 +1395,8 @@ export default class UsersController {
               allUserHasDoc[i].step &&
               allUserHasDoc[i].step.includes('Informed')
             ) {
+              console.log('เข้ายังง่ะ')
+
               // if (allUserHasDoc[i].step === 'Informed supervision (1/6)') {
               if (allUserHasDoc[i].step === documentStatusesJsonCurrent.step) {
                 objSupervision['advisorDate'] = allUserHasDoc[i].advisor_date
@@ -1592,10 +1660,15 @@ export default class UsersController {
           }
         }
 
+        if (documentStatusesJsonCurrent.status === StepStatus.APPROVED) {
+        }
         currentSteps['name'] = documentStatusesJsonCurrent.step
         currentSteps['status'] = documentStatusesJsonCurrent.status
+        // nextStep['nameShow'] = 'asdasd'
         // currentSteps['name'] = TrStep
-        console.log(documentStatusesJsonCurrent.step, 'adasd')
+        // console.log(currentSteps['name'], '2')
+
+        // console.log(documentStatusesJsonCurrent.step, 'adasd')
 
         if (
           documentStatusesJsonCurrent.step.includes('TR-03 and TR-05') ||
@@ -1621,6 +1694,8 @@ export default class UsersController {
             }
           }
         } else {
+          // console.log('เข้า')
+
           let showStep: any
           showStep = this.showSteps(studentUser.student.plan)
           const stepRe = showStep.find((ele) => ele.name === documentStatusesJsonCurrent.step)
@@ -1634,10 +1709,19 @@ export default class UsersController {
         let stepIndex: any
         let monthStepIndex: any
         let stepsRenderIndex: any
+        console.log(currentSteps['name'], 'name')
+
         if (
-          currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-          currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
-          (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved')
+          (currentSteps['name'].includes(AllSteps.TR_03_TR_05) &&
+            studentUser.student.plan &&
+            studentUser.student.plan !== 2) ||
+          (currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) &&
+            studentUser.student.plan &&
+            studentUser.student.plan !== 2) ||
+          (currentSteps['name'] === AllSteps.TR02 &&
+            currentSteps['status'] === 'Approved' &&
+            studentUser.student.plan &&
+            studentUser.student.plan !== 2)
         ) {
           stepsRenderIndex = stepsRender.findIndex(
             (step) => step.name === AllSteps.TR03_TR05_AND_SUPERVISION
@@ -1658,24 +1742,70 @@ export default class UsersController {
         }
         if (userHasDoc[0].status === 'Approved') {
           if (
-            currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-            currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) ||
-            (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved')
+            (currentSteps['name'].includes(AllSteps.TR_03_TR_05) &&
+              studentUser.student.plan &&
+              studentUser.student.plan !== 2) ||
+            (currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) &&
+              studentUser.student.plan &&
+              studentUser.student.plan !== 2) ||
+            (currentSteps['name'] === AllSteps.TR02 &&
+              currentSteps['status'] === 'Approved' &&
+              studentUser.student.plan &&
+              studentUser.student.plan !== 2)
           ) {
-            if (currentSteps['name'] === AllSteps.TR02 && currentSteps['status'] === 'Approved') {
+            if (
+              (!request.qs().step || request.qs().step !== AllSteps.TR02) &&
+              currentSteps['name'] === AllSteps.TR02 &&
+              currentSteps['status'] === 'Approved'
+            ) {
               // console.log(nextStep = stepsRender[stepsRenderIndex].month[0][0]);
 
               nextStep['name'] = stepsRender[stepsRenderIndex].month[0][0].value
+              currentSteps['name'] = stepsRender[stepsRenderIndex].month[0][0].value // เปลี่ยน current สำหรับ 02 to 03-05
+              const index = nextStep['name'].indexOf('(')
+              const index2 = nextStep['name'].indexOf('5')
+              const substr = nextStep['name'].substr(0, index2 + 1)
+              nextStep['nameShow'] = substr + ' (Month ' + nextStep['name'][index + 1] + ')'
+              // console.log(nextStep.nameShow)
+
+              currentSteps['status'] = ''
             } else {
               if (stepIndex >= 0) {
-                nextStep['name'] =
+                // console.log(nextStep['name'])
+                // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex][1].value)
+                console.log(stepIndex)
+                // console.log(stepsRender[stepsRenderIndex].month[monthStepIndex + 1]);
+
+                nextStep =
                   stepIndex === 1
                     ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1]
-                      ? stepsRender[stepsRenderIndex].month[monthStepIndex + 1][0].value
+                      ? { name: stepsRender[stepsRenderIndex].month[monthStepIndex + 1][0].value }
                       : stepsRender[stepsRenderIndex + 1].name
                       ? stepsRender[stepsRenderIndex + 1]
                       : stepsRender[stepsRenderIndex].name
-                    : stepsRender[stepsRenderIndex].month[monthStepIndex][1].value
+                    : { name: stepsRender[stepsRenderIndex].month[monthStepIndex][1].value }
+                //       nextStep['name'] = stepsRender[stepsRenderIndex].month[0][0].value
+                // currentSteps['name'] = stepsRender[stepsRenderIndex].month[0][0].value // เปลี่ยน current สำหรับ 02 to 03-05
+                console.log(nextStep)
+                if (nextStep['name'] !== AllSteps.PRESENTATION) {
+                  // console.log('เข้า')
+                  if (nextStep['name'].includes(AllSteps.INFORMED_SUPERVISION)) {
+                    // console.log(nextStep['name'], 'name')
+                    const index = nextStep['name'].indexOf('(')
+                    const index2 = nextStep['name'].indexOf('on')
+                    const indexStart = nextStep['name'].indexOf('s')
+                    // nextStep['name'][indexStart].toUpperCase()
+                    const substr =
+                      nextStep['name'][indexStart].toUpperCase() +
+                      nextStep['name'].substr(indexStart + 1, index2 - indexStart + 2)
+                    nextStep['nameShow'] = substr + ' (Month ' + nextStep['name'][index + 1] + ')'
+                  } else {
+                    const index = nextStep['name'].indexOf('(')
+                    const index2 = nextStep['name'].indexOf('5')
+                    const substr = nextStep['name'].substr(0, index2 + 1)
+                    nextStep['nameShow'] = substr + ' (Month ' + nextStep['name'][index + 1] + ')'
+                  }
+                }
               }
             }
 
@@ -1690,24 +1820,55 @@ export default class UsersController {
               nextStep['name'] = stepsRender[stepIndex + 1]
                 ? stepsRender[stepIndex + 1].name
                 : stepsRender[stepIndex].name
+
+              nextStep['nameShow'] = nextStep['name']
+              // currentSteps['name'] = stepsRender[stepIndex + 1]
+              //   ? stepsRender[stepIndex + 1].name
+              //   : stepsRender[stepIndex].name
             }
           }
           // stepsRender[stepsRenderIndex]
         } else {
+          nextStep['name'] = currentSteps['name']
           if (
-            currentSteps['name'].includes(AllSteps.TR_03_TR_05) ||
-            currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)
+            (currentSteps['name'].includes(AllSteps.TR_03_TR_05) &&
+              studentUser.student.plan &&
+              studentUser.student.plan !== 2) ||
+            (currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION) &&
+              studentUser.student.plan &&
+              studentUser.student.plan !== 2)
           ) {
+            // console.log('ไม่เข้าหงอ')
             // console.log(stepIndex)
             // // console.log(stepIndex)
             // console.log(monthStepIndex)
+            console.log(nextStep, 'next')
+
             if (stepIndex >= 0) {
               nextStep['name'] =
                 stepsRender[stepsRenderIndex].month[monthStepIndex][stepIndex].value
+              if (nextStep.name !== AllSteps.PRESENTATION) {
+                if (currentSteps['name'].includes(AllSteps.INFORMED_SUPERVISION)) {
+                  const index = nextStep['name'].indexOf('(')
+                  const index2 = nextStep['name'].indexOf('on')
+                  const indexStart = nextStep['name'].indexOf('s')
+                  // nextStep['name'][indexStart].toUpperCase()
+                  const substr =
+                    nextStep['name'][indexStart].toUpperCase() +
+                    nextStep['name'].substr(indexStart + 1, index2 - indexStart + 2)
+                  nextStep['nameShow'] = substr + ' (Month ' + nextStep['name'][index + 1] + ')'
+                } else {
+                  const index = nextStep['name'].indexOf('(')
+                  const index2 = nextStep['name'].indexOf('5')
+                  const substr = nextStep['name'].substr(0, index2 + 1)
+                  nextStep['nameShow'] = substr + ' (Month ' + nextStep['name'][index + 1] + ')'
+                }
+              }
             }
           } else {
             if (stepIndex >= 0) {
               nextStep['name'] = stepsRender[stepIndex].name
+              nextStep['nameShow'] = nextStep['name']
             }
           }
           // }
@@ -1748,6 +1909,8 @@ export default class UsersController {
         const stepReIndex = showStep.findIndex(
           (ele) => ele.name === AllSteps.TR03_TR05_AND_SUPERVISION
         )
+        // console.log(stepReIndex, 'asdasd')
+
         if (stepReIndex > -1) {
           // console.log(showStep[stepReIndex])
           for (let shm = 0; shm < showStep[stepReIndex].month.length; shm++) {
@@ -1778,7 +1941,7 @@ export default class UsersController {
         let showStep: any
         showStep = this.showSteps(studentUser.student.plan)
         const stepRe = showStep.find((ele) => ele.name === request.qs().step)
-        currentSteps['description'] = stepRe.description
+        currentSteps['description'] = stepRe && stepRe.description ? stepRe.description : ''
         currentSteps['status'] = ''
         currentSteps['createAt'] = ''
         currentSteps['reason'] = ''
@@ -1918,6 +2081,8 @@ export default class UsersController {
         'advisorDate',
       ])
       // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      console.log('เข้า')
+
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUser: any
       let usersInAcademicYear: any
@@ -2005,13 +2170,13 @@ export default class UsersController {
 
       if (advisorDate) {
         body['advisor_date'] = advisorDate
-      } else if (step && step === AllSteps.TR02 && !advisorDate) {
+      } else if (step && step === AllSteps.TR02 && !advisorDate && request.qs().step) {
         throw new Error('no adDate')
       }
 
       if (completeDate) {
         body['complete_date'] = completeDate
-      } else if (step && step === AllSteps.TR02 && !completeDate) {
+      } else if (step && step === AllSteps.TR02 && !completeDate && request.qs().step) {
         throw new Error('no compDate')
       }
 
@@ -2032,6 +2197,8 @@ export default class UsersController {
       }
       // console.log('เข้า')
       // console.log(step, 'asdasd')
+      console.log(step, status)
+
       if (
         status &&
         status !== StepStatus.PENDING &&
@@ -2067,6 +2234,8 @@ export default class UsersController {
           .query()
           .where('step', step)
           .orderBy('created_at', 'desc')
+        console.log(stepTracking, 'Track')
+
         if (stepTracking && stepTracking.length > 0) {
           for (let i = 0; i < Object.keys(body).length; i++) {
             stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
@@ -2138,7 +2307,7 @@ export default class UsersController {
           .andWhere('academic_year', years[0].academic_year)
           .preload('student')
       }
-      if (step && step.includes('TR-03 and TR-05')) {
+      if ((step && step.includes('TR-03 and TR-05')) || step.includes('TR-02')) {
         const test = Object.keys(AllSteps).find((key) => AllSteps[key] === step)
         const indexOfS = Object.keys(AllSteps).indexOf(test ? test : '')
         const s = Object.values(AllSteps)[indexOfS + 1]

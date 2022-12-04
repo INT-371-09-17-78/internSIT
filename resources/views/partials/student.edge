@@ -186,7 +186,7 @@
           <p class="">{{lastOfAllStep}}</p>
           @else
           <p class="font-bold text-2xl {{request.qs().status === 'Approved' && 'text-green-700'}}">
-            {{request.qs().step || nextStep.name}}
+            {{request.qs().step || (nextStep.nameShow ? nextStep.nameShow : nextStep.name)}}
             @if(request.qs().status === 'Approved')
             <span class="text-xl">Completed</span>
             @end
@@ -549,7 +549,7 @@
             disabled,
           })
           @end
-          @elseif(request.qs().step && request.qs().step.includes('Presentation'))
+          @elseif(request.qs().step && request.qs().step.includes('Presentation')  || (request.qs().step  ? (nextStep.name.includes('Presentation') && currentSteps.status === 'Approved' && request.qs().step && (!request.qs().step.includes('supervision') && !request.qs().step.includes('Supervision'))) : (nextStep.name.includes('Presentation') && currentSteps.status === 'Approved')))
           <table class="table w-full mt-2">
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -605,7 +605,7 @@
             disabled,
           })
           @end
-          @elseif(request.qs().step && request.qs().step.includes('TR-03') || nextStep.name.includes('TR-03'))
+          @elseif(request.qs().step && request.qs().step.includes('TR-03') || nextStep.name.includes('TR-03') && !currentSteps.name.includes('supervision'))
           <table class="table w-full mt-2">
             <thead>
               <tr class="border-2 border-[#E6E7EA] rounded-none">
@@ -753,7 +753,7 @@
               @end
             </tbody>
           </table>
-            @if((auth.user.role === 'staff' && request.qs().status !== 'Approved' && currentSteps.file.row.length > 0) || (auth.user.role === 'student' && request.qs().status !== 'Approved'))
+            @if((auth.user.role === 'staff' && request.qs().status !== 'Approved' && currentSteps.file.row && currentSteps.file.row.length > 0) || (auth.user.role === 'student' && request.qs().status !== 'Approved'))
             @!common.bgButton({
               text: 'Confirm',
               type: 'submit',
@@ -762,7 +762,7 @@
               disabled,
             })
             @end
-          @elseif(request.qs().step && request.qs().step && request.qs().step.includes('Supervision'))
+          @elseif(request.qs().step && ( request.qs().step.includes('Supervision') || request.qs().step.includes('supervision') )|| nextStep.nameShow && (nextStep.nameShow.includes('Supervision') || nextStep.nameShow.includes('supervision')))
               @if(auth.user.role !== 'student')
               <div class="flex space-x-2">
                 <div class="flex items-center space-x-2">
@@ -1287,8 +1287,9 @@ const checkStartDateMax = () => {
         })
       }
       // console.log(body);
+     
       // console.log('{{currentSteps.name}}')
-      if('{{currentSteps.name}}'.includes('Informed')){
+      if('{{currentSteps.name}}'.includes('Informed') && '{{request.qs()}}'  &&  '{{request.qs().step}}'){
         if(dateConfirm || advisorDateValue || reason){
         await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
              method: 'PATCH',
@@ -1300,7 +1301,9 @@ const checkStartDateMax = () => {
         })
        }
       }else{
+        console.log("เข้า");
         try {
+         
           await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
           method: 'PATCH',
           headers: {
