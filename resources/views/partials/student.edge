@@ -762,7 +762,7 @@
               disabled,
             })
             @end
-          @elseif(request.qs().step && request.qs().step.includes('Supervision') || nextStep.nameShow.toLowerCase().includes('supervision'))
+          @elseif(request.qs().step && (request.qs().step.includes('Supervision') || request.qs().step.includes('supervision'))  || (nextStep.nameShow && nextStep.nameShow.toLowerCase().includes('supervision')))
               @if(auth.user.role !== 'student')
               <div class="flex space-x-2">
                 <div class="flex items-center space-x-2">
@@ -1250,7 +1250,7 @@ const checkStartDateMax = () => {
     let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || {{isEdit}} || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     // if(('{{currentSteps.name}}' === 'TR-02' && !acknowledgeDate) || ('{{currentSteps.name}}' === 'TR-02' && !requestDate) || ('{{currentSteps.name}}' === 'TR-02' && !file)) return
     let step = null
-    if('{{currentSteps.name}}' === 'TR-02' && '{{currentSteps.status}}' === 'Approved'){
+    if('{{currentSteps.name}}' === 'TR-02' && '{{currentSteps.status}}' === 'Approved' && '{{request.qs().step}}' !== 'undefined'){
       step = '{{currentSteps.name}}'
     }
     const body = {
@@ -1289,7 +1289,7 @@ const checkStartDateMax = () => {
       // console.log(body);
      
       // console.log('{{currentSteps.name}}')
-      if('{{currentSteps.name}}'.includes('Informed') && '{{request.qs()}}'  &&  '{{request.qs().step}}'){
+      // if('{{currentSteps.name}}'.includes('Informed')){
         if(dateConfirm || advisorDateValue || reason){
         await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
              method: 'PATCH',
@@ -1299,7 +1299,7 @@ const checkStartDateMax = () => {
              },
             body: JSON.stringify(body),
         })
-       }
+      //  }
       }else{
         console.log("เข้า");
         try {

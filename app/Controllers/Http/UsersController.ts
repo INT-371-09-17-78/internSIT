@@ -2012,11 +2012,24 @@ export default class UsersController {
         }
         // steps[i]['status'] = 'Approved'
       }
+      const isEmpty =
+        currentSteps.file.row &&
+        currentSteps.file.row.length > 0 &&
+        Object.values(currentSteps.file.row[0]).every(
+          (x: object) => Object.keys(x).length === 0
+          // || x === ''
+        )
+      console.log(isEmpty)
+      if (isEmpty) {
+        currentSteps.file = {}
+      }
       console.log(currentSteps)
       // console.log(stepsRender[2].month)
       // console.log(stepsRender)
       // console.log(currentSteps.supervision)
-      // console.log(currentSteps.file.row)
+      console.log(currentSteps.file.row)
+
+      // !Object.values(obj1).some(v => v
       // console.log(currentSteps.file.row)
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
@@ -2197,7 +2210,7 @@ export default class UsersController {
       }
       // console.log('เข้า')
       // console.log(step, 'asdasd')
-      console.log(step, status)
+      // console.log(step, status)
 
       if (
         status &&
