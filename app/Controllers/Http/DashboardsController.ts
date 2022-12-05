@@ -113,6 +113,7 @@ export default class DashboardsController {
                       ).length
                       notSub = notSub + stepRender[j].month[k][g][x + ' Total']
                     })
+                    stepRender[j].month[k][g]['Not Summited' + ' Total'] = allSt - notSub
                   }
                 }
               } else {
@@ -131,14 +132,14 @@ export default class DashboardsController {
                   //   console.log(notSub)
                 })
 
-                // stepRender[j]['Not Summited' + ' Total'] =
+                stepRender[j]['Not Summited' + ' Total'] = allSt - notSub
               }
             }
           }
         }
         // console.log(allSt - notSub)
       }
-      //   console.log(stepRender)
+      console.log(stepRender)
 
       return view.render('dashboard', {
         stepRender: stepRender,
