@@ -12,27 +12,7 @@
 @set('activeSixMonth','bg-[#EEF8FF]')
 @end
 <section class="w-full h-full flex flex-col">
-    <div class="flex px-8 bg-[#F0F3F8] w-full py-6">
-        <div class="flex items-center space-x-5">
-          <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
-            Dashboard
-          </p>
-          <div class="flex items-center space-x-2">
-            <svg class="w-4 h-4" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M5.9998 6.62069C7.82805 6.62069 9.31014 5.1386 9.31014 3.31034C9.31014 1.48209 7.82805 0 5.9998 0C4.17154 0 2.68945 1.48209 2.68945 3.31034C2.68945 5.1386 4.17154 6.62069 5.9998 6.62069Z"
-                fill="#4263EB" />
-              <path d="M6 6.59766C2.68629 6.59766 0 9.28395 0 12.5977H12C12 9.28395 9.31371 6.59766 6 6.59766Z"
-                fill="#4263EB" />
-            </svg>
-            <p class="text-primary font-medium capitalize">{{auth.user.role}}</p>
-          </div>
-        </div>
-        <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
-          <p class="font-bold">Academic year: {{request.cookie('year') || academicYears[0].academic_year}} </p>
-          <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
-        </div>
-      </div>
+      @include('partials/header')
       <div class="w-full h-full p-5 flex flex-col">
         <div class="card w-full bg-base-100 shadow-xl">
             <div class="py-5 px-10">

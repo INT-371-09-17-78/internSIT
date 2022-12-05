@@ -2,7 +2,7 @@
 @set('title', 'announcement page')
 @section('announcement')
 <section class="h-full w-full z-[5] flex flex-col">
-  @include('partials/announcement-header')
+  @include('partials/header')
   <div class="card-group flex flex-col space-y-5 mt-5 overflow-y-auto h-[85%] mx-40">
     @if(posts.length === 0 && auth.user?.role != "student")
     <div class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">
@@ -15,10 +15,8 @@
     <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
       <div
         class="card card-side w-full max-h-40 card-compact card-bordered text-black-content flex border-0 bg-[#F0F3F8] rounded-xl p-5 space-x-2">
-        <div class="avatar">
-          <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
-            <img src="{{ asset('assets/images/avatar.svg') }}" />
-          </div>
+        <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex justify-center items-center bg-primary text-white">
+            <p>{{auth.user.firstname.charAt(0) + auth.user.lastname.charAt(0)}}</p>
         </div>
         <div class="space-y-2 text-xs">
           <div class="flex">
