@@ -1,7 +1,7 @@
 @layout('layouts/app')
 @set('title', 'announcement page')
 @section('announcement')
-<section class="h-full w-full z-[5] px-10">
+<section class="h-full w-full z-[5] flex flex-col">
   @include('partials/announcement-header')
   <div class="card-group flex flex-col space-y-5 mt-5 overflow-y-auto h-[85%] mx-40">
     @if(posts.length === 0 && auth.user?.role != "student")

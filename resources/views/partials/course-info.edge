@@ -10,7 +10,7 @@
       @each((advisor,index) in studentUsersByAd)
       <div tabindex="0" class="collapse collapse-arrow bg-white rounded-md">
         <input type="checkbox" class="peer" />
-        <div class="collapse-title font-medium border-[#ACB5BD] {{index === studentUsersByAd.length-1 ? 'border-none' : 'border-b-2'}}">
+        <div class="collapse-title font-medium border-[#ACB5BD] peer-checked:border-none {{index === studentUsersByAd.length-1 ? 'border-none' : 'border-b-2'}}">
           {{index+1}}. {{advisor.firstname + ' ' + advisor.lastname}}
         </div>
         <div class="collapse-content bg-[#F6F7F9]">
@@ -86,7 +86,7 @@
       <p class="font-medium text-sm text-[#ACB5BD]">{{advisorById.user_id}}</p>
     </div>
     <div class="flex col-span-4">
-      <div class="w-56 h-60 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2">
+      <div class="w-56 h-60 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2 overflow-y-auto overflow-x-hidden">
         <input id="student" type="text" placeholder="Type student name or ID"
         class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
         onkeyup="searchStudent()" />
@@ -94,7 +94,7 @@
 
         </div>
       </div>
-      <div class="w-56 h-60 border-y-2 border-r-2 border-[#ACB5BD]">
+      <div class="w-56 h-60 border-y-2 border-r-2 border-[#ACB5BD] overflow-y-auto overflow-x-hidden">
         <div class="w-full h-full p-5" id="new_student_list">
           <p class="mb-2">New student</p>
         </div>
@@ -169,7 +169,7 @@
     <p class="col-span-4">{{academicYears[0].academic_year}}</p>
     <p class="font-medium">Advisor</p>
     <div class="flex col-span-4">
-      <div class="w-56 h-60 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2">
+      <div class="w-56 h-60 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2 overflow-y-auto overflow-x-hidden">
         <input id="advisor" type="text" placeholder="Type advisor name or ID"
         class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
         onkeyup="searchAdvisor()" />
@@ -177,7 +177,7 @@
 
         </div>
       </div>
-      <div class="w-56 h-60 border-y-2 border-r-2 border-[#ACB5BD]">
+      <div class="w-56 h-60 border-y-2 border-r-2 border-[#ACB5BD]  overflow-y-auto overflow-x-hidden">
         <div class="w-full h-full p-5" id="new_advisor_list">
           <p class="mb-2">New advisor</p>
         </div>
@@ -232,7 +232,7 @@
     <div class="divider col-span-5"></div> 
     <p class="font-medium">Staff</p>
     <div class="flex col-span-4">
-      <div class="w-56 h-60 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2">
+      <div class="w-56 h-60 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2 overflow-y-auto overflow-x-hidden">
         <input id="staff" type="text" placeholder="Type staff name or ID"
         class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
         onkeyup="searchStaff()" />
@@ -240,7 +240,7 @@
 
         </div>
       </div>
-      <div class="w-56 h-60 border-y-2 border-r-2 border-[#ACB5BD]">
+      <div class="w-56 h-60 border-y-2 border-r-2 border-[#ACB5BD] overflow-y-auto overflow-x-hidden">
         <div class="w-full h-full p-5" id="new_staff_list">
           <p class="mb-2">New staff</p>
         </div>

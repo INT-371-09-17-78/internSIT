@@ -308,15 +308,17 @@
     }
     studentTemp = studentTemp.filter((t)=> t !== id)
     if(studentUsers.studentUsers.length === 0)  document.getElementById('student_list').innerHTML = ''
-    if(studentTemp.length === 0) {
-      studentUsers.studentUsers.forEach((student)=>{
-        document.getElementById('student_list').innerHTML = `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}', '${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
-      })
-    } 
     document.getElementById('student').value = ''
     document.getElementById(id).remove()
-    document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addStudentList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
     studentUsers.studentUsers.push(obj)
+    if(studentTemp.length === 0) {
+      document.getElementById('student_list').innerHTML = ''
+      studentUsers.studentUsers.forEach((student)=>{
+        document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}', '${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
+      })
+    }else{
+      document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addStudentList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
+    }
   }
   
   const deleteStudent = async (id) => {
