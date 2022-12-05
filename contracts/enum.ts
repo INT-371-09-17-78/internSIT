@@ -5,6 +5,11 @@ export enum StepStatus {
   WAITING = 'Waiting',
 }
 
+export enum SupervisionStatus {
+  PENDING = 'Pending',
+  Done = 'Done',
+}
+
 export enum AllSteps {
   TR01 = 'TR-01',
   TR02 = 'TR-02',
