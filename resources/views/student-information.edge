@@ -236,7 +236,7 @@
     const searchValue = document.getElementById('advisor').value
     document.getElementById('advisor_list').innerHTML = ''
     let countNotFound = 0
-    advisorUsers.advisorUsers.forEach(advisor => {
+    advisorUsers.forEach(advisor => {
       if((advisor.user_id.toLowerCase().startsWith(searchValue.toLowerCase()) || advisor.firstname.toLowerCase().startsWith(searchValue.toLowerCase()) || advisor.lastname.toLowerCase().startsWith(searchValue.toLowerCase())) && searchValue){
         document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}' ,'${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
       }else if(!searchValue){
@@ -245,7 +245,7 @@
         countNotFound++
       }
     })
-    if(countNotFound === advisorUsers.advisorUsers.length){
+    if(countNotFound === advisorUsers.length){
       document.getElementById('advisor_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
     }
   }
@@ -257,7 +257,7 @@
       user_id: id
     }
     advisorTemp = advisorTemp.filter((t)=> t !== id)
-    if(advisorUsers.advisorUsers.length === 0)  document.getElementById('advisor_list').innerHTML = ''
+    if(advisorUsers.length === 0)  document.getElementById('advisor_list').innerHTML = ''
     if(advisorTemp.length === 0) {
       advisorUsers.advisorUsers.forEach((advisor)=>{
         document.getElementById('advisor_list').innerHTML = `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}', '${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
@@ -266,7 +266,7 @@
     document.getElementById('advisor').value = ''
     document.getElementById(id).remove()
     document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addAdvisorList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
-    advisorUsers.advisorUsers.push(obj)
+    advisorUsers.push(obj)
   }
   
   const deleteAdvisor = async (id) => {
@@ -296,7 +296,7 @@
       const searchValue = document.getElementById('student').value
       document.getElementById('student_list').innerHTML = ''
       let countNotFound = 0
-      studentUsers.studentUsers.forEach(student => {
+      studentUsers.forEach(student => {
         if((student.user_id.toLowerCase().startsWith(searchValue.toLowerCase()) || student.firstname.toLowerCase().startsWith(searchValue.toLowerCase()) || student.lastname.toLowerCase().startsWith(searchValue.toLowerCase())) && searchValue){
           document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}' ,'${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
         }else if(!searchValue){
@@ -305,7 +305,7 @@
           countNotFound++
         }
       })
-      if(countNotFound === studentUsers.studentUsers.length){
+      if(countNotFound === studentUsers.length){
         document.getElementById('student_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
       }
   }
@@ -317,13 +317,13 @@
       user_id: id
     }
     studentTemp = studentTemp.filter((t)=> t !== id)
-    if(studentUsers.studentUsers.length === 0)  document.getElementById('student_list').innerHTML = ''
+    if(studentUsers.length === 0)  document.getElementById('student_list').innerHTML = ''
     document.getElementById('student').value = ''
     document.getElementById(id).remove()
-    studentUsers.studentUsers.push(obj)
+    studentUsers.push(obj)
     if(studentTemp.length === 0) {
       document.getElementById('student_list').innerHTML = ''
-      studentUsers.studentUsers.forEach((student)=>{
+      studentUsers.forEach((student)=>{
         document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}', '${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
       })
     }else{
@@ -358,7 +358,7 @@
     const searchValue = document.getElementById('staff').value
     document.getElementById('staff_list').innerHTML = ''
     let countNotFound = 0
-    staffUsers.staffUsers.forEach(staff => {
+    staffUsers.forEach(staff => {
       if((staff.user_id.toLowerCase().startsWith(searchValue.toLowerCase()) || staff.firstname.toLowerCase().startsWith(searchValue.toLowerCase()) || staff.lastname.toLowerCase().startsWith(searchValue.toLowerCase())) && searchValue){
         document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}' ,'${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
       }else if(!searchValue){
@@ -367,7 +367,7 @@
         countNotFound++
       }
     })
-    if(countNotFound === staffUsers.staffUsers.length){
+    if(countNotFound === staffUsers.length){
       document.getElementById('staff_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
     }
   }
@@ -379,16 +379,16 @@
       user_id: id
     }
     staffTemp = staffTemp.filter((t)=> t !== id)
-    if(staffUsers.staffUsers.length === 0)  document.getElementById('staff_list').innerHTML = ''
+    if(staffUsers.length === 0)  document.getElementById('staff_list').innerHTML = ''
     if(staffTemp.length === 0) {
-      staffUsers.staffUsers.forEach((staff)=>{
+      staffUsers.forEach((staff)=>{
         document.getElementById('staff_list').innerHTML = `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}', '${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
       })
     } 
     document.getElementById('staff').value = ''
     document.getElementById(id).remove()
     document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${id}" onclick="addStaffList('${id}', '${firstname}', '${lastname}')"><p>${firstname} ${lastname}</p><p class="text-sm text-[#ACB5BD]">${id}</p></div>`
-    staffUsers.staffUsers.push(obj)
+    staffUsers.push(obj)
   }
 
   const deleteStaff = async (id) => {
@@ -423,7 +423,7 @@
       }
     }
     const year = '{{academicYears[0].academic_year}}'
-    if(advisorTemp.length > 0 || staffTemp.length > 0){
+    // if(advisorTemp.length > 0 || staffTemp.length > 0){
       await fetch('/api/user/courseInfoUs?_method=PATCH', {
         method: "PATCH",
         headers: {
@@ -436,17 +436,19 @@
           window.location.reload()
         }
       })
-    }else{
-      await fetch(`/api/course/${year}?_method=PATCH`, {
+    // }else{
+      if(document.getElementById('accept-end-course') && document.getElementById('accept-end-course').checked){
+        await fetch(`/api/course/${year}?_method=PATCH`, {
         method: "PATCH",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-      }).then(() => {
-          window.location.href = '/academic-year'
-      })
-    }
+        }).then(() => {
+            window.location.href = '/academic-year'
+        })
+      }
+    // }
   }
 
   const updateSettings2 =  async () => { 
