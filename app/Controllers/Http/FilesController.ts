@@ -88,6 +88,8 @@ export default class FilesController {
       if (files.length === 0) {
         throw new Error('not have files')
       }
+      console.log(files.length)
+
       for (let file of files) {
         if (!file.isValid) {
           err.push(file.errors)
@@ -122,16 +124,16 @@ export default class FilesController {
               .orderBy('updated_at', 'desc')
           }
           const fileSize = fileServices.convertFileSize(file.size)
-          if (stepFileType.includes('template')) {
-            const result = await File.query().where(
-              'step_file_type',
-              stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
-            )
+          // if (stepFileType.includes('template')) {
+          //   const result = await File.query().where(
+          //     'step_file_type',
+          //     stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
+          //   )
 
-            if (result && result.length > 0) {
-              this.deleteFile(result, 'template/')
-            }
-          }
+          //   if (result && result.length > 0) {
+          //     this.deleteFile(result, 'template/')
+          //   }
+          // }
 
           await File.create({
             file_id: newFileName,
@@ -143,11 +145,10 @@ export default class FilesController {
               ? stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
               : stepFileType,
           })
-
-          return response.status(200).json({ message: 'success' })
         }
       }
-      return response.status(400).json({ message: 'something went wrong maybe cant find data' })
+      return response.status(200).json({ message: 'success' })
+      // return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
       console.log(error)
       if (

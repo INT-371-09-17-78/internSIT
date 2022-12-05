@@ -130,18 +130,16 @@ Route.group(() => {
   Route.get('/:id', 'PostsController.showById')
 }).prefix('/announcement')
 
-Route.get('/file', 'FilesController.showAllFile')
-
 Route.group(() => {
   Route.post('/login', 'UsersController.verify').as('auth.login')
-  Route.post('/register', 'UsersController.register').as('auth.register')
+  // Route.post('/register', 'UsersController.register').as('auth.register')
   Route.get('/logout', 'UsersController.logout').as('auth.logout')
   Route.group(() => {
     Route.patch('/student/:id', 'StepsController.updateStudentUserStatus')
     Route.patch('/student/super/:id', 'CoursesInfoController.updateSupervisionStatus')
     Route.patch('/student/info/:id', 'CoursesInfoController.updateStudentUserInfo')
     Route.patch('/student/regis/approve', 'CoursesInfoController.updateStudentUserApprove')
-    Route.delete('/student/:id', 'UsersController.deleteStudentUser')
+    Route.delete('/student/:id', 'UsersController.deleteStudentUser') //
     Route.patch('/courseInfo', 'CoursesInfoController.updateCourseInformation')
     Route.patch('/courseInfoUs', 'CoursesInfoController.updateUsersCourseInformation')
     Route.patch('/advisor/st', 'CoursesInfoController.updateAdvisorHasStudent')
@@ -166,6 +164,8 @@ Route.group(() => {
   })
     // .middleware('role')
     .prefix('/post')
+
+  Route.get('/file', 'FilesController.showAllFile')
 
   Route.group(() => {
     Route.post('/', 'FilesController.store')

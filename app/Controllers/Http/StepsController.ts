@@ -201,7 +201,7 @@ export default class StepsController {
         }
       }
 
-      console.log(stepRender)
+      //   console.log(stepRender)
 
       if (request.qs() && request.qs().month && request.qs().step) {
         stepEdit = StepsServices.findStepEdit(
@@ -212,7 +212,7 @@ export default class StepsController {
           AllStepByMonth['sixMonth']
         )
       }
-      console.log(stepEdit)
+      //   console.log(stepEdit)
 
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
