@@ -404,7 +404,7 @@ export default class StepsController {
       if (userHasDoc && userHasDoc.length > 0) {
         documentStatusesJsonCurrent = userHasDoc[0].toJSON()
         const templateFileQuery =
-          'template' + documentStatusesJsonCurrent.step + studentUser.student.plan
+          'template' + studentUser.student.plan + documentStatusesJsonCurrent.step
         const templateFile = await File.query().where('step_file_type', templateFileQuery)
 
         currentSteps['id'] = documentStatusesJsonCurrent.id

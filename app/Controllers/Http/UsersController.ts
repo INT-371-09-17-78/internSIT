@@ -14,7 +14,7 @@ export default class UsersController {
         throw new Error('empty username')
       }
       const authService = new AuthService()
-      let rememberMe: boolean = isRemember && isRemember === 'yes' ? true : false
+      let rememberMe: boolean = isRemember
       let user: any
       user = await User.findBy('user_id', username)
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
