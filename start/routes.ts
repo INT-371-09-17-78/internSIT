@@ -88,9 +88,7 @@ Route.get('/success-regis', async ({ view }) => {
   return view.render('success-regis')
 })
 
-Route.get('/dashboard', async ({ view }) => {
-  return view.render('dashboard')
-})
+Route.get('/dashboard', 'DashboardsController.showDashboard')
 
 Route.group(() => {
   Route.get('/:id/information', 'CoursesInfoController.showStudentInfo')
