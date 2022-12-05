@@ -9,8 +9,10 @@
       Announcement
       @elseif(request.matchesRoute(['/dashboard']))
       Dashboard
-      @elseif(request.matchesRoute(['/student-information','/register-request','/course-info','/course-info/edit','/course-info/edit/supervised-student','/steps','/course-info/complete-course']))
+      @elseif(request.matchesRoute(['/step/edit','/student-information','/student-information/:id','/register-request','/course-info','/course-info/edit','/course-info/edit/supervised-student','/steps','/course-info/complete-course']))
       {{auth.user.firstname + ' ' + auth.user.lastname}}
+      @elseif(request.matchesRoute(['/academic-year']))
+      Academic year
       @end
     </p>
     <div class="flex items-center space-x-2">

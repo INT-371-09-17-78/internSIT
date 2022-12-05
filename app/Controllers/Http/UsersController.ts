@@ -35,7 +35,7 @@ export default class UsersController {
         }
         if (checkExist[0].approved) {
           await auth.attempt(username, password, rememberMe)
-          return response.redirect(`/student-information/${user.user_id}`) //student ที่ approved แล้ว
+          return response.redirect(`/student-information/${user.user_id}/?step=TR-01`) //student ที่ approved แล้ว
         } else {
           return response.redirect('/success-regis') //student ที่ยังไม่ approved
         }

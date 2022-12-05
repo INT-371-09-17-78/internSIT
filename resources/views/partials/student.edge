@@ -1333,27 +1333,27 @@ const checkStartDateMax = () => {
         error = e
       }
 
-
-      if(error){
-        console.log(error)
-        const urlParams = new URLSearchParams()
-        urlParams.append('step', '{{request.qs().step}}')
-        // if('{{request.qs().step}}' !== 'undefined'){
-        //   urlParams.append('status', '{{currentSteps.status}}')
-        // }
-        urlParams.append('mode', 'edit')
-        window.location.href = `/student-information/{{studentUser.user_id}}${urlParams.toString() ? '?'+ urlParams : ''}`
-      }else{
-        console.log('ok')
-        const urlParams = new URLSearchParams()
-        if('{{request.qs().step}}' !== 'undefined'){
-          urlParams.append('step', '{{request.qs().step}}')
-        }
-        // if('{{request.qs().step}}' !== 'undefined'){
-        //   urlParams.append('status', '{{currentSteps.status}}')
-        // }
-        window.location.href = `/student-information/{{studentUser.user_id}}${urlParams.toString() ? '?'+ urlParams : ''}`
-      }
+      window.location.reload()
+      // if(error){
+      //   console.log(error)
+      //   const urlParams = new URLSearchParams()
+      //   urlParams.append('step', '{{request.qs().step}}')
+      //   // if('{{request.qs().step}}' !== 'undefined'){
+      //   //   urlParams.append('status', '{{currentSteps.status}}')
+      //   // }
+      //   urlParams.append('mode', 'edit')
+      //   window.location.href = `/student-information/{{studentUser.user_id}}${urlParams.toString() ? '?'+ urlParams : ''}`
+      // }else{
+      //   console.log('ok')
+      //   const urlParams = new URLSearchParams()
+      //   if('{{request.qs().step}}' !== 'undefined'){
+      //     urlParams.append('step', '{{request.qs().step}}')
+      //   }
+      //   // if('{{request.qs().step}}' !== 'undefined'){
+      //   //   urlParams.append('status', '{{currentSteps.status}}')
+      //   // }
+      //   window.location.href = `/student-information/{{studentUser.user_id}}${urlParams.toString() ? '?'+ urlParams : ''}`
+      // }
     // @if(flashMessages.get('error', ''))
     //         <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
     // @end

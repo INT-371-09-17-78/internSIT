@@ -319,7 +319,8 @@ export default class StepsController {
           studentUser = stSerialize
         }
       }
-
+      if (!request.qs().step)
+        response.redirect('/student-information/' + usersInAcademicYear[0].user_id + '?step=TR-01')
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
         { title: 'Email', value: studentUser.email, key: 'email' },

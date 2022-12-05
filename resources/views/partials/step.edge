@@ -1,6 +1,6 @@
 <form onsubmit="submitFile(event)" class="p-8">
     <p class="text-base lg:text-3xl text-base-content font-semibold">Steps</p>
-    <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
+    <div class="flex font-normal items-center space-x-2 my-5 text-sm">
         <a href="{{ route('/steps')}}" class="hover:text-blue-800">
             <p>Steps</p>
         </a>
@@ -130,6 +130,10 @@
         await fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formData,
+        }).then(()=>{
+            const qs = new URLSearchParams()
+            qs.append('month','{{request.qs().month}}')
+            window.location.href = `/steps?${qs}`
         })
     }
 </script>
