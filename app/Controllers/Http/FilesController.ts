@@ -275,7 +275,16 @@ export default class FilesController {
       let filePath = ''
       if (file) {
         const ext = file.file_name.split('.')
-        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_id) + '.' + ext[1])
+        if (file.step_file_type.includes('template')) {
+          filePath = Application.tmpPath(
+            'uploads/template' + decodeURIComponent(file.file_id) + '.' + ext[1]
+          )
+        } else {
+          filePath = Application.tmpPath(
+            'uploads/' + decodeURIComponent(file.file_id) + '.' + ext[1]
+          )
+        }
+
         fs.unlink(filePath, (error) => {
           if (error) {
             throw new Error(error.message)
