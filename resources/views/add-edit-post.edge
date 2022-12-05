@@ -17,7 +17,7 @@
       <hr class="border-base-200 my-2" />
       <div class="space-y-4">
         <div class="flex items-center space-x-2">
-          <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex justify-center items-center bg-primary text-white">
+          <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex justify-center items-center bg-primary text-white flex-shrink-0">
             <p>{{auth.user.firstname.charAt(0) + auth.user.lastname.charAt(0)}}</p>
           </div>
           <p class="font-medium">{{auth.user.user_id}}</p>
@@ -27,8 +27,7 @@
         <div class="relative">
           <textarea onkeyup="validateInput()" id="content" name="content"
             class="pt-3 pb-8 px-4 w-full h-36 text-xs rounded-lg focus-visible:outline-none"
-            placeholder="Write your content...">{{post ? post.content : ''}}
-          </textarea>
+            placeholder="Write your content...">{{post ? post.content : ''}}</textarea>
           <div class="absolute w-full h-fit flex bottom-0 bg-white rounded-l-lg rounded-br-lg space-x-2 p-2">
             <label for="images">
               <svg class="fill-[#ACB5BD] w-5 h-5 cursor-pointer" viewBox="0 0 10 17" fill="none"
@@ -39,7 +38,7 @@
               </svg>
               <input type="file" id="images" name="images" class="hidden">
             </label>
-            <label for="images2">
+            {{--  <label for="images2">
               <svg class="w-5 h-5 cursor-pointer" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M13.4567 0H1.54941C0.695403 0 0 0.695403 0 1.54941V13.4567C0 14.3107 0.695403 15.003 1.54636 15.003H13.4536C14.3076 15.003 15 14.3076 15 13.4567V1.54941C15.0061 0.695403 14.3107 0 13.4567 0ZM13.1852 9.27204L10.8367 6.92353C10.7055 6.79238 10.489 6.79238 10.3578 6.92353L8.65288 8.62848L5.70352 5.67912C5.57237 5.54797 5.35582 5.54797 5.22467 5.67912L1.82086 9.07684V1.82086H13.1852V9.27204Z"
@@ -49,7 +48,7 @@
                   fill="#ACB5BD" />
               </svg>
               <input type="file" id="images2" name="images2" class="hidden" accept="image/*">
-            </label>
+            </label>  --}}
           </div>
         </div>
         <div id="selectedFile" class="flex flex-wrap p-2 gap-2">

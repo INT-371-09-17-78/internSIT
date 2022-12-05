@@ -3,7 +3,7 @@
 @section('announcement')
 <section class="h-full w-full z-[5] flex flex-col">
   @include('partials/header')
-  <div class="card-group flex flex-col space-y-5 mt-5 overflow-y-auto h-[85%] mx-40">
+  <div class="card-group flex flex-col space-y-5 mt-5 h-[85%]">
     @if(posts.length === 0 && auth.user?.role != "student")
     <div class="w-full h-full flex justify-center items-center text-3xl font-semibold opacity-50">
       <a href="{{ route('/announcement/create')}}" class="h-fit w-fit">
@@ -14,17 +14,17 @@
     @each(post in posts)
     <a href="{{ route('/announcement/:id', { id: post.post_id }) }}">
       <div
-        class="card card-side w-full max-h-40 card-compact card-bordered text-black-content flex border-0 bg-[#F0F3F8] rounded-xl p-5 space-x-2">
-        <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex justify-center items-center bg-primary text-white">
+        class="card card-side w-full card-compact card-bordered text-black-content flex border-0 bg-[#F0F3F8] rounded-xl p-5 space-x-2 max-w-4xl mx-auto">
+        <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex justify-center items-center bg-primary text-white flex-shrink-0">
             <p>{{auth.user.firstname.charAt(0) + auth.user.lastname.charAt(0)}}</p>
         </div>
-        <div class="space-y-2 text-xs">
+        <div class="space-y-2 text-xs line-clamp-4">
           <div class="flex">
             <p class="font-semibold">{{post.usersInAcademicYear.user_id}}</p>
             <p class="text-xs ml-7">{{post.updated_at}}</p>
           </div>
           <p class="font-semibold">{{post.topic}}</p>
-          <p class="leading-5 line-clamp-2">{{post.content}}</p>
+          <p class="leading-5">{{post.content}}</p>
           @if(post.files.length > 0)
           <div class="flex space-x-2 pt-2">
             <svg width="11" height="18" viewBox="0 0 11 18" fill="none" xmlns="http://www.w3.org/2000/svg">
