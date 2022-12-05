@@ -9,6 +9,8 @@ import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 // import LdapAuth from 'ldapauth-fork'
 // import moment from 'moment-timezone'
 import Mail from '@ioc:Adonis/Addons/Mail'
+import Staff from 'App/Models/Staff'
+import Advisor from 'App/Models/Advisor'
 // import stepService from 'App/Services/stepServices'
 
 export default class CoursesInfoController {
@@ -62,6 +64,15 @@ export default class CoursesInfoController {
             await AcademicYearCfResult[0]
               .related('users')
               .attach({ [user.user_id]: { approved: true } })
+
+            const acCfRe = await UsersInAcademicYearModel.query().orderBy('created_at', 'desc')
+            if (acCfRe && acCfRe.length > 0) {
+              if (user.role === 'staff') {
+                await Staff.create({ staff_id: acCfRe[0].id })
+              } else {
+                await Advisor.create({ advisor_id: acCfRe[0].id })
+              }
+            }
 
             // await Mail.use('smtp').send((message) => {
             //   message

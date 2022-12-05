@@ -34,7 +34,10 @@ export default class UsersController {
           await checkExist[0]?.related('student').create({})
         }
         if (checkExist[0].approved) {
-          await auth.attempt(username, password, rememberMe)
+          const ldapUser: any = await authService.authenticate(username, password, 'st') //student ที่ยังไม่มีข้อมูลใน db
+          if (ldapUser) {
+            await auth.attempt(username, password, rememberMe)
+          }
           return response.redirect(`/student-information/${user.user_id}/?step=TR-01`) //student ที่ approved แล้ว
         } else {
           return response.redirect('/success-regis') //student ที่ยังไม่ approved
@@ -43,7 +46,10 @@ export default class UsersController {
         if (!checkExist || checkExist.length <= 0) {
           throw new Error('no privacy in this academic_year')
         } else {
-          await auth.attempt(username, password, rememberMe) //staff เข้าได้เลย
+          const ldapUser: any = await authService.authenticate(username, password, 'staff')
+          if (ldapUser) {
+            await auth.attempt(username, password, rememberMe) //staff เข้าได้เลย
+          }
           if (years && years.length > 0) {
             return response.redirect('/student-information')
           }
