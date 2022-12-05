@@ -239,11 +239,12 @@ export default class UsersController {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
       const users = await User.query().where('role', 'student')
+      const adv = await UsersInAcademicYearModel.query().where('user_id', advisor)
       for (let i = 0; i < users.length; i++) {
         const result = await UsersInAcademicYearModel.query()
           .where('user_id', users[i].user_id)
           .andWhere('academic_year', AcademicYearCf[0].academic_year)
-          .andWhere('advisor_ac_id', advisor)
+          .andWhere('advisor_ac_id', adv[0].id)
         if (result && result.length > 0) {
           studentUsers.push(result[0])
         }
