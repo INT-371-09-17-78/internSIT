@@ -18,26 +18,28 @@
     <div class="flex-1 pr-20">
       <table class="table w-full mt-5">
         <thead>
-          <tr class="border-2 border-[#F6F7F9]">
-            <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
-            <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-            <th class="bg-[#F6F7F9] text-[#7C8DA7]">Files</th>
-            <th class="bg-[#F6F7F9] text-[#7C8DA7]"></th>
+          <tr class="border-2 border-[#E4E5E8]">
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">No.</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Name</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Files</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none"></th>
           </tr>
         </thead>
         <tbody>
           @each((step,index) in AllStepByMonth[request.qs().month === '6' ? 'sixMonth' : request.qs().month === '4' ? 'fourMonth' : 'twoMonth' ])
-          <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]">
-            <td>{{index+1}}</td>
-            <td>{{step.name}}</td>
-            @if(step.templateFile.length === 0)
-            <td>-</td>
-            @else
-              @each(file in step.templateFile)
-              <td>{{file.file_name}}</td>
+          <tr class="cursor-pointer font-medium border-2 border-[#E4E5E8]">
+            <td class="border-r-2 border-[#E4E5E8] ">{{index+1}}</td>
+            <td class="border-r-2 border-[#E4E5E8] ">{{step.name}}</td>
+            <td class="space-y-4 border-r-2 border-[#E4E5E8] ">
+              @if(step.templateFile.length === 0)
+              <p>-</p>
+              @else
+                @each(file in step.templateFile)
+                <p>{{file.file_name}}</p>
+                @end
               @end
-            @end
-            <td>
+            </td>
+            <td class="border-r-2 border-[#E4E5E8] text-center w-20">
               <div class="dropdown">
                 <label tabindex="0">
                   <div class="w-5 h-5 cursor-pointer">

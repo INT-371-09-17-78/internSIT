@@ -193,13 +193,13 @@
             @end
           </p>
           <p>
-            <span class="font-medium">Description:</span> เอกสารขอความอนุเคราะห์เข้าฝึกงาน
-            นักศึกษากรอกข้อมูลในเอกสารให้ครบถ้วนก่อนส่ง เข้าระบบให้อาจารย์เซ็น
+            <span class="font-medium">Description:</span> {{currentSteps.description}}
           </p>
           @end
           <div class="my-3 flex flex-col space-y-2">
             <p class="font-bold text-lg">Template document</p>
-            <a href="{{ route('/api/file/:fileId', { fileId: currentSteps.name + 'DEF.pdf' }) }}"
+            @each(file in currentSteps.templateFile)
+            <a href="{{ route('/api/file/:fileId', { fileId: file.file_id } , {qs:{isTemplate: true}}) }}"
               class="flex bg-white rounded-md border-2 border-[#ACB5BD] w-72 py-2 px-3 items-center space-x-2">
               <svg class="w-5 h-5" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -207,10 +207,11 @@
                   fill="#ACB5BD" />
               </svg>
               <div class="text-xs">
-                <p>TR-01_IT62.pdf</p>
-                <p class="text-[#ACB5BD]">2.4 MB</p>
+                <p>{{file.file_name}}</p>
+                <p class="text-[#ACB5BD]">{{file.fileSize}}</p>
               </div>
             </a>
+            @end
           </div>
           <div class="flex items-center">
             <p class="font-bold text-lg">Submission</p>
