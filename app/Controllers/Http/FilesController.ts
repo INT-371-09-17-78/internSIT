@@ -97,7 +97,9 @@ export default class FilesController {
           const newFileName = uuidv4()
           await file.move(
             Application.tmpPath(
-              stepFileType.includes('template') ? 'uploads/template' : 'uploads/steps'
+              stepFileType.includes('template')
+                ? 'uploads/template'
+                : 'uploads/steps/' + studentId + '/' + step + '/' + status
             ),
             {
               name: newFileName + '.' + file.extname,

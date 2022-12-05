@@ -21,7 +21,7 @@ import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
 import stepService from 'App/Services/stepServices'
 // import DocumentStatus from 'App/Models/StepStatus'
-// import Status from 'App/Models/Status'
+import AcademicYear from 'App/Models/AcademicYear'
 
 View.global('middleEllipsis', (str: string) => {
   if (str.length > 30) {
@@ -44,6 +44,11 @@ View.global('formatBytes', (bytes: number, decimals = 2) => {
 
 View.global('getCurrentYear', () => {
   return new Date().getFullYear()
+})
+
+View.global('getCurrentAcademicYear', async () => {
+  const ac = await AcademicYear.query().orderBy('created_at')
+  return ac[0].academic_year
 })
 
 View.global('checkStatus', (str: string) => {

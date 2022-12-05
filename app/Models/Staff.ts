@@ -7,7 +7,7 @@ export default class Staff extends BaseModel {
   // public id: number
 
   @column({ isPrimary: true })
-  public staff_id: string
+  public staff_id: number
 
   @belongsTo(() => UsersInAcademicYear)
   public usersInAcademicYear: BelongsTo<typeof UsersInAcademicYear>
