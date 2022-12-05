@@ -197,6 +197,7 @@
           </p>
           @end
           <div class="my-3 flex flex-col space-y-2">
+            @if(currentSteps.templateFile && currentSteps.templateFile.length > 0)
             <p class="font-bold text-lg">Template document</p>
             @each(file in currentSteps.templateFile)
             <a href="{{ route('/api/file/:fileId', { fileId: file.file_id } , {qs:{isTemplate: true}}) }}"
@@ -211,6 +212,7 @@
                 <p class="text-[#ACB5BD]">{{file.file_size}}</p>
               </div>
             </a>
+            @end
             @end
           </div>
           <div class="flex items-center">
@@ -609,7 +611,7 @@
                 </th>
                 <th class="bg-[#E6E7EA] text-[#495057] rounded-none font-medium">
                   <div class="flex items-center space-x-2">
-                    <p class="text-base normal-case">TR-03 and TR-05</p>
+                    <p class="text-base normal-case">{{request.qs().step}}</p>
                     <div class="tooltip z-20 font-normal normal-case"
                       data-tip="Document that student have to &#10; submit and waiting for advisor’s &#10; feedback or sign.">
                       <svg class="w-4 h-4 cursor-pointer" viewBox="0 0 10 10" fill="none"

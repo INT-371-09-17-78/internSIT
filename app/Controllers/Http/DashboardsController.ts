@@ -109,14 +109,25 @@ export default class DashboardsController {
                       result && result.length > 0 ? result[0].serialize().status : null
 
                     Object.values(StepStatus).forEach((x) => {
+                      // if (stepRender[j].month[k][g][x + ' Total'])
+                      // console.log(stepRender[j].month[k][g].value)
+                      // console.log(x)
                       stepRender[j].month[k][g][x + ' Total'] = studentUsers.filter(
-                        (y) => y[stepRender[j].month[k][g].value + 'Total'] === x
+                        (y) => y[stepRender[j].month[k][g].value] === x
                       ).length
-                      notSub = notSub + stepRender[j].month[k][g][x + ' Total']
+                      // notSub = notSub + stepRender[j].month[k][g][x + ' Total']
                     })
-                    stepRender[j].month[k][g]['Not Summited' + ' Total'] =
-                      studentUsers.length - notSub
+
+                    // Object.values(StepStatus).forEach((x) => {
+                    //   stepRender[j][x + ' Total'] = studentUsers.filter(
+                    //     (y) => y[stepRender[j].name] === x
+                    //   ).length
+                    //   //   console.log(notSub)
+                    // })
+                    // stepRender[j].month[k][g]['Not Summited' + ' Total'] =
+                    //   studentUsers.length - notSub
                     stepRender[j].month[k][g]['Max'] = studentUsers.length
+                    console.log(stepRender[j].month[k][g]['Pending' + ' Total'])
                   }
                 }
               } else {
@@ -143,7 +154,7 @@ export default class DashboardsController {
         }
         // console.log(allSt - notSub)
       }
-      console.log(stepRender)
+      // console.log(stepRender[2].month)
 
       return view.render('dashboard', {
         stepRender: stepRender,

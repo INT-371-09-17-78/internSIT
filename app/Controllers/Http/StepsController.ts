@@ -320,6 +320,16 @@ export default class StepsController {
           studentUser = stSerialize
         }
       }
+      //   console.log(studentUser.student)
+
+      //   const userSt = await UsersInAcademicYearModel.query()
+      //     //   .where('user_id', studentUsersRole[0].user_id)
+      //     .andWhere('academic_year', AcademicYearCf[0].academic_year)
+      //     .preload('student')
+      //   console.log(userSt[0])
+
+      //   const noApprove = userSt[0].student.filter((st) => !st.approved)
+
       if (!request.qs().step) {
         response.redirect('/student-information/' + usersInAcademicYear[0].user_id + '?step=TR-01')
       }
@@ -971,6 +981,7 @@ export default class StepsController {
         academicYears: academicYearAll,
         step01Stat,
         step02Stat,
+        // noApprove,
       })
     } catch (error) {
       console.log(error)
