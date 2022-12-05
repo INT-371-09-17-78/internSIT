@@ -144,7 +144,10 @@ export default class FilesController {
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
             step_file_type: stepFileTypePlanJSON
-              ? stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
+              ? stepFileType +
+                stepFileTypePlanJSON.month +
+                stepFileTypePlanJSON.step +
+                AcademicYearCf[0].academic_year
               : stepFileType,
           })
         }

@@ -155,12 +155,14 @@ export default class UsersController {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
       const users = await User.query().where('role', 'staff')
-      for (let i = 0; i < users.length; i++) {
-        const result = await UsersInAcademicYearModel.query()
-          .where('user_id', users[i].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
-        if (result && result.length > 0) {
-          staffUsers.push(result[0])
+      if (users && users.length > 0) {
+        for (let i = 0; i < users.length; i++) {
+          const result = await UsersInAcademicYearModel.query()
+            .where('user_id', users[i].user_id)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          if (result && result.length > 0) {
+            staffUsers.push(users[i].serialize())
+          }
         }
       }
 
@@ -180,12 +182,14 @@ export default class UsersController {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
       const users = await User.query().where('role', 'advisor')
-      for (let i = 0; i < users.length; i++) {
-        const result = await UsersInAcademicYearModel.query()
-          .where('user_id', users[i].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
-        if (result && result.length > 0) {
-          advisorUsers.push(result[0])
+      if (users && users.length > 0) {
+        for (let i = 0; i < users.length; i++) {
+          const result = await UsersInAcademicYearModel.query()
+            .where('user_id', users[i].user_id)
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          if (result && result.length > 0) {
+            advisorUsers.push(users[i].serialize())
+          }
         }
       }
 
@@ -212,6 +216,7 @@ export default class UsersController {
             .andWhere('approved', true)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (result && result.length > 0) {
+            // result
             studentUsers.push(users[i].serialize())
           }
         }

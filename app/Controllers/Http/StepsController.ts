@@ -201,7 +201,7 @@ export default class StepsController {
         }
       }
 
-      //   console.log(stepRender)
+      console.log(stepRender)
 
       if (request.qs() && request.qs().month && request.qs().step) {
         stepEdit = StepsServices.findStepEdit(
@@ -319,8 +319,9 @@ export default class StepsController {
           studentUser = stSerialize
         }
       }
-      if (!request.qs().step)
+      if (!request.qs().step) {
         response.redirect('/student-information/' + usersInAcademicYear[0].user_id + '?step=TR-01')
+      }
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
         { title: 'Email', value: studentUser.email, key: 'email' },
@@ -362,6 +363,30 @@ export default class StepsController {
       let userHasDoc: any = []
       let isChangeStep: any = false
       let documentStatusesJsonCurrent: any
+      //   console.log(request.qs().step)
+
+      if (request.qs() && request.qs().step) {
+        const templateFileQuery =
+          'template' +
+          studentUser.student.plan +
+          (request.qs().step.includes('TR-03 and TR-05') ||
+          request.qs().step.includes('Supervision')
+            ? AllSteps.TR03_TR05_AND_SUPERVISION
+            : request.qs().step) +
+          AcademicYearCf[0].academic_year
+        //   console.log(documentStatusesJsonCurrent.step)
+        // console.log(templateFileQuery)
+
+        const templateFile = await File.query().where('step_file_type', templateFileQuery)
+        // console.log(templateFile)
+
+        if (templateFile && templateFile.length > 0) {
+          currentSteps['templateFile'] = []
+          for (let tmpIndex = 0; tmpIndex < templateFile.length; tmpIndex++) {
+            currentSteps['templateFile'].push(templateFile[tmpIndex].serialize())
+          }
+        }
+      }
 
       if (userHasDocResult[0]) {
         if (
@@ -403,17 +428,7 @@ export default class StepsController {
 
       if (userHasDoc && userHasDoc.length > 0) {
         documentStatusesJsonCurrent = userHasDoc[0].toJSON()
-        const templateFileQuery =
-          'template' + studentUser.student.plan + documentStatusesJsonCurrent.step
-        const templateFile = await File.query().where('step_file_type', templateFileQuery)
-
         currentSteps['id'] = documentStatusesJsonCurrent.id
-        if (templateFile && templateFile.length > 0) {
-          currentSteps['templateFile'] = []
-          for (let tmpIndex = 0; tmpIndex < templateFile.length; tmpIndex++) {
-            currentSteps['templateFile'].push(templateFile[tmpIndex].serialize())
-          }
-        }
         currentSteps['file'] = {}
         currentSteps['file'].row = []
         currentSteps['supervision'] = {}

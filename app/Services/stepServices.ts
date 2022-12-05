@@ -65,10 +65,12 @@ export default class StepsServices {
   }
 
   public async addTemplateFiletoStepMonth(stepMonth, month) {
+    const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
     for (let i = 0; i < stepMonth.length; i++) {
       stepMonth[i]['templateFile'] = []
 
-      const templateFileQuery = 'template' + month + stepMonth[i].name
+      const templateFileQuery =
+        'template' + month + stepMonth[i].name + AcademicYearCf[0].academic_year
       const templateFile = await File.query().where('step_file_type', templateFileQuery)
 
       if (templateFile && templateFile.length > 0) {
@@ -97,6 +99,8 @@ export default class StepsServices {
             },
             {
               name: Steps6Month.TR03_TR05_AND_SUPERVISION,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) และเอกสารสำหรับการนิเทศ (Supervision)',
               month: [
                 [
                   {
