@@ -119,10 +119,14 @@
     const submitFile = async (event)=> {
         event.preventDefault()
         const formData = new FormData()
-        formData.append('files', files)
+        for (let i = 0; i < files.length; i++) {
+           formData.append('files', files[i]);
+        }
+        // formData.append('files', files)
         formData.append('stepFileType', 'template')
-        formData.append('stepFileTypePlan',{ month : '{{request.qs().month}}', step : '{{request.qs().step}}'})
+        formData.append('stepFileTypePlan', JSON.stringify({ month : '{{request.qs().month}}', step : '{{request.qs().step}}'}))
         console.log(formData)
+
         await fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formData,
