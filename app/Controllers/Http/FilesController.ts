@@ -9,9 +9,11 @@ import moment from 'moment-timezone'
 import AcademicYear from 'App/Models/AcademicYear'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 import UserHasDoc from 'App/Models/UserHasDoc'
+import FileServices from 'App/Services/fileServices'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
+    const fileServices = new FileServices()
     let allImages: any[] = []
     let err: Object[] = []
     if (typeof oldImages === 'string') {
@@ -53,7 +55,7 @@ export default class FilesController {
           overwrite: true, // overwrite in case of conflict
         })
         if (post) {
-          image.size = this.convertFileSize(image.size)
+          image.size = fileServices.convertFileSize(image.size)
           await post.related('files').create({
             file_id: newFileName,
             file_name: image.clientName,
@@ -80,6 +82,7 @@ export default class FilesController {
       })
 
       let err: Object[] = []
+      const fileServices = new FileServices()
       let stepFileTypePlanJSON = stepFileTypePlan ? JSON.parse(stepFileTypePlan) : null
 
       if (files.length === 0) {
@@ -118,7 +121,7 @@ export default class FilesController {
               .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
               .orderBy('updated_at', 'desc')
           }
-          const fileSize = this.convertFileSize(file.size)
+          const fileSize = fileServices.convertFileSize(file.size)
           if (stepFileType.includes('template')) {
             const result = await File.query().where(
               'step_file_type',
@@ -158,18 +161,6 @@ export default class FilesController {
       }
       return response.status(400).json({ message: error.messages })
     }
-  }
-
-  private convertFileSize(bytes: number, decimals = 2) {
-    if (bytes === 0) return '0 Bytes'
-
-    const k = 1024
-    const dm = decimals < 0 ? 0 : decimals
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
   }
 
   public async showAllFile({ auth, view, request, response }: HttpContextContract) {

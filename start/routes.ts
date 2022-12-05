@@ -19,7 +19,7 @@
 */
 import Route from '@ioc:Adonis/Core/Route'
 import View from '@ioc:Adonis/Core/View'
-import UsersController from 'App/Controllers/Http/UsersController'
+import stepService from 'App/Services/stepServices'
 // import DocumentStatus from 'App/Models/StepStatus'
 // import Status from 'App/Models/Status'
 
@@ -72,8 +72,8 @@ View.global('returnIcon', (str: string) => {
 })
 
 Route.get('/', async ({ view, auth, response }) => {
-  const userCon = new UsersController()
-  const year = await userCon.gen()
+  const stepServiceGen = new stepService()
+  const year = await stepServiceGen.gen()
   if (year) {
     response.cookie('year', year.academic_year)
   }
@@ -93,34 +93,34 @@ Route.get('/dashboard', async ({ view }) => {
 })
 
 Route.group(() => {
-  Route.get('/:id/information', 'UsersController.showStudentInfo')
+  Route.get('/:id/information', 'CoursesInfoController.showStudentInfo')
 
-  Route.get('/:id/edit', 'UsersController.showStudentInfoEdit')
+  Route.get('/:id/edit', 'CoursesInfoController.showStudentInfoEdit')
 
-  Route.get('/:id', 'UsersController.showStudentUserById')
+  Route.get('/:id', 'StepsController.showStudentUserById')
 }).prefix('/student')
 
 Route.group(() => {
-  Route.get('/', 'UsersController.showStudentUser')
-  Route.get('/:id', 'UsersController.showStudentUserById')
-  Route.get('/:id/editInformedSupervision', 'UsersController.showStudentUserById')
+  Route.get('/', 'StepsController.showStudentUser')
+  Route.get('/:id', 'StepsController.showStudentUserById')
+  Route.get('/:id/editInformedSupervision', 'StepsController.showStudentUserById')
 }).prefix('/student-information')
 
-Route.get('/academic-year', 'UsersController.showStudentUser')
+Route.get('/academic-year', 'StepsController.showStudentUser')
 
-Route.get('/register-request', 'UsersController.showStudentUser')
+Route.get('/register-request', 'StepsController.showStudentUser')
 
-Route.get('/course-info', 'UsersController.showStudentUser')
+Route.get('/course-info', 'StepsController.showStudentUser')
 
-Route.get('/course-info/edit', 'UsersController.showStudentUser')
+Route.get('/course-info/edit', 'StepsController.showStudentUser')
 
-Route.get('/course-info/complete-course', 'UsersController.showStudentUser')
+Route.get('/course-info/complete-course', 'StepsController.showStudentUser')
 
-Route.get('/steps', 'UsersController.showStudentUser')
+Route.get('/steps', 'StepsController.showStudentUser')
 
-Route.get('/step/edit', 'UsersController.showStudentUser')
+Route.get('/step/edit', 'StepsController.showStudentUser')
 
-Route.get('/course-info/edit/supervised-student', 'UsersController.showStudentUser')
+Route.get('/course-info/edit/supervised-student', 'StepsController.showStudentUser')
 
 Route.group(() => {
   Route.get('/', 'PostsController.show')
@@ -139,14 +139,14 @@ Route.group(() => {
   Route.post('/register', 'UsersController.register').as('auth.register')
   Route.get('/logout', 'UsersController.logout').as('auth.logout')
   Route.group(() => {
-    Route.patch('/student/:id', 'UsersController.updateStudentUserStatus')
-    Route.patch('/student/super/:id', 'UsersController.updateSupervisionStatus')
-    Route.patch('/student/info/:id', 'UsersController.updateStudentUserInfo')
-    Route.patch('/student/regis/approve', 'UsersController.updateStudentUserApprove')
+    Route.patch('/student/:id', 'StepsController.updateStudentUserStatus')
+    Route.patch('/student/super/:id', 'CoursesInfoController.updateSupervisionStatus')
+    Route.patch('/student/info/:id', 'CoursesInfoController.updateStudentUserInfo')
+    Route.patch('/student/regis/approve', 'CoursesInfoController.updateStudentUserApprove')
     Route.delete('/student/:id', 'UsersController.deleteStudentUser')
-    Route.patch('/courseInfo', 'UsersController.updateCourseInformation')
-    Route.patch('/courseInfoUs', 'UsersController.updateUsersCourseInformation')
-    Route.patch('/advisor/st', 'UsersController.updateAdvisorHasStudent')
+    Route.patch('/courseInfo', 'CoursesInfoController.updateCourseInformation')
+    Route.patch('/courseInfoUs', 'CoursesInfoController.updateUsersCourseInformation')
+    Route.patch('/advisor/st', 'CoursesInfoController.updateAdvisorHasStudent')
     Route.get('/advisorUser', 'UsersController.showAdvisorUser')
     Route.get('/staffUser', 'UsersController.showStaffUser')
     Route.get('/staffCYear', 'UsersController.getStaffUserCuurentYear')
