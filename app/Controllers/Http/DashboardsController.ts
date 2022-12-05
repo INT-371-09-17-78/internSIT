@@ -127,21 +127,23 @@ export default class DashboardsController {
                     (y) => y[stepRender[j].name] === x
                   ).length
                 })
+                // stepRender[j]['Not Summited' + ' Total'] =
               }
             }
           }
         }
-
-        return view.render('dashboard', {
-          stepRender: stepRender,
-          resultAdvisorRe,
-          resultStaffRe,
-          allSt,
-          studentUsers2,
-          studentUsers4,
-          studentUsers6,
-        })
       }
+      console.log(stepRender)
+
+      return view.render('dashboard', {
+        stepRender: stepRender,
+        resultAdvisorRe,
+        resultStaffRe,
+        allSt,
+        studentUsers2,
+        studentUsers4,
+        studentUsers6,
+      })
     } catch (error) {
       console.log(error)
 
