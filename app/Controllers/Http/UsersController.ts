@@ -230,7 +230,7 @@ export default class UsersController {
 
   public async getStudentUserByAdvisor({ request, response }: HttpContextContract) {
     try {
-      const { advisor } = request.all()
+      const advisor = request.param('id')
       let studentUsers: any = []
       let AcademicYearCf: any
       if (request.cookie('year')) {

@@ -153,7 +153,7 @@ Route.group(() => {
     Route.get('/staffCYear', 'UsersController.getStaffUserCuurentYear')
     Route.get('/advisorCYear', 'UsersController.getAdvisorUserCuurentYear')
     Route.get('/studentCYear', 'UsersController.getStudentUserCuurentYear')
-    Route.get('/studentByAdv', 'UsersController.getStudentUserByAdvisor')
+    Route.get('/studentByAdv/:id', 'UsersController.getStudentUserByAdvisor')
     Route.delete('/delUserAc/:id', 'UsersController.delUsersInAcademicYear')
     Route.delete('/delUserAdv/:id', 'UsersController.delUsersFromAdvisor')
     // Route.patch('/supervision/:id', 'UsersController.updateSupervision')
