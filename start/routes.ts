@@ -135,7 +135,7 @@ Route.group(() => {
 Route.get('/file', 'FilesController.showAllFile')
 
 Route.group(() => {
-  Route.post('/login', 'UsersController.verify2').as('auth.login')
+  Route.post('/login', 'UsersController.verify').as('auth.login')
   Route.post('/register', 'UsersController.register').as('auth.register')
   Route.get('/logout', 'UsersController.logout').as('auth.logout')
   Route.group(() => {
