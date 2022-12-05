@@ -255,7 +255,11 @@ export default class StepsController {
               studentUsers[i]['lastestStatus'] = userHasDoc[0].step + ' ' + userHasDoc[0].status
             }
           } else {
-            studentUsers[i]['lastestStatus'] = `No plan selected`
+            if (studentUsers[i].plan) {
+              studentUsers[i]['lastestStatus'] = AllSteps.TR01 + ` ` + StepStatus.WAITING
+            } else {
+              studentUsers[i]['lastestStatus'] = `No plan selected`
+            }
           }
         }
       }
