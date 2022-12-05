@@ -174,7 +174,7 @@ export default class PostsController {
           ...result,
           updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
         }))
-        return view.render('announcement', { posts, canEdit })
+        return view.render('announcement', { posts, canEdit, academicYears: AcademicYearCf })
       }
     } catch (error) {
       return response.status(400).send({ message: error.message })
@@ -214,6 +214,8 @@ export default class PostsController {
 
   public async showById({ view, auth, request, response }: HttpContextContract) {
     try {
+      let AcademicYearCf: any
+      let canEdit: any
       if (!auth.user) response.redirect('/')
       else {
         const result = await Post.query()
@@ -222,12 +224,18 @@ export default class PostsController {
           .preload('usersInAcademicYear')
         const post = result[0]?.serialize()
         post.updated_at = moment(post.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A')
-
-        let canEdit: any
-        const AcademicYearCf = await AcademicYear.query().where(
-          'academic_year',
-          request.cookie('year')
-        )
+        if (auth.user?.role === 'student') {
+          AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+        } else {
+          if (request.cookie('year')) {
+            AcademicYearCf = await AcademicYear.query().where(
+              'academic_year',
+              request.cookie('year')
+            )
+          } else {
+            AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          }
+        }
         const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
         AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
           ? (canEdit = false)
@@ -237,9 +245,11 @@ export default class PostsController {
             .status(404)
             .send({ message: 'not found maybe this post has been deleted T^T' })
         }
-        return view.render('post', { post, canEdit })
+        return view.render('post', { post, canEdit, academicYears: AcademicYearCf })
       }
     } catch (error) {
+      console.log(error)
+
       return response.status(400).send({ message: error.message })
     }
   }
