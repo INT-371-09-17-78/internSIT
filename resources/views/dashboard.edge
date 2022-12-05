@@ -80,7 +80,11 @@
         </div>
         <div class="card w-full shadow-xl mt-5 flex-1 bg-[#EEF8FF] max-h-72 overflow-auto pb-5">
           @if(studentUsers6 === 0 && request.qs().month === '6' || studentUsers4 === 0 && request.qs().month === '4' || studentUsers2 === 0 && request.qs().month === '2')
-          <p class="m-auto">404 Not Found</p>
+          <div
+            class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+            <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
+            <p>No students in this month</p>
+          </div>
           @else
           <div class="grid grid-cols-5 gap-5 px-10">
             <p class="text-[#858D95] font-bold sticky z-10 top-0 bg-[#EEF8FF] pt-5">Steps</p>
