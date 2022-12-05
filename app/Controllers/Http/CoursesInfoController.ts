@@ -373,4 +373,22 @@ export default class CoursesInfoController {
       return response.status(400).json({ message: error.message })
     }
   }
+
+  public async completeCourse({ request, response }: HttpContextContract) {
+    try {
+      // const { academicYear } = request.only['academic_year']
+      const academicYear = request.param('id')
+      console.log(academicYear)
+
+      const ac = await AcademicYear.query().where('academic_year', academicYear)
+      if (ac && ac.length > 0) {
+        ac[0].status = false
+        ac[0].save()
+        return response.status(200).json('success')
+      }
+      return response.status(400).json({ message: 'cant update academic year' })
+    } catch (error) {
+      return response.status(400).json({ message: error.message })
+    }
+  }
 }
