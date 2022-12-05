@@ -15,6 +15,7 @@ export default class DashboardsController {
       let resultAdvisorRe: any = 0
       let resultStaffRe: any = 0
       const StepsServices = new stepService()
+      const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
@@ -152,6 +153,7 @@ export default class DashboardsController {
         studentUsers2,
         studentUsers4,
         studentUsers6,
+        academicYears: AcademicYearAll,
         // notSub: allSt - notSub,
       })
     } catch (error) {
