@@ -159,29 +159,65 @@
     })
   })
 
-  let advisorUsers, staffUsers, studentUsers
+  let advisorUsers, staffUsers, studentUsers = []
   const getAdvisor = async () =>{
     const response = await fetch(`/api/user/advisorUser`)
-    advisorUsers = await response.json()
-    advisorUsers.advisorUsers.forEach(advisor => {
-      document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}' ,'${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
-    })
+    const res = await fetch(`/api/user/advisorCYear`)
+    const allAdvisor = await response.json()
+    const allAdvisorYear = await res.json()
+    if(allAdvisorYear.advisorUsers.length === 0){
+      advisorUsers = allAdvisor.advisorUsers
+    }else{
+      advisorUsers = allAdvisor.advisorUsers.filter((user) => !allAdvisorYear.advisorUsers.some((adv) => adv.user_id === user.user_id))
+    }
+    if(advisorUsers.length === 0){
+      document.getElementById('advisor_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
+    }else{
+      advisorUsers.forEach(advisor => {
+        document.getElementById('advisor_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${advisor.user_id}" onclick="addAdvisorList('${advisor.user_id}', '${advisor.firstname}' ,'${advisor.lastname}')"><p>${advisor.firstname} ${advisor.lastname}</p><p class="text-sm text-[#ACB5BD]">${advisor.user_id}</p></div>`
+      })
+    }
   }
 
   const getStudent = async () =>{
     const response = await fetch(`/api/user/studentCYear`)
-    studentUsers = await response.json()
-    studentUsers.studentUsers.forEach(student => {
-      document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}' ,'${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
-    })
+    const res = await fetch(`/api/user/studentByAdv/{{request.qs().advisor}}`)
+    const allStudent = await response.json()
+    const allStudentYear = await res.json()
+    console.log(allStudentYear)
+    studentUsers = allStudent.studentUsers.filter(val => allStudentYear.studentUsers.includes(val))
+    if(allStudentYear.studentUsers.length === 0){
+      studentUsers = allStudent.studentUsers
+    }else{
+      studentUsers = allStudent.studentUsers.filter((user) => !allStudentYear.studentUsers.some((student) => student.user_id === user.user_id))
+    }
+    if(studentUsers.length === 0){
+      document.getElementById('student_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
+    }else{
+      studentUsers.forEach(student => {
+        document.getElementById('student_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${student.user_id}" onclick="addStudentList('${student.user_id}', '${student.firstname}' ,'${student.lastname}')"><p>${student.firstname} ${student.lastname}</p><p class="text-sm text-[#ACB5BD]">${student.user_id}</p></div>`
+      })
+    }
   }
 
   const getStaff = async () =>{
     const response = await fetch(`/api/user/staffUser`)
-    staffUsers = await response.json()
-    staffUsers.staffUsers.forEach(staff => {
-      document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}' ,'${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
-    })
+    const res = await fetch(`/api/user/staffCYear`)
+    const allStaff = await response.json()
+    const allStaffYear = await res.json()
+    staffUsers = allStaff.staffUsers.filter(val => allStaffYear.staffUsers.includes(val))
+    if(allStaffYear.staffUsers.length === 0){
+      staffUsers = allStaff.staffUsers
+    }else{
+      staffUsers = allStaff.staffUsers.filter((user) => !allStaffYear.staffUsers.some((staff) => staff.user_id === user.user_id))
+    }
+    if(staffUsers.length === 0){
+      document.getElementById('staff_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
+    }else{
+      staffUsers.forEach(staff => {
+        document.getElementById('staff_list').innerHTML += `<div class="p-2 hover:bg-gray-100 cursor-pointer" id="${staff.user_id}" onclick="addStaffList('${staff.user_id}', '${staff.firstname}' ,'${staff.lastname}')"><p>${staff.firstname} ${staff.lastname}</p><p class="text-sm text-[#ACB5BD]">${staff.user_id}</p></div>`
+      })
+    }
   }
   if(document.getElementById('staff_list')){
     getStaff()
@@ -253,7 +289,7 @@
       </svg>
       </div>`
     advisorTemp.push(id)
-    advisorUsers['advisorUsers'] = advisorUsers.advisorUsers.filter((t)=> t.user_id !== id)
+    advisorUsers['advisorUsers'] = advisorUsers.filter((t)=> t.user_id !== id)
   }
 
   const searchStudent = async () => {
@@ -315,7 +351,7 @@
       </svg>
       </div>`
     studentTemp.push(id)
-    studentUsers['studentUsers'] = studentUsers.studentUsers.filter((t)=> t.user_id !== id)
+    studentUsers['studentUsers'] = studentUsers.filter((t)=> t.user_id !== id)
   }
 
   const searchStaff = async () => {
@@ -375,7 +411,7 @@
       </svg>
       </div>`
     staffTemp.push(id)
-    staffUsers['staffUsers'] = staffUsers.staffUsers.filter((t)=> t.user_id !== id)
+    staffUsers['staffUsers'] = staffUsers.filter((t)=> t.user_id !== id)
   }
 
   const updateSettings =  async (event) => { 
@@ -401,7 +437,6 @@
         }
       })
     }else{
-      console.log('dssdass')
       await fetch(`/api/course/${year}?_method=PATCH`, {
         method: "PATCH",
         headers: {

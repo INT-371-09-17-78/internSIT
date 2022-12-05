@@ -6,7 +6,7 @@
 @set('hideMenu', '')
 @if(request.matchesRoute(['/announcement','/announcement/create','/announcement/edit/:id','/announcement/:id']))
 @set('activeAnnouncement', 'btn-active bg-base-300')
-@elseif(request.matchesRoute(['/student-information/:id','/student-information','/academic-year','/student-information','/course-info','/course-info/edit','/register-request','/steps']))
+@elseif(request.matchesRoute(['/course-info/edit/supervised-student','/student-information/:id','/student-information','/academic-year','/student-information','/course-info','/course-info/edit','/register-request','/steps']))
 @set('activeInternship', 'btn-active bg-base-300')
 @elseif(request.matchesRoute(['/dashboard']))
 @set('activeDashboard','btn-active bg-base-300')
