@@ -1,13 +1,13 @@
 @if(noApprove)
 <form id="formElem" name="formElem" class="px-40 mt-10">
   <p class="text-base lg:text-2xl text-base-content font-semibold">Register request</p>
-  <table class="table w-full mt-5">
+  <table class="table w-full mt-5 border-[#E4E5E8] border-2">
     <thead>
       <tr>
-        <th class="bg-[#F6F7F9] text-[#7C8DA7] items-center flex"><input type="checkbox" id="checkAllBox"
+        <th class="bg-[#E4E5E8] text-[#7C8DA7] items-center flex rounded-none"><input type="checkbox" id="checkAllBox"
             onclick="checkAll(this)" class="checkbox border-2 mr-5 checkbox-sm rounded-sm" />ID</th>
-        <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-        <th class="bg-[#F6F7F9]"></th>
+        <th class="bg-[#E4E5E8] text-[#7C8DA7] rounded-none">Name</th>
+        <th class="bg-[#E4E5E8] rounded-none"></th>
       </tr>
     </thead>
     <tbody>
@@ -34,9 +34,13 @@
       @end
     </tbody>
   </table>
-  <div class="flex justify-end px-5">
-    <button type="submit" id="submitButton"
-      class="btn btn-sm btn-primary rounded-xl text-white capitalize mt-5">confirm</button>
+  <div class="flex justify-end">
+    @!common.bgButton({
+      text: 'confirm',
+      type: 'submit',
+      classProps: 'mt-5',
+      id: 'submitButton',
+    })
   </div>
 </form>
 @else

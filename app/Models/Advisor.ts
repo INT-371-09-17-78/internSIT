@@ -9,7 +9,7 @@ export default class Advisor extends BaseModel {
   // public id: number
 
   @column({ isPrimary: true })
-  public advisor_id: string
+  public advisor_id: number
 
   @belongsTo(() => UsersInAcademicYear)
   public usersInAcademicYear: BelongsTo<typeof UsersInAcademicYear>

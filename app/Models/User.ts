@@ -6,8 +6,6 @@ import {
   BaseModel,
   // hasMany,
   // HasMany,
-  // hasOne,
-  // HasOne,
   // belongsTo,
   // BelongsTo,
   manyToMany,

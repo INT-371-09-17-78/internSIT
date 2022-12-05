@@ -1,6 +1,6 @@
-<div class="p-8">
+<form onsubmit="submitFile(event)" class="p-8">
     <p class="text-base lg:text-3xl text-base-content font-semibold">Steps</p>
-    <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
+    <div class="flex font-normal items-center space-x-2 my-5 text-sm">
         <a href="{{ route('/steps')}}" class="hover:text-blue-800">
             <p>Steps</p>
         </a>
@@ -19,7 +19,8 @@
                 </svg>
             </div>
         </div>
-        <input type="text" class="input input-sm border-2 border-[#ACB5BD] w-full py-4 col-span-3" />
+        <p class="col-span-3">{{stepEdit.name}}</p>
+        {{--  <input type="text" class="input input-sm border-2 border-[#ACB5BD] w-full py-4 col-span-3" />  --}}
         <div class="flex items-center space-x-2 col-span-2">
             <p class="font-medium">Description</p>
             <div class="tooltip z-20 font-normal normal-case"
@@ -31,7 +32,8 @@
                 </svg>
             </div>
         </div>
-        <textarea class="textarea border-2 border-[#ACB5BD] col-span-3"></textarea>
+        <p class="col-span-3">{{stepEdit.description}}</p>
+        {{--  <textarea class="textarea border-2 border-[#ACB5BD] col-span-3"></textarea>  --}}
         <div class="flex items-center space-x-2 col-span-2">
             <p class="font-medium">Templete document</p>
             <div class="tooltip z-20 font-normal normal-case"
@@ -54,21 +56,35 @@
                 No files
             </div>
         </div>
+        <div class="col-span-2"></div>
+        <div class="col-span-3 space-y-5 border-[#A8B0B8] border-2 p-5 rounded-lg">
+            @each((file,index) in stepEdit.templateFile)
+            <div class="flex">
+                <p class="w-full">{{file.file_name}}</p>
+                <div class="flex justify-end w-full">
+                    <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500 self-end"
+                      onclick="deleteTemplateFile('{{file.file_id}}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path
+                          d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                      </svg>
+                    </button>
+                  </div>
+            </div>
+            @end
+        </div>
     </div>
-    {{-- @component('components/common/button',{
-    text: 'Create new step',
-    type: 'text',
-    classProps: 'bg-white rounded-3xl text-base-content gap-2 btn-sm text-base lg:text-lg h-10 lg:px-4 lg:h-12 w-fit
-    ml-auto border-0 hover:bg-secondary hover:text-white group',
-    })
-    <svg class="fill-[#A8B0B8] group-hover:fill-white w-7 h-7 lg:w-8 lg:h-8" xmlns="http://www.w3.org/2000/svg"
-        height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-        <path d="M0 0h24v24H0V0z" fill="none" />
-        <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
-    </svg>
-    @end --}}
-</div>
+    <div class="flex justify-end items-end space-x-2 pb-5 mt-5">
+        <a href="{{ route('/steps',{} , {qs:{month: 2}})}}">
+          @!common.borderButton({
+            text: 'cancel',
+            type: 'button',
+          })
+        </a>
+        <button type="submit" class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit">save
+          change</button>
+      </div>
+</form>
 <script>
     let files = []
     const middleEllipsis = (str) => {
@@ -81,7 +97,14 @@
         document.getElementById(name).remove()
         files = files.filter(file => file.name !== name)
         console.log(files.length)
-        if(files.length === 0) document.getElementById('showTemplateFile').innerHTML = 'No files'
+    }
+
+    const deleteTemplateFile = async (id) =>{
+        await fetch(`/api/file/${id}?_method=DELETE`, {
+        method: 'DELETE',
+        }).then(() => {
+            window.location.reload()
+        })
     }
     const getFiles = (event) =>{
     let html = ''
@@ -103,5 +126,25 @@
      document.getElementById('showTemplateFile').innerHTML = html
      console.log(files)
     }
-    
+
+    const submitFile = async (event)=> {
+        event.preventDefault()
+        const formData = new FormData()
+        for (let i = 0; i < files.length; i++) {
+           formData.append('files', files[i]);
+        }
+        // formData.append('files', files)
+        formData.append('stepFileType', 'template')
+        formData.append('stepFileTypePlan', JSON.stringify({ month : '{{request.qs().month}}', step : '{{request.qs().step}}'}))
+        console.log(formData)
+
+        await fetch('/api/file/steps?_method=POST', {
+          method: 'POST',
+          body: formData,
+        }).then(()=>{
+            const qs = new URLSearchParams()
+            qs.append('month','{{request.qs().month}}')
+            window.location.href = `/steps?${qs}`
+        })
+    }
 </script>

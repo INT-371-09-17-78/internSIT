@@ -5,16 +5,15 @@ import User from 'App/Models/User'
 import File from 'App/Models/File'
 import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
-// import Document from 'App/Models/Document'
-// import StepStatusModel from 'App/Models/StepStatus'
-// import { StepStatus, Steps } from 'Contracts/enum'
 import moment from 'moment-timezone'
 import AcademicYear from 'App/Models/AcademicYear'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 import UserHasDoc from 'App/Models/UserHasDoc'
+import FileServices from 'App/Services/fileServices'
 
 export default class FilesController {
   public async store(request: any, post_id: number, oldImages: any) {
+    const fileServices = new FileServices()
     let allImages: any[] = []
     let err: Object[] = []
     if (typeof oldImages === 'string') {
@@ -22,9 +21,7 @@ export default class FilesController {
     } else {
       allImages = oldImages
     }
-    // if (!allImages) {
-    //   return
-    // }
+
     const post = await Post.find(post_id)
     const files = await File.query() // 👈now have access to all query builder methods
       .where('post_id', post_id)
@@ -32,7 +29,6 @@ export default class FilesController {
       size: '2mb',
       // extnames: ['jpg', 'png', 'gif'],
     })
-    // console.log(allImages)
     const newItems = files.filter((b) => !allImages.some((a) => String(a) === String(b.file_id)))
     if (newItems && newItems.length > 0) {
       for (let newItem of newItems) {
@@ -59,12 +55,10 @@ export default class FilesController {
           overwrite: true, // overwrite in case of conflict
         })
         if (post) {
-          image.size = this.convertFileSize(image.size)
+          image.size = fileServices.convertFileSize(image.size)
           await post.related('files').create({
             file_id: newFileName,
-            //  + '.' + image.extname,
             file_name: image.clientName,
-            // user_id: post.user_id,
             file_size: image.size,
           })
         }
@@ -82,16 +76,20 @@ export default class FilesController {
         'stepFileType',
         'stepFileTypePlan',
       ])
-      // console.log(docId)
-      // console.log(statId)
+
       const files = request.files('files', {
         size: '3mb',
-        // extnames: ['jpg', 'png', 'gif'],
       })
+
       let err: Object[] = []
+      const fileServices = new FileServices()
+      let stepFileTypePlanJSON = stepFileTypePlan ? JSON.parse(stepFileTypePlan) : null
+
       if (files.length === 0) {
         throw new Error('not have files')
       }
+      console.log(files.length)
+
       for (let file of files) {
         if (!file.isValid) {
           err.push(file.errors)
@@ -99,7 +97,9 @@ export default class FilesController {
           const newFileName = uuidv4()
           await file.move(
             Application.tmpPath(
-              stepFileType.includes('template') ? 'uploads/template' : 'uploads/steps'
+              stepFileType.includes('template')
+                ? 'uploads/template'
+                : 'uploads/steps/' + studentId + '/' + step + '/' + status
             ),
             {
               name: newFileName + '.' + file.extname,
@@ -118,10 +118,6 @@ export default class FilesController {
             usersInAcademicYear = await UsersInAcademicYearModel.query()
               .where('user_id', user.user_id)
               .andWhere('academic_year', AcademicYearCf[0].academic_year)
-            // console.log(docStat[0].id)
-            // console.log(usersInAcademicYear[0].id)
-            // console.log(step)
-            // console.log(status)
 
             userHasDocResult = await UserHasDoc.query()
               .where('step', step)
@@ -129,55 +125,35 @@ export default class FilesController {
               .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
               .orderBy('updated_at', 'desc')
           }
-          // console.log(userHasDocResult[0])
-          // console.log(UserHasDocResult[0].id)
-          const fileSize = this.convertFileSize(file.size)
-          // if (userHasDocResult) {
-          //   const result = await File.query().where('user_has_doc_id', userHasDocResult[0].id)
+          const fileSize = fileServices.convertFileSize(file.size)
+          // if (stepFileType.includes('template')) {
+          //   const result = await File.query().where(
+          //     'step_file_type',
+          //     stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
+          //   )
 
           //   if (result && result.length > 0) {
-          //     this.deleteFile(result, 'steps/')
+          //     this.deleteFile(result, 'template/')
           //   }
-          // } else
-          if (stepFileType.includes('template')) {
-            // if (auth.user) {
-            //   auth
-            const result = await File.query().where(
-              'step_file_type',
-              stepFileType + stepFileTypePlan
-            )
-            // }
-
-            // console.log(result)
-
-            if (result && result.length > 0) {
-              this.deleteFile(result, 'template/')
-            }
-          }
-
-          // console.log(userHasDocResult)
+          // }
 
           await File.create({
             file_id: newFileName,
-            // + '.' + file.extname,
             file_name: file.clientName,
-            // user_id: user.user_id,
             file_size: fileSize,
-            // doc_id: doc.doc_name,
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
-            // step_file_type: template === 'true' ? step : null,
-            step_file_type: stepFileTypePlan ? stepFileType + stepFileTypePlan : stepFileType,
-            // step_sep: stepSep && stepSep !== '' ? stepSep : null,
+            step_file_type: stepFileTypePlanJSON
+              ? stepFileType +
+                stepFileTypePlanJSON.month +
+                stepFileTypePlanJSON.step +
+                AcademicYearCf[0].academic_year
+              : stepFileType,
           })
-          // userHasDoc[0].related('f')
-          // newFile.related('userHasDoc')
-          // }
-
-          return response.status(200).json({ message: 'success' })
         }
       }
-      return response.status(400).json({ message: 'something went wrong maybe cant find data' })
+      return response.status(200).json({ message: 'success' })
+      // return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
       console.log(error)
       if (
@@ -193,31 +169,13 @@ export default class FilesController {
     }
   }
 
-  private convertFileSize(bytes: number, decimals = 2) {
-    if (bytes === 0) return '0 Bytes'
-
-    const k = 1024
-    const dm = decimals < 0 ? 0 : decimals
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-  }
-
   public async showAllFile({ auth, view, request, response }: HttpContextContract) {
     try {
       let canEdit: any
-      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       let AcademicYearCf: any
-      // const AcademicYearCf = await AcademicYear.query().where(
-      //   'academic_year',
-      //   request.cookie('year')
-      // )
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
-        // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
         if (request.cookie('year')) {
           AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
         } else {
@@ -230,7 +188,6 @@ export default class FilesController {
         : (canEdit = false)
       const files = await File.query().whereNull('user_has_doc_id')
       let newFiles: any = []
-      // console.log(testQuery)
       for (const file of files) {
         const posts = await Post.query().where('post_id', file.post_id)
         if (posts[0]) {
@@ -244,23 +201,15 @@ export default class FilesController {
         }
       }
       const filesJSON = newFiles.map((result) => result.serialize())
-      // console.log(filesJSON)
 
       for (const file of filesJSON) {
-        // file.serialize()
-        // file.post.relate
-        // const post = await Post.find(file.post_id)
         const postArr = await Post.query().where('post_id', file.post_id)
-        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
         const post = postArr[0]
-        // console.log(post)
         const user = await UsersInAcademicYearModel.query().where('id', post.usersInAcademicYearId)
-        // console.log(user)
         if (user) {
           file['user_id'] = user[0].user_id
         }
       }
-      // console.log(filesJSON)
       const filesDateTime = filesJSON.map((result) => ({
         ...result,
         updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
@@ -278,22 +227,7 @@ export default class FilesController {
       let path = ''
       let preview: any = prev === 'prev' ? 'inline' : undefined
       if (userId && step) {
-        // const result = await File.query().where('user_id', userId).andWhere('doc_id', docId)
-        // if (result && result.length > 0) {
-        //   file = result[0]
-        //   path = 'steps/'
-        // }
-        // console.log(statId)
         const user = await User.findOrFail(userId)
-        // const doc = await Document.find(docId)
-        // doc?.related('')
-        // const stepStat = await StepStatusModel.query()
-        //   .where('step', step)
-        //   .andWhere(
-        //     'status_id',
-        //     status === 'Disapproved' || status === 'Approved' ? 'Pending' : status
-        //   )
-        // docStat[0].related('usersInAcademicYear').create({})
         const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         const usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', user.user_id)
@@ -309,7 +243,6 @@ export default class FilesController {
           .orderBy('updated_at', 'desc')
 
         const result = await File.query().where('user_has_doc_id', userHasDocResult[0].id)
-        // console.log(result)
         if (result && result.length > 0) {
           file = result[0]
           path = 'steps/'
@@ -325,7 +258,6 @@ export default class FilesController {
         filePath = Application.tmpPath(
           'uploads/' + path + decodeURIComponent(file.file_id) + '.' + ext[1]
         )
-        // console.log(filePath)
 
         response.attachment(filePath, file.file_name, preview, undefined, (error) => {
           if (error.code === 'ENOENT') {
@@ -348,7 +280,16 @@ export default class FilesController {
       let filePath = ''
       if (file) {
         const ext = file.file_name.split('.')
-        filePath = Application.tmpPath('uploads/' + decodeURIComponent(file.file_id) + '.' + ext[1])
+        if (file.step_file_type.includes('template')) {
+          filePath = Application.tmpPath(
+            'uploads/template/' + decodeURIComponent(file.file_id) + '.' + ext[1]
+          )
+        } else {
+          filePath = Application.tmpPath(
+            'uploads/' + decodeURIComponent(file.file_id) + '.' + ext[1]
+          )
+        }
+
         fs.unlink(filePath, (error) => {
           if (error) {
             throw new Error(error.message)

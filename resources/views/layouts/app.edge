@@ -1,12 +1,15 @@
 @set('hideSearch', '')
 @set('activeAnnouncement', '')
 @set('activeInternship','')
+@set('activeDashboard','')
 @set('background', 'block')
 @set('hideMenu', '')
 @if(request.matchesRoute(['/announcement','/announcement/create','/announcement/edit/:id','/announcement/:id']))
 @set('activeAnnouncement', 'btn-active bg-base-300')
-@elseif(request.matchesRoute(['/student-information/:id','/student-information','/academic-year','/student-information','/course-info','/course-info/edit','/register-request','/steps']))
+@elseif(request.matchesRoute(['/course-info/edit/supervised-student','/student-information/:id','/student-information','/academic-year','/student-information','/course-info','/course-info/edit','/register-request','/steps']))
 @set('activeInternship', 'btn-active bg-base-300')
+@elseif(request.matchesRoute(['/dashboard']))
+@set('activeDashboard','btn-active bg-base-300')
 @end
 @if(request.matchesRoute('/'))
 @set('background', 'hidden')
@@ -93,8 +96,9 @@
                 <p class="capitalize font-medium">Announcement</p>
               </a>
             </li>
+            @if(auth.user.role !== 'student')
             <li>
-              <a class="p-2 text-xs active:bg-base-300 active:text-base-content">
+              <a class="p-2 text-xs active:bg-base-300 active:text-base-content {{activeDashboard}}" href="{{ route('/dashboard', {} , {qs:{month: 2}}) }}">
                 <svg class="w-4 h-4" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M14.9189 6.5H12.3189L10.3689 12L6.46895 1L4.51895 6.5H1.91895" stroke="#495057"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -102,16 +106,15 @@
                 <p class="capitalize font-medium">dashboard</p>
               </a>
             </li>
+            @end
           </div>
           <div class="flex items-center mt-auto">
-            <div class="avatar">
-              <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full">
-                <img src="{{ asset('assets/images/avatar.svg') }}" />
-              </div>
+            <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex justify-center items-center bg-primary text-white flex-shrink-0">
+              <p>{{auth.user.firstname.charAt(0) + auth.user.lastname.charAt(0)}}</p>
             </div>
             <div class="content px-2 text-xs flex-1">
-              <p class="font-medium">{{auth.user?.user_id}}</p>
-              <p>{{auth.user?.role}}</p>
+              <p class="font-medium">{{auth.user.firstname + ' ' + auth.user.lastname}}</p>
+              <p>{{auth.user.user_id}}</p>
             </div>
             <button class="btn btn-circle bg-slate-400 border-0 btn-sm hover:bg-error"
               onclick="openAlertConfirmlogout()">
@@ -137,6 +140,7 @@
     @!section('file')
     @!section('student-information')
     @!section('edit-student')
+    @!section('dashboard')
   </div>
 </body>
 

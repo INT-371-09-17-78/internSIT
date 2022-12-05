@@ -1,27 +1,21 @@
 <div class="p-8">
   <div class="pr-20 flex items-end">
     <p class="text-base px-2 lg:text-2xl text-base-content font-semibold">Student information</p>
-    <div class="dropdown ml-auto">
+    {{--  <div class="dropdown ml-auto">
       <label tabindex="0" class="select select-sm bg-[#F6F7F9]" id="selectInput">Filter by</label>
       <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box mt-2 space-y-2">
         <p>Steps</p>
+        @each(step in stepsRender)
         <div class="flex flex-row space-x-2">
           <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-01">
           <p>TR-01</p>
         </div>
-        <div class="flex flex-row space-x-2">
-          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-02">
-          <p>TR-02</p>
-        </div>
-        <div class="flex flex-row space-x-2">
-          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-03">
-          <p>TR-03</p>
-        </div>
-        <div class="flex flex-row space-x-2">
-          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-04">
-          <p>TR-04</p>
-        </div>
+        @end
         <p>Status</p>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Not submitted">
+          <p>Not submitted</p>
+        </div>
         <div class="flex flex-row space-x-2">
           <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Pending">
           <p>Pending</p>
@@ -32,12 +26,12 @@
         </div>
         <div class="flex flex-row space-x-2">
           <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Disapproved">
-          <p>Not approved</p>
+          <p>Improved</p>
         </div>
       </ul>
-    </div>
+    </div>  --}}
   </div>
-  <div class="flex space-x-5 h-full">
+  <div class="flex h-full">
     <div>
         <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
           <li class="{{activeAll}}">
@@ -51,13 +45,13 @@
               href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
           <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
               href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
-          @if(auth.user.role ==="advisor")
+          {{--  @if(auth.user.role ==="advisor")
           <li class="{{activeStudentByAdvisor}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
               href="{{ route('/student-information', {} , {qs: {advisor: auth.user.user_id}}) }}">Supervised student</a>
           </li>
-          @end
+          @end  --}}
       </ul>
-      <div tabindex="0" class="collapse collapse-open">
+      {{--  <div tabindex="0" class="collapse collapse-open">
         <div class="collapse-title bg-[#E6E7EA] text-[#495057] font-bold">
           Steps
         </div>
@@ -92,24 +86,76 @@
           @end
           @end
         </div>
-      </div>
+      </div>  --}}
     </div>
     @if(allAmoutSt !== noApprove && studentUsers.length > 0)
-    <div class="flex-1 pr-20">
+    <div class="flex-1 overflow-x-auto w-fit h-fit max-w-6xl ml-5">
       <table class="table w-full mt-5">
         <thead>
-          <tr class="border-2 border-[#F6F7F9]">
-            <th class="bg-[#F6F7F9] text-[#7C8DA7]">No.</th>
-            <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
+          <tr class="border-2 border-[#E4E5E8]">
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">No.</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Name</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Latest Status</th>
+              @each(step in stepRender)
+                @if(!step.month)
+                <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">{{step.name}}</th>
+                @else
+                  @each((month,j) in step.month)
+                    @each(subStep in month)
+                    <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">{{subStep.name}} ({{j+1}})</th>
+                    @end
+                  @end
+                @end
+              @end
           </tr>
         </thead>
         <tbody>
           @each((student,index) in studentUsers)
           @if(student.approved)
-          <tr class="cursor-pointer font-medium border-2 border-[#F6F7F9]"
+          <tr class="cursor-pointer font-medium border-2 border-[#E4E5E8]"
             onclick="window.location='/student-information/{{student.user_id}}'">
-            <td>{{student.user_id}}</td>
-            <td>{{student.firstname + " " + student.lastname}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{student.user_id}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{student.firstname + " " + student.lastname}}</td>
+            <td class="border-r-2 border-[#E4E5E8] {{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}</td>
+            @if(request.qs().month)
+              @if(student.plan === 6)
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (4/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (5/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (5/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (6/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (6/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-06'])}}}</td>
+              @elseif(student.plan === 4)
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (4/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/6)'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-06'])}}}</td>
+              @elseif(student.plan === 2)
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
+                <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-08'])}}}</td>
+              @end
+            @end
           </tr>
           @end
           @end

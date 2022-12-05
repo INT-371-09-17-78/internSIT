@@ -1,23 +1,23 @@
-<form id="course_form" class="px-10 pt-5 h-full flex flex-col overflow-auto space-y-5">
+<form onsubmit="updateSettings(event)" id="course_form" class="px-10 pt-5 h-full flex flex-col overflow-auto space-y-5">
   <p class="text-base lg:text-2xl text-base-content font-semibold">Course information</p>
   @if(request.matchesRoute('/course-info'))
   <div class="grid grid-cols-5 gap-y-5 font-medium text-base">
     <p>Academic year</p>
-    <p class="col-span-4 font-normal">{{academicYears[0].academic_year}}</p>
+    <p class="col-span-4">{{academicYears[0].academic_year}}</p>
     <p>Advisor</p>
-    @if(advisorUsers.length > 0)
-    <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
+    @if(studentUsersByAd.length > 0)
+    <div class="flex flex-col rounded-md col-span-4 border-[#ACB5BD] border-2">
       @each((advisor,index) in studentUsersByAd)
-      <div tabindex="0" class="collapse collapse-arrow bg-base-100">
+      <div tabindex="0" class="collapse collapse-arrow bg-white rounded-md">
         <input type="checkbox" class="peer" />
-        <div class="collapse-title font-medium">
+        <div class="collapse-title font-medium border-[#ACB5BD] peer-checked:border-none {{index === studentUsersByAd.length-1 ? 'border-none' : 'border-b-2'}}">
           {{index+1}}. {{advisor.firstname + ' ' + advisor.lastname}}
         </div>
-        <div class="collapse-content bg-[#F6F7F9] rounded-b-md">
+        <div class="collapse-content bg-[#F6F7F9]">
           <p class="font-medium text-[#7C8DA7] pt-3">Supervised students</p>
           <div class="pl-10">
             @each((student,index) in advisor.st)
-            <p> {{index+1}}. {{student.firstname + ' ' + student.lastname}}</p>
+            <p> {{index+1}}. {{student.user_id + ' ' + student.firstname + ' ' + student.lastname}}</p>
             @end
           </div>
         </div>
@@ -29,20 +29,22 @@
     @end
     <p>Staff</p>
     @if(staffUsers.length > 0)
-    <div class="flex flex-col border-2 rounded-md col-span-4 border-[#F6F7F9]">
-      @each((staff,index) in staffUsers)
-      <div tabindex="0" class="collapse bg-base-100 rounded-b-md">
-        <input type="checkbox" class="peer" />
-        <div class="collapse-title text-base font-medium border-b-2 border-[#F6F7F9]">
-          {{index+1}}. {{staff.firstname + " " + staff.lastname}}
-        </div>
-      </div>
-      @end
+    <div class="overflow-x-auto col-span-4 border-[#ACB5BD] border-2 rounded-md">
+        <table class="table w-full">
+          <tbody>
+            @each((staff,index) in staffUsers)
+            <tr class="border-b-2 border-[#ACB5BD] last:border-none">
+              <td>{{index+1}}. {{staff.firstname + " " + staff.lastname}}</td>
+            </tr>
+            @end
+          </tbody>
+        </table>
     </div>
     @else
     <p class="col-span-4">-</p>
     @end
   </div>
+  @if(auth.user.role === 'staff' || auth.user.role === 'admin')
   <a href="{{ route('/course-info/edit')}}" class="ml-auto">
     @!common.borderButton({
       text: 'edit',
@@ -51,7 +53,9 @@
       id: 'editButton',
     })
   </a>
+  @end
   <div class="border-t-2 border-[#A8B0B8]"></div>
+  @if(academicYears[0].status === 1)
   <a href="{{ route('/course-info/complete-course')}}">
     @!common.borderButton({
       text: 'Complete course',
@@ -60,6 +64,7 @@
       id: 'complete-button',
     })
   </a>
+  @end
   @else
   <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
     <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
@@ -78,32 +83,37 @@
   </div>
   @if(request.matchesRoute('/course-info/edit/supervised-student'))
   <div class="grid grid-cols-5 font-medium gap-y-5">
-    <p class="font-medium">Advisor</p>
-    <p class="font-medium col-span-4">{{advisorById.firstname + " "+ advisorById.lastname}}</p>
-    <p class="col-span-1"></p>
-    <div class="flex flex-row col-span-4 space-x-2">
-      <p>Add an new student</p>
-      <div class="flex flex-col">
-        <input id="student" type="text"
-          class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
-          onkeyup="searchStudent()" />
-        <div class="dropdown dropdown-open max-w-xs" id="student_list">
+    <div>
+      <p class="font-medium">{{advisorById.firstname + " "+ advisorById.lastname}}</p>
+      <p class="font-medium text-sm text-[#ACB5BD]">{{advisorById.user_id}}</p>
+    </div>
+    <div class="flex col-span-4">
+      <div class="w-60 h-64 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2 overflow-y-auto overflow-x-hidden">
+        <input id="student" type="text" placeholder="Type student name or ID"
+        class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
+        onkeyup="searchStudent()" />
+        <div class="w-full h-full" id="student_list">
+
         </div>
       </div>
-      <button id="add-student-button" class="btn btn-primary capitalize btn-sm" onclick="addStudent()">add</button>
+      <div class="w-60 h-64 border-y-2 border-r-2 border-[#ACB5BD] overflow-y-auto overflow-x-hidden">
+        <div class="w-full h-full p-5" id="new_student_list">
+          <p class="mb-2">New student</p>
+        </div>
+      </div>
     </div>
     <p></p>
     <table class="table w-full col-span-4">
       <thead>
         <tr>
-          <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-          <th class="bg-[#F6F7F9]"></th>
+          <th class="bg-[#E4E5E8] text-[#7C8DA7] rounded-none">Name</th>
+          <th class="bg-[#E4E5E8] rounded-none"></th>
         </tr>
       </thead>
       <tbody id="student-table-row">
         @each((student,index) in studentUsersByAdOne.st)
-        <tr id="{{student.user_id}}">
-          <td>{{index+1}}. {{student.firstname + ' ' +student.lastname}}</td>
+        <tr id="{{student.user_id}}" class="border-2 border-[#E4E5E8]">
+          <td>{{index+1}}. {{student.firstname + " " + student.lastname}}</td>
           <td class="text-right">
             <div class="flex justify-end space-x-2">
               <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500"
@@ -160,28 +170,32 @@
     <p>Academic year</p>
     <p class="col-span-4">{{academicYears[0].academic_year}}</p>
     <p class="font-medium">Advisor</p>
-    <div class="flex flex-row col-span-4 space-x-2">
-      <p>Add an new advisor</p>
-      <div class="flex flex-col">
-        <input id="advisor" type="text"
-          class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
-          onkeyup="searchAdvisor()" />
-        <div class="dropdown dropdown-open max-w-xs" id="advisor_list">
+    <div class="flex col-span-4">
+      <div class="w-60 h-64 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2 overflow-y-auto overflow-x-hidden">
+        <input id="advisor" type="text" placeholder="Type advisor name or ID"
+        class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
+        onkeyup="searchAdvisor()" />
+        <div class="w-full h-full" id="advisor_list">
+
         </div>
       </div>
-      <button id="add-advisor-button" class="btn btn-primary capitalize btn-sm" onclick="addAdvisor()">add</button>
+      <div class="w-60 h-64 border-y-2 border-r-2 border-[#ACB5BD]  overflow-y-auto overflow-x-hidden">
+        <div class="w-full h-full p-5" id="new_advisor_list">
+          <p class="mb-2">New advisor</p>
+        </div>
+      </div>
     </div>
     <p></p>
-    <table class="table w-full col-span-4">
+    <table class="table w-full col-span-4 border-2 border-[#E4E5E8]">
       <thead>
         <tr>
-          <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-          <th class="bg-[#F6F7F9]"></th>
+          <th class="bg-[#E4E5E8] text-[#7C8DA7] rounded-none">Name</th>
+          <th class="bg-[#E4E5E8] rounded-none"></th>
         </tr>
       </thead>
       <tbody id="advisor-table-row">
         @each((advisor,index) in advisorUsers)
-        <tr id="{{advisor.user_id}}">
+        <tr id="{{advisor.user_id}}" class="border-2 border-[#E4E5E8]">
           <td>{{index+1}}. {{advisor.firstname + " " + advisor.lastname}}</td>
           <td class="text-right">
             <div class="flex justify-end space-x-2">
@@ -217,32 +231,36 @@
         @end
       </tbody>
     </table>
+    <div class="divider col-span-5"></div> 
     <p class="font-medium">Staff</p>
-    <div class="flex flex-row col-span-4 space-x-2">
-      <p>Add an new staff</p>
-      <div class="flex flex-col">
-        <input id="staff" type="text"
-          class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
-          onkeyup="searchStaff()" />
-        <div class="dropdown dropdown-open max-w-xs" id="staff_list">
+    <div class="flex col-span-4">
+      <div class="w-60 h-64 border-2 border-[#ACB5BD] flex flex-col items-center p-4 space-y-2 overflow-y-auto overflow-x-hidden">
+        <input id="staff" type="text" placeholder="Type staff name or ID"
+        class="input input-bordered input-primary max-w-xs input-sm border-[#ACB5BD] border-2"
+        onkeyup="searchStaff()" />
+        <div class="w-full h-full" id="staff_list">
+
         </div>
       </div>
-      <button id="add-staff-button" class="btn btn-primary capitalize btn-sm" onclick="addStaff()">add</button>
+      <div class="w-60 h-64 border-y-2 border-r-2 border-[#ACB5BD] overflow-y-auto overflow-x-hidden">
+        <div class="w-full h-full p-5" id="new_staff_list">
+          <p class="mb-2">New staff</p>
+        </div>
+      </div>
     </div>
     <p></p>
-    <table class="table w-full col-span-4">
+    <table class="table w-full col-span-4 border-2 border-[#E4E5E8]">
       <thead>
         <tr>
-          <th class="bg-[#F6F7F9] text-[#7C8DA7]">Name</th>
-          <th class="bg-[#F6F7F9]"></th>
+          <th class="bg-[#E4E5E8] text-[#7C8DA7] rounded-none">Name</th>
+          <th class="bg-[#E4E5E8] rounded-none"></th>
         </tr>
       </thead>
       <tbody id="staff-table-row">
         @each((staff,index) in staffUsers)
-        <tr id="{{staff.user_id}}">
+        <tr id="{{staff.user_id}}" class="border-2 border-[#E4E5E8]">
           <td>{{index+1}}. {{staff.firstname + " " + staff.lastname}}</td>
           <td class="text-right">
-            <div class="flex justify-end space-x-2">
               <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500"
                 onclick="deleteStaff('{{staff.user_id}}')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -265,7 +283,7 @@
         classProps: 'px-5',
       })
     </a>
-    <button class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit font-medium" onclick="updateSettings()">save
+    <button type="submit" class="btn btn-sm btn-primary rounded-md px-5 capitalize w-fit font-medium">save
       change</button>
   </div>
   @end
