@@ -1,5 +1,5 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
-import { StepStatus, AllSteps } from 'Contracts/enum'
+import { StepStatus, AllSteps, SupervisionStatus } from 'Contracts/enum'
 
 export default class UserHasDocs extends BaseSchema {
   protected tableName = 'users_has_docs'
@@ -20,7 +20,14 @@ export default class UserHasDocs extends BaseSchema {
       table.string('student_date').nullable()
       table.string('complete_date').nullable()
       table.string('meeting_link').nullable()
-      table.string('supervision_status').nullable()
+      // table.string('supervision_status').nullable()
+      table
+        .enu('supervision_status', Object.values(SupervisionStatus), {
+          useNative: true,
+          enumName: 'supervisions',
+          existingType: false,
+        })
+        .nullable()
       // table.string('advisor_comment').nullable()
       table.string('date_confirm_status').nullable()
       table.enu('step', Object.values(AllSteps), {

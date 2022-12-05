@@ -675,6 +675,7 @@ export default class UsersController {
         for (let i = 0; i < users.length; i++) {
           const result = await UsersInAcademicYearModel.query()
             .where('user_id', users[i].user_id)
+            .andWhere('approved', true)
             .andWhere('academic_year', AcademicYearCf[0].academic_year)
           if (result && result.length > 0) {
             studentUsers.push(users[i].serialize())
@@ -1417,7 +1418,7 @@ export default class UsersController {
         completeDate,
         supervisionStatus,
         meetingLink,
-        advisorComment,
+        // advisorComment,
         dateConfirmStatus,
         isSigned,
         advisorDate,
@@ -1891,7 +1892,7 @@ export default class UsersController {
     try {
       const {
         firm,
-        email,
+        // email,
         tel,
         department,
         position,
@@ -2135,18 +2136,18 @@ export default class UsersController {
             // approved: true,
           },
         ]
-
-        const usersArr = await User.createMany(arr)
-        usersArr.forEach(
-          async (user) =>
-            user.role === 'staff'
-              ? await user.related('staff').create({})
-              : // ,
-                // await year.related('users').attach([user.user_id]))
-                await user.related('advisor').create({})
-          // ,
-          // await year.related('users').attach([user.user_id]))
-        )
+        await User.createMany(arr)
+        // const usersArr =
+        // usersArr.forEach(
+        //   async (user) =>
+        //     user.role === 'staff'
+        //       ? await user.related('staff').create({})
+        //       : // ,
+        //         // await year.related('users').attach([user.user_id]))
+        //         await user.related('advisor').create({})
+        //   // ,
+        //   // await year.related('users').attach([user.user_id]))
+        // )
         await File.create({
           file_id: 'TR-01DEF',
           file_name: 'TR-01DEF.pdf',

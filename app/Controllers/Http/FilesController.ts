@@ -5,9 +5,6 @@ import User from 'App/Models/User'
 import File from 'App/Models/File'
 import { v4 as uuidv4 } from 'uuid'
 import * as fs from 'fs'
-// import Document from 'App/Models/Document'
-// import StepStatusModel from 'App/Models/StepStatus'
-// import { StepStatus, Steps } from 'Contracts/enum'
 import moment from 'moment-timezone'
 import AcademicYear from 'App/Models/AcademicYear'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
@@ -22,9 +19,7 @@ export default class FilesController {
     } else {
       allImages = oldImages
     }
-    // if (!allImages) {
-    //   return
-    // }
+
     const post = await Post.find(post_id)
     const files = await File.query() // 👈now have access to all query builder methods
       .where('post_id', post_id)
@@ -32,7 +27,6 @@ export default class FilesController {
       size: '2mb',
       // extnames: ['jpg', 'png', 'gif'],
     })
-    // console.log(allImages)
     const newItems = files.filter((b) => !allImages.some((a) => String(a) === String(b.file_id)))
     if (newItems && newItems.length > 0) {
       for (let newItem of newItems) {
@@ -62,9 +56,7 @@ export default class FilesController {
           image.size = this.convertFileSize(image.size)
           await post.related('files').create({
             file_id: newFileName,
-            //  + '.' + image.extname,
             file_name: image.clientName,
-            // user_id: post.user_id,
             file_size: image.size,
           })
         }
@@ -82,19 +74,13 @@ export default class FilesController {
         'stepFileType',
         'stepFileTypePlan',
       ])
-      // console.log(docId)
-      // console.log(statId)
+
       const files = request.files('files', {
         size: '3mb',
-        // extnames: ['jpg', 'png', 'gif'],
       })
-      // console.log(request.files)
-
-      // console.log(files)
 
       let err: Object[] = []
       let stepFileTypePlanJSON = stepFileTypePlan ? JSON.parse(stepFileTypePlan) : null
-      // console.log(stepFileTypePlanJSON, 'testtttttttttt')
 
       if (files.length === 0) {
         throw new Error('not have files')
@@ -125,10 +111,6 @@ export default class FilesController {
             usersInAcademicYear = await UsersInAcademicYearModel.query()
               .where('user_id', user.user_id)
               .andWhere('academic_year', AcademicYearCf[0].academic_year)
-            // console.log(docStat[0].id)
-            // console.log(usersInAcademicYear[0].id)
-            // console.log(step)
-            // console.log(status)
 
             userHasDocResult = await UserHasDoc.query()
               .where('step', step)
@@ -136,55 +118,28 @@ export default class FilesController {
               .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
               .orderBy('updated_at', 'desc')
           }
-          // console.log(userHasDocResult[0])
-          // console.log(UserHasDocResult[0].id)
           const fileSize = this.convertFileSize(file.size)
-          // if (userHasDocResult) {
-          //   const result = await File.query().where('user_has_doc_id', userHasDocResult[0].id)
-
-          //   if (result && result.length > 0) {
-          //     this.deleteFile(result, 'steps/')
-          //   }
-          // } else
           if (stepFileType.includes('template')) {
-            // if (auth.user) {
-            //   auth
             const result = await File.query().where(
               'step_file_type',
               stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
             )
-            // }
-
-            // console.log(result)
 
             if (result && result.length > 0) {
               this.deleteFile(result, 'template/')
             }
           }
 
-          // console.log(userHasDocResult)
-          // console.log(stepFileTypePlan)
-
-          // console.log(JSON.parse(stepFileTypePlan).month)
-
           await File.create({
             file_id: newFileName,
-            // + '.' + file.extname,
             file_name: file.clientName,
-            // user_id: user.user_id,
             file_size: fileSize,
-            // doc_id: doc.doc_name,
             user_has_doc_id:
               userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
-            // step_file_type: template === 'true' ? step : null,
             step_file_type: stepFileTypePlanJSON
               ? stepFileType + stepFileTypePlanJSON.month + stepFileTypePlanJSON.step
               : stepFileType,
-            // step_sep: stepSep && stepSep !== '' ? stepSep : null,
           })
-          // userHasDoc[0].related('f')
-          // newFile.related('userHasDoc')
-          // }
 
           return response.status(200).json({ message: 'success' })
         }
@@ -220,16 +175,10 @@ export default class FilesController {
   public async showAllFile({ auth, view, request, response }: HttpContextContract) {
     try {
       let canEdit: any
-      // const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       let AcademicYearCf: any
-      // const AcademicYearCf = await AcademicYear.query().where(
-      //   'academic_year',
-      //   request.cookie('year')
-      // )
       if (auth.user?.role === 'student') {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
-        // AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
         if (request.cookie('year')) {
           AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
         } else {
@@ -242,7 +191,6 @@ export default class FilesController {
         : (canEdit = false)
       const files = await File.query().whereNull('user_has_doc_id')
       let newFiles: any = []
-      // console.log(testQuery)
       for (const file of files) {
         const posts = await Post.query().where('post_id', file.post_id)
         if (posts[0]) {
@@ -256,23 +204,15 @@ export default class FilesController {
         }
       }
       const filesJSON = newFiles.map((result) => result.serialize())
-      // console.log(filesJSON)
 
       for (const file of filesJSON) {
-        // file.serialize()
-        // file.post.relate
-        // const post = await Post.find(file.post_id)
         const postArr = await Post.query().where('post_id', file.post_id)
-        // .andWhere('conf_id', AcademicYearCf[0].conf_id)
         const post = postArr[0]
-        // console.log(post)
         const user = await UsersInAcademicYearModel.query().where('id', post.usersInAcademicYearId)
-        // console.log(user)
         if (user) {
           file['user_id'] = user[0].user_id
         }
       }
-      // console.log(filesJSON)
       const filesDateTime = filesJSON.map((result) => ({
         ...result,
         updated_at: moment(result.updated_at).tz('Asia/Bangkok').format('MMMM D, YYYY h:mm A'),
@@ -290,22 +230,7 @@ export default class FilesController {
       let path = ''
       let preview: any = prev === 'prev' ? 'inline' : undefined
       if (userId && step) {
-        // const result = await File.query().where('user_id', userId).andWhere('doc_id', docId)
-        // if (result && result.length > 0) {
-        //   file = result[0]
-        //   path = 'steps/'
-        // }
-        // console.log(statId)
         const user = await User.findOrFail(userId)
-        // const doc = await Document.find(docId)
-        // doc?.related('')
-        // const stepStat = await StepStatusModel.query()
-        //   .where('step', step)
-        //   .andWhere(
-        //     'status_id',
-        //     status === 'Disapproved' || status === 'Approved' ? 'Pending' : status
-        //   )
-        // docStat[0].related('usersInAcademicYear').create({})
         const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         const usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', user.user_id)
@@ -321,7 +246,6 @@ export default class FilesController {
           .orderBy('updated_at', 'desc')
 
         const result = await File.query().where('user_has_doc_id', userHasDocResult[0].id)
-        // console.log(result)
         if (result && result.length > 0) {
           file = result[0]
           path = 'steps/'
@@ -337,7 +261,6 @@ export default class FilesController {
         filePath = Application.tmpPath(
           'uploads/' + path + decodeURIComponent(file.file_id) + '.' + ext[1]
         )
-        // console.log(filePath)
 
         response.attachment(filePath, file.file_name, preview, undefined, (error) => {
           if (error.code === 'ENOENT') {
