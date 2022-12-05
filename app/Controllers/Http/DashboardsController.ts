@@ -25,10 +25,9 @@ export default class DashboardsController {
         }
       }
       if (AcademicYearCf && AcademicYearCf.length > 0) {
-        const UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
-          'academic_year',
-          AcademicYearCf[0].academic_year
-        )
+        const UsersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('approved', true)
 
         for (let i = 0; i < UsersInAcademicYear.length; i++) {
           const result = await User.query()
@@ -62,6 +61,7 @@ export default class DashboardsController {
       let studentUsers4: any
       let studentUsers6: any
       let allSt: any
+      let notSub: any = 0
       allSt = studentUsers.length
       studentUsers2 = studentUsers.filter((userPre) => userPre.plan === 2).length
 
@@ -109,8 +109,9 @@ export default class DashboardsController {
 
                     Object.values(StepStatus).forEach((x) => {
                       stepRender[j].month[k][g][x + ' Total'] = studentUsers.filter(
-                        (y) => y[stepRender[j].month[k][g].value] === x
+                        (y) => y[stepRender[j].month[k][g].value + 'Total'] === x
                       ).length
+                      notSub = notSub + stepRender[j].month[k][g][x + ' Total']
                     })
                   }
                 }
@@ -126,14 +127,18 @@ export default class DashboardsController {
                   stepRender[j][x + ' Total'] = studentUsers.filter(
                     (y) => y[stepRender[j].name] === x
                   ).length
+                  notSub = notSub + stepRender[j][x + ' Total']
+                  //   console.log(notSub)
                 })
+
                 // stepRender[j]['Not Summited' + ' Total'] =
               }
             }
           }
         }
+        // console.log(allSt - notSub)
       }
-      console.log(stepRender)
+      //   console.log(stepRender)
 
       return view.render('dashboard', {
         stepRender: stepRender,
@@ -143,6 +148,7 @@ export default class DashboardsController {
         studentUsers2,
         studentUsers4,
         studentUsers6,
+        notSub: allSt - notSub,
       })
     } catch (error) {
       console.log(error)
