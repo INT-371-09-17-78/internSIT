@@ -277,7 +277,7 @@ export default class FilesController {
         const ext = file.file_name.split('.')
         if (file.step_file_type.includes('template')) {
           filePath = Application.tmpPath(
-            'uploads/template' + decodeURIComponent(file.file_id) + '.' + ext[1]
+            'uploads/template/' + decodeURIComponent(file.file_id) + '.' + ext[1]
           )
         } else {
           filePath = Application.tmpPath(

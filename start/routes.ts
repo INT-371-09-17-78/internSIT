@@ -166,6 +166,7 @@ Route.group(() => {
     .prefix('/post')
 
   Route.get('/file', 'FilesController.showAllFile')
+  Route.patch('/course/:id', 'CoursesInfoController.completeCourse')
 
   Route.group(() => {
     Route.post('/', 'FilesController.store')
