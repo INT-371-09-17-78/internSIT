@@ -93,7 +93,9 @@ export default class FilesController {
       // console.log(files)
 
       let err: Object[] = []
-      let stepFileTypePlanJSON = JSON.parse(stepFileTypePlan) || null
+      let stepFileTypePlanJSON = stepFileTypePlan ? JSON.parse(stepFileTypePlan) : null
+      // console.log(stepFileTypePlanJSON, 'testtttttttttt')
+
       if (files.length === 0) {
         throw new Error('not have files')
       }
@@ -161,9 +163,9 @@ export default class FilesController {
           }
 
           // console.log(userHasDocResult)
-          console.log(stepFileTypePlan)
+          // console.log(stepFileTypePlan)
 
-          console.log(JSON.parse(stepFileTypePlan).month)
+          // console.log(JSON.parse(stepFileTypePlan).month)
 
           await File.create({
             file_id: newFileName,
