@@ -316,12 +316,26 @@ export default class StepsController {
         if (usersInAcademicYear[0]) {
           const stSerialize = studentUsersRole[0].serialize()
           stSerialize['student'] = usersInAcademicYear[0].student
+          stSerialize['studentAc'] = usersInAcademicYear[0]
           studentUser = stSerialize
         }
       }
       if (!request.qs().step) {
         response.redirect('/student-information/' + usersInAcademicYear[0].user_id + '?step=TR-01')
       }
+
+      let avisorSt: any
+      if (studentUser['studentAc']['advisor_ac_id']) {
+        const ac = await UsersInAcademicYearModel.query().where(
+          'id',
+          studentUser['studentAc']['advisor_ac_id']
+        )
+        if (ac && ac.length > 0) {
+          const result = await User.query().where('user_id', ac[0].user_id)
+          result && result.length > 0 ? (avisorSt = result) : undefined
+        }
+      }
+      //   console.log(avisorSt[0].firstname)
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
         { title: 'Email', value: studentUser.email, key: 'email' },
@@ -339,9 +353,9 @@ export default class StepsController {
         { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
         {
           title: 'Advisor',
-          value: studentUser.student['advisorFullName']
-            ? studentUser.student['advisorFullName']
-            : '',
+          value: avisorSt[0] ? avisorSt[0].firstname + ' ' + avisorSt[0].lastname : '',
+          // ? studentUser.student['advisorFullName']
+          // : '',
           key: 'advisorFullName',
         },
       ]

@@ -338,6 +338,7 @@ export default class CoursesInfoController {
       }
       let studentUser: any
       let usersInAcademicYear: any
+      let avisorSt: any
       const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
@@ -351,10 +352,21 @@ export default class CoursesInfoController {
         if (usersInAcademicYear[0]) {
           const stSerialize = studentUsersRole[0].serialize()
           stSerialize['student'] = usersInAcademicYear[0].student
+          stSerialize['studentAc'] = usersInAcademicYear[0]
           studentUser = stSerialize
         }
-      }
 
+        if (studentUser['studentAc']['advisor_ac_id']) {
+          const ac = await UsersInAcademicYearModel.query().where(
+            'id',
+            studentUser['studentAc']['advisor_ac_id']
+          )
+          if (ac && ac.length > 0) {
+            const result = await User.query().where('user_id', ac[0].user_id)
+            result && result.length > 0 ? (avisorSt = result) : undefined
+          }
+        }
+      }
       const disabled = studentUser.student.plan === null ? '' : 'disabled'
       const studentInfo = [
         { title: 'Firm', value: studentUser.student.firm, key: 'firm' },
@@ -373,9 +385,7 @@ export default class CoursesInfoController {
         { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
         {
           title: 'Advisor',
-          value: studentUser.student['advisorFullName']
-            ? studentUser.student['advisorFullName']
-            : '',
+          value: avisorSt[0] ? avisorSt[0].firstname + ' ' + avisorSt[0].lastname : '',
           key: 'advisorFullName',
         },
       ]
