@@ -386,18 +386,32 @@
         staffs: staffTemp
       }
     }
-    await fetch('/api/user/courseInfoUs?_method=PATCH', {
+    const year = '{{academicYears[0].academic_year}}'
+    if(advisorTemp.length > 0 || staffTemp.length > 0){
+      await fetch('/api/user/courseInfoUs?_method=PATCH', {
         method: "PATCH",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(users),
-    }).then((response) => {
-      if(response.ok){
-        window.location.reload()
-      }
-    })
+      }).then((response) => {
+        if(response.ok){
+          window.location.reload()
+        }
+      })
+    }else{
+      console.log('dssdass')
+      await fetch(`/api/course/${year}?_method=PATCH`, {
+        method: "PATCH",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      }).then(() => {
+          window.location.href = '/academic-year'
+      })
+    }
   }
 
   const updateSettings2 =  async () => { 

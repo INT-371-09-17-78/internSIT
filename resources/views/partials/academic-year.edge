@@ -43,7 +43,7 @@
     @each(year in academicYears)
     <a href="{{ route('/student-information') }}" onclick="updateYear({{year.academic_year}})">
       <div
-        class="w-72 h-40 rounded-md flex justify-center items-center cursor-pointer shadow-md {{year.academic_year == academicYears[0].academic_year  ? 'bg-[#B6D3FF] text-primary' : 'bg-[#F0F3F4]'}}">
+        class="w-72 h-40 rounded-md flex justify-center items-center cursor-pointer shadow-md {{year.status === 1 ? 'bg-[#B6D3FF] text-primary' : 'bg-[#F0F3F4]'}}">
         <p class="font-bold text-3xl">{{year.academic_year}}</p>
       </div>
     </a>
