@@ -2,10 +2,16 @@
 @if(request.matchesRoute(['/announcement/create', '/announcement/edit/:id']))
 @set('hidePostButton', 'hidden')
 @end
-<div class="flex px-8 bg-[#F0F3F8] w-full py-6">
+<div class="flex px-8 bg-[#F0F3F8] w-full py-6 h-24">
   <div class="flex items-center space-x-5">
     <p class="text-base lg:text-3xl text-base-content font-bold capitalize">
+      @if(request.matchesRoute(['/announcement','/announcement/:id','/announcement/create', '/announcement/edit/:id']))
       Announcement
+      @elseif(request.matchesRoute(['/dashboard']))
+      Dashboard
+      @elseif(request.matchesRoute(['/student-information','/register-request','/course-info','/course-info/edit','/course-info/edit/supervised-student','/steps','/course-info/complete-course']))
+      {{auth.user.firstname + ' ' + auth.user.lastname}}
+      @end
     </p>
     <div class="flex items-center space-x-2">
       <svg class="w-4 h-4" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -18,8 +24,15 @@
       <p class="text-primary font-medium capitalize">{{auth.user.role}}</p>
     </div>
   </div>
+  @if(auth.user.role !== 'student')
+    @if(request.matchesRoute(['/announcement','/announcement/:id']))
+    <a class="my-auto" href="{{ route('/announcement/create')}}">
+      <button class="btn btn-sm h-10 btn-outline btn-primary rounded-full bg-white ml-5">Create new post</button>
+    </a>
+    @end
   <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
     <p class="font-bold">Academic year: {{request.cookie('year') || academicYears[0].academic_year}} </p>
     <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
   </div>
+  @end
 </div>
