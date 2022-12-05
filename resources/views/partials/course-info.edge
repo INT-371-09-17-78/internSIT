@@ -55,6 +55,7 @@
   </a>
   @end
   <div class="border-t-2 border-[#A8B0B8]"></div>
+  @if(academicYears[0].status === 1)
   <a href="{{ route('/course-info/complete-course')}}">
     @!common.borderButton({
       text: 'Complete course',
@@ -63,6 +64,7 @@
       id: 'complete-button',
     })
   </a>
+  @end
   @else
   <div class="flex font-normal items-center space-x-2 mt-2 text-sm">
     <a href="{{ route('/course-info')}}" class="hover:text-blue-800">
