@@ -65,7 +65,9 @@ export default class CoursesInfoController {
               .related('users')
               .attach({ [user.user_id]: { approved: true } })
 
-            const acCfRe = await UsersInAcademicYearModel.query().orderBy('created_at', 'desc')
+            const acCfRe = await UsersInAcademicYearModel.query()
+              .where('user_id', user.user_id)
+              .orderBy('created_at', 'desc')
             if (acCfRe && acCfRe.length > 0) {
               if (user.role === 'staff') {
                 await Staff.create({ staff_id: acCfRe[0].id })
