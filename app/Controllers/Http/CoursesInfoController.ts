@@ -387,7 +387,10 @@ export default class CoursesInfoController {
         { title: 'Mentor’s Tel.', value: studentUser.student.mentor_tel_no, key: 'mentorTel' },
         {
           title: 'Advisor',
-          value: avisorSt[0] ? avisorSt[0].firstname + ' ' + avisorSt[0].lastname : '',
+          value:
+            avisorSt && avisorSt.length > 0
+              ? avisorSt[0].firstname + ' ' + avisorSt[0].lastname
+              : '',
           key: 'advisorFullName',
         },
       ]
