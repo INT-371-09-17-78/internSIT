@@ -21,9 +21,9 @@
                         <p class="card-title">All student</p>
                         <p class="card-title">All staff</p>
                         <p class="card-title">All advisor</p>
-                        <p class="text-4xl font-bold">5</p>
-                        <p class="text-4xl font-bold">10</p>
-                        <p class="text-4xl font-bold">20</p>
+                        <p class="text-4xl font-bold">{{allSt}}</p>
+                        <p class="text-4xl font-bold">{{resultStaffRe}}</p>
+                        <p class="text-4xl font-bold">{{resultAdvisorRe}}</p>
                     </div>
                     <div class="flex ml-auto my-auto">
                         <svg width="87" height="34" viewBox="0 0 87 34" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,10 +43,10 @@
                     <div class="flex h-full">
                         <div class="flex flex-col">
                             <p class="card-title">INT340 students</p>
-                            <p class="font-bold text-3xl">20</p>
+                            <p class="font-bold text-3xl">{{studentUsers2}}</p>
                           </div>
                           <div class="flex flex-1 justify-center items-center">
-                            <div class="radial-progress" style="--value:16.67;">16.67%</div>
+                            <div class="radial-progress" style="--value:{{studentUsers2/allSt * 100}};">{{studentUsers2/allSt * 100}}%</div>
                           </div>
                     </div>
                 </div>
@@ -56,10 +56,10 @@
                     <div class="flex h-full">
                         <div class="flex flex-col">
                             <p class="card-title">INT350 students</p>
-                            <p class="font-bold text-3xl">60</p>
+                            <p class="font-bold text-3xl">{{studentUsers4}}</p>
                           </div>
                           <div class="flex flex-1 justify-center items-center">
-                            <div class="radial-progress" style="--value:50;">50%</div>
+                            <div class="radial-progress" style="--value:{{studentUsers4/allSt * 100}};">{{studentUsers4/allSt * 100}}%</div>
                           </div>
                     </div>
                 </div>
@@ -69,71 +69,65 @@
                     <div class="flex h-full">
                         <div class="flex flex-col">
                             <p class="card-title">INT370 students</p>
-                            <p class="font-bold text-3xl">40</p>
+                            <p class="font-bold text-3xl">{{studentUsers6}}</p>
                           </div>
                           <div class="flex flex-1 justify-center items-center">
-                            <div class="radial-progress" style="--value:33.33;">33.33%</div>
+                            <div class="radial-progress" style="--value:{{studentUsers6/allSt * 100}};">{{studentUsers6/allSt * 100}}%</div>
                           </div>
                     </div>
                 </div>
             </a>
         </div>
         <div class="card w-full shadow-xl mt-5 flex-1 bg-[#EEF8FF] max-h-72 overflow-auto pb-5">
-            <div class="grid grid-cols-5 gap-y-5 px-10">
-                <p class="text-[#858D95] font-bold sticky top-0 bg-[#EEF8FF] pt-5">Steps</p>
-                <p class="text-[#212429] font-bold sticky top-0 bg-[#EEF8FF] pt-5">No submitted</p>
-                <p class="text-yellow-700 font-bold sticky top-0 bg-[#EEF8FF] pt-5">Pending</p>
-                <p class="text-red-700 font-bold sticky top-0 bg-[#EEF8FF] pt-5">Improve</p>
-                <p class="text-green-700 font-bold sticky top-0 bg-[#EEF8FF] pt-5">Completed</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-
-
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
-                <p class="text-green-700 font-bold">test</p>
+            <div class="grid grid-cols-5 gap-5 px-10">
+                <p class="text-[#858D95] font-bold sticky z-10 top-0 bg-[#EEF8FF] pt-5">Steps</p>
+                <p class="text-[#212429] font-bold sticky z-10 top-0 bg-[#EEF8FF] pt-5">No submitted</p>
+                <p class="text-warning font-bold sticky z-10 top-0 bg-[#EEF8FF] pt-5">Pending</p>
+                <p class="text-error font-bold sticky z-10 top-0 bg-[#EEF8FF] pt-5">Improve</p>
+                <p class="text-success font-bold sticky z-10 top-0 bg-[#EEF8FF] pt-5">Completed</p>
+                @each(step in stepRender)
+                  @if(!step.month)
+                  <p class="font-bold">{{step.name}}</p>
+                  <div>
+                    <p class="font-bold">{{step.Max-(step['Pending Total']+step['Disapproved Total']+step['Approved Total'])}}/{{step.Max}}</p>
+                    <progress class="progress max-w-56 h-4" value="{{step.Max-(step['Pending Total']+step['Disapproved Total']+step['Approved Total'])}}" max="{{step.Max}}"></progress>
+                  </div>
+                  <div>
+                    <p class="font-bold">{{step['Pending Total']}}/{{step.Max}}</p>
+                    <progress class="progress progress-warning max-w-56 h-4" value="{{step['Pending Total']}}" max="{{step.Max}}"></progress>
+                  </div>
+                  <div>
+                    <p class="font-bold">{{step['Disapproved Total']}}/{{step.Max}}</p>
+                    <progress class="progress progress-error max-w-56 h-4" value="{{step['Disapproved Total']}}" max="{{step.Max}}"></progress>
+                  </div>
+                  <div>
+                    <p class="font-bold">{{step['Approved Total']}}/{{step.Max}}</p>
+                    <progress class="progress progress-success max-w-56 h-4" value="{{step['Approved Total']}}" max="{{step.Max}}"></progress>
+                  </div>
+                  @else
+                    @each(months in step.month)
+                      @each(subStep in months)
+                      <p class="font-bold">{{subStep.value}}</p>
+                      <div>
+                        <p class="font-bold">{{subStep.Max-(subStep['Pending Total']+subStep['Disapproved Total']+subStep['Approved Total'])}}/{{subStep.Max}}</p>
+                        <progress class="progress max-w-56 h-4" value="{{subStep.Max-(subStep['Pending Total']+subStep['Disapproved Total']+subStep['Approved Total'])}}" max="{{subStep.Max}}"></progress>
+                      </div>
+                      <div>
+                        <p class="font-bold">{{subStep['Pending Total']}}/{{subStep.Max}}</p>
+                        <progress class="progress progress-warning max-w-56 h-4" value="{{subStep['Pending Total']}}" max="{{subStep.Max}}"></progress>
+                      </div>
+                      <div>
+                        <p class="font-bold">{{subStep['Disapproved Total']}}/{{subStep.Max}}</p>
+                        <progress class="progress progress-error max-w-56 h-4" value="{{subStep['Disapproved Total']}}" max="{{subStep.Max}}"></progress>
+                      </div>
+                      <div>
+                        <p class="font-bold">{{subStep['Approved Total']}}/{{subStep.Max}}</p>
+                        <progress class="progress progress-success max-w-56 h-4" value="{{subStep['Approved Total']}}" max="{{subStep.Max}}"></progress>
+                      </div>
+                      @end
+                    @end
+                  @end
+                @end
             </div>
         </div>
 </section>
