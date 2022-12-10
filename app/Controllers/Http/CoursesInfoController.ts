@@ -291,7 +291,7 @@ export default class CoursesInfoController {
         // error.message === 'empty role'
       ) {
         session.flash({
-          error: 'Invalid phone number',
+          phone: 'Invalid phone number',
           type: 'negative',
         })
       }
@@ -300,7 +300,7 @@ export default class CoursesInfoController {
         // error.message === 'empty role'
       ) {
         session.flash({
-          error: 'Invalid duration plan',
+          plan: 'Invalid duration plan',
           type: 'negative',
         })
       }
@@ -309,7 +309,7 @@ export default class CoursesInfoController {
         // error.message === 'empty role'
       ) {
         session.flash({
-          error: `Invalid mentor's phone number`,
+          mentorPhone: `Invalid mentor's phone number`,
           type: 'negative',
         })
       }
@@ -318,7 +318,7 @@ export default class CoursesInfoController {
         // error.message === 'empty role'
       ) {
         session.flash({
-          error: `Invalid mentor's email`,
+          mentorMail: `Invalid mentor's email`,
           type: 'negative',
         })
       }
