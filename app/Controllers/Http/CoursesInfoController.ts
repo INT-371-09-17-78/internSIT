@@ -287,7 +287,7 @@ export default class CoursesInfoController {
     } catch (error) {
       console.log(error)
       if (
-        error.message === 'invalid phone number'
+        error.message === 'Invalid phone number'
         // error.message === 'empty role'
       ) {
         session.flash({
@@ -296,7 +296,7 @@ export default class CoursesInfoController {
         })
       }
       if (
-        error.message === 'invalid duration plan'
+        error.message === 'Invalid duration plan'
         // error.message === 'empty role'
       ) {
         session.flash({
