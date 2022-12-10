@@ -293,7 +293,7 @@ export default class CoursesInfoController {
       if (Array.isArray(error)) {
         for (let i = 0; i < error.length; i++) {
           if (
-            error[i].message === 'Invalid phone number'
+            error[i] === 'Invalid phone number'
             // error.message === 'empty role'
           ) {
             session.flash({
@@ -302,7 +302,7 @@ export default class CoursesInfoController {
             })
           }
           if (
-            error[i].message === 'Invalid duration plan'
+            error[i] === 'Invalid duration plan'
             // error.message === 'empty role'
           ) {
             session.flash({
@@ -311,7 +311,7 @@ export default class CoursesInfoController {
             })
           }
           if (
-            error[i].message === `Invalid mentor's phone number`
+            error[i] === `Invalid mentor's phone number`
             // error.message === 'empty role'
           ) {
             session.flash({
@@ -320,7 +320,7 @@ export default class CoursesInfoController {
             })
           }
           if (
-            error[i].message === `Invalid mentor's email`
+            error[i] === `Invalid mentor's email`
             // error.message === 'empty role'
           ) {
             session.flash({
