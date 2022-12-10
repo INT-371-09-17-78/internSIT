@@ -297,8 +297,9 @@ export default class CoursesInfoController {
             // error.message === 'empty role'
           ) {
             session.flash({
-              tel: 'Invalid phone number',
+              error: 'Invalid phone number',
               type: 'negative',
+              key: 'tel',
             })
           }
           if (
@@ -306,8 +307,9 @@ export default class CoursesInfoController {
             // error.message === 'empty role'
           ) {
             session.flash({
-              duration: 'Invalid duration plan',
+              error: 'Invalid duration plan',
               type: 'negative',
+              key: 'duration',
             })
           }
           if (
@@ -315,8 +317,9 @@ export default class CoursesInfoController {
             // error.message === 'empty role'
           ) {
             session.flash({
-              mentorTel: `Invalid mentor's phone number`,
+              error: `Invalid mentor's phone number`,
               type: 'negative',
+              key: 'mentorTel',
             })
           }
           if (
@@ -324,8 +327,9 @@ export default class CoursesInfoController {
             // error.message === 'empty role'
           ) {
             session.flash({
-              mentorEmail: `Invalid mentor's email`,
+              error: `Invalid mentor's email`,
               type: 'negative',
+              key: 'mentorEmail',
             })
           }
         }
