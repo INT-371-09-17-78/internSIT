@@ -297,7 +297,7 @@ export default class CoursesInfoController {
             // error.message === 'empty role'
           ) {
             session.flash({
-              error: 'Invalid phone number',
+              error: { tel: 'Invalid phone number' },
               type: 'negative',
               key: 'tel',
             })

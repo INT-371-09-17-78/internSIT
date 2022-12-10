@@ -17,14 +17,30 @@
       class="bg-white rounded-xl w-full h-fit flex flex-col p-6">
       <div class="grid grid-cols-2 w-fit gap-y-4">
         @each(info in studentInfo)
-        <p class="font-bold">{{info.title}}</p>
-        @if(info.key!=='advisorFullName')
-        <input type="{{info.key.toLowerCase().includes('tel') ? 'tel' : 'text'}}"
-          class="input input-sm w-full max-w-xs border-2 border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}" id="{{info.key}}"
-          maxlength="{{info.key==='tel' && 10}}">
-        @else
-        <p class="font-bold">{{info.value || '-'}}</p>
-        @end
+          <p class="font-bold">{{info.title}}</p>
+          @if(info.key !=='advisorFullName' && info.key !=='email')
+            @if(info.key !== 'duration')
+            <input type="{{info.key.toLowerCase().includes('tel') ? 'tel' : info.key.toLowerCase().includes('email') ? 'email' : 'text'}}"
+              class="input input-sm w-full max-w-xs border-2 border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}" id="{{info.key}}"
+              maxlength="{{info.key.toLowerCase().includes('tel') && 10}}"> 
+              {{ inspect(flashMessages.all()) }}
+            {{--  @if(flashMessages.has('tel', ''))
+              <p class="text-error text-xs col-span-2 text-right">{{ flashMessages.get('tel', '') }}</p>
+            @end
+            @if(flashMessages.has('mentorTel', ''))
+              <p class="text-error text-xs col-span-2 text-right">{{ flashMessages.get('mentorTel', '') }}</p>
+            @end  --}}
+            @else
+            <select id="study" name="study"
+            class="select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-full max-w-xs">
+              <option {{info.value === 2 ? 'selected' : ''}} value="2">2 month</option>
+              <option {{info.value === 4 ? 'selected' : ''}} value="4">4 month</option>
+              <option {{info.value === 6 ? 'selected' : ''}} value="6">6 month</option>
+            </select>
+            @end
+          @else
+          <p class="font-bold">{{info.value || '-'}}</p>
+          @end
         @end
       </div>
       <a href="{{ route('/student-information/:id', { id: studentUser.user_id }) }}" class="self-center mt-2">
