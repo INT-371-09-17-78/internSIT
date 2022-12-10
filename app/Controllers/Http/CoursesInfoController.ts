@@ -245,12 +245,13 @@ export default class CoursesInfoController {
 
       const stepServices = new stepService()
       studentUser.firm = firm
+      let err: Object[] = []
       console.log(duration)
       if (tel) {
         if (stepServices.validatePhoneNumber(tel)) {
           studentUser.tel = tel
         } else {
-          throw new Error('Invalid phone number')
+          err.push('Invalid phone number')
         }
       }
 
@@ -258,7 +259,7 @@ export default class CoursesInfoController {
       studentUser.position = position
       if (duration) {
         if (duration !== '2' && duration !== '4' && duration !== '6') {
-          throw new Error('Invalid duration plan')
+          err.push('Invalid duration plan')
         } else {
           studentUser.plan = duration
         }
@@ -269,7 +270,7 @@ export default class CoursesInfoController {
         if (stepServices.validateEmail(mentorEmail)) {
           studentUser.mentor_email = mentorEmail
         } else {
-          throw new Error(`Invalid mentor's email`)
+          err.push(`Invalid mentor's email`)
         }
       }
 
@@ -277,53 +278,63 @@ export default class CoursesInfoController {
         if (stepServices.validatePhoneNumber(mentorTel)) {
           studentUser.mentor_tel_no = mentorTel
         } else {
-          throw new Error(`Invalid mentor's phone number`)
+          err.push(`Invalid mentor's phone number`)
         }
       }
 
+      if (err && err.length > 0) {
+        throw err
+      }
       await studentUser.save()
 
       response.redirect(`/student-information/${usersInAcademicYear[0].user_id}`)
     } catch (error) {
       console.log(error)
-      if (
-        error.message === 'Invalid phone number'
-        // error.message === 'empty role'
-      ) {
-        session.flash({
-          tel: 'Invalid phone number',
-          type: 'negative',
-        })
+      if (Array.isArray(error)) {
+        for (let i = 0; i < error.length; i++) {
+          if (
+            error[i].message === 'Invalid phone number'
+            // error.message === 'empty role'
+          ) {
+            session.flash({
+              tel: 'Invalid phone number',
+              type: 'negative',
+            })
+          }
+          if (
+            error[i].message === 'Invalid duration plan'
+            // error.message === 'empty role'
+          ) {
+            session.flash({
+              duration: 'Invalid duration plan',
+              type: 'negative',
+            })
+          }
+          if (
+            error[i].message === `Invalid mentor's phone number`
+            // error.message === 'empty role'
+          ) {
+            session.flash({
+              mentorTel: `Invalid mentor's phone number`,
+              type: 'negative',
+            })
+          }
+          if (
+            error[i].message === `Invalid mentor's email`
+            // error.message === 'empty role'
+          ) {
+            session.flash({
+              mentorEmail: `Invalid mentor's email`,
+              type: 'negative',
+            })
+          }
+        }
+        response.redirect(`/student/${request.param('id')}/edit`)
+      } else {
+        return response.status(400).json({ message: error.message })
       }
-      if (
-        error.message === 'Invalid duration plan'
-        // error.message === 'empty role'
-      ) {
-        session.flash({
-          duration: 'Invalid duration plan',
-          type: 'negative',
-        })
-      }
-      if (
-        error.message === `Invalid mentor's phone number`
-        // error.message === 'empty role'
-      ) {
-        session.flash({
-          mentorTel: `Invalid mentor's phone number`,
-          type: 'negative',
-        })
-      }
-      if (
-        error.message === `Invalid mentor's email`
-        // error.message === 'empty role'
-      ) {
-        session.flash({
-          mentorEmail: `Invalid mentor's email`,
-          type: 'negative',
-        })
-      }
+
       // return response.status(400).json({ message: error.message })
-      response.redirect(`/student/${request.param('id')}/edit`)
     }
   }
 
