@@ -399,4 +399,16 @@ export default class StepsServices {
       console.log(error)
     }
   }
+
+  public validatePhoneNumber(input_str) {
+    const re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/
+
+    return re.test(input_str)
+  }
+
+  public validateEmail(mail) {
+    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+
+    return re.test(mail)
+  }
 }

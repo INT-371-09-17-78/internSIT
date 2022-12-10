@@ -7,7 +7,7 @@ import AcademicYear from 'App/Models/AcademicYear'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 
 export default class PostsController {
-  public async store({ auth, request, response }: HttpContextContract) {
+  public async store({ auth, request, response, session }: HttpContextContract) {
     try {
       const { content, topic } = request.all()
       const user = await User.findOrFail(auth.user?.user_id)
@@ -33,6 +33,16 @@ export default class PostsController {
 
       return response.json(post)
     } catch (error) {
+      console.log(error)
+      if (
+        error.message
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: error.message,
+          type: 'negative',
+        })
+      }
       return response.status(400).send({ message: error.message })
     }
   }

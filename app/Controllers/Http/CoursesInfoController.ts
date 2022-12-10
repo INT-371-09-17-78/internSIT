@@ -11,7 +11,7 @@ import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Staff from 'App/Models/Staff'
 import Advisor from 'App/Models/Advisor'
-// import stepService from 'App/Services/stepServices'
+import stepService from 'App/Services/stepServices'
 
 export default class CoursesInfoController {
   public async updateCourseInformation({ auth, request, response }: HttpContextContract) {
@@ -195,7 +195,7 @@ export default class CoursesInfoController {
     }
   }
 
-  public async updateStudentUserInfo({ request, response }: HttpContextContract) {
+  public async updateStudentUserInfo({ request, session, response }: HttpContextContract) {
     try {
       const {
         firm,
@@ -243,21 +243,87 @@ export default class CoursesInfoController {
         }
       }
 
+      const stepServices = new stepService()
       studentUser.firm = firm
-      studentUser.tel = tel
+      console.log(duration)
+      if (tel) {
+        if (stepServices.validatePhoneNumber(tel)) {
+          studentUser.tel = tel
+        } else {
+          throw new Error('Invalid phone number')
+        }
+      }
+
       studentUser.department = department
       studentUser.position = position
-      studentUser.plan = duration
+      if (duration) {
+        if (duration !== '2' && duration !== '4' && duration !== '6') {
+          throw new Error('Invalid duration plan')
+        } else {
+          studentUser.plan = duration
+        }
+      }
       studentUser.mentor_name = mentor
       studentUser.mentor_position = mentorPosition
-      studentUser.mentor_email = mentorEmail
-      studentUser.mentor_tel_no = mentorTel
+      if (mentorEmail) {
+        if (stepServices.validateEmail(mentorEmail)) {
+          studentUser.mentor_email = mentorEmail
+        } else {
+          throw new Error(`Invalid mentor's email`)
+        }
+      }
+
+      if (mentorTel) {
+        if (stepServices.validatePhoneNumber(mentorTel)) {
+          studentUser.mentor_tel_no = mentorTel
+        } else {
+          throw new Error(`Invalid mentor's phone number`)
+        }
+      }
 
       await studentUser.save()
 
       response.redirect(`/student-information/${usersInAcademicYear[0].user_id}`)
     } catch (error) {
-      return response.status(400).json({ message: error.message })
+      console.log(error)
+      if (
+        error.message === 'invalid phone number'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'Invalid phone number',
+          type: 'negative',
+        })
+      }
+      if (
+        error.message === 'invalid duration plan'
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: 'Invalid duration plan',
+          type: 'negative',
+        })
+      }
+      if (
+        error.message === `Invalid mentor's phone number`
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: `Invalid mentor's phone number`,
+          type: 'negative',
+        })
+      }
+      if (
+        error.message === `Invalid mentor's email`
+        // error.message === 'empty role'
+      ) {
+        session.flash({
+          error: `Invalid mentor's email`,
+          type: 'negative',
+        })
+      }
+      // return response.status(400).json({ message: error.message })
+      response.redirect(`/student/${request.param('id')}/edit`)
     }
   }
 
