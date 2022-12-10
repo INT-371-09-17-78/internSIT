@@ -251,7 +251,7 @@ export default class CoursesInfoController {
         if (stepServices.validatePhoneNumber(tel)) {
           studentUser.tel = tel
         } else {
-          err.push('Invalid phone number')
+          err.push({ tel: 'Invalid phone number' })
         }
       }
 
@@ -259,7 +259,7 @@ export default class CoursesInfoController {
       studentUser.position = position
       if (duration) {
         if (duration !== '2' && duration !== '4' && duration !== '6') {
-          err.push('Invalid duration plan')
+          err.push({ duration: 'Invalid duration plan' })
         } else {
           studentUser.plan = duration
         }
@@ -270,7 +270,7 @@ export default class CoursesInfoController {
         if (stepServices.validateEmail(mentorEmail)) {
           studentUser.mentor_email = mentorEmail
         } else {
-          err.push(`Invalid mentor's email`)
+          err.push({ mentorEmail: `Invalid mentor's email` })
         }
       }
 
@@ -278,7 +278,7 @@ export default class CoursesInfoController {
         if (stepServices.validatePhoneNumber(mentorTel)) {
           studentUser.mentor_tel_no = mentorTel
         } else {
-          err.push(`Invalid mentor's phone number`)
+          err.push({ mentorTel: `Invalid mentor's phone number` })
         }
       }
 
@@ -288,54 +288,58 @@ export default class CoursesInfoController {
       await studentUser.save()
 
       response.redirect(`/student-information/${usersInAcademicYear[0].user_id}`)
-    } catch (error) {
-      console.log(error)
-      if (Array.isArray(error)) {
-        for (let i = 0; i < error.length; i++) {
-          if (
-            error[i] === 'Invalid phone number'
-            // error.message === 'empty role'
-          ) {
-            session.flash({
-              error: { tel: 'Invalid phone number' },
-              type: 'negative',
-              key: 'tel',
-            })
-          }
-          if (
-            error[i] === 'Invalid duration plan'
-            // error.message === 'empty role'
-          ) {
-            session.flash({
-              error: 'Invalid duration plan',
-              type: 'negative',
-              key: 'duration',
-            })
-          }
-          if (
-            error[i] === `Invalid mentor's phone number`
-            // error.message === 'empty role'
-          ) {
-            session.flash({
-              error: `Invalid mentor's phone number`,
-              type: 'negative',
-              key: 'mentorTel',
-            })
-          }
-          if (
-            error[i] === `Invalid mentor's email`
-            // error.message === 'empty role'
-          ) {
-            session.flash({
-              error: `Invalid mentor's email`,
-              type: 'negative',
-              key: 'mentorEmail',
-            })
-          }
+    } catch (errors) {
+      console.log(errors)
+      if (Array.isArray(errors)) {
+        for (const error in errors) {
+          // if (
+          //   error[i] === 'Invalid phone number'
+          //   // error.message === 'empty role'
+          // ) {
+          session.flash({
+            error: errors[error],
+            type: 'negative',
+            // key: 'tel',
+          })
+          // }
+          // if (
+          //   error[i] === 'Invalid duration plan'
+          //   // error.message === 'empty role'
+          // ) {
+          //   session.flash({
+          //     duration: 'Invalid duration plan',
+          //     type: 'negative',
+          //     // key: 'duration',
+          //   })
+          // }
+          // if (
+          //   error[i] === `Invalid mentor's phone number`
+          //   // error.message === 'empty role'
+          // ) {
+          //   session.flash({
+          //     error: {
+          //       mentorTel: `Invalid mentor's phone number`,
+          //       type: 'negative',
+          //       // key: 'mentorTel',
+          //     },
+          //   })
+          // }
+          // if (
+          //   error[i] === `Invalid mentor's email`
+          //   // error.message === 'empty role'
+          // ) {
+          //   session.flash({
+          //     error: {
+          //       mentorEmail: `Invalid mentor's email`,
+          //       type: 'negative',
+          //       // key: 'mentorEmail',
+          //     },
+          //   })
+          // }
         }
         response.redirect(`/student/${request.param('id')}/edit`)
       } else {
-        return response.status(400).json({ message: error.message })
+        return response.status(400).json({ message: errors.message })
       }
 
       // return response.status(400).json({ message: error.message })
