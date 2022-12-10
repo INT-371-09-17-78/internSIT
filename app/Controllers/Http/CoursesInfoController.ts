@@ -395,6 +395,7 @@ export default class CoursesInfoController {
   public async showStudentInfoEdit({ auth, request, response, view }: HttpContextContract) {
     try {
       let years: any
+      const plans = [2, 4, 6]
       if (auth.user?.role === 'student') {
         years = await AcademicYear.query().orderBy('updated_at', 'desc')
       } else {
@@ -460,7 +461,7 @@ export default class CoursesInfoController {
           key: 'advisorFullName',
         },
       ]
-      return view.render('edit-student', { studentUser, disabled, studentInfo })
+      return view.render('edit-student', { studentUser, disabled, studentInfo, plans })
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
