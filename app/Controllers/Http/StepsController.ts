@@ -993,33 +993,51 @@ export default class StepsController {
   public async updateStudentUserStatus({ auth, session, request, response }: HttpContextContract) {
     try {
       const {
-        study,
-        status,
-        step,
-        reason,
-        date,
-        completeDate,
-        supervisionStatus,
-        meetingLink,
-        // advisorComment,
-        dateConfirmStatus,
-        isSigned,
-        advisorDate,
+        // study,
+        // status,
+        // step,
+        // reason,
+        // date,
+        // completeDate,
+        // supervisionStatus,
+        // meetingLink,
+        // // advisorComment,
+        // dateConfirmStatus,
+        // isSigned,
+        // advisorDate,
+        info,
+        // files,
       } = request.only([
-        'study',
-        'status',
-        'step',
-        'reason',
-        'date',
-        'stepStatId',
-        'supervisionStatus',
-        'meetingLink',
-        'advisorComment',
-        'dateConfirmStatus',
-        'isSigned',
-        'completeDate',
-        'advisorDate',
+        // 'study',
+        // 'status',
+        // 'step',
+        // 'reason',
+        // 'date',
+        // 'stepStatId',
+        // 'supervisionStatus',
+        // 'meetingLink',
+        // 'advisorComment',
+        // 'dateConfirmStatus',
+        // 'isSigned',
+        // 'completeDate',
+        // 'advisorDate',
+        'info',
+        // 'files',
       ])
+      // console.log(info.isSigned, 'asdasdasd')
+      const infoParse = JSON.parse(info)
+      console.log(infoParse)
+      // console.log(infoParse.date)
+      const files = request.files('files', {
+        size: '3mb',
+      })
+      if (
+        infoParse.step === AllSteps.TR02 &&
+        (!files || files.length === 0 || !infoParse.advisorDate || !infoParse.completeDate)
+      ) {
+        throw new Error('all field are required')
+      }
+      console.log(files.length)
 
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let usersInAcademicYear: any
@@ -1037,8 +1055,8 @@ export default class StepsController {
         user = await User.query().where('user_id', auth.user.user_id)
       }
 
-      if (study) {
-        usersInAcademicYear[0].student.plan = study
+      if (infoParse.study) {
+        usersInAcademicYear[0].student.plan = infoParse.study
         await usersInAcademicYear[0].student.save()
         const userHasDoc = await UserHasDoc.query().where(
           'user_in_academic_year_id',
@@ -1055,81 +1073,100 @@ export default class StepsController {
       }
 
       const body = {}
-      if (status && step) {
-        body['status'] = status
-        body['step'] = step
+      if (infoParse.status && infoParse.step) {
+        body['status'] = infoParse.status
+        body['step'] = infoParse.step
         body['is_react'] =
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? true : false
         body['is_signed'] =
-          auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? isSigned : false
+          auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? infoParse.isSigned : false
         body['no_approve_reason'] =
-          reason && reason !== null && status === 'Disapproved' ? reason : null
-        if (step.includes('Informed')) {
+          infoParse.reason && infoParse.reason !== null && infoParse.status === 'Disapproved'
+            ? infoParse.reason
+            : null
+        if (infoParse.step.includes('Informed')) {
           body['is_new'] = auth.user?.role === 'student' ? false : true
         }
       }
-
-      if (date) {
+      console.log(info)
+      if (infoParse.date) {
         if (user[0].role === 'advisor') {
-          body['advisor_date'] = date
+          body['advisor_date'] = infoParse.date
         } else {
-          body['student_date'] = date
+          console.log('เข้าหรอ')
+
+          body['student_date'] = infoParse.date
           body['is_react'] = true
-          body['is_signed'] = isSigned
+          body['is_signed'] = infoParse.isSigned
         }
       }
 
-      if (advisorDate) {
-        body['advisor_date'] = advisorDate
-      } else if (step && step === AllSteps.TR02 && !advisorDate && request.qs().step) {
+      if (infoParse.advisorDate) {
+        body['advisor_date'] = infoParse.advisorDate
+      } else if (
+        infoParse.step &&
+        infoParse.step === AllSteps.TR02 &&
+        !infoParse.advisorDate &&
+        request.qs().step
+      ) {
         throw new Error('no adDate')
       }
 
-      if (completeDate) {
-        body['complete_date'] = completeDate
-      } else if (step && step === AllSteps.TR02 && !completeDate && request.qs().step) {
+      if (infoParse.completeDate) {
+        body['complete_date'] = infoParse.completeDate
+      } else if (
+        infoParse.step &&
+        infoParse.step === AllSteps.TR02 &&
+        !infoParse.completeDate &&
+        request.qs().step
+      ) {
         throw new Error('no compDate')
       }
 
-      if (supervisionStatus) {
-        body['supervision_status'] = supervisionStatus
+      if (infoParse.supervisionStatus) {
+        body['supervision_status'] = infoParse.supervisionStatus
       }
 
-      if (meetingLink) {
-        body['meeting_link'] = meetingLink
+      if (infoParse.meetingLink) {
+        body['meeting_link'] = infoParse.meetingLink
       }
 
       // if (advisorComment) {
       //   body['advisor_comment'] = advisorComment
       // }
 
-      if (dateConfirmStatus) {
-        body['date_confirm_status'] = dateConfirmStatus
+      if (infoParse.dateConfirmStatus) {
+        body['date_confirm_status'] = infoParse.dateConfirmStatus
       }
 
       if (
-        status &&
-        status !== StepStatus.PENDING &&
-        step &&
-        step !== AllSteps.TR02 &&
-        step !== AllSteps.PRESENTATION
+        infoParse.status &&
+        infoParse.status !== StepStatus.PENDING &&
+        infoParse.step &&
+        infoParse.step !== AllSteps.TR02 &&
+        infoParse.step !== AllSteps.PRESENTATION
       ) {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
-          .where('step', step)
+          .where('step', infoParse.step)
           .orderBy('created_at', 'desc')
         for (let i = 0; i < Object.keys(body).length; i++) {
           stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
         }
         await stepTracking[0].save()
-      } else if ((step && step === AllSteps.TR02) || (step && step === AllSteps.PRESENTATION)) {
+      } else if (
+        (infoParse.step && infoParse.step === AllSteps.TR02) ||
+        (infoParse.step && infoParse.step === AllSteps.PRESENTATION)
+      ) {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
           .query()
-          .where('step', step)
+          .where('step', infoParse.step)
           .orderBy('created_at', 'desc')
         if (stepTracking && stepTracking.length > 0) {
+          console.log(body)
+
           for (let i = 0; i < Object.keys(body).length; i++) {
             stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
           }
@@ -1141,19 +1178,34 @@ export default class StepsController {
         await usersInAcademicYear[0].related('userHasDoc').create(body)
       }
       return response.status(200).json('success')
-    } catch (error) {
-      console.log(error)
-      if (
-        error.message === 'no adDate' ||
-        error.message === 'no compDate'
-        // error.message === 'empty role'
-      ) {
-        session.flash({
-          error: 'All fields are required',
-          type: 'negative',
-        })
+    } catch (errors) {
+      // console.log(error)
+      // if (
+      //   error.message === 'no adDate' ||
+      //   error.message === 'no compDate'
+      //   // error.message === 'empty role'
+      // ) {
+      //   session.flash({
+      //     error: 'All fields are required',
+      //     type: 'negative',
+      //   })
+      // }
+      console.log(errors)
+      if (Array.isArray(errors)) {
+        for (const error in errors) {
+          session.flash({
+            error: errors[error],
+            type: 'negative',
+            // key: 'tel',
+          })
+        }
+        response.redirect(
+          `/student-information/${auth.user?.user_id}?step=${AllSteps.TR02}mode=edit`
+        )
+      } else {
+        return response.status(400).json({ message: errors.message })
       }
-      return response.status(400).json({ message: error.message })
+      // return response.status(400).json({ message: error.message })
     }
   }
 }

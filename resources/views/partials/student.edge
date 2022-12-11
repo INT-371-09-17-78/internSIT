@@ -1251,14 +1251,17 @@ const checkStartDateMax = () => {
       step = '{{currentSteps.name}}'
     }
     const body = {
-      step: step ? '{{currentSteps.name}}' : '{{nextStep.name}}' ? '{{nextStep.name}}' : 'TR-01',
+      step: step ? '{{currentSteps.name}}' : '{{nextStep.name}}',
       status: status,
       reason : reason ,
       isSigned : status == 'Approved',
       date: advisorDateValue || reason,
       completeDate: dateConfirm || acknowledgeDate,
       advisorDate: requestDate,
-      meetingLink: meetlink
+      meetingLink: meetlink,
+      stepFileType: fileType,
+      studentId: {{studentUser.user_id}},
+      
     }
     const bodyNotUpdateStatus = {
       step: '{{currentSteps.name}}',
@@ -1267,10 +1270,23 @@ const checkStartDateMax = () => {
     let error
     const formData = new FormData()
     formData.append('files', file)
-    formData.append('step', step ? '{{currentSteps.name}}' : '{{nextStep.name}}')
-    formData.append('status', status)
-    formData.append('studentId', {{studentUser.user_id}})
-    formData.append('stepFileType', fileType)
+    // formData.append('step', step ? '{{currentSteps.name}}' : '{{nextStep.name}}')
+    // formData.append('status', status)
+    // formData.append('studentId', {{studentUser.user_id}})
+    // formData.append('stepFileType', fileType)
+    // formData.append('isSigned', status == 'Approved')
+    // formData.append('date', advisorDateValue || reason || undefined)
+    // formData.append('completeDate', dateConfirm || acknowledgeDate)
+    // formData.append('advisorDate', requestDate)
+    // formData.append('meetingLink', meetlink)
+    // formData.append('reason', reason)
+    formData.append('info' , JSON.stringify(body))
+    const formDataFile = new FormData()
+    formDataFile.append('files', file)
+    formDataFile.append('step', step ? '{{currentSteps.name}}' : '{{nextStep.name}}')
+    formDataFile.append('status', status)
+    formDataFile.append('studentId', {{studentUser.user_id}})
+    formDataFile.append('stepFileType', fileType)
     // formData.append('studentId', {{studentUser.user_id}})
     // console.log(bodyNotUpdateStatus);
       if(supervisionStatus){
@@ -1290,50 +1306,57 @@ const checkStartDateMax = () => {
         if(dateConfirm || advisorDateValue || reason){
         await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
              method: 'PATCH',
-             headers: {
-                 'Accept': 'application/json',
-                 'Content-Type': 'application/json',
-             },
-            body: JSON.stringify(body),
+            //  headers: {
+            //      'Accept': 'application/json',
+            //      'Content-Type': 'application/json',
+            //  },
+            body: formData,
         })
       //  }
       }
-    }else{
-        console.log("เข้า");
-        try {
-         
-          await fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
-          method: 'PATCH',
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-          })
-          // const urlParams = new URLSearchParams()
-          // urlParams.append('step', '{{request.qs().step}}')
-          // urlParams.append('status', '{{request.qs().status}}')
-          // window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
-        } catch (e) {
-          error = e
-          // const urlParams = new URLSearchParams()
-          // urlParams.append('step', '{{request.qs().step}}')
-          // urlParams.append('status', '{{request.qs().status}}')
-          // urlParams.append('mode', 'edit')
-          // window.location.href = `/student-information/{{studentUser.user_id}}?${urlParams}`
-        }
-      }
-      
-      try {
-        await fetch('/api/file/steps?_method=POST', {
-          method: 'POST',
-          body: formData,
-        })
-      } catch (e) {
-        error = e
-      }
+
+      // try {
+      //   await fetch('/api/file/steps?_method=POST', {
+      //     method: 'POST',
+      //     body: formDataFile,
+      //   })
+      // } catch (e) {
+      //   error = e
+      // }
 
       window.location.reload()
+    }else{
+        console.log("เข้า");
+        
+         
+          fetch('/api/user/student/{{studentUser.user_id}}?_method=PATCH',{
+          method: 'PATCH',
+          // headers: {
+          //     'Accept': 'application/json',
+          //     'Content-Type': 'application/json',
+          // },
+          body: formData,
+          }).then(() => {
+          fetch('/api/file/steps?_method=POST', {
+          method: 'POST',
+          body: formDataFile,
+        })
+          }).then(() => {
+            window.location.reload()
+          })
+     
+      }
+      
+      // try {
+      //   await fetch('/api/file/steps?_method=POST', {
+      //     method: 'POST',
+      //     body: formData,
+      //   })
+      // } catch (e) {
+      //   error = e
+      // }
+
+      // window.location.reload()
       // if(error){
       //   console.log(error)
       //   const urlParams = new URLSearchParams()
