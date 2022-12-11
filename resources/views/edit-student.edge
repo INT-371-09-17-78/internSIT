@@ -1,12 +1,12 @@
 @layout('layouts/app')
 @set('title', 'edit-student page')
 @section('edit-student')
-<section class="h-full w-full z-[5]">
+<section class="h-full w-full z-[5] flex flex-col">
   <div class="flex flex-col pt-5">
     <p class="text-xl font-bold pl-11">{{studentUser.firstname + " " + studentUser.lastname}}</p>
     <p class="text-base pl-11">{{studentUser.user_id}}</p>
   </div>
-  <div class="px-16 pt-5">
+  <div class="px-16 pt-5 overflow-y-auto">
     <a href="{{ route('/student-information/:id', { id: studentUser.user_id }) }}">
       <div class="w-fit my-3 flex items-center space-x-2 cursor-pointer">
         <img class="w-5 h-5" src="{{ asset('assets/images/arrow.svg') }}" />
@@ -23,13 +23,12 @@
             <input type="{{info.key.toLowerCase().includes('tel') ? 'tel' : info.key.toLowerCase().includes('email') ? 'email' : 'text'}}"
               class="input input-sm w-full max-w-xs border-2 border-[#ACB5BD] rounded-md" value="{{info.value || ''}}" name="{{info.key}}" id="{{info.key}}"
               maxlength="{{info.key.toLowerCase().includes('tel') && 10}}"> 
-              {{ inspect(flashMessages.all()) }}
-            {{--  @if(flashMessages.has('tel', ''))
-              <p class="text-error text-xs col-span-2 text-right">{{ flashMessages.get('tel', '') }}</p>
+            @if(flashMessages.has('error.tel', '') && info.key === 'tel')
+              <p class="text-error text-xs col-span-2 text-right">{{ flashMessages.get('error.tel', '') }}</p>
             @end
-            @if(flashMessages.has('mentorTel', ''))
-              <p class="text-error text-xs col-span-2 text-right">{{ flashMessages.get('mentorTel', '') }}</p>
-            @end  --}}
+            @if(flashMessages.has('error.mentorTel', '') && info.key === 'mentorTel')
+              <p class="text-error text-xs col-span-2 text-right">{{ flashMessages.get('error.mentorTel', '') }}</p>
+            @end
             @else
             <select id="study" name="study"
             class="select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-full max-w-xs">
