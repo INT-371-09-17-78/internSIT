@@ -1026,6 +1026,8 @@ export default class StepsController {
       ])
       // console.log(info.isSigned, 'asdasdasd')
       const infoParse = JSON.parse(info)
+      // let err: Object[] = []
+      let err: Object[] = []
       console.log(infoParse)
       // console.log(infoParse.date)
       const files = request.files('files', {
@@ -1035,7 +1037,10 @@ export default class StepsController {
         infoParse.step === AllSteps.TR02 &&
         (!files || files.length === 0 || !infoParse.advisorDate || !infoParse.completeDate)
       ) {
-        throw new Error('all field are required')
+        err.push({ field: 'all field are required' })
+      }
+      if (err && err.length > 0) {
+        throw err
       }
       console.log(files.length)
 
@@ -1103,25 +1108,27 @@ export default class StepsController {
 
       if (infoParse.advisorDate) {
         body['advisor_date'] = infoParse.advisorDate
-      } else if (
-        infoParse.step &&
-        infoParse.step === AllSteps.TR02 &&
-        !infoParse.advisorDate &&
-        request.qs().step
-      ) {
-        throw new Error('no adDate')
       }
+      // else if (
+      //   infoParse.step &&
+      //   infoParse.step === AllSteps.TR02 &&
+      //   !infoParse.advisorDate &&
+      //   request.qs().step
+      // ) {
+      //   throw new Error('no adDate')
+      // }
 
       if (infoParse.completeDate) {
         body['complete_date'] = infoParse.completeDate
-      } else if (
-        infoParse.step &&
-        infoParse.step === AllSteps.TR02 &&
-        !infoParse.completeDate &&
-        request.qs().step
-      ) {
-        throw new Error('no compDate')
       }
+      // else if (
+      //   infoParse.step &&
+      //   infoParse.step === AllSteps.TR02 &&
+      //   !infoParse.completeDate &&
+      //   request.qs().step
+      // ) {
+      //   throw new Error('no compDate')
+      // }
 
       if (infoParse.supervisionStatus) {
         body['supervision_status'] = infoParse.supervisionStatus
@@ -1199,9 +1206,9 @@ export default class StepsController {
             // key: 'tel',
           })
         }
-        response.redirect(
-          `/student-information/${auth.user?.user_id}?step=${AllSteps.TR02}mode=edit`
-        )
+        // response.redirect(
+        //   `/student-information/${request.param('id')}?step=${AllSteps.TR02}&&mode=edit`
+        // )
       } else {
         return response.status(400).json({ message: errors.message })
       }
