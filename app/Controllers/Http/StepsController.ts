@@ -1042,7 +1042,7 @@ export default class StepsController {
         infoParse.step === AllSteps.TR02 &&
         (!files || files.length === 0 || !infoParse.advisorDate || !infoParse.completeDate)
       ) {
-        err.push({ field: 'all field are required' })
+        err.push({ field: 'all fields are required' })
       }
       if (err && err.length > 0) {
         throw err
@@ -1215,6 +1215,7 @@ export default class StepsController {
         // response.redirect(
         //   `/student-information/${request.param('id')}?step=${AllSteps.TR02}&&mode=edit`
         // )
+        return response.status(400).json({ message: errors })
       } else {
         return response.status(400).json({ message: errors.message })
       }

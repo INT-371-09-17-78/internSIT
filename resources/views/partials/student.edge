@@ -1336,8 +1336,11 @@ const checkStartDateMax = () => {
           //     'Content-Type': 'application/json',
           // },
           body: formData,
-          }).then(() => {
-          fetch('/api/file/steps?_method=POST', {
+          }).then((res) => {
+            console.log(res);
+            if(res.ok){
+              console.log("เข้านี่");
+              fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formDataFile,
         }).then(() => {
@@ -1351,8 +1354,18 @@ const checkStartDateMax = () => {
               window.location.reload()
             }
           })
+            }else{
+              window.location.reload()
+            }
+          
+
+          
      
           })
+          // .then(() => {
+          //   console.log("เข้าป้ะ");
+          //   window.location.reload()
+          // })
       }
       
       // try {
