@@ -1025,7 +1025,10 @@ export default class StepsController {
         // 'files',
       ])
       // console.log(info.isSigned, 'asdasdasd')
-      const infoParse = JSON.parse(info)
+      let infoParse: any
+      if (info) {
+        infoParse = JSON.parse(info)
+      }
       // let err: Object[] = []
       let err: Object[] = []
       console.log(infoParse)
@@ -1033,7 +1036,9 @@ export default class StepsController {
       const files = request.files('files', {
         size: '3mb',
       })
+
       if (
+        infoParse &&
         infoParse.step === AllSteps.TR02 &&
         (!files || files.length === 0 || !infoParse.advisorDate || !infoParse.completeDate)
       ) {
@@ -1060,7 +1065,7 @@ export default class StepsController {
         user = await User.query().where('user_id', auth.user.user_id)
       }
 
-      if (infoParse.study) {
+      if (infoParse && infoParse.study) {
         usersInAcademicYear[0].student.plan = infoParse.study
         await usersInAcademicYear[0].student.save()
         const userHasDoc = await UserHasDoc.query().where(
@@ -1078,7 +1083,7 @@ export default class StepsController {
       }
 
       const body = {}
-      if (infoParse.status && infoParse.step) {
+      if (infoParse && infoParse.status && infoParse.step) {
         body['status'] = infoParse.status
         body['step'] = infoParse.step
         body['is_react'] =
@@ -1094,7 +1099,7 @@ export default class StepsController {
         }
       }
       console.log(info)
-      if (infoParse.date) {
+      if (infoParse && infoParse.date) {
         if (user[0].role === 'advisor') {
           body['advisor_date'] = infoParse.date
         } else {
@@ -1106,7 +1111,7 @@ export default class StepsController {
         }
       }
 
-      if (infoParse.advisorDate) {
+      if (infoParse && infoParse.advisorDate) {
         body['advisor_date'] = infoParse.advisorDate
       }
       // else if (
@@ -1118,7 +1123,7 @@ export default class StepsController {
       //   throw new Error('no adDate')
       // }
 
-      if (infoParse.completeDate) {
+      if (infoParse && infoParse.completeDate) {
         body['complete_date'] = infoParse.completeDate
       }
       // else if (
@@ -1130,11 +1135,11 @@ export default class StepsController {
       //   throw new Error('no compDate')
       // }
 
-      if (infoParse.supervisionStatus) {
+      if (infoParse && infoParse.supervisionStatus) {
         body['supervision_status'] = infoParse.supervisionStatus
       }
 
-      if (infoParse.meetingLink) {
+      if (infoParse && infoParse.meetingLink) {
         body['meeting_link'] = infoParse.meetingLink
       }
 
@@ -1142,11 +1147,12 @@ export default class StepsController {
       //   body['advisor_comment'] = advisorComment
       // }
 
-      if (infoParse.dateConfirmStatus) {
+      if (infoParse && infoParse.dateConfirmStatus) {
         body['date_confirm_status'] = infoParse.dateConfirmStatus
       }
 
       if (
+        infoParse &&
         infoParse.status &&
         infoParse.status !== StepStatus.PENDING &&
         infoParse.step &&
@@ -1163,8 +1169,8 @@ export default class StepsController {
         }
         await stepTracking[0].save()
       } else if (
-        (infoParse.step && infoParse.step === AllSteps.TR02) ||
-        (infoParse.step && infoParse.step === AllSteps.PRESENTATION)
+        (infoParse && infoParse.step && infoParse.step === AllSteps.TR02) ||
+        (infoParse && infoParse.step && infoParse.step === AllSteps.PRESENTATION)
       ) {
         const stepTracking = await usersInAcademicYear[0]
           .related('userHasDoc')
@@ -1213,6 +1219,45 @@ export default class StepsController {
         return response.status(400).json({ message: errors.message })
       }
       // return response.status(400).json({ message: error.message })
+    }
+  }
+
+  public async updateStudentUserPlan({ request, response }: HttpContextContract) {
+    try {
+      const { study } = request.only(['study'])
+
+      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      let usersInAcademicYear: any
+      const studentUsersRole = await User.query()
+        .where('role', 'student')
+        .andWhere('user_id', request.param('id'))
+      if (studentUsersRole[0]) {
+        usersInAcademicYear = await UsersInAcademicYearModel.query()
+          .where('user_id', studentUsersRole[0].user_id)
+          .andWhere('academic_year', years[0].academic_year)
+          .preload('student')
+      }
+
+      if (study) {
+        usersInAcademicYear[0].student.plan = study
+        await usersInAcademicYear[0].student.save()
+        const userHasDoc = await UserHasDoc.query().where(
+          'user_in_academic_year_id',
+          usersInAcademicYear[0].id
+        )
+
+        if (userHasDoc && userHasDoc.length > 0) {
+          for (let i = 0; i < userHasDoc.length; i++) {
+            await File.query().where('user_has_doc_id', userHasDoc[i].id).delete()
+            userHasDoc[i].delete()
+          }
+        }
+        return response.redirect('/student-information/' + usersInAcademicYear[0].user_id)
+      }
+
+      // return response.status(200).json('success')
+    } catch (errors) {
+      return response.status(400).json({ message: errors.message })
     }
   }
 }

@@ -81,7 +81,7 @@
   </div>
   @if(nextStep.name === 'TR-01' && auth.user.role === "student" && !studentUser.student.plan)
   <div class="flex mt-5 px-11">
-    <form id="planForm" method="POST" action="/api/user/student/{{studentUser.user_id}}?_method=PATCH"
+    <form id="planForm" method="POST" action="/api/user/student/plan/{{studentUser.user_id}}?_method=PATCH"
       class="flex space-x-2 z-10">
       <select {{disabled}} id="study" name="study"
         class="select rounded-xl select-bordered h-9 px-4 lg:text-base w-full max-w-xs">
@@ -1323,7 +1323,7 @@ const checkStartDateMax = () => {
       // } catch (e) {
       //   error = e
       // }
-
+      // console.log("เข้า");
       window.location.reload()
     }else{
         console.log("เข้า");
@@ -1340,11 +1340,19 @@ const checkStartDateMax = () => {
           fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formDataFile,
-        })
-          }).then(() => {
-            window.location.reload()
+        }).then(() => {
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString)
+          const mode = urlParams.get('mode')
+            if(mode === 'edit'){
+              urlParams.set('mode', 'show')
+              window.location.href = `/student-information/{{studentUser.user_id}}${urlParams.toString() ? '?'+ urlParams : ''}`
+            }else{
+              window.location.reload()
+            }
           })
      
+          })
       }
       
       // try {
