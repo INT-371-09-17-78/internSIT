@@ -86,7 +86,7 @@ export default class FilesController {
       let stepFileTypePlanJSON = stepFileTypePlan ? JSON.parse(stepFileTypePlan) : null
 
       if (files.length === 0) {
-        err.push({ file: 'not have files' })
+        err.push('not have files')
       }
       console.log(files.length)
       console.log(step, status)
@@ -94,7 +94,7 @@ export default class FilesController {
       for (let file of files) {
         if (!file.isValid) {
           // err.push(file.errors)
-          err.push({ file: file.errors[0].message })
+          err.push(file.errors[0].message)
         } else {
           const newFileName = uuidv4()
           await file.move(
