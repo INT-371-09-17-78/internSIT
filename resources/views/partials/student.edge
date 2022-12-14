@@ -243,6 +243,9 @@
                           <div id="showSignedFile" class="text-[#858D95] text-xs flex items-center">No file choosen
                           </div>
                         </div>
+                        <textarea id="feedback"
+                        class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                        placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
                       </div>
                     </div>
                     <div class="flex flex-col">
@@ -342,6 +345,9 @@
               @end
             </tbody>
           </table>
+          @if(flashMessages.get('error', ''))
+          <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
+          @end  
           @if(auth.user.role !== 'staff' && (request.qs().step && currentSteps.status !== 'Approved' || currentSteps.status !== 'Approved'))
           @!common.bgButton({
             text: 'Confirm',
@@ -452,10 +458,12 @@
             </tr>
           </table>
           {{--  {{inspect(flashMessages.get('error', ''))}}  --}}
-           @if(flashMessages.get('error', ''))
-           {{--  {{inspect(flashMessages.get('error.field', ''))}}  --}}
+          @if(flashMessages.get('error', ''))
+            <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
+          @end
+          @if(flashMessages.get('error', ''))
             <p class="text-error text-xs pt-3">{{ flashMessages.get('error.field', '') }}</p>
-           @end
+          @end
           @if((auth.user.role === 'staff' && currentSteps.name === 'TR-01') || (auth.user.role === 'staff' && isEdit) || (auth.user.role === 'staff' && currentSteps.status !== 'Approved'))
           @!common.bgButton({
             text: 'Confirm',
@@ -513,6 +521,9 @@
             </tr>
             @end
           </table>
+          @if(flashMessages.get('error', ''))
+          <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
+          @end
           @if(auth.user.role === 'student' && isEdit)
           @!common.bgButton({
             text: 'Confirm',
@@ -576,10 +587,15 @@
                 <td class="align-top border-2 border-[#F6F7F9] text-sm">
                   <div class="flex">
                     <div class="flex flex-col">
-                      <div class="flex space-x-2 items-center mb-5 w-44">
-                        <input type="radio" name="radio-1" class="radio radio-primary" id="isComplete" checked
+                      <div class="flex space-x-2 items-center mb-5">
+                        <input type="radio" name="radio-1" class="radio radio-primary" id="hasSignedFile" checked
                           onchange="isShowComplete()" />
                         <p>Complete</p>
+                      </div>
+                      <div class="invisible" id="signedForm">
+                        <textarea id="feedback"
+                        class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                        placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
                       </div>
                     </div>
                     <div class="flex flex-col">
@@ -669,6 +685,9 @@
               @end
             </tbody>
           </table>
+            @if(flashMessages.get('error', ''))
+              <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
+            @end
             @if((auth.user.role === 'staff' && ((currentSteps.status !== 'Approved'  || nextStep.name.includes('TR-03')) || (currentSteps.status !== 'Approved'  || nextStep.name.includes('TR-03'))) && currentSteps.file.row && currentSteps.file.row.length > 0) || (auth.user.role === 'student' && (currentSteps.status !== 'Approved'  || nextStep.name.includes('TR-03'))))
             @!common.bgButton({
               text: 'Confirm',
@@ -878,6 +897,9 @@
                   </tr>
                 </tbody>
               </table>
+              @if(flashMessages.get('error', ''))
+              <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
+              @end
             @if((request.qs().step && currentSteps.status !== 'Approved' || currentSteps.status !== 'Approved') || nextStep.name.includes('supervision') || (auth.user.role === 'student' && currentSteps.supervision.supervisionStatus !== 'Done'))
             @!common.bgButton({
               text: 'Confirm',
@@ -887,7 +909,6 @@
               disabled,
             })
             @end
-
             @end
           @else
             @if(auth.user.role === 'student')
