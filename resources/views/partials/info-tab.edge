@@ -13,7 +13,7 @@
         </svg>
         <p>Student information</p>
     </a>
-    @if(auth.user.role === 'staff')
+    @if(auth.user.role === 'staff' || auth.user.role === 'admin')
     <a href="{{ route('/register-request')}}" class="indicator tab font-medium h-full {{activeRequestTab}} space-x-2">
         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
             <path
