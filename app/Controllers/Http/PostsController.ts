@@ -32,18 +32,46 @@ export default class PostsController {
       }
 
       return response.json(post)
-    } catch (error) {
-      console.log(error)
-      if (
-        error.message
-        // error.message === 'empty role'
-      ) {
+    } catch (errors) {
+      console.log(errors)
+      // console.log(errors.message)
+      if (Array.isArray(errors.message)) {
+        // for (const error in errors.message) {
         session.flash({
-          error: error.message,
+          error: errors.message,
           type: 'negative',
         })
+        return response.status(400).json({ message: errors.message })
+      } else {
+        if (errors['sqlMessage']) {
+          // if (errors['sqlMessage'].includes('Data too long')){
+          //   errors['sqlMessage'] =
+          // }
+          session.flash({
+            error: errors['sqlMessage'],
+            type: 'negative',
+            // key: 'tel',
+          })
+          return response.status(400).json({ message: errors['sqlMessage'] })
+        } else {
+          session.flash({
+            error: errors.message,
+            type: 'negative',
+            // key: 'tel',
+          })
+          return response.status(400).json({ message: errors.message })
+        }
       }
-      return response.status(400).send({ message: error.message })
+      // if (
+      //   error.message
+      //   // error.message === 'empty role'
+      // ) {
+      //   session.flash({
+      //     error: error.message,
+      //     type: 'negative',
+      //   })
+      // }
+      // return response.status(400).send({ message: error.message })
     }
   }
 
