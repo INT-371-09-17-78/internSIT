@@ -86,13 +86,15 @@ export default class FilesController {
       let stepFileTypePlanJSON = stepFileTypePlan ? JSON.parse(stepFileTypePlan) : null
 
       if (files.length === 0) {
-        throw new Error('not have files')
+        err.push({ file: 'not have files' })
       }
       console.log(files.length)
+      console.log(step, status)
 
       for (let file of files) {
         if (!file.isValid) {
-          err.push(file.errors)
+          // err.push(file.errors)
+          err.push({ file: file.errors[0].message })
         } else {
           const newFileName = uuidv4()
           await file.move(
@@ -136,6 +138,9 @@ export default class FilesController {
           //     this.deleteFile(result, 'template/')
           //   }
           // }
+          if (err && err.length > 0) {
+            throw { message: err }
+          }
 
           await File.create({
             file_id: newFileName,
@@ -156,12 +161,21 @@ export default class FilesController {
       // return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
       console.log(error)
+      // if (
+      //   error.message === 'not have files'
+      //   // error.message === 'empty role'
+      // ) {
+      //   session.flash({
+      //     error: 'All fields are required',
+      //     type: 'negative',
+      //   })
+      // }
       if (
-        error.message === 'not have files'
+        error.message
         // error.message === 'empty role'
       ) {
         session.flash({
-          error: 'All fields are required',
+          error: error.message,
           type: 'negative',
         })
       }

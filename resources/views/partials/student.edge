@@ -1170,7 +1170,7 @@ const checkStartDateMax = () => {
     let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || {{isEdit}} || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     // if(('{{currentSteps.name}}' === 'TR-02' && !acknowledgeDate) || ('{{currentSteps.name}}' === 'TR-02' && !requestDate) || ('{{currentSteps.name}}' === 'TR-02' && !file)) return
     let step = null
-    if('{{currentSteps.name}}' === 'TR-02' && '{{currentSteps.status}}' === 'Approved' && '{{request.qs().step}}' !== 'undefined'){
+    if(('{{currentSteps.name}}' === 'TR-02' || '{{currentSteps.name}}' === 'Presentation') && '{{currentSteps.status}}' === 'Approved' && '{{request.qs().step}}' !== 'undefined'){
       step = '{{currentSteps.name}}'
     }
     const body = {

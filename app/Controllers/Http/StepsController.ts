@@ -677,6 +677,7 @@ export default class StepsController {
               const currentStepFile = await File.query()
                 .where('user_has_doc_id', allUserHasDoc[i].id)
                 .where('step_file_type', 'signedFile')
+                .orderBy('created_at', 'desc')
 
               if (currentStepFile[0]) {
                 currentSteps['file'].row.push(currentStepFile[0].serialize())
@@ -962,7 +963,7 @@ export default class StepsController {
       // console.log(stepsRender[2].month)
       // console.log(stepsRender)
       // console.log(currentSteps.supervision)
-      //   console.log(currentSteps.file.row)
+      console.log(currentSteps.file.row)
 
       // console.log(currentSteps.file.signedFile)
       // console.log(currentSteps.file.studentFile[0])
@@ -1030,7 +1031,7 @@ export default class StepsController {
         infoParse = JSON.parse(info)
       }
       // let err: Object[] = []
-      let err: Object[] = []
+      let err: any = []
       console.log(infoParse)
       // console.log(infoParse.date)
       const files = request.files('files', {
@@ -1044,8 +1045,19 @@ export default class StepsController {
       ) {
         err.push({ field: 'all fields are required' })
       }
+
+      for (let file of files) {
+        if (!file.isValid) {
+          // err.findIndex((error) => error[0].file !== undefined)
+          // const fileKeyIndex = err.findIndex((error) => error.file !== undefined)
+          // if (fileKeyIndex > -1) {
+          //   err[fileKeyIndex].file.push()
+          // }
+          err.push({ file: file.errors[0].message })
+        }
+      }
       if (err && err.length > 0) {
-        throw err
+        throw { message: err }
       }
       console.log(files.length)
 
@@ -1098,7 +1110,7 @@ export default class StepsController {
           body['is_new'] = auth.user?.role === 'student' ? false : true
         }
       }
-      console.log(info)
+      // console.log(info)
       if (infoParse && infoParse.date) {
         if (user[0].role === 'advisor') {
           body['advisor_date'] = infoParse.date
@@ -1204,10 +1216,10 @@ export default class StepsController {
       //   })
       // }
       console.log(errors)
-      if (Array.isArray(errors)) {
-        for (const error in errors) {
+      if (Array.isArray(errors.message)) {
+        for (const error in errors.message) {
           session.flash({
-            error: errors[error],
+            error: errors.message[error],
             type: 'negative',
             // key: 'tel',
           })
@@ -1215,7 +1227,7 @@ export default class StepsController {
         // response.redirect(
         //   `/student-information/${request.param('id')}?step=${AllSteps.TR02}&&mode=edit`
         // )
-        return response.status(400).json({ message: errors })
+        return response.status(400).json({ message: errors.message })
       } else {
         return response.status(400).json({ message: errors.message })
       }
