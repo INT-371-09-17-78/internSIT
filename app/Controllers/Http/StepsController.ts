@@ -252,7 +252,10 @@ export default class StepsController {
             if (userHasDoc[0].status === StepStatus.WAITING) {
               studentUsers[i]['lastestStatus'] = userHasDoc[0].status + ' for ' + userHasDoc[0].step
             } else {
-              studentUsers[i]['lastestStatus'] = userHasDoc[0].step + ' ' + userHasDoc[0].status
+              studentUsers[i]['lastestStatus'] =
+                userHasDoc[0].status === StepStatus.DISAPPROVED
+                  ? userHasDoc[0].step + ' ' + 'Improved'
+                  : userHasDoc[0].step + ' ' + userHasDoc[0].status
             }
           } else {
             if (studentUsers[i].plan) {
@@ -509,6 +512,7 @@ export default class StepsController {
             obj['signedFile'] = {}
             obj['studentFile'] = {}
             obj['reason'] = {}
+            obj['reasonComplete'] = {}
 
             if (result && result.length > 0) {
               if (allUserHasDoc[i].is_react || allUserHasDoc[i].is_signed) {
@@ -537,10 +541,15 @@ export default class StepsController {
                 StFileResult && StFileResult.length > 0 ? StFileResult[0].serialize() : {}
             }
             if (allUserHasDoc[i].no_approve_reason) {
-              obj['reason'] = {
-                body: allUserHasDoc[i].no_approve_reason,
-                date: allUserHasDoc[i].updatedAt,
-              }
+              allUserHasDoc[i].status === StepStatus.APPROVED
+                ? (obj['reasonComplete'] = {
+                    body: allUserHasDoc[i].no_approve_reason,
+                    date: allUserHasDoc[i].updatedAt,
+                  })
+                : (obj['reason'] = {
+                    body: allUserHasDoc[i].no_approve_reason,
+                    date: allUserHasDoc[i].updatedAt,
+                  })
             }
             currentSteps['file'].row.push(obj)
           } else if (
@@ -587,6 +596,7 @@ export default class StepsController {
               obj['studentFile'] = {}
               obj['feedbackFile'] = {}
               obj['reason'] = ''
+              obj['reasonComplete'] = ''
               const StFileResult = await File.query()
                 .where('user_has_doc_id', allUserHasDoc[i].id)
                 .andWhere('step_file_type', 'studentFile')
@@ -607,10 +617,15 @@ export default class StepsController {
                 }
               }
               if (allUserHasDoc[i].no_approve_reason) {
-                obj['reason'] = {
-                  body: allUserHasDoc[i].no_approve_reason,
-                  date: allUserHasDoc[i].updatedAt,
-                }
+                allUserHasDoc[i].status === StepStatus.APPROVED
+                  ? (obj['reasonComplete'] = {
+                      body: allUserHasDoc[i].no_approve_reason,
+                      date: allUserHasDoc[i].updatedAt,
+                    })
+                  : (obj['reason'] = {
+                      body: allUserHasDoc[i].no_approve_reason,
+                      date: allUserHasDoc[i].updatedAt,
+                    })
               }
               if (
                 !(
@@ -654,10 +669,15 @@ export default class StepsController {
                 }
               }
               if (allUserHasDoc[i].no_approve_reason) {
-                obj['reason'] = {
-                  body: allUserHasDoc[i].no_approve_reason,
-                  date: allUserHasDoc[i].updatedAt,
-                }
+                allUserHasDoc[i].status === StepStatus.APPROVED
+                  ? (obj['reasonComplete'] = {
+                      body: allUserHasDoc[i].no_approve_reason,
+                      date: allUserHasDoc[i].updatedAt,
+                    })
+                  : (obj['reason'] = {
+                      body: allUserHasDoc[i].no_approve_reason,
+                      date: allUserHasDoc[i].updatedAt,
+                    })
               }
               if (
                 !(
@@ -1102,19 +1122,35 @@ export default class StepsController {
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? true : false
         body['is_signed'] =
           auth.user?.role === 'advisor' || auth.user?.role === 'staff' ? infoParse.isSigned : false
-        body['no_approve_reason'] =
-          infoParse.reason && infoParse.reason !== null && infoParse.status === 'Disapproved'
-            ? infoParse.reason
-            : null
+        if (
+          infoParse.reason &&
+          infoParse.reason !== null &&
+          // infoParse.status === 'Disapproved'
+          !infoParse.step.includes(AllSteps.INFORMED_SUPERVISION)
+        ) {
+          body['no_approve_reason'] = infoParse.reason
+        }
+        //  else if (
+        //   infoParse.reason &&
+        //   infoParse.reason !== null
+        //   // infoParse.status === 'Disapproved' &&
+        //   // infoParse.step === AllSteps.INFORMED_SUPERVISION
+        // ) {
+        //   body['no_approve_reason'] = infoParse.reason
+        // }
+        // body['no_approve_reason'] =
+        //   infoParse.reason && infoParse.reason !== null && infoParse.status === 'Disapproved'
+        //     ? infoParse.reason
+        //     : null
         if (infoParse.step.includes('Informed')) {
           body['is_new'] = auth.user?.role === 'student' ? false : true
         }
       }
       // console.log(info)
       if (infoParse && infoParse.date) {
-        if (user[0].role === 'advisor') {
+        if (user[0].role === 'advisor' && !infoParse.step.includes(AllSteps.TR01)) {
           body['advisor_date'] = infoParse.date
-        } else {
+        } else if (infoParse.step.includes(AllSteps.INFORMED_SUPERVISION)) {
           console.log('เข้าหรอ')
 
           body['student_date'] = infoParse.date

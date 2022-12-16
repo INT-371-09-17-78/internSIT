@@ -243,9 +243,9 @@
                           <div id="showSignedFile" class="text-[#858D95] text-xs flex items-center">No file choosen
                           </div>
                         </div>
-                        <textarea id="feedback"
+                        <textarea id="feedbackComplete"
                         class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                        placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
+                        placeholder="Add your feedback" oninput="checkFeedbackComplete()"></textarea>
                       </div>
                     </div>
                     <div class="flex flex-col">
@@ -593,9 +593,9 @@
                         <p>Complete</p>
                       </div>
                       <div class="invisible" id="signedForm">
-                        <textarea id="feedback"
+                        <textarea id="feedbackComplete"
                         class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
-                        placeholder="Add your feedback" oninput="checkFeedback()"></textarea>
+                        placeholder="Add your feedback" oninput="checkFeedbackComplete()"></textarea>
                       </div>
                     </div>
                     <div class="flex flex-col">
@@ -1119,6 +1119,18 @@ const checkStartDateMax = () => {
     }
   }
 
+  const checkFeedbackComplete = () =>{
+    inputFeedback = document.getElementById('feedbackComplete').value
+    if(inputFeedback) {
+      document.getElementById('submitStepButton').disabled = false
+      if(document.getElementById('labelSignedFile'))
+      document.getElementById('labelSignedFile').classList.add('btn-disabled')
+    }else if(!inputFeedback && !file){
+      document.getElementById('submitStepButton').disabled = true
+      document.getElementById('labelSignedFile').classList.remove('btn-disabled')
+    }
+  }
+
   const checkRequiredData = () =>{
     meetlink = document.getElementById('meetlink').value
     dateConfirm = document.getElementById('dateConfirm').value
@@ -1162,7 +1174,7 @@ const checkStartDateMax = () => {
   
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason, supervisionStatus, acknowledgeDate, requestDate   = ''
+    let reason, reasonComplete, supervisionStatus, acknowledgeDate, requestDate   = ''
     if(document.getElementById('supervisionStatus')){
       supervisionStatus = document.getElementById('supervisionStatus').value
     }
@@ -1176,6 +1188,9 @@ const checkStartDateMax = () => {
     if(document.getElementById('feedback')){
       reason = document.getElementById('feedback').value
     }
+    if(document.getElementById('feedbackComplete')){
+      reasonComplete = document.getElementById('feedbackComplete').value
+    }
     if(document.getElementById('advisorDate')){
       advisorDateValue = document.getElementById('advisorDate').value
     }
@@ -1188,7 +1203,7 @@ const checkStartDateMax = () => {
       meetlink = document.getElementById('meetlink').value
     }
     
-    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || {{isEdit}} || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
+    let status = ( reason || (fileType === 'feedbackFile' && file) ? 'Disapproved' : (fileType === 'signedFile' && file) || reasonComplete || ({{auth.user.role === 'staff'}} && {{nextStep.name ==='TR-02'}}) && file || {{isEdit}} || meetlink && dateConfirm || document.getElementById('isComplete') && document.getElementById('isComplete').checked ? 'Approved' : 'Pending')||'Pending'
     // if(('{{currentSteps.name}}' === 'TR-02' && !acknowledgeDate) || ('{{currentSteps.name}}' === 'TR-02' && !requestDate) || ('{{currentSteps.name}}' === 'TR-02' && !file)) return
     let step = null
     if(('{{currentSteps.name}}' === 'TR-02' || '{{currentSteps.name}}' === 'Presentation') && '{{currentSteps.status}}' === 'Approved' && '{{request.qs().step}}' !== 'undefined'){
@@ -1197,7 +1212,7 @@ const checkStartDateMax = () => {
     const body = {
       step: step ? '{{currentSteps.name}}' : '{{nextStep.name}}',
       status: status,
-      reason : reason ,
+      reason : reason || reasonComplete ,
       isSigned : status == 'Approved',
       date: advisorDateValue || reason,
       completeDate: dateConfirm || acknowledgeDate,
