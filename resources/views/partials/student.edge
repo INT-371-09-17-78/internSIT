@@ -316,7 +316,7 @@
                           </a>
                         </span>
                       </p>
-                      <p>{{row.reasonComplete.body}}</p>
+                      <p>{{row.reasonComplete.body || ''}}</p>
                       <p class="text-[#858D95]">Submitted: <span>{{row.signedFile.created_at}}</span></p>
                     </div>
                     @end
@@ -700,7 +700,7 @@
             })
             @end
           @elseif(request.qs().step && (request.qs().step.includes('Supervision') || request.qs().step.includes('supervision'))  || (nextStep.nameShow && nextStep.nameShow.toLowerCase().includes('supervision')))
-              @if(auth.user.role !== 'student')
+              @if(auth.user.role === 'staff')
               <div class="flex space-x-2">
                 <div class="flex items-center space-x-2">
                   <p>Supervision status</p>
@@ -899,10 +899,18 @@
                   </tr>
                 </tbody>
               </table>
+              @if(currentSteps.supervision.completeDate && auth.user.role === 'advisor')
+              <div class="flex space-x-5 mt-5">
+                <p class="font-medium flex-shrink-0">Advisor feedback</p>
+                <textarea id="advFeedback"
+                                    class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
+                                    placeholder="Write your feedback..."></textarea>
+              </div>
+              @end
               @if(flashMessages.get('error', ''))
               <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
               @end
-            @if((request.qs().step && currentSteps.status !== 'Approved' || currentSteps.status !== 'Approved') || nextStep.name.includes('supervision') || (auth.user.role === 'student' && currentSteps.supervision.supervisionStatus !== 'Done'))
+            @if((request.qs().step && currentSteps.status !== 'Approved' || currentSteps.status !== 'Approved') || nextStep.name.includes('supervision') || (auth.user.role !== 'staff' && currentSteps.supervision.supervisionStatus !== 'Done'))
             @!common.bgButton({
               text: 'Confirm',
               type: 'submit',
