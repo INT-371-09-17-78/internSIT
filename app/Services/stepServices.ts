@@ -319,7 +319,7 @@ export default class StepsServices {
         const currentYear = await AcademicYear.query().orderBy('updated_at', 'desc')
         if (!currentYear || currentYear.length === 0) {
           year = await AcademicYear.create({
-            academic_year: new Date().getFullYear(),
+            academic_year: new Date().getFullYear().toString(),
             status: true,
           })
         } else {
@@ -410,5 +410,15 @@ export default class StepsServices {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 
     return re.test(mail)
+  }
+
+  public semesterPlan(semester) {
+    if (semester === 2) {
+      return [4, 6]
+    } else {
+      return [2]
+    }
+
+    // return re.test(mail)
   }
 }

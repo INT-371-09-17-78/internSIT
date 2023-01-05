@@ -17,10 +17,23 @@ export default class StepsController {
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
 
       let AcademicYearCf: any
+      console.log(AcademicYearAll)
 
-      if (request.cookie('year')) {
-        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
-      } else {
+      // if (request.cookie('year')) {
+      //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      // } else {
+      //   AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // }
+
+      // AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+
+      // if (request.cookie('year')) {
+      //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      // }
+
+      AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+
+      if (!AcademicYearCf[0]) {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
       let studentUsers: any = []
@@ -34,6 +47,14 @@ export default class StepsController {
       let studentUsersByAdOne: any
       let adSe: any = []
       const StepsServices = new stepService()
+      // const semester = [
+      //   AcademicYearCf[0].academic_year + '/' + 2,
+      //   AcademicYearCf[0].academic_year + '/' + 's',
+      // ]
+      // const semester = '2022/1'
+      // console.log(semester)
+      const acSplit = AcademicYearCf[0].academic_year.split('/')
+      console.log(acSplit[0])
 
       if (request.qs().advisor) {
         advisorById = await User.query()
@@ -69,23 +90,15 @@ export default class StepsController {
               const tmp = advisor[i].serialize()
               tmp['st'] = []
               for (let j = 0; j < result.length; j++) {
-                // console.log(id)
-
                 const user = await User.query().where('user_id', result[j].user_id)
                 tmp['st'].push(user[0].serialize())
               }
 
               adSe.push(tmp)
-              // console.log(adSe)
             }
           }
-          // adSe = adSe.find((ele) => ele.user_id === auth.user?.user_id)
         }
       }
-      // auth.user?.user_id
-      // console.log(adSe.find((ele) => ele.user_id === auth.user?.user_id))
-      // console.log(auth.user?.user_id)
-      // console.log(adSe)
 
       if (auth.user && auth.user.role === 'advisor') {
         const ad = await User.query()
@@ -95,7 +108,7 @@ export default class StepsController {
         for (let i = 0; i < ad.length; i++) {
           const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
             .where('user_id', ad[i].user_id)
-            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            .andWhere('academic_year', acSplit[0])
 
           if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
             const id = checkAdvisorExistInAcademicYear[0].id
@@ -116,7 +129,6 @@ export default class StepsController {
             }
           }
         }
-        // console.log(studentUsers)
       } else {
         if (AcademicYearCf && AcademicYearCf.length > 0) {
           const UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
@@ -212,7 +224,6 @@ export default class StepsController {
           AllStepByMonth['sixMonth']
         )
       }
-      //   console.log(stepEdit)
 
       if (studentUsers && studentUsers.length > 0) {
         for (let i = 0; i < studentUsers.length; i++) {
@@ -266,6 +277,7 @@ export default class StepsController {
           }
         }
       }
+      console.log(AcademicYearAll)
 
       return view.render('student-information', {
         studentUsers:
@@ -276,7 +288,12 @@ export default class StepsController {
         staffUsers: staffUsersResult,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
-        academicYears: AcademicYearAll,
+        academicYears: [
+          { academic_year: '2022' },
+          { academic_year: '2022/1' },
+
+          { academic_year: '2023' },
+        ],
         advisorById: advisorById[0],
         studentUsersByAd: adSe,
         studentUsersByAdOne: studentUsersByAdOne,
