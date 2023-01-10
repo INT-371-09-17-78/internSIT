@@ -47,8 +47,17 @@ View.global('getCurrentYear', () => {
 })
 
 View.global('getCurrentAcademicYear', async () => {
-  const ac = await AcademicYear.query().orderBy('created_at')
-  return ac[0].academic_year
+  const ac = await AcademicYear.query()
+    .where('academic_year', 'LIKE', '%' + '/' + '%')
+    .orderBy('updated_at', 'desc')
+  console.log(ac)
+
+  console.log(ac[0].academic_year, 'asd')
+
+  // return ac[0].academic_year.includes('/2')
+  //   ? ac[0].academic_year.split('/')[0] + '/s'
+  //   : parseInt(ac[0].academic_year.split('/')[0]) + 1 + '/2'
+  return parseInt(ac[0].academic_year.split('/')[0]) + 1
 })
 
 View.global('checkStatus', (str: string) => {

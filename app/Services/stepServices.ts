@@ -311,19 +311,35 @@ export default class StepsServices {
     return steps
   }
 
+  public delay(milliseconds) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds)
+    })
+  }
+
   public async gen() {
     try {
       let year: any
+
       const users = await User.all()
       if (users && users.length === 0) {
         const currentYear = await AcademicYear.query().orderBy('updated_at', 'desc')
         if (!currentYear || currentYear.length === 0) {
+          const date = new Date().getFullYear().toString()
           year = await AcademicYear.create({
-            academic_year: new Date().getFullYear().toString(),
+            academic_year: date,
+            status: true,
+          })
+          await AcademicYear.create({
+            academic_year: date + '/2',
+            status: true,
+          })
+          await AcademicYear.create({
+            academic_year: date + '/s',
             status: true,
           })
         } else {
-          year = currentYear[0]
+          year = currentYear[0].academic_year.split('/')[0]
         }
         const arr = [
           {

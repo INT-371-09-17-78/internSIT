@@ -18,25 +18,65 @@ export default class CoursesInfoController {
     try {
       const { year, isCurrent } = request.all()
       let AcademicYearCfResult: any = []
+      // console.log(year)
+      // let yearRe = year
+      // if (yearRe.includes('/2')) {
+      // } else if (yearRe.includes('/s')) {
+      // }
       if (isCurrent) {
         AcademicYearCfResult = await AcademicYear.query()
           .where('academic_year', year)
           .orderBy('updated_at', 'desc')
         let AcademicYearCf: any
         if (!AcademicYearCfResult || AcademicYearCfResult.length === 0 || !year) {
+          // if (year.includes('/2')) {
+          //   AcademicYearCf = new AcademicYear()
+          //   AcademicYearCf.academic_year = year.split('/')[0]
+          //   AcademicYearCf.status = true
+          //   await AcademicYearCf.save()
+          //   const stepServices = new stepService()
+          //   await stepServices.delay(1000)
+          // }
           AcademicYearCf = new AcademicYear()
           AcademicYearCf.academic_year = year
           AcademicYearCf.status = true
           await AcademicYearCf.save()
-          if (auth.user) {
-            await AcademicYearCf.related('users').attach({
-              [auth.user.user_id]: {
-                approved: true,
-              },
-            })
+
+          AcademicYearCf = new AcademicYear()
+          AcademicYearCf.academic_year = year + '/2'
+          AcademicYearCf.status = true
+          await AcademicYearCf.save()
+
+          AcademicYearCf = new AcademicYear()
+          AcademicYearCf.academic_year = year + '/s'
+          AcademicYearCf.status = true
+          await AcademicYearCf.save()
+
+          const AcademicYearCfResult2 = await AcademicYear.query()
+            .where('academic_year', 'NOT LIKE', '%' + year.split('/')[0] + '%')
+            .orderBy('updated_at', 'desc')
+
+          if (!AcademicYearCfResult2 || AcademicYearCfResult2.length === 0) {
+            if (auth.user) {
+              await AcademicYearCf.related('users').attach({
+                [auth.user.user_id]: {
+                  approved: true,
+                },
+              })
+            }
           }
+
+          // AcademicYearCf = new AcademicYear()
+          // AcademicYearCf.academic_year = year + '/2'
+          // AcademicYearCf.status = true
+          // await AcademicYearCf.save()
+          // AcademicYearCf = new AcademicYear()
+          // AcademicYearCf.academic_year = year + '/s'
+          // AcademicYearCf.status = true
+          // await AcademicYearCf.save()
         }
       }
+      // console.log(year, year)
 
       response.cookie('year', year)
     } catch (error) {
@@ -48,7 +88,11 @@ export default class CoursesInfoController {
     try {
       const { users } = request.all()
       let AcademicYearCfResult: any
-      AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // const acSplit = request.cookie('year').split('/')
+      // console.log(acSplit[1], 'asdasdsplit')
+      AcademicYearCfResult = await AcademicYear.query()
+        .where('academic_year', 'NOT LIKE', '%' + '/' + '%')
+        .orderBy('updated_at', 'desc')
       if (
         (users.advisors && users.advisors.length > 0) ||
         (users.staffs && users.staffs.length > 0)
@@ -100,6 +144,7 @@ export default class CoursesInfoController {
 
       let AcademicYearCfResult: any
       AcademicYearCfResult = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const yearsSplit = AcademicYearCfResult[0].academic_year.split('/')[0]
       const advisorResult = await User.query()
         .where('role', 'advisor')
         .andWhere('user_id', advisor.advisor_id)
@@ -107,12 +152,12 @@ export default class CoursesInfoController {
       if (advisorResult[0] && students && students.length > 0) {
         const AdvisorInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', advisorResult[0].user_id)
-          .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
+          .andWhere('academic_year', yearsSplit)
 
         for (let i = 0; i < students.length; i++) {
           const usi = await UsersInAcademicYearModel.query()
             .where('user_id', students[i])
-            .andWhere('academic_year', AcademicYearCfResult[0].academic_year)
+            .andWhere('academic_year', 'LIKE', '%' + yearsSplit + '%')
           usi[0].advisor_ac_id = AdvisorInAcademicYear[0].id
           await usi[0].save()
         }
@@ -130,13 +175,15 @@ export default class CoursesInfoController {
       let usersInAcademicYear: any
 
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const yearsSplit = years[0].academic_year.split('/')[0]
       const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
-          .andWhere('academic_year', years[0].academic_year)
+          // .andWhere('academic_year', years[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + yearsSplit + '%')
           .preload('student')
       }
       if ((step && step.includes('TR-03 and TR-05')) || step.includes('TR-02')) {
@@ -172,10 +219,13 @@ export default class CoursesInfoController {
   public async updateStudentUserApprove({ request, response }: HttpContextContract) {
     try {
       const { users } = request.only(['users'])
+      console.log(users)
+
       users.forEach(async (user) => {
         const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+        const yearsSplit = years[0].academic_year.split('/')[0]
         const UsersInAcademicYear = await UsersInAcademicYearModel.query()
-          .where('academic_year', years[0].academic_year)
+          .where('academic_year', yearsSplit)
           .andWhere('user_id', user.id)
         UsersInAcademicYear[0].approved = user.approve
         await UsersInAcademicYear[0].save()
@@ -228,6 +278,7 @@ export default class CoursesInfoController {
       const years = await AcademicYear.query().orderBy('updated_at', 'desc')
       let studentUser: any
       let usersInAcademicYear: any
+      const yearsSplit = years[0].academic_year.split('/')[0]
       const studentUsersRole = await User.query()
         .where('role', 'student')
         .andWhere('user_id', request.param('id'))
@@ -235,7 +286,8 @@ export default class CoursesInfoController {
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
-          .andWhere('academic_year', years[0].academic_year)
+          // .andWhere('academic_year', years[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + yearsSplit + '%')
           .preload('student')
 
         if (usersInAcademicYear[0]) {
@@ -424,6 +476,7 @@ export default class CoursesInfoController {
           years = await AcademicYear.query().orderBy('updated_at', 'desc')
         }
       }
+      const yearsSplit = years[0].academic_year.split('/')[0]
       let studentUser: any
       let usersInAcademicYear: any
       let avisorSt: any
@@ -434,7 +487,8 @@ export default class CoursesInfoController {
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
-          .andWhere('academic_year', years[0].academic_year)
+          // .andWhere('academic_year', years[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + yearsSplit + '%')
           .preload('student')
 
         if (usersInAcademicYear[0]) {
@@ -490,7 +544,7 @@ export default class CoursesInfoController {
     try {
       // const { academicYear } = request.only['academic_year']
       const academicYear = request.param('id')
-      console.log(academicYear)
+      // console.log(academicYear)
 
       const ac = await AcademicYear.query().where('academic_year', academicYear)
       if (ac && ac.length > 0) {

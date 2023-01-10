@@ -47,7 +47,9 @@
               href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
       </ul>
     </div>
-    @if(allAmoutSt !== noApprove && studentUsers.length > 0)
+    {{--  @if(allAmoutSt !== noApprove && studentUsers.length > 0)  --}}
+    @if(allAmoutSt > 0)
+    {{--  allAmoutSt  --}}
     <div class="flex-1 overflow-x-auto w-fit h-fit max-w-6xl ml-5">
       <table class="table w-full mt-5">
         <thead>

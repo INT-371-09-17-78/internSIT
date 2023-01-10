@@ -14,10 +14,13 @@ import stepService from 'App/Services/stepServices'
 export default class StepsController {
   public async showStudentUser({ request, auth, response, view }: HttpContextContract) {
     try {
-      const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const AcademicYearAll = await AcademicYear.query()
+        .where('academic_year', 'LIKE', '%' + '/' + '%')
+        .orderBy('updated_at', 'desc')
 
       let AcademicYearCf: any
-      console.log(AcademicYearAll)
+      // console.log(AcademicYearAll)
+      // console.log(request.cookie('year'))
 
       // if (request.cookie('year')) {
       //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
@@ -31,12 +34,16 @@ export default class StepsController {
       //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
       // }
 
-      AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      AcademicYearCf = await AcademicYear.query().where(
+        'academic_year',
+        request.cookie('year') || 0
+      )
 
       if (!AcademicYearCf[0]) {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
       let studentUsers: any = []
+      let requestUsers: any = []
       let result: any = []
       let advisorUsersResult: any = []
       let staffUsersResult: any = []
@@ -54,7 +61,7 @@ export default class StepsController {
       // const semester = '2022/1'
       // console.log(semester)
       const acSplit = AcademicYearCf[0].academic_year.split('/')
-      console.log(acSplit[0])
+      // console.log(acSplit[0], 'split')
 
       if (request.qs().advisor) {
         advisorById = await User.query()
@@ -63,7 +70,8 @@ export default class StepsController {
 
         const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', advisorById[0].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          // .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + acSplit[0] + '%')
         if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
           const id = checkAdvisorExistInAcademicYear[0].id
           const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
@@ -83,7 +91,8 @@ export default class StepsController {
           for (let i = 0; i < advisor.length; i++) {
             const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
               .where('user_id', advisor[i].user_id)
-              .andWhere('academic_year', AcademicYearCf[0].academic_year)
+              // .andWhere('academic_year', AcademicYearCf[0].academic_year)
+              .andWhere('academic_year', 'LIKE', '%' + acSplit[0] + '%')
             if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
               const id = checkAdvisorExistInAcademicYear[0].id
               const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
@@ -108,7 +117,7 @@ export default class StepsController {
         for (let i = 0; i < ad.length; i++) {
           const checkAdvisorExistInAcademicYear = await UsersInAcademicYearModel.query()
             .where('user_id', ad[i].user_id)
-            .andWhere('academic_year', acSplit[0])
+            .andWhere('academic_year', AcademicYearCf[0].academic_year)
 
           if (checkAdvisorExistInAcademicYear && checkAdvisorExistInAcademicYear.length > 0) {
             const id = checkAdvisorExistInAcademicYear[0].id
@@ -128,6 +137,35 @@ export default class StepsController {
               }
             }
           }
+
+          const checkAdvisorExistInAcademicYearRq = await UsersInAcademicYearModel.query()
+            .where('user_id', ad[i].user_id)
+            // .andWhere('academic_year', acSplit[0])
+            .andWhere('academic_year', acSplit[0])
+
+          if (checkAdvisorExistInAcademicYearRq && checkAdvisorExistInAcademicYearRq.length > 0) {
+            const id = checkAdvisorExistInAcademicYearRq[0].id
+            const result = await UsersInAcademicYearModel.query().where('advisor_ac_id', id)
+
+            if (result && result.length > 0) {
+              for (let i = 0; i < result.length; i++) {
+                const students = await Student.query().where('student_id', result[i].id)
+                const user = await User.query().where('user_id', result[i].user_id)
+
+                if (user[0]) {
+                  const resultSe = user[0].serialize()
+                  resultSe['approved'] = result[i].approved
+                  resultSe['plan'] = students[0].plan || 0
+                  requestUsers.push(resultSe)
+                  if (resultSe['plan'] === 0) {
+                    studentUsers.push(resultSe)
+                  }
+                }
+              }
+            }
+          }
+
+          console.log(requestUsers)
         }
       } else {
         if (AcademicYearCf && AcademicYearCf.length > 0) {
@@ -135,6 +173,9 @@ export default class StepsController {
             'academic_year',
             AcademicYearCf[0].academic_year
           )
+          // .where('academic_year', 'LIKE', '%' + acSplit[0] + '/' + '%')
+          // console.log(UsersInAcademicYear)
+
           for (let i = 0; i < UsersInAcademicYear.length; i++) {
             const result = await User.query()
               .where('role', 'student')
@@ -152,14 +193,52 @@ export default class StepsController {
               }
             }
           }
+
+          const UsersInAcademicYearRq = await UsersInAcademicYearModel.query()
+            // .where(
+            //   'academic_year',
+            //   acSplit[0]
+            // )
+            .where('academic_year', acSplit[0])
+          // console.log(UsersInAcademicYearRq)
+
+          for (let i = 0; i < UsersInAcademicYearRq.length; i++) {
+            const result = await User.query()
+              .where('role', 'student')
+              .andWhere('user_id', UsersInAcademicYearRq[i].user_id)
+            if (result[0]) {
+              // console.log(UsersInAcademicYearRq[0].academic_year)
+
+              const resultSt = await UsersInAcademicYearModel.query()
+                .where('user_id', result[0].user_id)
+                .andWhere('academic_year', UsersInAcademicYearRq[i].academic_year)
+              // console.log(resultSt)
+
+              const students = await Student.query().where('student_id', resultSt[0].id)
+              if (students[0]) {
+                const resultSe = result[0].serialize()
+                resultSe['approved'] = UsersInAcademicYearRq[i].approved
+                resultSe['plan'] = students[0].plan || 0
+                requestUsers.push(resultSe)
+                if (resultSe['plan'] === 0) {
+                  studentUsers.push(resultSe)
+                }
+              }
+            }
+          }
+          console.log(studentUsers)
         } else {
           studentUsers = []
+          requestUsers = []
         }
       }
 
-      allAmoutSt = studentUsers.length
+      // allAmoutSt = studentUsers.length
 
-      noApprove = studentUsers.filter((st) => !st.approved)
+      allAmoutSt = studentUsers.filter((st) => st.approved).length
+      // console.log(allAmoutSt)
+
+      noApprove = requestUsers.filter((st) => !st.approved)
       if (request.qs().month) {
         studentUsers = studentUsers.filter(
           (userPre) => userPre.plan === parseInt(request.qs().month)
@@ -171,7 +250,8 @@ export default class StepsController {
       for (let i = 0; i < advisorUsers.length; i++) {
         const check = await UsersInAcademicYearModel.query()
           .where('user_id', advisorUsers[i].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          // .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + acSplit[0] + '%')
         if (check && check.length > 0) {
           advisorUsersResult.push(advisorUsers[i])
         }
@@ -179,7 +259,8 @@ export default class StepsController {
       for (let i = 0; i < staffUsers.length; i++) {
         const check = await UsersInAcademicYearModel.query()
           .where('user_id', staffUsers[i].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          // .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + acSplit[0] + '%')
         if (check && check.length > 0) {
           staffUsersResult.push(staffUsers[i])
         }
@@ -213,7 +294,7 @@ export default class StepsController {
         }
       }
 
-      console.log(stepRender)
+      // console.log(stepRender)
 
       if (request.qs() && request.qs().month && request.qs().step) {
         stepEdit = StepsServices.findStepEdit(
@@ -229,7 +310,9 @@ export default class StepsController {
         for (let i = 0; i < studentUsers.length; i++) {
           const usersInAcademicYear = await UsersInAcademicYearModel.query()
             .where('user_id', studentUsers[i].user_id)
-            .andWhere('academic_year', AcademicYearCf[0].academic_year)
+            .andWhere('academic_year', 'LIKE', '%' + acSplit[0] + '%')
+          // console.log(UsersInAcademicYear)
+          // .andWhere('academic_year', AcademicYearCf[0].academic_year)
 
           const userHasDoc = await UserHasDoc.query()
             .where('user_in_academic_year_id', usersInAcademicYear[0].id)
@@ -277,7 +360,7 @@ export default class StepsController {
           }
         }
       }
-      console.log(AcademicYearAll)
+      // console.log(AcademicYearAll)
 
       return view.render('student-information', {
         studentUsers:
@@ -288,12 +371,14 @@ export default class StepsController {
         staffUsers: staffUsersResult,
         noApprove: noApprove ? noApprove.length : 0,
         allAmoutSt: allAmoutSt,
-        academicYears: [
-          { academic_year: '2022' },
-          { academic_year: '2022/1' },
+        // academicYears: [
+        //   { academic_year: '2022' },
+        //   { academic_year: '2022/1' },
 
-          { academic_year: '2023' },
-        ],
+        //   { academic_year: '2023' },
+        // ],
+        requestUsers: requestUsers,
+        academicYears: AcademicYearAll,
         advisorById: advisorById[0],
         studentUsersByAd: adSe,
         studentUsersByAdOne: studentUsersByAdOne,
@@ -322,6 +407,7 @@ export default class StepsController {
       }
       let studentUser: any
       let usersInAcademicYear: any
+      const AcademicYearCfSplit = AcademicYearCf[0].academic_year.split('/')[0]
       const stepServices = new stepService()
       const studentUsersRole = await User.query()
         .where('role', 'student')
@@ -330,7 +416,7 @@ export default class StepsController {
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + AcademicYearCfSplit + '%')
           .preload('student')
 
         if (usersInAcademicYear[0]) {
@@ -593,6 +679,7 @@ export default class StepsController {
                 objSupervision['supervisionStatus'] = allUserHasDoc[i].supervision_status
                 objSupervision['dateConfirmStatus'] = allUserHasDoc[i].date_confirm_status
                 objSupervision['is_new'] = allUserHasDoc[i].is_new
+                objSupervision['comments'] = allUserHasDoc[i].no_approve_reason
                 if (
                   !(
                     objSupervision && // 👈 null and undefined check
@@ -1098,7 +1185,10 @@ export default class StepsController {
       }
       console.log(files.length)
 
-      const years = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const years = await AcademicYear.query()
+        // .where('academic_year', 'NOT LIKE', '%' + '/' + '%')
+        .orderBy('updated_at', 'desc')
+      const yearsSplit = years[0].academic_year.split('/')[0]
       let usersInAcademicYear: any
       const studentUsersRole = await User.query()
         .where('role', 'student')
@@ -1106,7 +1196,8 @@ export default class StepsController {
       if (studentUsersRole[0]) {
         usersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('user_id', studentUsersRole[0].user_id)
-          .andWhere('academic_year', years[0].academic_year)
+          // .where('academic_year', 'NOT LIKE', '%' + '/' + '%')
+          .andWhere('academic_year', 'LIKE', '%' + yearsSplit + '%')
           .preload('student')
       }
       let user: any
@@ -1114,22 +1205,31 @@ export default class StepsController {
         user = await User.query().where('user_id', auth.user.user_id)
       }
 
-      if (infoParse && infoParse.study) {
-        usersInAcademicYear[0].student.plan = infoParse.study
-        await usersInAcademicYear[0].student.save()
-        const userHasDoc = await UserHasDoc.query().where(
-          'user_in_academic_year_id',
-          usersInAcademicYear[0].id
-        )
+      // if (infoParse && infoParse.study) {
+      //   usersInAcademicYear[0].student.plan = infoParse.study
+      //   // if (infoParse.study === 2) {
+      //   //   console.log(years[0].academic_year.split('/')[0] + '/s', 'test')
+      //   //   usersInAcademicYear[0].academic_year = years[0].academic_year.split('/')[0] + '/s'
+      //   // } else {
+      //   //   console.log(years[0].academic_year.split('/')[0] + '/s', 'test')
 
-        if (userHasDoc && userHasDoc.length > 0) {
-          for (let i = 0; i < userHasDoc.length; i++) {
-            await File.query().where('user_has_doc_id', userHasDoc[i].id).delete()
-            userHasDoc[i].delete()
-          }
-        }
-        return response.redirect('/student-information/' + usersInAcademicYear[0].user_id)
-      }
+      //   //   usersInAcademicYear[0].academic_year = years[0].academic_year.split('/')[0] + '/2'
+      //   // }
+      //   usersInAcademicYear[0].academic_year = years
+      //   await usersInAcademicYear[0].student.save()
+      //   const userHasDoc = await UserHasDoc.query().where(
+      //     'user_in_academic_year_id',
+      //     usersInAcademicYear[0].id
+      //   )
+
+      //   if (userHasDoc && userHasDoc.length > 0) {
+      //     for (let i = 0; i < userHasDoc.length; i++) {
+      //       await File.query().where('user_has_doc_id', userHasDoc[i].id).delete()
+      //       userHasDoc[i].delete()
+      //     }
+      //   }
+      //   return response.redirect('/student-information/' + usersInAcademicYear[0].user_id)
+      // }
 
       const body = {}
       if (infoParse && infoParse.status && infoParse.step) {
@@ -1168,7 +1268,7 @@ export default class StepsController {
         if (user[0].role === 'advisor' && !infoParse.step.includes(AllSteps.TR01)) {
           body['advisor_date'] = infoParse.date
         } else if (infoParse.step.includes(AllSteps.INFORMED_SUPERVISION)) {
-          console.log('เข้าหรอ')
+          // console.log('เข้าหรอ')
 
           body['student_date'] = infoParse.date
           body['is_react'] = true
@@ -1243,7 +1343,7 @@ export default class StepsController {
           .where('step', infoParse.step)
           .orderBy('created_at', 'desc')
         if (stepTracking && stepTracking.length > 0) {
-          console.log(body)
+          // console.log(body)
 
           for (let i = 0; i < Object.keys(body).length; i++) {
             stepTracking[0][Object.keys(body)[i]] = body[Object.keys(body)[i]]
@@ -1306,7 +1406,20 @@ export default class StepsController {
 
       if (study) {
         usersInAcademicYear[0].student.plan = study
+        if (study === 2) {
+          console.log(years[0].academic_year.split('/')[0] + '/s', 'test')
+          usersInAcademicYear[0].academic_year = years[0].academic_year.split('/')[0] + '/s'
+        } else {
+          console.log(years[0].academic_year.split('/')[0] + '/s', 'test')
+
+          usersInAcademicYear[0].academic_year = years[0].academic_year.split('/')[0] + '/2'
+        }
+        // usersInAcademicYear[0].academic_year = '2032/s'
+        // usersInAcademicYear[0].approved = 0
+        // console.log(usersInAcademicYear[0])
+
         await usersInAcademicYear[0].student.save()
+        await usersInAcademicYear[0].save()
         const userHasDoc = await UserHasDoc.query().where(
           'user_in_academic_year_id',
           usersInAcademicYear[0].id
@@ -1323,6 +1436,8 @@ export default class StepsController {
 
       // return response.status(200).json('success')
     } catch (errors) {
+      console.log(errors)
+
       return response.status(400).json({ message: errors.message })
     }
   }

@@ -116,10 +116,12 @@ export default class FilesController {
           }
 
           const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+          const AcademicYearCfSplit = AcademicYearCf[0].academic_year.split('/')[0]
           if (user) {
             usersInAcademicYear = await UsersInAcademicYearModel.query()
               .where('user_id', user.user_id)
-              .andWhere('academic_year', AcademicYearCf[0].academic_year)
+              // .andWhere('academic_year', AcademicYearCfSplit)
+              .andWhere('academic_year', 'LIKE', '%' + AcademicYearCfSplit + '%')
 
             userHasDocResult = await UserHasDoc.query()
               .where('step', step)

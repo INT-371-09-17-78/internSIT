@@ -193,9 +193,9 @@ export default class PostsController {
         }
       }
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
-      AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
-        ? (canEdit = false)
-        : (canEdit = true)
+      const AcademicYearAllSplit = AcademicYearAll[0].academic_year.split('/')[0]
+      const AcademicYearCfSplit = AcademicYearCf[0].academic_year.split('/')[0]
+      AcademicYearCfSplit !== AcademicYearAllSplit ? (canEdit = false) : (canEdit = true)
       if (!auth.user) {
         return response.redirect('/')
       } else {
@@ -206,7 +206,8 @@ export default class PostsController {
           .preload('usersInAcademicYear')
         const resultsJSONpre = results.map((result) => result.serialize())
         const resultJSON = resultsJSONpre.filter(
-          (result) => result.usersInAcademicYear.academic_year === AcademicYearCf[0].academic_year
+          (result) => result.usersInAcademicYear.academic_year === AcademicYearCfSplit
+          // result.usersInAcademicYear.academic_year.includes(AcademicYearCf[0].academic_year)
         )
         const posts = resultJSON.map((result) => ({
           ...result,
