@@ -409,7 +409,11 @@ export default class StepsController {
                       result && result.length > 0 ? result[0].serialize().status : null
                     if (stepRender[j].month[k][g].value.includes('Informed')) {
                       studentUsers[i][
-                        'Supervision Status' + stepRender[j].month[k][g].value.split('/')[0]
+                        'Supervision Status' +
+                          ' (' +
+                          stepRender[j].month[k][g].value.split('/')[0].split('(')[1] +
+                          '/' +
+                          stepRender[j].month[k][g].value.split('/')[1]
                       ] =
                         result && result.length > 0
                           ? result[0].serialize().supervision_status
