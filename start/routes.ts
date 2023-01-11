@@ -87,9 +87,17 @@ View.global('returnIcon', (str: string) => {
 
 Route.get('/', async ({ view, auth, response }) => {
   const stepServiceGen = new stepService()
+  // const month = new Date().getMonth()
+  // console.log(month)
+
   const year = await stepServiceGen.gen()
   if (year) {
-    response.cookie('year', year.academic_year)
+    const month = new Date().getMonth()
+    if (month < 4) {
+      response.cookie('year', year.academic_year + '/2')
+    } else {
+      response.cookie('year', year.academic_year + '/s')
+    }
   }
   if (auth.user) return response.redirect('/student-information')
   else {

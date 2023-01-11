@@ -74,11 +74,23 @@ export default class CoursesInfoController {
           // AcademicYearCf.academic_year = year + '/s'
           // AcademicYearCf.status = true
           // await AcademicYearCf.save()
+          const month = new Date().getMonth()
+          if (month < 4) {
+            response.cookie('year', year + '/2')
+          } else {
+            response.cookie('year', year + '/s')
+          }
         }
+      } else {
+        response.cookie('year', year)
       }
       // console.log(year, year)
-
-      response.cookie('year', year)
+      // const month = new Date().getMonth()
+      // if (month < 4) {
+      //   response.cookie('year', year + '/2')
+      // } else {
+      //   response.cookie('year', year + '/s')
+      // }
     } catch (error) {
       return response.status(400).json({ message: error.message })
     }
@@ -170,7 +182,11 @@ export default class CoursesInfoController {
 
   public async updateSupervisionStatus({ request, response }: HttpContextContract) {
     try {
-      const { step, supervisionStatus } = request.only(['step', 'supervisionStatus'])
+      const { step, supervisionStatus, comments } = request.only([
+        'step',
+        'supervisionStatus',
+        'comments',
+      ])
       let supervision
       let usersInAcademicYear: any
 
@@ -206,6 +222,9 @@ export default class CoursesInfoController {
       if (supervision[0]) {
         if (supervisionStatus) {
           supervision[0].supervision_status = supervisionStatus
+        }
+        if (comments) {
+          supervision[0].no_approve_reason = comments
         }
         await supervision[0].save()
       }

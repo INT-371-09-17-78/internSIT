@@ -952,6 +952,11 @@ if(document.getElementById('hasSignedFile') && document.getElementById('hasSigne
 if(document.getElementById('supervisionStatus') && document.getElementById('supervisionStatus').value && '{{currentSteps.status}}' === 'Approved'){
   document.getElementById('submitStepButton').disabled = false
 }
+
+// if(document.getElementById('advFeedback') && document.getElementById('advFeedback').value && '{{currentSteps.status}}' === 'Approved'){
+//   document.getElementById('submitStepButton').disabled = false
+// }
+
 if((document.getElementById('dateConfirm') && !document.getElementById('dateConfirm').value && document.getElementById('meetlink') && !document.getElementById('meetlink').value)){
   document.getElementById('submitStepButton').disabled = true
 }
@@ -1184,12 +1189,16 @@ const checkStartDateMax = () => {
   
   const submitStepForm = async (event) => {
     event.preventDefault() 
-    let reason, reasonComplete, supervisionStatus, acknowledgeDate, requestDate   = ''
+    let reason, reasonComplete, supervisionStatus, acknowledgeDate, requestDate, advFeedback
     if(document.getElementById('supervisionStatus')){
       supervisionStatus = document.getElementById('supervisionStatus').value
     }
     if(document.getElementById('acknowledgeDate')){
       acknowledgeDate = document.getElementById('acknowledgeDate').value
+    }
+
+    if(document.getElementById('advFeedback')){
+      advFeedback = document.getElementById('advFeedback').value
     }
 
     if(document.getElementById('requestDate')){
@@ -1235,6 +1244,7 @@ const checkStartDateMax = () => {
     const bodyNotUpdateStatus = {
       step: '{{currentSteps.name}}',
       supervisionStatus : supervisionStatus,
+      comments : advFeedback,
     }
     let error
     const formData = new FormData()
@@ -1258,7 +1268,7 @@ const checkStartDateMax = () => {
     formDataFile.append('stepFileType', fileType)
     // formData.append('studentId', {{studentUser.user_id}})
     // console.log(bodyNotUpdateStatus);
-      if(supervisionStatus){
+      if(supervisionStatus || advFeedback){
         await fetch('/api/user/student/super/{{studentUser.user_id}}?_method=PATCH',{
         method: 'PATCH',
         headers: {

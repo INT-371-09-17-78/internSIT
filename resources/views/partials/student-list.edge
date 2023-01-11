@@ -57,15 +57,22 @@
         <p class="font-medium">Filter</p>
         <select
           class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStep">
-          <option value="2">2 month</option>
-          <option value="4">4 month</option>
-          <option value="6">6 month</option>
+          <option value="TR-01">TR-01</option>
+          <option value="TR-02">TR-02</option>
+          <option value="Informed supervision">Informed supervision</option>
+          <option value="Presentation">Presentation</option>
+          <option value="TR-03 and TR-08">TR-03 and TR-08</option>
+          
         </select>
         <select
           class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStatus">
-          <option value="2">2 month</option>
+          {{--  <option value="2">2 month</option>
           <option value="4">4 month</option>
-          <option value="6">6 month</option>
+          <option value="6">6 month</option>  --}}
+          <option value="No Submitted">No submitted</option>
+          <option value="Pending">Pending</option>
+          <option value="Not completed">Not completed</option>
+          <option value="Completed">Completed</option>
         </select>
         @!common.bgButton({
           id: 'submitFilter',
@@ -110,35 +117,47 @@
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (1/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (2/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (3/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (4/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (4/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (5/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (5/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (5/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (6/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (6/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (6/6)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-06'])}}}</td>
             @elseif(student.plan === 4)
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/6)'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/6)'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/6)'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/6)'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/6)'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (1/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (2/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (3/4)'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (4/6)'])}}}</td>
-            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (4/4)'])}}}</td>
+            {{--  <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status'])}}}</td>  --}}
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-06'])}}}</td>
             @elseif(student.plan === 2)
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
             <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-08'])}}}</td>
             @end
