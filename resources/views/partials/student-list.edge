@@ -125,13 +125,13 @@
             @each(step in stepRender)
             
             @if(!step.month)
-            @if(step.name === request.qs().filterStep)
+            @if(step.name === request.qs().filterStep || request.qs().filterStep === undefined)
             <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">{{step.name}}</th>
             @end
             @else
             @each((month,j) in step.month)
             @each(subStep in month)
-            @if(subStep.value === request.qs().filterStep)
+            @if(subStep.value === request.qs().filterStep || request.qs().filterStep === undefined)
             <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">{{subStep.name}} ({{j+1}})
             </th>
             @end
