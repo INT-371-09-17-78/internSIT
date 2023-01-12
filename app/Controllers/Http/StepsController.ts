@@ -397,10 +397,10 @@ export default class StepsController {
             .orderBy('created_at', 'desc')
 
           if (stepRender && stepRender.length > 0) {
-            for (let j = 0; j < stepRender.length; j++) {
+            loop1: for (let j = 0; j < stepRender.length; j++) {
               if (stepRender[j].name === AllSteps.TR03_TR05_AND_SUPERVISION) {
-                for (let k = 0; k < stepRender[j].month.length; k++) {
-                  for (let g = 0; g < stepRender[j].month[k].length; g++) {
+                loop2: for (let k = 0; k < stepRender[j].month.length; k++) {
+                  loop3: for (let g = 0; g < stepRender[j].month[k].length; g++) {
                     const result = await UserHasDoc.query()
                       .where('user_in_academic_year_id', usersInAcademicYear[0].id)
                       .andWhere('step', stepRender[j].month[k][g].value)
@@ -419,6 +419,15 @@ export default class StepsController {
                           ? result[0].serialize().supervision_status
                           : null
                     }
+                    if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
+                      if (
+                        stepRender[j].month[k][g].value.toLowerCase() ===
+                        request.qs().filterStep.toLowerCase()
+                      ) {
+                        break loop1
+                      }
+                    }
+
                     // console.log(stepRender[j].month[k][g].value)
                   }
                 }
@@ -433,6 +442,12 @@ export default class StepsController {
                 if (stepRender[j].name.includes('Informed')) {
                   studentUsers[i]['Supervision Status'] =
                     result && result.length > 0 ? result[0].serialize().supervision_status : null
+                }
+
+                if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
+                  if (stepRender[j].name.toLowerCase() === request.qs().filterStep.toLowerCase()) {
+                    break loop1
+                  }
                 }
               }
             }
@@ -464,6 +479,10 @@ export default class StepsController {
                 ? st[request.qs().filterStep] === null
                 : !st[request.qs().filterStep]
                 ? st[request.qs().filterStep] === request.qs().filterStatus.toLowerCase()
+                : request.qs().filterStatus.toLowerCase() === 'completed'
+                ? st[request.qs().filterStep].toLowerCase() === StepStatus.APPROVED.toLowerCase()
+                : request.qs().filterStatus.toLowerCase() === 'not completed'
+                ? st[request.qs().filterStep].toLowerCase() === StepStatus.DISAPPROVED.toLowerCase()
                 : st[request.qs().filterStep].toLowerCase() ===
                   request.qs().filterStatus.toLowerCase()
             )
