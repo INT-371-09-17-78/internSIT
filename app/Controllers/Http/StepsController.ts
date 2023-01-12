@@ -227,19 +227,20 @@ export default class StepsController {
               'academic_year',
               AcademicYearCf[0].academic_year
             )
-            if (!UsersInAcademicYear || UsersInAcademicYear.length <= 0) {
-              UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
-                'academic_year',
-                AcademicYearCf[0].academic_year.split('/')[0]
-              )
-            }
-          } else {
-            UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
-              'academic_year',
-              'LIKE',
-              '%' + AcademicYearCf[0].academic_year + '/' + '%'
-            )
+            // if (!UsersInAcademicYear || UsersInAcademicYear.length <= 0) {
+            //   UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
+            //     'academic_year',
+            //     AcademicYearCf[0].academic_year.split('/')[0]
+            //   )
+            // }
           }
+          // else {
+          //   UsersInAcademicYear = await UsersInAcademicYearModel.query().where(
+          //     'academic_year',
+          //     'LIKE',
+          //     '%' + AcademicYearCf[0].academic_year + '/' + '%'
+          //   )
+          // }
 
           // console.log(UsersInAcademicYear)
           // console.log(AcademicYearCf[0].academic_year)
@@ -275,6 +276,7 @@ export default class StepsController {
             // )
             .where('academic_year', acSplit[0])
           // console.log(UsersInAcademicYearRq.length)
+          // console.log(UsersInAcademicYearRq)
 
           for (let i = 0; i < UsersInAcademicYearRq.length; i++) {
             const result = await User.query()
@@ -286,7 +288,7 @@ export default class StepsController {
               const resultSt = await UsersInAcademicYearModel.query()
                 .where('user_id', result[0].user_id)
                 .andWhere('academic_year', UsersInAcademicYearRq[i].academic_year)
-              // console.log(resultSt)
+              console.log(resultSt)
 
               const students = await Student.query().where('student_id', resultSt[0].id)
               if (students[0]) {
@@ -295,14 +297,14 @@ export default class StepsController {
                 resultSe['plan'] = students[0].plan || 0
                 requestUsers.push(resultSe)
                 if (resultSe['plan'] === 0) {
-                  // console.log('เข้า')
+                  console.log('เข้า')
 
                   studentUsers.push(resultSe)
                 }
               }
             }
           }
-          // console.log(studentUsers)
+          console.log(studentUsers)
         } else {
           studentUsers = []
           requestUsers = []
@@ -541,11 +543,28 @@ export default class StepsController {
                   request.qs().filterStatus.toLowerCase()
             )
 
-            stepRender = [
-              {
-                name: request.qs().filterStep,
-              },
-            ]
+            if (request.qs().filterStep.includes('supervision')) {
+              stepRender = [
+                {
+                  name: request.qs().filterStep,
+                },
+                {
+                  name:
+                    'Supervision Status' +
+                    ' (' +
+                    request.qs().filterStep.split('/')[0].split('(')[1] +
+                    '/' +
+                    request.qs().filterStep.split('/')[1],
+                },
+              ]
+            } else {
+              stepRender = [
+                {
+                  name: request.qs().filterStep,
+                },
+              ]
+            }
+
             // if (request.qs().filterStatus.toLowerCase() === 'no submitted') {
             //   results = studentUsers.filter((st) => st[request.qs().filterStep] === null)
             // } else {

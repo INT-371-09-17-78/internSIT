@@ -73,6 +73,8 @@ View.global('checkStatus', (str: string) => {
 })
 
 View.global('returnIcon', (str: string) => {
+  console.log(str, 'asdasdas')
+
   if (!str) return '<div class="text-center">-</div>'
   if (str.includes('Approved') || str.includes('Done')) {
     return '<svg class="m-auto" width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.8601 2.78743L11.2829 0.14355C11.1934 0.0516684 11.0717 0 10.945 0C10.8183 0 10.6967 0.05162 10.6071 0.14355L5.35658 5.52948L3.39277 3.51518C3.30316 3.42335 3.18163 3.37168 3.05483 3.37168C2.92813 3.37168 2.80656 3.42335 2.71699 3.51523L0.139817 6.15921C-0.0466136 6.35051 -0.0466136 6.66052 0.139864 6.85178L5.0187 11.8565C5.10826 11.9484 5.22978 12 5.35658 12C5.48334 12 5.60486 11.9484 5.69442 11.8565L13.8601 3.47995C14.0466 3.28874 14.0466 2.97868 13.8601 2.78743Z" fill="#007934"/></svg>'

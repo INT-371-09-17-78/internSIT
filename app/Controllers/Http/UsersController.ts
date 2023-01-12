@@ -235,6 +235,7 @@ export default class UsersController {
           }
         }
       }
+      // console.log(studentUsers)
 
       return response.status(200).json({ studentUsers: studentUsers })
     } catch (error) {
@@ -252,20 +253,27 @@ export default class UsersController {
       } else {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
+      const acSplit = AcademicYearCf[0].academic_year.split('/')
       const users = await User.query().where('role', 'student')
-      const adv = await UsersInAcademicYearModel.query().where('user_id', advisor)
+      const adv = await UsersInAcademicYearModel.query()
+        .where('user_id', advisor)
+        .andWhere('academic_year', acSplit[0])
       for (let i = 0; i < users.length; i++) {
         const result = await UsersInAcademicYearModel.query()
           .where('user_id', users[i].user_id)
-          .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          // .andWhere('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('academic_year', 'LIKE', '%' + acSplit[0] + '%')
           .andWhere('advisor_ac_id', adv[0].id)
         if (result && result.length > 0) {
           studentUsers.push(result[0])
         }
       }
+      console.log(studentUsers)
 
       return response.status(200).json({ studentUsers: studentUsers })
     } catch (error) {
+      console.log(error)
+
       return response.status(400).json({ message: error.message })
     }
   }
@@ -288,15 +296,50 @@ export default class UsersController {
     try {
       const userId = request.param('id')
       const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      const acSplit = AcademicYearCf[0].academic_year.split('/')
+      // const rawYears = await AcademicYear.query()
+      //   // .where('academic_year', 'NOT LIKE', '%' + '/' + '%')
+      //   .orderBy('updated_at', 'desc')
       const delUser = await UsersInAcademicYearModel.query()
-        .where('academic_year', AcademicYearCf[0].academic_year)
+        // .where('academic_year', AcademicYearCf[0].academic_year)
+        .where('academic_year', 'LIKE', '%' + acSplit[0] + '%')
         .andWhere('user_id', userId)
+      // const tmpSt = await Student.query().where('student_id', delUser[0].id)
+      // const newSt = new Student()
+      // newSt.
+
+      // if (user) {
+      //   await rawYears[0].related('users').attach([user.user_id])
+      // } else {
+      // const lastestUsers = await UsersInAcademicYearModel.query()
+      //   .where('user_id', username)
+      //   .andWhere('academic_year', rawYears[0].academic_year)
+
+      // }
       const newTmp = new UsersInAcademicYearModel()
       newTmp.academic_year = delUser[0].academic_year
       newTmp.user_id = delUser[0].user_id
       newTmp.approved = delUser[0].approved
+
       await delUser[0].delete()
+      // const st = await Student.findBy('student_id', delUser[0].user_id)
+      // if (st) {
+      //   st.plan = 0
+      //   await st.save()
+      // }
+      // if (!st && delUser && delUser.length > 0) {
+      //   await delUser[0].related('student').create({})
+      // }
       await newTmp.save()
+
+      const lastestUsers = await UsersInAcademicYearModel.query()
+        .where('user_id', delUser[0].user_id)
+        .andWhere('academic_year', delUser[0].academic_year)
+      if (lastestUsers && lastestUsers.length > 0) {
+        await lastestUsers[0].related('student').create({})
+      }
+      // delUser[0].advisor_ac_id = null
+      // await delUser[0].save()
       return response.status(200).json('success')
     } catch (error) {
       console.log(error)
