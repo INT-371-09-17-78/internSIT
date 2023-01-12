@@ -38,14 +38,18 @@
           <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information') }}">All
             Student</a>
         </li>
+        @if(request.cookie('year').includes('/s'))
+        
         <li class="{{activeTwoMonth}}">
           <a class="active:bg-[#A1D9FF] active:text-[#495057]"
             href="{{ route('/student-information', {} , {qs: {month: 2}})  }}">INT340 (2 months)</a>
         </li>
+        @else
         <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
             href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
         <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
             href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
+        @end
       </ul>
     </div>
     {{--  @if(allAmoutSt !== noApprove && studentUsers.length > 0)  --}}

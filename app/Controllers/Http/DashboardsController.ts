@@ -25,10 +25,13 @@ export default class DashboardsController {
           AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
         }
       }
+      console.log(AcademicYearCf[0].academic_year)
+
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         const UsersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('academic_year', AcademicYearCf[0].academic_year)
           .andWhere('approved', true)
+        // console.log(UsersInAcademicYear)
 
         for (let i = 0; i < UsersInAcademicYear.length; i++) {
           const result = await User.query()
