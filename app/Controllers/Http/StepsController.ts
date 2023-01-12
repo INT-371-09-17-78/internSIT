@@ -462,6 +462,8 @@ export default class StepsController {
             results = studentUsers.filter((st) =>
               request.qs().filterStatus.toLowerCase() === 'no submitted'
                 ? st[request.qs().filterStep] === null
+                : !st[request.qs().filterStep]
+                ? st[request.qs().filterStep] === request.qs().filterStatus.toLowerCase()
                 : st[request.qs().filterStep].toLowerCase() ===
                   request.qs().filterStatus.toLowerCase()
             )
