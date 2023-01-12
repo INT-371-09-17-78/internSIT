@@ -195,8 +195,8 @@
     const res = await fetch(`/api/user/studentByAdv/{{request.qs().advisor}}`)
     const allStudent = await response.json()
     const allStudentYear = await res.json()
-    console.log(allStudentYear)
     studentUsers = allStudent.studentUsers.filter(val => allStudentYear.studentUsers.includes(val))
+    console.log(allStudentYear)
     if(allStudentYear.studentUsers.length === 0){
       studentUsers = allStudent.studentUsers
     }else{
@@ -222,6 +222,7 @@
     }else{
       staffUsers = allStaff.staffUsers.filter((user) => !allStaffYear.staffUsers.some((staff) => staff.user_id === user.user_id))
     }
+
     if(staffUsers.length === 0){
       document.getElementById('staff_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
     }else{

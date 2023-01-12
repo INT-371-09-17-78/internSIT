@@ -902,9 +902,13 @@
               @if(currentSteps.supervision.completeDate && auth.user.role === 'advisor')
               <div class="flex space-x-5 mt-5">
                 <p class="font-medium flex-shrink-0">Advisor feedback</p>
+                @if(currentSteps.supervision.comments)
+                <p>{{currentSteps.supervision.comments}}</p>
+                @else
                 <textarea id="advFeedback"
                                     class="p-3 mt-2 w-full h-20 text-sm placeholder:text-[#A8B0B8] rounded-none border-2 border-[#CED3D6]"
                                     placeholder="Write your feedback..."></textarea>
+                @end
               </div>
               @end
               @if(flashMessages.get('error', ''))
@@ -1138,8 +1142,8 @@ const checkStartDateMax = () => {
     inputFeedback = document.getElementById('feedbackComplete').value
     if(inputFeedback) {
       document.getElementById('submitStepButton').disabled = false
-      if(document.getElementById('labelSignedFile'))
-      document.getElementById('labelSignedFile').classList.add('btn-disabled')
+      // if(document.getElementById('labelSignedFile'))
+      // document.getElementById('labelSignedFile').classList.add('btn-disabled')
     }else if(!inputFeedback && !file){
       document.getElementById('submitStepButton').disabled = true
       document.getElementById('labelSignedFile').classList.remove('btn-disabled')

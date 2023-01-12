@@ -57,22 +57,18 @@
         <p class="font-medium">Filter</p>
         <select
           class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStep">
-          <option value="TR-01">TR-01</option>
-          <option value="TR-02">TR-02</option>
-          <option value="Informed supervision">Informed supervision</option>
-          <option value="Presentation">Presentation</option>
-          <option value="TR-03 and TR-08">TR-03 and TR-08</option>
-          
+          <option {{request.qs().filterStep === 'TR-01' && 'selected'}} value="TR-01">TR-01</option>
+          <option {{request.qs().filterStep === 'TR-02' && 'selected'}} value="TR-02">TR-02</option>
+          <option {{request.qs().filterStep === 'Informed supervision' && 'selected'}} value="Informed supervision">Informed supervision</option>
+          <option {{request.qs().filterStep === 'Presentation' && 'selected'}} value="Presentation">Presentation</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-08' && 'selected'}} value="TR-03 and TR-08">TR-03 and TR-08</option>
         </select>
         <select
           class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStatus">
-          {{--  <option value="2">2 month</option>
-          <option value="4">4 month</option>
-          <option value="6">6 month</option>  --}}
-          <option value="No Submitted">No submitted</option>
-          <option value="Pending">Pending</option>
-          <option value="Not completed">Not completed</option>
-          <option value="Completed">Completed</option>
+          <option {{request.qs().filterStatus === 'No Submitted' && 'selected'}} value="No Submitted">No submitted</option>
+          <option {{request.qs().filterStatus === 'Pending' && 'selected'}} value="Pending">Pending</option>
+          <option {{request.qs().filterStatus === 'Not completed' && 'selected'}} value="Not completed">Not completed</option>
+          <option {{request.qs().filterStatus === 'Completed' && 'selected'}} value="Completed">Completed</option>
         </select>
         @!common.bgButton({
           id: 'submitFilter',
