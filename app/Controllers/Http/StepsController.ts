@@ -405,26 +405,56 @@ export default class StepsController {
                       .where('user_in_academic_year_id', usersInAcademicYear[0].id)
                       .andWhere('step', stepRender[j].month[k][g].value)
                       .orderBy('created_at', 'desc')
-                    studentUsers[i][stepRender[j].month[k][g].value] =
-                      result && result.length > 0 ? result[0].serialize().status : null
-                    if (stepRender[j].month[k][g].value.includes('Informed')) {
-                      studentUsers[i][
-                        'Supervision Status' +
-                          ' (' +
-                          stepRender[j].month[k][g].value.split('/')[0].split('(')[1] +
-                          '/' +
-                          stepRender[j].month[k][g].value.split('/')[1]
-                      ] =
-                        result && result.length > 0
-                          ? result[0].serialize().supervision_status
-                          : null
-                    }
                     if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
                       if (
                         stepRender[j].month[k][g].value.toLowerCase() ===
                         request.qs().filterStep.toLowerCase()
                       ) {
-                        break loop1
+                        studentUsers[i][stepRender[j].month[k][g].value] =
+                          result && result.length > 0 ? result[0].serialize().status : null
+                        if (stepRender[j].month[k][g].value.includes('Informed')) {
+                          studentUsers[i][
+                            'Supervision Status' +
+                              ' (' +
+                              stepRender[j].month[k][g].value.split('/')[0].split('(')[1] +
+                              '/' +
+                              stepRender[j].month[k][g].value.split('/')[1]
+                          ] =
+                            result && result.length > 0
+                              ? result[0].serialize().supervision_status
+                              : null
+                        }
+                        if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
+                          if (
+                            stepRender[j].month[k][g].value.toLowerCase() ===
+                            request.qs().filterStep.toLowerCase()
+                          ) {
+                            break loop1
+                          }
+                        }
+                      }
+                    } else {
+                      studentUsers[i][stepRender[j].month[k][g].value] =
+                        result && result.length > 0 ? result[0].serialize().status : null
+                      if (stepRender[j].month[k][g].value.includes('Informed')) {
+                        studentUsers[i][
+                          'Supervision Status' +
+                            ' (' +
+                            stepRender[j].month[k][g].value.split('/')[0].split('(')[1] +
+                            '/' +
+                            stepRender[j].month[k][g].value.split('/')[1]
+                        ] =
+                          result && result.length > 0
+                            ? result[0].serialize().supervision_status
+                            : null
+                      }
+                      if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
+                        if (
+                          stepRender[j].month[k][g].value.toLowerCase() ===
+                          request.qs().filterStep.toLowerCase()
+                        ) {
+                          break loop1
+                        }
                       }
                     }
 
@@ -436,17 +466,41 @@ export default class StepsController {
                   .where('user_in_academic_year_id', usersInAcademicYear[0].id)
                   .andWhere('step', stepRender[j].name)
                   .orderBy('created_at', 'desc')
-                studentUsers[i][stepRender[j].name] =
-                  result && result.length > 0 ? result[0].serialize().status : null
-                console.log(stepRender[j].name)
-                if (stepRender[j].name.includes('Informed')) {
-                  studentUsers[i]['Supervision Status'] =
-                    result && result.length > 0 ? result[0].serialize().supervision_status : null
-                }
-
                 if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
                   if (stepRender[j].name.toLowerCase() === request.qs().filterStep.toLowerCase()) {
-                    break loop1
+                    studentUsers[i][stepRender[j].name] =
+                      result && result.length > 0 ? result[0].serialize().status : null
+                    console.log(stepRender[j].name)
+                    if (stepRender[j].name.includes('Informed')) {
+                      studentUsers[i]['Supervision Status'] =
+                        result && result.length > 0
+                          ? result[0].serialize().supervision_status
+                          : null
+                    }
+                  }
+
+                  if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
+                    if (
+                      stepRender[j].name.toLowerCase() === request.qs().filterStep.toLowerCase()
+                    ) {
+                      break loop1
+                    }
+                  }
+                } else {
+                  studentUsers[i][stepRender[j].name] =
+                    result && result.length > 0 ? result[0].serialize().status : null
+                  console.log(stepRender[j].name)
+                  if (stepRender[j].name.includes('Informed')) {
+                    studentUsers[i]['Supervision Status'] =
+                      result && result.length > 0 ? result[0].serialize().supervision_status : null
+                  }
+
+                  if (request.qs() && request.qs().filterStep && request.qs().filterStatus) {
+                    if (
+                      stepRender[j].name.toLowerCase() === request.qs().filterStep.toLowerCase()
+                    ) {
+                      break loop1
+                    }
                   }
                 }
               }
@@ -486,6 +540,12 @@ export default class StepsController {
                 : st[request.qs().filterStep].toLowerCase() ===
                   request.qs().filterStatus.toLowerCase()
             )
+
+            stepRender = [
+              {
+                name: request.qs().filterStep,
+              },
+            ]
             // if (request.qs().filterStatus.toLowerCase() === 'no submitted') {
             //   results = studentUsers.filter((st) => st[request.qs().filterStep] === null)
             // } else {
@@ -493,10 +553,48 @@ export default class StepsController {
             //     (st) => st[request.qs().filterStep] === request.qs().filterStatus
             //   )
             // }
+            // if (
+            //   request.qs().filterStep.toLowerCase().includes('informed supervision (') ||
+            //   request.qs().filterStep.toLowerCase().includes('tr-03 and tr-05')
+            // ) {
+            //   const index = stepRender.findIndex(
+            //     (ele) => ele.name === 'TR-03, TR-05 and Supervision'
+            //   )
+            //   let index2: any
+            //   let index3: any
+            //   for (let i = 0; i < stepRender[index].month.length; i++) {
+            //     index2 = stepRender[index].month[i].findIndex(
+            //       (ele) => ele.value.toLowerCase() === request.qs().filterStep.toLowerCase()
+            //     )
+            //     if (index2 > -1) {
+            //       index3 = i
+            //       break
+            //     }
+            //   }
+
+            //   console.log(index, 'index')
+            //   const stepRenderTmp = stepRender[index].month.slice(0, index3 + 1)
+
+            //   // const stepRenderTmp3 = (stepRender[index].month[index3] = stepRender[index].month[
+            //   //   index3
+            //   // ].slice(0, index2 + 1))
+            //   console.log(stepRenderTmp, 'test')
+            //   // const stepRenderTmp2 = stepRenderTmp.month.slice(0, index3 + 1)
+            //   // // stepRenderTmp
+            //   // stepRender = stepRenderTmp2.slice(0, index + 1)
+            // } else {
+            //   const index = stepRender.findIndex(
+            //     (ele) => ele.name.toLowerCase() === request.qs().filterStep.toLowerCase()
+            //   )
+            //   console.log(index, 'index')
+
+            //   stepRender = stepRender.slice(0, index + 1)
+            // }
 
             console.log(results)
+            console.log(stepRender, 'render')
           }
-          console.log(studentUsers)
+          // console.log(studentUsers)
         }
       }
       // console.log(AcademicYearAll)
