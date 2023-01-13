@@ -26,10 +26,21 @@ export default class DashboardsController {
         }
       }
       console.log(AcademicYearCf[0].academic_year)
+      const yearsSplit = AcademicYearCf[0].academic_year.split('/')[0]
+      console.log(yearsSplit)
 
       if (AcademicYearCf && AcademicYearCf.length > 0) {
         const UsersInAcademicYear = await UsersInAcademicYearModel.query()
           .where('academic_year', AcademicYearCf[0].academic_year)
+          .andWhere('approved', true)
+
+        const UsersInAcademicYearAdvisor = await UsersInAcademicYearModel.query()
+          .where('academic_year', yearsSplit)
+          .andWhere('approved', true)
+        console.log(UsersInAcademicYearAdvisor)
+
+        const UsersInAcademicYearStaff = await UsersInAcademicYearModel.query()
+          .where('academic_year', yearsSplit)
           .andWhere('approved', true)
         // console.log(UsersInAcademicYear)
 
@@ -38,14 +49,6 @@ export default class DashboardsController {
             .where('role', 'student')
             .andWhere('user_id', UsersInAcademicYear[i].user_id)
 
-          const resultAdvisor = await User.query()
-            .where('role', 'advisor')
-            .andWhere('user_id', UsersInAcademicYear[i].user_id)
-          resultAdvisorRe = resultAdvisorRe + resultAdvisor.length
-          const resultStaff = await User.query()
-            .where('role', 'staff')
-            .andWhere('user_id', UsersInAcademicYear[i].user_id)
-          resultStaffRe = resultStaffRe + resultStaff.length
           if (result[0]) {
             const resultSt = await UsersInAcademicYearModel.query()
               .where('user_id', result[0].user_id)
@@ -58,6 +61,20 @@ export default class DashboardsController {
               studentUsers.push(resultSe)
             }
           }
+        }
+
+        for (let i = 0; i < UsersInAcademicYearAdvisor.length; i++) {
+          const resultAdvisor = await User.query()
+            .where('role', 'advisor')
+            .andWhere('user_id', UsersInAcademicYearAdvisor[i].user_id)
+          resultAdvisorRe = resultAdvisorRe + resultAdvisor.length
+        }
+
+        for (let i = 0; i < UsersInAcademicYearStaff.length; i++) {
+          const resultStaff = await User.query()
+            .where('role', 'staff')
+            .andWhere('user_id', UsersInAcademicYearStaff[i].user_id)
+          resultStaffRe = resultStaffRe + resultStaff.length
         }
       }
 
