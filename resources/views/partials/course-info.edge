@@ -3,7 +3,7 @@
   @if(request.matchesRoute('/course-info'))
   <div class="grid grid-cols-5 gap-y-5 font-medium text-base">
     <p>Academic year</p>
-    <p class="col-span-4">{{academicYears[0].academic_year}}<a class="col-span-4 underline ml-auto link ml-4" href="{{ route('/academic-year')}}">See all academic year</a></p>
+    <p class="col-span-4">{{academicYears[0].academic_year}}<a class="col-span-4 link-primary link ml-4" href="{{ route('/academic-year')}}">See all academic year</a></p>
     
     <p>Advisor</p>
     @if(studentUsersByAd.length > 0)
