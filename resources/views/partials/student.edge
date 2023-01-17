@@ -717,7 +717,7 @@
                 <p class="{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'text-yellow-500' : 'text-green-700'}}">{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'Pending' : 'Done'}}</p>
               </div>
               @else
-              <div class="flex space-x-2 items-center">
+              <div class="flex space-x-4 items-center">
                 <div class="flex items-center space-x-2">
                   <p>Supervision status</p>
                   <div class="tooltip z-20 font-normal normal-case"
@@ -730,14 +730,10 @@
                     </svg>
                   </div>
                 </div>
-                @if(currentSteps.supervision.supervisionStatus==='Pending' || !currentSteps.supervision.supervisionStatus)
-                <select class="select select-sm w-fit bg-[#F6F7F9]" {{currentSteps.supervision.supervisionStatus==='Done' && 'disabled'}} id="supervisionStatus">
+                <select class="select {{currentSteps.supervision.supervisionStatus==='Pending' ? 'text-yellow' : 'text-green-700'}} select-sm w-fit bg-[#F6F7F9]" id="supervisionStatus">
                   <option class="text-black" value="Pending" {{currentSteps.supervision.supervisionStatus==='Pending' && 'selected'}}>Pending</option>
                   <option class="text-black" value="Done" {{currentSteps.supervision.supervisionStatus==='Done' && 'selected'}}>Done</option>
                 </select>
-                @else
-                <p class="{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'text-yellow-500' : 'text-green-700'}}">{{currentSteps.supervision.supervisionStatus === 'Pending' || !currentSteps.supervision.supervisionStatus ? 'Pending' : 'Done'}}</p>
-                @end
               </div>
               @end
               <table class="table w-full mt-2">
@@ -914,15 +910,12 @@
               @if(flashMessages.get('error', ''))
               <p class="text-error text-xs pt-3">{{ flashMessages.get('error.file', '') }}</p>
               @end
-            @if((request.qs().step && currentSteps.status !== 'Approved' || currentSteps.status !== 'Approved') || nextStep.name.includes('supervision') || (auth.user.role !== 'staff' && currentSteps.supervision.supervisionStatus !== 'Done'))
             @!common.bgButton({
               text: 'Confirm',
               type: 'submit',
               classProps: 'ml-auto mt-2',
               id: 'submitStepButton',
-              disabled,
             })
-            @end
             @end
           @else
             @if(auth.user.role === 'student')
