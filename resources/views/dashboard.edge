@@ -38,6 +38,7 @@
             </div>
           </div>
           <div class="w-full flex mt-5 space-x-5">
+            @if(request.cookie('year').includes('/s'))
             <a href="{{ route('/dashboard', {} , {qs:{month: 2}}) }}" class="card w-80 {{activetwoMonth}} shadow-xl cursor-pointer">
                 <div class="card-body">
                     <div class="flex h-full">
@@ -51,6 +52,7 @@
                     </div>
                 </div>
             </a>
+            @else
             <a href="{{ route('/dashboard', {} , {qs:{month: 4}}) }}" class="card w-80 {{activeFourMonth}} shadow-xl">
                 <div class="card-body">
                     <div class="flex h-full">
@@ -77,6 +79,7 @@
                     </div>
                 </div>
             </a>
+            @end
         </div>
         <div class="card w-full shadow-xl mt-5 flex-1 bg-[#EEF8FF] max-h-72 overflow-auto pb-5">
           @if(studentUsers6 === 0 && request.qs().month === '6' || studentUsers4 === 0 && request.qs().month === '4' || studentUsers2 === 0 && request.qs().month === '2')

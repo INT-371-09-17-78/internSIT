@@ -34,7 +34,6 @@
     @end
   <div class="ml-auto mt-auto flex flex-col items-end space-y-2">
     <p class="font-bold">Academic year: {{request.cookie('year') ? request.cookie('year') : academicYears[0].academic_year}} </p>
-    <a class="underline ml-auto link" href="{{ route('/academic-year')}}">See all academic year</a>
   </div>
   @end
 </div>

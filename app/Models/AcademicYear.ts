@@ -7,7 +7,7 @@ export default class AcademicYear extends BaseModel {
   // public conf_id: number
 
   @column({ isPrimary: true })
-  public academic_year: number
+  public academic_year: string
 
   @manyToMany(() => User, {
     localKey: 'academic_year',

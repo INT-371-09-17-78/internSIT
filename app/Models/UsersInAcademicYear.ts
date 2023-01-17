@@ -26,7 +26,7 @@ export default class UsersInAcademicYear extends BaseModel {
   public id: number
 
   @column()
-  public academic_year: number
+  public academic_year: string
 
   @column()
   public user_id: string

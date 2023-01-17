@@ -98,7 +98,9 @@
   // }
 
   const updateYear = async (y) =>{
+    // console.log(y);
     const year = {year: y}
+    // console.log(JSON.stringify(year));
     await fetch('/api/user/courseInfo?_method=PATCH', {
         method: "PATCH",
         headers: {
@@ -107,10 +109,19 @@
         },
         body: JSON.stringify(year),
     })
+
+    window.location.href = `/student-information`
   }
 
   const addYear =  async () => { 
-    const year = {year: document.getElementById('acdemic_year').innerHTML , isCurrent: true}
+    let yearRe = document.getElementById('acdemic_year').innerHTML
+    // if(yearRe.includes('/2')){
+    //   yearRe = yearRe.split('/')[0] + '/s'
+    // }else{
+    //   yearRe = yearRe.split('/')[0] + '/2'
+    // }
+    const year = {year: yearRe , isCurrent: true}
+    
     await fetch('/api/user/courseInfo?_method=PATCH', {
         method: "PATCH",
         headers: {
@@ -184,8 +195,8 @@
     const res = await fetch(`/api/user/studentByAdv/{{request.qs().advisor}}`)
     const allStudent = await response.json()
     const allStudentYear = await res.json()
-    console.log(allStudentYear)
     studentUsers = allStudent.studentUsers.filter(val => allStudentYear.studentUsers.includes(val))
+    console.log(allStudentYear)
     if(allStudentYear.studentUsers.length === 0){
       studentUsers = allStudent.studentUsers
     }else{
@@ -211,6 +222,7 @@
     }else{
       staffUsers = allStaff.staffUsers.filter((user) => !allStaffYear.staffUsers.some((staff) => staff.user_id === user.user_id))
     }
+
     if(staffUsers.length === 0){
       document.getElementById('staff_list').innerHTML = '<div class="flex w-full h-full justify-center items-center">No Results Found.</div>'
     }else{

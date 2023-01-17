@@ -7,7 +7,7 @@ import AcademicYear from 'App/Models/AcademicYear'
 import UsersInAcademicYearModel from 'App/Models/UsersInAcademicYear'
 
 export default class PostsController {
-  public async store({ auth, request, response }: HttpContextContract) {
+  public async store({ auth, request, response, session }: HttpContextContract) {
     try {
       const { content, topic } = request.all()
       const user = await User.findOrFail(auth.user?.user_id)
@@ -32,8 +32,46 @@ export default class PostsController {
       }
 
       return response.json(post)
-    } catch (error) {
-      return response.status(400).send({ message: error.message })
+    } catch (errors) {
+      console.log(errors)
+      // console.log(errors.message)
+      if (Array.isArray(errors.message)) {
+        // for (const error in errors.message) {
+        session.flash({
+          error: errors.message,
+          type: 'negative',
+        })
+        return response.status(400).json({ message: errors.message })
+      } else {
+        if (errors['sqlMessage']) {
+          // if (errors['sqlMessage'].includes('Data too long')){
+          //   errors['sqlMessage'] =
+          // }
+          session.flash({
+            error: errors['sqlMessage'],
+            type: 'negative',
+            // key: 'tel',
+          })
+          return response.status(400).json({ message: errors['sqlMessage'] })
+        } else {
+          session.flash({
+            error: errors.message,
+            type: 'negative',
+            // key: 'tel',
+          })
+          return response.status(400).json({ message: errors.message })
+        }
+      }
+      // if (
+      //   error.message
+      //   // error.message === 'empty role'
+      // ) {
+      //   session.flash({
+      //     error: error.message,
+      //     type: 'negative',
+      //   })
+      // }
+      // return response.status(400).send({ message: error.message })
     }
   }
 
@@ -155,9 +193,9 @@ export default class PostsController {
         }
       }
       const AcademicYearAll = await AcademicYear.query().orderBy('updated_at', 'desc')
-      AcademicYearCf[0].academic_year !== AcademicYearAll[0].academic_year
-        ? (canEdit = false)
-        : (canEdit = true)
+      const AcademicYearAllSplit = AcademicYearAll[0].academic_year.split('/')[0]
+      const AcademicYearCfSplit = AcademicYearCf[0].academic_year.split('/')[0]
+      AcademicYearCfSplit !== AcademicYearAllSplit ? (canEdit = false) : (canEdit = true)
       if (!auth.user) {
         return response.redirect('/')
       } else {
@@ -168,7 +206,8 @@ export default class PostsController {
           .preload('usersInAcademicYear')
         const resultsJSONpre = results.map((result) => result.serialize())
         const resultJSON = resultsJSONpre.filter(
-          (result) => result.usersInAcademicYear.academic_year === AcademicYearCf[0].academic_year
+          (result) => result.usersInAcademicYear.academic_year === AcademicYearCfSplit
+          // result.usersInAcademicYear.academic_year.includes(AcademicYearCf[0].academic_year)
         )
         const posts = resultJSON.map((result) => ({
           ...result,

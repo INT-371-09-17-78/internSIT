@@ -311,19 +311,319 @@ export default class StepsServices {
     return steps
   }
 
+  public showStepsTable(month) {
+    const steps =
+      month === 6
+        ? [
+            {
+              name: Steps6Month.TR01,
+              description:
+                'เอกสารขอความอนุเคราะห์เข้าฝึกงาน เมื่อนักศึกษากรอกข้อมูลในเอกสารครบถ้วนและส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากอาจารย์หรือไม่ เมื่อเอกสารของนักศึกษาถูกต้องสมบูรณ์ จะมีการเซ็นเอกสารจากอาจารย์ส่งเข้าระบบ',
+              // defaultFile:
+            },
+            {
+              name: Steps6Month.TR02,
+              description:
+                'เอกสารตอบรับเข้าฝึกงานจากบริษัท เมื่อได้รับแล้ว เจ้าหน้าที่จะมีการส่งเอกสารเข้ามายังระบบ',
+            },
+            {
+              name: Steps6Month.TR03_TR05_AND_SUPERVISION,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) และเอกสารสำหรับการนิเทศ (Supervision)',
+              month: [
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_1_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_1_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 1/6',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_2_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_2_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 2/6',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_3_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_3_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 3/6',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_4_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_4_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 4/6',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_5_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_5_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 5/6',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps6Month.TR_03_TR_05,
+                    value: Steps6Month.TR03_AND_TR05_6_6,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps6Month.SUPERVISION,
+                    value: Steps6Month.INFORMED_SUPERVISION_6_6,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 6/6',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+              ],
+            },
+            {
+              name: Steps6Month.PRESENTATION,
+              description: 'งานนำเสนอการฝึกงานของนักษาที่ใช้ประกอบการนิเทศครั้งสุดท้าย',
+            },
+            {
+              name: Steps6Month.TR03_TR06,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-06) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+            },
+          ]
+        : month === 4
+        ? [
+            {
+              name: Steps4Month.TR01,
+              description:
+                'เอกสารขอความอนุเคราะห์เข้าฝึกงาน เมื่อนักศึกษากรอกข้อมูลในเอกสารครบถ้วนและส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากอาจารย์หรือไม่ เมื่อเอกสารของนักศึกษาถูกต้องสมบูรณ์ จะมีการเซ็นเอกสารจากอาจารย์ส่งเข้าระบบ',
+            },
+            {
+              name: Steps4Month.TR02,
+              description:
+                'เอกสารตอบรับเข้าฝึกงานจากบริษัท เมื่อได้รับแล้ว เจ้าหน้าที่จะมีการส่งเอกสารเข้ามายังระบบ',
+            },
+            {
+              name: Steps4Month.TR03_TR05_AND_SUPERVISION,
+              month: [
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_1_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_1_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 1/4',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_2_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_2_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 2/4',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_3_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_3_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 3/4',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+                [
+                  {
+                    name: Steps4Month.TR_03_TR_05,
+                    value: Steps4Month.TR03_AND_TR05_4_4,
+                    description:
+                      'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานความก้าวหน้าประจำเดือน (TR-05) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+                  },
+                  {
+                    name: Steps4Month.SUPERVISION,
+                    value: Steps4Month.INFORMED_SUPERVISION_4_4,
+                    description:
+                      'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+                  },
+                  {
+                    name: 'Supervision Status',
+                    value: 'Supervision Status 4/4',
+                    description: 'สนถานะของการนิเทศ',
+                  },
+                ],
+              ],
+            },
+            {
+              name: Steps4Month.PRESENTATION,
+              description: 'งานนำเสนอการฝึกงานของนักษาที่ใช้ประกอบการนิเทศครั้งสุดท้าย',
+            },
+            {
+              name: Steps4Month.TR03_TR06,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-06) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+            },
+          ]
+        : [
+            {
+              name: Steps2Month.TR01,
+              description:
+                'เอกสารขอความอนุเคราะห์เข้าฝึกงาน เมื่อนักศึกษากรอกข้อมูลในเอกสารครบถ้วนและส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากอาจารย์หรือไม่ เมื่อเอกสารของนักศึกษาถูกต้องสมบูรณ์ จะมีการเซ็นเอกสารจากอาจารย์ส่งเข้าระบบ',
+            },
+            {
+              name: Steps2Month.TR02,
+              description:
+                'เอกสารตอบรับเข้าฝึกงานจากบริษัท เมื่อได้รับแล้ว เจ้าหน้าที่จะมีการส่งเอกสารเข้ามายังระบบ',
+            },
+            {
+              name: Steps2Month.INFORMED_SUPERVISION,
+              description:
+                'บันทึกข้อมูลการนิเทศนักศึกษา โปรดรอวันนัดหมายจากอาจารย์ก่อนยืนยันหรือขอเปลี่ยนแปลงวันนัดหมาย เมื่อจบการนิเทศแล้วให้นักศึกษาเปลี่ยนสถานะของการนิเทศจาก Pending เป็น Done',
+            },
+            {
+              name: 'Supervision Status',
+              // value: Steps6Month.INFORMED_SUPERVISION_1_6,
+              description: 'สนถานะของการนิเทศ',
+            },
+            {
+              name: Steps2Month.PRESENTATION,
+              description: 'งานนำเสนอการฝึกงานของนักษาที่ใช้ประกอบการนิเทศครั้งสุดท้าย',
+            },
+            {
+              name: Steps2Month.TR03_AND_TR08,
+              description:
+                'เอกสารรายงานความก้าวหน้าประจำสัปดาห์ของแต่ละเดือน (TR-03) และ เอกสารรายงานการฝึกงานฉบับสมบูรณ์ (TR-08) เมื่อนักศึกษาส่งเข้าระบบแล้ว โปรดตรวจสอบว่ามีการให้แก้ไขจากเจ้าหน้าที่หรือไม่',
+            },
+          ]
+
+    return steps
+  }
+
+  public delay(milliseconds) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds)
+    })
+  }
+
   public async gen() {
     try {
       let year: any
+
       const users = await User.all()
       if (users && users.length === 0) {
         const currentYear = await AcademicYear.query().orderBy('updated_at', 'desc')
         if (!currentYear || currentYear.length === 0) {
+          const date = new Date().getFullYear().toString()
           year = await AcademicYear.create({
-            academic_year: new Date().getFullYear(),
+            academic_year: date,
+            status: true,
+          })
+          await AcademicYear.create({
+            academic_year: date + '/2',
+            status: true,
+          })
+          await AcademicYear.create({
+            academic_year: date + '/s',
             status: true,
           })
         } else {
-          year = currentYear[0]
+          year = currentYear[0].academic_year.split('/')[0]
         }
         const arr = [
           {
@@ -398,5 +698,27 @@ export default class StepsServices {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  public validatePhoneNumber(input_str) {
+    const re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/
+
+    return re.test(input_str)
+  }
+
+  public validateEmail(mail) {
+    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+
+    return re.test(mail)
+  }
+
+  public semesterPlan(semester) {
+    if (semester === 2) {
+      return [4, 6]
+    } else {
+      return [2]
+    }
+
+    // return re.test(mail)
   }
 }

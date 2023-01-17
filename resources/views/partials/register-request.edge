@@ -11,7 +11,7 @@
       </tr>
     </thead>
     <tbody>
-      @each((studentUser,index) in studentUsers)
+      @each((studentUser,index) in requestUsers)
       @if(!studentUser.approved)
       <tr class="font-bold">
         <td><input type="checkbox" name="checkStudent" id="{{studentUser.user_id}}" onchange="updateCheckAll()"

@@ -8,7 +8,7 @@ export default class UsersInAcademicYears extends BaseSchema {
       table.increments('id').primary()
       table.string('user_id', 80).references('users.user_id').onDelete('CASCADE')
       table
-        .integer('academic_year')
+        .string('academic_year')
         // .unsigned()
         .references('academic_years.academic_year')
         .onDelete('CASCADE')
