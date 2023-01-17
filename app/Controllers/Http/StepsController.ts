@@ -34,12 +34,19 @@ export default class StepsController {
       //   AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
       // }
 
-      AcademicYearCf = await AcademicYear.query().where(
-        'academic_year',
-        request.cookie('year') || 0
-      )
+      // AcademicYearCf = await AcademicYear.query().where(
+      //   'academic_year',
+      //   request.cookie('year') || 0
+      // )
+      const AcademicYearCftest = await AcademicYear.query().orderBy('updated_at', 'desc')
+      console.log(AcademicYearCftest[0].academic_year, 'test')
 
-      if (!AcademicYearCf[0]) {
+      // if (!AcademicYearCf[0]) {
+      //   AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
+      // }
+      if (request.cookie('year')) {
+        AcademicYearCf = await AcademicYear.query().where('academic_year', request.cookie('year'))
+      } else {
         AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
       }
       let studentUsers: any = []

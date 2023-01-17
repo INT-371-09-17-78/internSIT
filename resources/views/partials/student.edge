@@ -1317,7 +1317,16 @@ const checkStartDateMax = () => {
       //   error = e
       // }
       // console.log("เข้า");
-      window.location.reload()
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString)
+      const mode = urlParams.get('mode')
+            if(mode === 'edit'){
+              urlParams.delete('mode')
+              window.location.href = `/student-information/{{studentUser.user_id}}${urlParams.toString() ? '?'+ urlParams : ''}`
+            }else{
+              window.location.reload()
+            }
+      // window.location.reload()
     }else{
         console.log("เข้า");
         

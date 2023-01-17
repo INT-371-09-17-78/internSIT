@@ -87,18 +87,34 @@ View.global('returnIcon', (str: string) => {
   }
 })
 
-Route.get('/', async ({ view, auth, response }) => {
+Route.get('/', async ({ view, auth, request, response }) => {
   const stepServiceGen = new stepService()
-  // const month = new Date().getMonth()
-  // console.log(month)
-
   const year = await stepServiceGen.gen()
-  if (year) {
-    const month = new Date().getMonth()
-    if (month < 4) {
-      response.cookie('year', year.academic_year + '/2')
-    } else {
-      response.cookie('year', year.academic_year + '/s')
+  // if (year) {
+  //   const month = new Date().getMonth()
+  //   if (month < 4) {
+  //     console.log('งำงาน')
+
+  //     response.cookie('year', year.academic_year || new Date().getFullYear().toString() + '/2')
+  //   } else {
+  //     console.log('งำงาน2')
+  //     response.cookie('year', year.academic_year || new Date().getFullYear().toString() + '/s')
+  //   }
+  // }
+  const month = new Date().getMonth()
+  if (month < 4) {
+    if (!request.cookie('year') || request.cookie('year') === '') {
+      response.cookie(
+        'year',
+        year ? year.academic_year : new Date().getFullYear().toString() + '/2'
+      )
+    }
+  } else {
+    if (!request.cookie('year') || request.cookie('year') === '') {
+      response.cookie(
+        'year',
+        year ? year.academic_year : new Date().getFullYear().toString() + '/s'
+      )
     }
   }
   if (auth.user) return response.redirect('/student-information')
