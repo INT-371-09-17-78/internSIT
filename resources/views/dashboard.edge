@@ -98,42 +98,42 @@
             @each(step in stepRender)
               @if(!step.month)
               <p class="font-bold">{{step.name}}</p>
-              <div>
+              <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'No submitted', month: request.qs().month } }) }}" class="cursor-pointer">
                 <p class="font-bold">{{step.Max-(step['Pending Total']+step['Disapproved Total']+step['Approved Total'])}}/{{step.Max}}</p>
                 <progress class="progress max-w-56 h-4" value="{{step.Max-(step['Pending Total']+step['Disapproved Total']+step['Approved Total'])}}" max="{{step.Max}}"></progress>
-              </div>
-              <div>
+              </a>
+              <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'Pending', month: request.qs().month } }) }}" class="cursor-pointer">
                 <p class="font-bold">{{step['Pending Total']}}/{{step.Max}}</p>
                 <progress class="progress progress-warning max-w-56 h-4" value="{{step['Pending Total']}}" max="{{step.Max}}"></progress>
-              </div>
-              <div>
+              </a>
+              <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'Improve', month: request.qs().month } }) }}" class="cursor-pointer">
                 <p class="font-bold">{{step['Disapproved Total']}}/{{step.Max}}</p>
                 <progress class="progress progress-error max-w-56 h-4" value="{{step['Disapproved Total']}}" max="{{step.Max}}"></progress>
-              </div>
-              <div>
+              </a>
+              <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'Completed', month: request.qs().month } }) }}" class="cursor-pointer">
                 <p class="font-bold">{{step['Approved Total']}}/{{step.Max}}</p>
                 <progress class="progress progress-success max-w-56 h-4" value="{{step['Approved Total']}}" max="{{step.Max}}"></progress>
-              </div>
+              </a>
               @else
                 @each(months in step.month)
                   @each(subStep in months)
                   <p class="font-bold">{{subStep.value}}</p>
-                  <div>
+                  <a href="{{ route('/student-information', {qs: { filterStep: subStep.value, filterStatus: 'No submitted', month: request.qs().month } }) }}" class="cursor-pointer">
                     <p class="font-bold">{{subStep.Max-(subStep['Pending Total']+subStep['Disapproved Total']+subStep['Approved Total'])}}/{{subStep.Max}}</p>
                     <progress class="progress max-w-56 h-4" value="{{subStep.Max-(subStep['Pending Total']+subStep['Disapproved Total']+subStep['Approved Total'])}}" max="{{subStep.Max}}"></progress>
-                  </div>
-                  <div>
+                  </a>
+                  <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'Pending', month: request.qs().month } }) }}" class="cursor-pointer">
                     <p class="font-bold">{{subStep['Pending Total']}}/{{subStep.Max}}</p>
                     <progress class="progress progress-warning max-w-56 h-4" value="{{subStep['Pending Total']}}" max="{{subStep.Max}}"></progress>
-                  </div>
-                  <div>
+                  </a>
+                  <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'Improve', month: request.qs().month } }) }}" class="cursor-pointer">
                     <p class="font-bold">{{subStep['Disapproved Total']}}/{{subStep.Max}}</p>
                     <progress class="progress progress-error max-w-56 h-4" value="{{subStep['Disapproved Total']}}" max="{{subStep.Max}}"></progress>
-                  </div>
-                  <div>
+                  </a>
+                  <a href="{{ route('/student-information', {qs: { filterStep: step.name, filterStatus: 'Completed', month: request.qs().month } }) }}" class="cursor-pointer">
                     <p class="font-bold">{{subStep['Approved Total']}}/{{subStep.Max}}</p>
                     <progress class="progress progress-success max-w-56 h-4" value="{{subStep['Approved Total']}}" max="{{subStep.Max}}"></progress>
-                  </div>
+                  </a>
                   @end
                 @end
               @end
