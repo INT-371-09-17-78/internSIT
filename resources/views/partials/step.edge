@@ -56,7 +56,9 @@
                 No files
             </div>
         </div>
-        <div class="col-span-2"></div>
+        <div class="col-span-2"> {{--  @if(flashMessages.get('error', ''))  --}}
+            <p class="text-error text-xs pt-3">{{ flashMessages.get('error', '') }}</p>
+            {{--  @end  --}}</div>
         <div class="col-span-3 space-y-5 border-[#A8B0B8] border-2 p-5 rounded-lg">
             @each((file,index) in stepEdit.templateFile)
             <div class="flex">
@@ -72,6 +74,7 @@
                   </div>
             </div>
             @end
+           
         </div>
     </div>
     <div class="flex justify-end items-end space-x-2 pb-5 mt-5">
@@ -141,10 +144,20 @@
         await fetch('/api/file/steps?_method=POST', {
           method: 'POST',
           body: formData,
-        }).then(()=>{
-            const qs = new URLSearchParams()
-            qs.append('month','{{request.qs().month}}')
-            window.location.href = `/steps?${qs}`
+        }).then((res)=>{
+
+            if(res.ok){
+              const qs = new URLSearchParams()
+              qs.append('month','{{request.qs().month}}')
+              window.location.href = `/steps?${qs}`
+            }else{
+              window.location.reload()
+            }
+            
+            // window.location.reload()
+            // qs.append('month','{{request.qs().month}}')
+            // window.location.href = `/steps?${qs}`
+            // window.location.href = `/`
         })
     }
 </script>

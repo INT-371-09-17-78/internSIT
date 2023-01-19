@@ -80,6 +80,7 @@ export default class FilesController {
       const files = request.files('files', {
         size: '3mb',
       })
+      console.log(files)
 
       let err: Object[] = []
       const fileServices = new FileServices()
@@ -91,12 +92,35 @@ export default class FilesController {
       console.log(files.length)
       console.log(step, status)
 
+      let user
+      let usersInAcademicYear
+      let userHasDocResult
+      let newFileName
+      let fileSize
+      // let AcademicYearCf
       for (let file of files) {
         if (!file.isValid) {
-          // err.push(file.errors)
           err.push(file.errors[0].message)
-        } else {
-          const newFileName = uuidv4()
+          // if (Array.isArray(file.errors)) {
+          //   for (const errFile in file.errors) {
+          //     // if (
+          //     console.log(errFile)
+
+          //     err.push(errFile.message)
+          //   }
+          //   console.log(err)
+          // }
+          // err.push(file.errors[0].message)
+        }
+      }
+
+      if (err && err.length > 0) {
+        console.log(err)
+
+        throw { message: err }
+      } else {
+        for (let file of files) {
+          newFileName = uuidv4()
           await file.move(
             Application.tmpPath(
               stepFileType.includes('template')
@@ -108,13 +132,11 @@ export default class FilesController {
               overwrite: true, // overwrite in case of conflict
             }
           )
-          let user
-          let usersInAcademicYear
-          let userHasDocResult
+
           if (studentId) {
             user = await User.find(studentId)
           }
-
+          console.log('teasdasdasdsadasd')
           const AcademicYearCf = await AcademicYear.query().orderBy('updated_at', 'desc')
           const AcademicYearCfSplit = AcademicYearCf[0].academic_year.split('/')[0]
           if (user) {
@@ -129,7 +151,7 @@ export default class FilesController {
               .andWhere('user_in_academic_year_id', usersInAcademicYear[0].id)
               .orderBy('updated_at', 'desc')
           }
-          const fileSize = fileServices.convertFileSize(file.size)
+          fileSize = fileServices.convertFileSize(file.size)
           // if (stepFileType.includes('template')) {
           //   const result = await File.query().where(
           //     'step_file_type',
@@ -141,25 +163,36 @@ export default class FilesController {
           //   }
           // }
           if (err && err.length > 0) {
-            throw { message: err }
-          }
+            console.log(err)
 
-          await File.create({
-            file_id: newFileName,
-            file_name: file.clientName,
-            file_size: fileSize,
-            user_has_doc_id:
-              userHasDocResult && userHasDocResult.length > 0 ? userHasDocResult[0].id : undefined,
-            step_file_type: stepFileTypePlanJSON
-              ? stepFileType +
-                stepFileTypePlanJSON.month +
-                stepFileTypePlanJSON.step +
-                AcademicYearCf[0].academic_year
-              : stepFileType,
-          })
+            // throw { message: err }
+          } else {
+            await File.create({
+              file_id: newFileName,
+              file_name: file.clientName,
+              file_size: fileSize,
+              user_has_doc_id:
+                userHasDocResult && userHasDocResult.length > 0
+                  ? userHasDocResult[0].id
+                  : undefined,
+              step_file_type: stepFileTypePlanJSON
+                ? stepFileType +
+                  stepFileTypePlanJSON.month +
+                  stepFileTypePlanJSON.step +
+                  AcademicYearCf[0].academic_year
+                : stepFileType,
+            })
+          }
         }
       }
-      return response.status(200).json({ message: 'success' })
+
+      // console.log('teasdasdasdsadasd')
+      // if (err && err.length > 0) {
+      //   console.log(err)
+
+      //   throw { message: err }
+      // }
+      // return response.status(200).json({ message: 'success' })
       // return response.status(400).json({ message: 'something went wrong maybe cant find data' })
     } catch (error) {
       console.log(error)
@@ -172,15 +205,43 @@ export default class FilesController {
       //     type: 'negative',
       //   })
       // }
-      if (
-        error.message
-        // error.message === 'empty role'
-      ) {
-        session.flash({
-          error: error.message,
-          type: 'negative',
-        })
+      // if (
+      //   error.message
+      //   // error.message === 'empty role'
+      // ) {
+      //   session.flash({
+      //     error: error.message,
+      //     type: 'negative',
+      //   })
+      // }
+      // console.log('push')
+      if (Array.isArray(error.message)) {
+        for (const err in error.message) {
+          // if (
+          //   error[i] === 'Invalid phone number'
+          //   // error.message === 'empty role'
+          // ) {
+          session.flash({
+            error: error.message[err],
+            type: 'negative',
+            // key: 'tel',
+          })
+        }
+        console.log('arr')
+
+        // response.redirect(`/student/${request.param('id')}/edit`)
+      } else {
+        if (
+          error.message
+          // error.message === 'empty role'
+        ) {
+          session.flash({
+            error: error.message,
+            type: 'negative',
+          })
+        }
       }
+
       return response.status(400).json({ message: error.messages })
     }
   }
