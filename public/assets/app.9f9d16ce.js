@@ -1,0 +1,1 @@
+(()=>{"use strict";window.onload=function(){var e;document.getElementById("topic")&&null!==(e=document.getElementById("topic"))&&void 0!==e&&e.value&&document.getElementById("content").value&&document.getElementById("content")&&(document.getElementById("sendButton").disabled=!1)}})();

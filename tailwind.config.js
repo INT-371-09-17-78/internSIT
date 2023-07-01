@@ -192,6 +192,13 @@ module.exports = {
       'xl': '0.75rem',
       '2xl': '1rem',
       '3xl': '1.5rem',
+      '4xl': '2rem',
+      '5xl': '2.5rem',
+      '6xl': '3rem',
+      '7xl': '3.5rem',
+      '8xl': '4rem',
+      '9xl': '4.5rem',
+      '10xl': '5rem',
       'full': '9999px',
     },
     /*
@@ -348,6 +355,7 @@ module.exports = {
       DEFAULT: '1',
     },
     fontFamily: {
+      roboto: ['Roboto'],
       sans: [
         'ui-sans-serif',
         'system-ui',
@@ -956,11 +964,22 @@ module.exports = {
       {
         light: {
           ...require('daisyui/src/colors/themes')['[data-theme=light]'],
-          'primary': 'blue',
-          'primary-focus': 'mediumblue',
+          'primary': '#4263EB',
+          'primary-focus': '#2342C0',
+          'secondary': '#7950F2',
+          'secondary-focus': '#582DD8',
+          'accent': '#ff8787',
+          'error-content': '#FFFFFF',
+          'base-200': '#ACB5BD',
+          'base-300': '#DDE2E5',
+          'base-content': '#495057',
+          'info': '#74C0FC',
+          'warning': '#E49200',
+          'error': '#FB3449',
+          'success': '#007934',
         },
       },
     ],
   },
-  plugins: [require('daisyui')],
+  plugins: [require('daisyui'), require('@tailwindcss/line-clamp')],
 }

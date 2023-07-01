@@ -1,4 +1,25 @@
 {
-  "assets/app.css": "http://localhost:8080/assets/app.css",
-  "assets/app.js": "http://localhost:8080/assets/app.js"
+  "assets/app.css": "/assets/app.0e799998.css",
+  "assets/app.js": "/assets/app.9f9d16ce.js",
+  "assets/images/bg.jpg": "/assets/images/bg.5a9ffc61.jpg",
+  "assets/images/nui.jpg": "/assets/images/nui.d5edd61c.jpg",
+  "assets/images/change-lang.png": "/assets/images/change-lang.69de1315.png",
+  "assets/images/waiting.gif": "/assets/images/waiting.38e036df.gif",
+  "assets/images/home.svg": "/assets/images/home.a1f1362c.svg",
+  "assets/images/united-kingdom.png": "/assets/images/united-kingdom.75e4f0e1.png",
+  "assets/images/empty.png": "/assets/images/empty.a5035a00.png",
+  "assets/images/avatar.svg": "/assets/images/avatar.6385c637.svg",
+  "assets/images/thailand.png": "/assets/images/thailand.233c8dc4.png",
+  "assets/images/close.svg": "/assets/images/close.c18b9af4.svg",
+  "assets/images/drop-file.svg": "/assets/images/drop-file.3f3587b2.svg",
+  "assets/images/file.svg": "/assets/images/file.cde1f2d4.svg",
+  "assets/images/paperclip.svg": "/assets/images/paperclip.4f9acd67.svg",
+  "assets/images/trash.svg": "/assets/images/trash.0821cea5.svg",
+  "assets/images/success.svg": "/assets/images/success.6b77e322.svg",
+  "assets/images/done-circle.svg": "/assets/images/done-circle.cd0e32ca.svg",
+  "assets/images/check.svg": "/assets/images/check.e4d03269.svg",
+  "assets/images/student-info.svg": "/assets/images/student-info.14931f50.svg",
+  "assets/images/arrow.svg": "/assets/images/arrow.d9307088.svg",
+  "assets/images/down-arrow.svg": "/assets/images/down-arrow.3ea96662.svg",
+  "assets/images/nothing.png": "/assets/images/nothing.e235720d.png"
 }

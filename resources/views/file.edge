@@ -1,0 +1,111 @@
+@layout('layouts/app')
+@set('title', 'file page')
+@section('file')
+<section class="h-full w-full z-[5] overflow-y-hidden overflow-x-auto flex justify-center">
+  {{-- <div class="bg-white h-fit max-h-[43rem] mt-20 mx-5 rounded-lg lg:mt-10 lg:mx-20 overflow-visible w-fit"> --}}
+    {{-- <div class="w-full flex overflow-auto"> --}}
+      <div class="h-fit w-8/12 rounded-lg">
+        <table class="table h-fit mt-20 w-full">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Date</th>
+              <th>Owner</th>
+              <th colspan="2"></th>
+            </tr>
+          </thead>
+          <tbody class="overflow-auto">
+            @each((file,index) in files)
+            <tr id="{{file.file_id}}">
+              <th>{{index+1}}</th>
+              <td>{{file.file_name}}</td>
+              <td>{{file.file_size}}</td>
+              <td>{{file.updated_at}}</td>
+              <td>{{file.user_id}}</td>
+              <td>
+                <div class="dropdown dropdown-top">
+                  <label tabindex="0">
+                    <div class="w-5 h-5 cursor-pointer">
+                      <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path
+                          d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z" />
+                      </svg>
+                    </div>
+                  </label>
+                  <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
+                    <li><a href="{{ route('/api/file/:fileId', { fileId: file.file_id }) }}"
+                        class="font-medium py-2 px-5">Download</a></li>
+                    @if(auth.user?.role != "student")
+                    <li><a onclick="openAlertDeleteFile('{{file.file_id}}')"
+                        class="font-medium py-2 px-5 text-red-500 active:bg-transparent">Delete</a></li>
+                    @end
+                  </ul>
+                </div>
+      </div>
+      {{-- <div class="dropdown dropdown-end" style="margin-left: auto">
+        <label tabindex="0">
+          <div class="w-5 h-5 cursor-pointer">
+            <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z" />
+            </svg>
+          </div>
+        </label>
+        <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
+          <li><a href="{{ route('/api/file/:fileId', { fileId: file.file_id }) }}"
+              class="font-medium py-2 px-5">Download</a></li>
+          <li><a onclick="openAlertDeleteFile('{{file.file_id}}')"
+              class="font-medium py-2 px-5 text-red-500 active:bg-transparent">Delete</a></li>
+        </ul>
+      </div> --}}
+      </td>
+      </tr>
+      @end
+      </tbody>
+      </table>
+    </div>
+    {{-- </div> --}}
+
+  {{-- </div> --}}
+</section>
+<script>
+  const openAlertDeleteFile = (fileId) => {
+    const alertDeleteFile = 
+    `<div id="modal-confirm" class="w-full h-full bg-black bg-opacity-30 absolute top-0 z-10">
+      <div class="alert-logout absolute z-20 top-5 w-full lg:px-32 px-10">
+        <div class="alert bg-base-100 shadow-lg font-bold">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-error flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Are you sure delete this post ?</span>
+          </div>
+          <div class="flex-none">
+            <button class="btn btn-sm btn-ghost rounded-3xl" onclick="closeAlertDeleteFile()">no</button>
+            <form id="formElem">
+            <button class="btn btn-sm btn-error rounded-3xl text-white">yes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> `
+    document.body.innerHTML += alertDeleteFile
+    formElem.onsubmit = async (event) => {
+    event.preventDefault()
+    const response = await fetch(`/api/file/${fileId}?_method=DELETE`, {
+        method: 'POST',
+    })
+    closeAlertDeleteFile()  
+    const deletedElem = document.getElementById(fileId)
+    deletedElem.remove()
+  }
+  }
+
+  const closeAlertDeleteFile = () => {
+    const element = document.getElementById('modal-confirm')
+    element.remove()
+  }
+
+</script>
+@end

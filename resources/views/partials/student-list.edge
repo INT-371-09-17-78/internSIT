@@ -1,0 +1,290 @@
+<div class="p-8">
+  <div class="pr-20 flex items-end">
+    <p class="text-base px-2 lg:text-2xl text-base-content font-semibold">Student information</p>
+    {{-- <div class="dropdown ml-auto">
+      <label tabindex="0" class="select select-sm bg-[#F6F7F9]" id="selectInput">Filter by</label>
+      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box mt-2 space-y-2">
+        <p>Steps</p>
+        @each(step in stepsRender)
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStep" class="checkbox" onclick="filterStudents()" value="TR-01">
+          <p>TR-01</p>
+        </div>
+        @end
+        <p>Status</p>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Not submitted">
+          <p>Not submitted</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Pending">
+          <p>Pending</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Approved">
+          <p>Approved</p>
+        </div>
+        <div class="flex flex-row space-x-2">
+          <input type="checkbox" name="selectStatus" class="checkbox" onclick="filterStudents()" value="Disapproved">
+          <p>Improved</p>
+        </div>
+      </ul>
+    </div> --}}
+  </div>
+  <div class="flex h-full">
+    <div>
+      <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
+        <li class="{{activeAll}}">
+          <a class="active:bg-[#A1D9FF] active:text-[#495057]" href="{{ route('/student-information') }}">All
+            Student</a>
+        </li>
+        @if(request.cookie('year').includes('/s'))
+        
+        <li class="{{activeTwoMonth}}">
+          <a class="active:bg-[#A1D9FF] active:text-[#495057]"
+            href="{{ route('/student-information', {} , {qs: {month: 2}})  }}">INT340 (2 months)</a>
+        </li>
+        @else
+        <li class="{{activeFourMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
+            href="{{ route('/student-information', {} , {qs: {month: 4}})  }}">INT350 (4 months)</a></li>
+        <li class="{{activeSixMonth}}"><a class="active:bg-[#A1D9FF] active:text-[#495057]"
+            href="{{ route('/student-information', {} , {qs: {month: 6}})  }}">INT370 (6 months)</a></li>
+        @end
+      </ul>
+    </div>
+    {{--  @if(allAmoutSt !== noApprove && studentUsers.length > 0)  --}}
+    @if(allAmoutSt > 0)
+    {{--  allAmoutSt  --}}
+    <div class="flex-1 overflow-x-auto w-fit h-fit max-w-6xl ml-5">
+      @if(request.qs().month)
+      <form onsubmit="sendFilter(event)" class="flex items-center mt-5 space-x-2">
+        <p class="font-medium">Filter</p>
+        @if(request.qs().month === '2')
+        <select
+          class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStep">
+          <option {{request.qs().filterStep === 'TR-01' && 'selected'}} value="TR-01">TR-01</option>
+          <option {{request.qs().filterStep === 'TR-02' && 'selected'}} value="TR-02">TR-02</option>
+          <option {{request.qs().filterStep === 'Informed supervision' && 'selected'}} value="Informed supervision">Informed supervision</option>
+          <option {{request.qs().filterStep === 'Presentation' && 'selected'}} value="Presentation">Presentation</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-08' && 'selected'}} value="TR-03 and TR-08">TR-03 and TR-08</option>
+        </select>
+        @elseif(request.qs().month === '4')
+        <select
+          class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStep">
+          <option {{request.qs().filterStep === 'TR-01' && 'selected'}} value="TR-01">TR-01</option>
+          <option {{request.qs().filterStep === 'TR-02' && 'selected'}} value="TR-02">TR-02</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (1/4)' && 'selected'}} value="TR-03 and TR-05 (1/4)">TR-03 and TR-05 (1/4)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (1/4)' && 'selected'}} value="Informed supervision (1/4)">Informed supervision (1/4)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (2/4)' && 'selected'}} value="TR-03 and TR-05 (2/4)">TR-03 and TR-05 (2/4)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (2/4)' && 'selected'}} value="Informed supervision (2/4)">Informed supervision (2/4)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (3/4)' && 'selected'}} value="TR-03 and TR-05 (3/4)">TR-03 and TR-05 (3/4)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (3/4)' && 'selected'}} value="Informed supervision (3/4)">Informed supervision (3/4)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (4/4)' && 'selected'}} value="TR-03 and TR-05 (4/4)">TR-03 and TR-05 (4/4)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (4/4)' && 'selected'}} value="Informed supervision (4/4)">Informed supervision (4/4)</option>
+          <option {{request.qs().filterStep === 'Presentation' && 'selected'}} value="Presentation">Presentation</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-06' && 'selected'}} value="TR-03 and TR-06">TR-03 and TR-06</option>
+        </select>
+        @else
+        <select
+          class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStep">
+          <option {{request.qs().filterStep === 'TR-01' && 'selected'}} value="TR-01">TR-01</option>
+          <option {{request.qs().filterStep === 'TR-02' && 'selected'}} value="TR-02">TR-02</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (1/6)' && 'selected'}} value="TR-03 and TR-05 (1/6)">TR-03 and TR-05 (1/6)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (1/6)' && 'selected'}} value="Informed supervision (1/6)">Informed supervision (1/6)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (2/6)' && 'selected'}} value="TR-03 and TR-05 (2/6)">TR-03 and TR-05 (2/6)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (2/6)' && 'selected'}} value="Informed supervision (2/6)">Informed supervision (2/6)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (3/4)' && 'selected'}} value="TR-03 and TR-05 (3/4)">TR-03 and TR-05 (3/6)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (3/6)' && 'selected'}} value="Informed supervision (3/6)">Informed supervision (3/6)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (4/6)' && 'selected'}} value="TR-03 and TR-05 (4/6)">TR-03 and TR-05 (4/6)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (4/6)' && 'selected'}} value="Informed supervision (4/6)">Informed supervision (4/6)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (5/6)' && 'selected'}} value="TR-03 and TR-05 (5/6)">TR-03 and TR-05 (5/6)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (5/6)' && 'selected'}} value="Informed supervision (5/6)">Informed supervision (5/6)</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-05 (6/6)' && 'selected'}} value="TR-03 and TR-05 (6/6)">TR-03 and TR-05 (6/6)</option>
+          <option {{request.qs().filterStep === 'Informed supervision (6/6)' && 'selected'}} value="Informed supervision (6/6)">Informed supervision (6/6)</option>
+          <option {{request.qs().filterStep === 'Presentation' && 'selected'}} value="Presentation">Presentation</option>
+          <option {{request.qs().filterStep === 'TR-03 and TR-06' && 'selected'}} value="TR-03 and TR-06">TR-03 and TR-06</option>
+        </select>
+        @end
+        <select
+          class="filter select select-sm select-bordered border-2 border-[#ACB5BD] rounded-md w-36 max-w-xs" id="filterStatus">
+          <option {{request.qs().filterStatus === 'No Submitted' && 'selected'}} value="No Submitted">No submitted</option>
+          <option {{request.qs().filterStatus === 'Pending' && 'selected'}} value="Pending">Pending</option>
+          <option {{request.qs().filterStatus === 'Not completed' && 'selected'}} value="Not completed">Not completed</option>
+          <option {{request.qs().filterStatus === 'Completed' && 'selected'}} value="Completed">Completed</option>
+        </select>
+        @!common.bgButton({
+          id: 'submitFilter',
+          text: 'search',
+          type: 'submit',
+          classProps: 'px-5',
+        })
+      </form>
+      @end
+      <table class="table w-full mt-5">
+        <thead>
+          <tr class="border-2 border-[#E4E5E8]">
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">No.</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Name</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Latest Status</th>
+            @each(step in stepRender)
+            
+            @if(!step.month)
+          
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">{{step.name}}</th>
+          
+            @else
+            @each((month,j) in step.month)
+            @each(subStep in month)
+           
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">{{subStep.name}} ({{j+1}})
+            </th>
+            
+            @end
+            @end
+            @end
+
+            @end
+          </tr>
+        </thead>
+        <tbody>
+          @each((student,index) in studentUsers)
+          @if(student.approved)
+          <tr class="cursor-pointer font-medium border-2 border-[#E4E5E8]"
+            onclick="window.location='/student-information/{{student.user_id}}?step=TR-01'">
+            <td class="border-r-2 border-[#E4E5E8]">{{student.user_id}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{student.firstname + " " + student.lastname}}</td>
+            <td class="border-r-2 border-[#E4E5E8] {{checkStatus(student.lastestStatus)}}">{{student.lastestStatus}}
+            </td>
+            @if(request.qs().month)
+            @if(student.plan === 6)
+            @if(student['TR-01'] || student['TR-01'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
+            @end
+            @if(student['TR-02'] || student['TR-02'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-05 (1/6)'] || student['TR-03 and TR-05 (1/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/6)'])}}}</td>
+            @end
+            @if(student['Informed supervision (1/6)'] || student['Informed supervision (1/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/6)'])}}}</td>
+            @end
+            @if(student['Supervision Status (1/6)'] || student['Supervision Status (1/6)'] === null|| request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (1/6)'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-05 (2/6)'] || student['TR-03 and TR-05 (2/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/6)'])}}}</td>
+            {{--  @elseif()  --}}
+            @end
+            @if(student['Informed supervision (2/6)'] || student['Informed supervision (2/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/6)'])}}}</td>
+            @end
+            @if(student['Supervision Status (2/6)'] || student['Supervision Status (2/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (2/6)'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-05 (3/6)'] || student['TR-03 and TR-05 (3/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/6)'])}}}</td>
+            @end
+            @if(student['Informed supervision (3/6)'] || student['Informed supervision (3/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/6)'])}}}</td>
+            @end
+            @if(student['Supervision Status (3/6)'] || student['Supervision Status (3/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (3/6)'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-05 (4/6)'] || student['TR-03 and TR-05 (4/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (4/6)'])}}}</td>
+            @end
+            @if(student['Informed supervision (4/6)'] || student['Informed supervision (4/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/6)'])}}}</td>
+            @end
+            @if(student['Supervision Status (4/6)'] || student['Supervision Status (4/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (4/6)'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-05 (5/6)'] || student['TR-03 and TR-05 (5/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (5/6)'])}}}</td>
+            @end
+            @if(student['Informed supervision (5/6)'] || student['Informed supervision (5/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (5/6)'])}}}</td>
+            @end
+            @if(student['Supervision Status (5/6)'] || student['Supervision Status (5/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (5/6)'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-05 (6/6)'] || student['TR-03 and TR-05 (6/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (6/6)'])}}}</td>
+            @end
+            @if(student['Informed supervision (6/6)'] || student['Informed supervision (6/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (6/6)'])}}}</td>
+            @end
+            @if(student['Supervision Status (6/6)'] || student['Supervision Status (6/6)'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (6/6)'])}}}</td>
+            @end
+            @if(student['Presentation'] || student['Presentation'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
+            @end
+            @if(student['TR-03 and TR-06'] || student['TR-03 and TR-06'] === null || request.qs().filterStep === undefined)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-06'])}}}</td>
+            @end
+            @elseif(student.plan === 4)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (1/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (1/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (1/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (2/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (2/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (2/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (3/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (3/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (3/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-05 (4/6)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision (4/4)'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status (4/4)'])}}}</td>
+            {{--  <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status'])}}}</td>  --}}
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-06'])}}}</td>
+            @elseif(student.plan === 2)
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-01'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-02'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Informed supervision'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Supervision Status'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['Presentation'])}}}</td>
+            <td class="border-r-2 border-[#E4E5E8]">{{{returnIcon(student['TR-03 and TR-08'])}}}</td>
+            @end
+            @end
+          </tr>
+          @end
+          @end
+        </tbody>
+      </table>
+    </div>
+    @else
+    <div
+      class="flex-1 h-full flex flex-col justify-center items-center text-3xl font-semibold space-y-5 text-black/50 m-auto">
+      <img class="w-20 h-20 opacity-50 " src="{{ asset('assets/images/empty.png') }}" />
+      <p>No students in the system</p>
+      <p class="text-base">Please add students into the system first or Check your filters.</p>
+    </div>
+    @end
+  </div>
+</div>
+
+<script>
+  const sendFilter = (event) => {
+    event.preventDefault()
+    const urlParams = new URLSearchParams()
+    urlParams.append('month', {{request.qs().month}})
+    urlParams.append('filterStep', document.getElementById('filterStep').value)
+    urlParams.append('filterStatus', document.getElementById('filterStatus').value)
+    window.location.href = `/student-information?${urlParams}`
+  }
+  // const checkFilter = () => {
+  //   const filters = document.querySelectorAll('.filter')
+  //   let count = 0
+  //   filters.forEach((filter) => {
+  //     if (filter.value !== 'default') {
+  //       count++
+  //     }
+  //   })
+  //   if(count == filters.length) document.getElementById('submitFilter').disabled = false
+  // }
+</script>

@@ -1,0 +1,90 @@
+<div class="p-8">
+  <div class="pr-20 flex items-end">
+    <p class="text-base lg:text-3xl text-base-content font-semibold">Steps</p>
+  </div>
+  <div class="flex space-x-5 h-full">
+    <ul tabindex="0" class="dropdown-content menu w-fit mt-4 font-medium">
+      <li class="{{activeTwoMonth}}">
+        <a href="{{ route('/steps', {} , {qs: {month: 2 }}) }}">INT340 (2
+          months)</a>
+      </li>
+      <li class="{{activeFourMonth}}"><a
+          href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 4 }}) : route('/academic-year') }}">INT350
+          (4 months)</a></li>
+      <li class="{{activeSixMonth}}"><a
+          href="{{ request.cookie('year') ? route('/steps', {} , {qs: {month: 6 }}) : route('/academic-year') }}">INT370
+          (6 months)</a></li>
+    </ul>
+    <div class="flex-1 pr-20">
+      <table class="table w-full mt-5">
+        <thead>
+          <tr class="border-2 border-[#E4E5E8]">
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">No.</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Name</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none">Files</th>
+            <th class="bg-[#E4E5E8] text-[#7C8DA7] border-r-2 border-[#FFFFFF] rounded-none"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @each((step,index) in AllStepByMonth[request.qs().month === '6' ? 'sixMonth' : request.qs().month === '4' ? 'fourMonth' : 'twoMonth' ])
+          <tr class="cursor-pointer font-medium border-2 border-[#E4E5E8]">
+            <td class="border-r-2 border-[#E4E5E8] ">{{index+1}}</td>
+            <td class="border-r-2 border-[#E4E5E8] ">{{step.name}}</td>
+            <td class="space-y-4 border-r-2 border-[#E4E5E8] ">
+              @if(step.templateFile.length === 0)
+              <p>-</p>
+              @else
+                @each(file in step.templateFile)
+                <p>{{file.file_name}}</p>
+                @end
+              @end
+            </td>
+            <td class="border-r-2 border-[#E4E5E8] text-center w-20">
+              <div class="dropdown">
+                <label tabindex="0">
+                  <div class="w-5 h-5 cursor-pointer">
+                    <svg class="fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                      <path
+                        d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z" />
+                    </svg>
+                  </div>
+                </label>
+                <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-lg w-fit">
+                  <li><a href="{{ route('/step/edit', {}, {qs: { step: step.name , month: request.qs().month }}) }}" class="font-medium py-2 px-5 rounded-lg">Edit</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          @end
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  const middleEllipsis = (str) => {
+    if (str.length > 35) {
+      return str.substring(0, 30) + '...' + str.substring(str.length - 10)
+    }
+    return str
+    }
+
+    // const stepFileForm = document.getElementById("step-files")
+    // let files = []
+    // stepFile.onchange = (e) =>{
+    //     const [file] = e.target.files
+    //     files.push(file)
+    //     const p = document.createElement('p')
+    //     const div = document.createElement('div')
+    //     div.innerHTML +=   `<p class="w-full mr-2">${files.length}. ${middleEllipsis(file.name)}</p>
+    //                         <button type='button' class="btn btn-sm btn-circle btn-outline hover:bg-red-500 hover:border-red-500">
+    //                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+    //                           <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+    //                         </svg>
+    //                         </button>`
+    //     div.classList.add('flex')
+    //     div.classList.add('mt-5')
+    //     stepFileForm.appendChild(div)
+    //     stepFile.value = ""
+    // }
+</script>
